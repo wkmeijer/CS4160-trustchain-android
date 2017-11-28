@@ -17,6 +17,7 @@ import nl.tudelft.cs4160.trustchain_android.message.MessageProto;
  * Class is package private to prevent another activity from accessing it and breaking everything
  */
 class Server {
+    private static final String TAG = "Server";
     ServerSocket serverSocket;
 
     String messageLog = "";

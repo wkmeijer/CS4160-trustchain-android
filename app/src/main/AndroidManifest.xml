@@ -6,6 +6,8 @@
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
 
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
 
@@ -19,11 +21,6 @@
         <activity
             android:name=".main.MainActivity"
             android:windowSoftInputMode="stateUnchanged">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
         <activity
             android:name=".KeyActivity"
@@ -35,6 +32,20 @@
             android:theme="@style/AppTheme.NoActionBar" />
 
         <activity android:name=".chainExplorer.ChainExplorerActivity" />
+
+
+        <activity
+            android:name=".main.OverviewActivity"
+            android:configChanges="orientation|screenLayout|screenSize"
+            >
+            <!--android:screenOrientation="portrait">-->
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+        </activity>
+
     </application>
 
 </manifest>

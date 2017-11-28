@@ -7,6 +7,9 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -23,10 +26,10 @@ import nl.tudelft.cs4160.trustchain_android.Peer;
 import nl.tudelft.cs4160.trustchain_android.R;
 import nl.tudelft.cs4160.trustchain_android.Util.Key;
 import nl.tudelft.cs4160.trustchain_android.block.TrustChainBlock;
-import nl.tudelft.cs4160.trustchain_android.chainExplorer.ChainExplorerActivity;
 import nl.tudelft.cs4160.trustchain_android.connection.Communication;
 import nl.tudelft.cs4160.trustchain_android.connection.CommunicationListener;
 import nl.tudelft.cs4160.trustchain_android.connection.network.NetworkCommunication;
+import nl.tudelft.cs4160.trustchain_android.chainExplorer.ChainExplorerActivity;
 import nl.tudelft.cs4160.trustchain_android.database.TrustChainDBHelper;
 import nl.tudelft.cs4160.trustchain_android.main.bluetooth.BluetoothActivity;
 import nl.tudelft.cs4160.trustchain_android.message.MessageProto;
@@ -122,18 +125,36 @@ public class MainActivity extends AppCompatActivity implements CommunicationList
         init();
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.main_menu, menu);
+        return true;
+    }
+
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.main_menu:
+                Intent intent = new Intent(this, OverviewActivity.class);
+                startActivity(intent);
+                return true;
+            default:
+                return true;
+        }
+    }
+
     private void initVariables() {
         thisActivity = this;
-        localIPText = findViewById(R.id.my_local_ip);
-        externalIPText = findViewById(R.id.my_external_ip);
-        statusText = findViewById(R.id.status);
+        localIPText = (TextView) findViewById(R.id.my_local_ip);
+        externalIPText = (TextView) findViewById(R.id.my_external_ip);
+        statusText = (TextView) findViewById(R.id.status);
         statusText.setMovementMethod(new ScrollingMovementMethod());
-        editTextDestinationIP = findViewById(R.id.destination_IP);
-        editTextDestinationPort = findViewById(R.id.destination_port);
-        connectionButton = findViewById(R.id.connection_button);
-        chainExplorerButton = findViewById(R.id.chain_explorer_button);
-        resetDatabaseButton = findViewById(R.id.reset_database_button);
-        bluetoothButton = findViewById(R.id.bluetooth_connection_button);
+        editTextDestinationIP = (EditText) findViewById(R.id.destination_IP);
+        editTextDestinationPort = (EditText) findViewById(R.id.destination_port);
+        connectionButton = (Button) findViewById(R.id.connection_button);
+        chainExplorerButton = (Button) findViewById(R.id.chain_explorer_button);
+        resetDatabaseButton = (Button) findViewById(R.id.reset_database_button);
+        bluetoothButton = (Button) findViewById(R.id.bluetooth_connection_button);
     }
 
     private void init() {
@@ -166,7 +187,9 @@ public class MainActivity extends AppCompatActivity implements CommunicationList
     private void initKeys() {
         kp = Key.loadKeys(getApplicationContext());
         if(kp == null) {
-            kp = Key.createAndSaveKeys(getApplicationContext());
+            kp = Key.createNewKeyPair();
+            Key.saveKey(getApplicationContext(), Key.DEFAULT_PUB_KEY_FILE, kp.getPublic());
+            Key.saveKey(getApplicationContext(), Key.DEFAULT_PRIV_KEY_FILE, kp.getPrivate());
             Log.i(TAG, "New keys created" );
         }
     }
@@ -180,7 +203,10 @@ public class MainActivity extends AppCompatActivity implements CommunicationList
         // check if a genesis block is present in database
         MessageProto.TrustChainBlock genesisBlock = dbHelper.getBlock(kp.getPublic().getEncoded(),GENESIS_SEQ);
 
-        return genesisBlock == null;
+        if(genesisBlock == null) {
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -202,6 +228,7 @@ public class MainActivity extends AppCompatActivity implements CommunicationList
     /**
      * Finds the external IP address of this device by making an API call to https://www.ipify.org/.
      * The networking runs on a separate thread.
+     * @return a string representation of the device's external IP address
      */
     public void updateIP() {
         Thread thread = new Thread(new Runnable() {
@@ -254,8 +281,7 @@ public class MainActivity extends AppCompatActivity implements CommunicationList
         runOnUiThread(new Runnable() {
                   @Override
                   public void run() {
-                      TextView statusText = findViewById(R.id.status);
-                      statusText.append(msg);
+                      ((TextView)findViewById(R.id.status)).append(msg);
                   }
               });
     }
