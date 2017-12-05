@@ -41,23 +41,6 @@ public class Key {
     public final static String DEFAULT_PRIV_KEY_FILE = "priv.key";
 
 
-    public static KeyPair ensureKeysExist(Context context) {
-        KeyPair keyPair = loadKeys(context);
-
-        if (keyPair == null) {
-            return createAndSaveKeys(context);
-        }
-        return keyPair;
-    }
-
-    public static KeyPair createAndSaveKeys(Context context) {
-        KeyPair kp = Key.createNewKeyPair();
-        Key.saveKey(context, Key.DEFAULT_PUB_KEY_FILE, kp.getPublic());
-        Key.saveKey(context, Key.DEFAULT_PRIV_KEY_FILE, kp.getPrivate());
-
-        return kp;
-    }
-
     /**
      * Creates a new curve25519 KeyPair.
      * @return KeyPair.
@@ -81,7 +64,11 @@ public class Key {
             KeyPairGenerator g = KeyPairGenerator.getInstance(algorithm, provider);
             g.initialize(ecSpec, new SecureRandom());
             keyPair = g.generateKeyPair();
-        } catch (Exception e) {
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        } catch (NoSuchProviderException e) {
+            e.printStackTrace();
+        } catch (InvalidAlgorithmParameterException e) {
             e.printStackTrace();
         }
         return keyPair;
@@ -116,7 +103,13 @@ public class Key {
             sig.initSign(privateKey);
             sig.update(data);
             return sig.sign();
-        } catch (Exception e) {
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        } catch (NoSuchProviderException e) {
+            e.printStackTrace();
+        } catch (InvalidKeyException e) {
+            e.printStackTrace();
+        } catch (SignatureException e) {
             e.printStackTrace();
         }
         return null;
@@ -135,7 +128,13 @@ public class Key {
             sig.initVerify(publicKey);
             sig.update(msg);
             return sig.verify(rawSig);
-        } catch (Exception e) {
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        } catch (NoSuchProviderException e) {
+            e.printStackTrace();
+        } catch (InvalidKeyException e) {
+            e.printStackTrace();
+        } catch (SignatureException e) {
             e.printStackTrace();
         }
         return false;
