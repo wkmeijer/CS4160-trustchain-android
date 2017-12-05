@@ -4,9 +4,13 @@ import android.app.ActivityManager;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.RequiresApi;
 import android.support.v7.app.AppCompatActivity;
 import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -22,22 +26,22 @@ import java.util.List;
 import nl.tudelft.cs4160.trustchain_android.Peer;
 import nl.tudelft.cs4160.trustchain_android.R;
 import nl.tudelft.cs4160.trustchain_android.Util.Key;
+import nl.tudelft.cs4160.trustchain_android.appToApp.PeerAppToApp;
 import nl.tudelft.cs4160.trustchain_android.block.TrustChainBlock;
-import nl.tudelft.cs4160.trustchain_android.chainExplorer.ChainExplorerActivity;
 import nl.tudelft.cs4160.trustchain_android.connection.Communication;
 import nl.tudelft.cs4160.trustchain_android.connection.CommunicationListener;
 import nl.tudelft.cs4160.trustchain_android.connection.network.NetworkCommunication;
+import nl.tudelft.cs4160.trustchain_android.chainExplorer.ChainExplorerActivity;
 import nl.tudelft.cs4160.trustchain_android.database.TrustChainDBHelper;
-import nl.tudelft.cs4160.trustchain_android.main.bluetooth.BluetoothActivity;
 import nl.tudelft.cs4160.trustchain_android.message.MessageProto;
 
 import static nl.tudelft.cs4160.trustchain_android.block.TrustChainBlock.GENESIS_SEQ;
 
-public class MainActivity extends AppCompatActivity implements CommunicationListener {
+public class TrustChainActivity extends AppCompatActivity implements CommunicationListener {
 
 
     public final static String TRANSACTION = "Hello world!";
-    private final static String TAG = MainActivity.class.toString();
+    private final static String TAG = TrustChainActivity.class.toString();
 
     TrustChainDBHelper dbHelper;
 
@@ -45,13 +49,12 @@ public class MainActivity extends AppCompatActivity implements CommunicationList
     TextView localIPText;
     TextView statusText;
     Button connectionButton;
-    Button chainExplorerButton;
-    Button resetDatabaseButton;
-    Button bluetoothButton;
     EditText editTextDestinationIP;
     EditText editTextDestinationPort;
 
-    MainActivity thisActivity;
+    TrustChainActivity thisActivity;
+    PeerAppToApp peerAppToApp;
+    Peer peer;
 
     private Communication communication;
 
@@ -62,78 +65,91 @@ public class MainActivity extends AppCompatActivity implements CommunicationList
 
     /**
      * Listener for the connection button.
-     * On click a block is created and send to a peer.
-     * When we encounter an unknown peer, send a crawl request to that peer in order to get its
+     * On click a block is created and send to a peerAppToApp.
+     * When we encounter an unknown peerAppToApp, send a crawl request to that peerAppToApp in order to get its
      * public key.
-     * Also, when we want to send a block always send our last 5 blocks to the peer so the block
+     * Also, when we want to send a block always send our last 5 blocks to the peerAppToApp so the block
      * request won't be rejected due to NO_INFO error.
-     *
+     * <p>
      * This is code to simulate dispersy, note that this does not work properly with a busy network,
-     * because the time delay between sending information to the peer and sending the actual
+     * because the time delay between sending information to the peerAppToApp and sending the actual
      * to-be-signed block could cause gaps.
-     *
+     * <p>
      * Also note that whatever goes wrong we will never get a valid full block, so the integrity of
      * the network is not compromised due to not using dispersy.
      */
-    View.OnClickListener connectionButtonListener = new View.OnClickListener(){
-        @Override
-        public void onClick(View view) {
-            Peer peer = new Peer(null, editTextDestinationIP.getText().toString(),
-                    Integer.parseInt(editTextDestinationPort.getText().toString()));
-            //send either a crawl request or a half block
-            communication.connectToPeer(peer);
-        }
-    };
 
-    View.OnClickListener chainExplorerButtonListener = new View.OnClickListener(){
-        @Override
-        public void onClick(View view) {
-            Intent intent = new Intent(thisActivity, ChainExplorerActivity.class);
-            startActivity(intent);
-        }
-    };
+    public void onClickConnect(View view) {
+        peer = new Peer(null, editTextDestinationIP.getText().toString(),
+                Integer.parseInt(editTextDestinationPort.getText().toString()));
+        communication.connectToPeer(peer);
+    }
 
-    View.OnClickListener keyOptionsListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View view) {
-            Intent intent = new Intent(thisActivity, BluetoothActivity.class);
-            startActivity(intent);
+    public void onClickReset(View view) {
+        if (Build.VERSION_CODES.KITKAT <= Build.VERSION.SDK_INT) {
+            ((ActivityManager) getApplicationContext().getSystemService(ACTIVITY_SERVICE))
+                    .clearApplicationUserData();
+        } else {
+            Toast.makeText(getApplicationContext(), "Requires at least API 19 (KitKat)", Toast.LENGTH_LONG).show();
         }
-    };
-
-    View.OnClickListener resetDatabaseListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View view) {
-            if (Build.VERSION_CODES.KITKAT <= Build.VERSION.SDK_INT) {
-                ((ActivityManager) getApplicationContext().getSystemService(ACTIVITY_SERVICE))
-                        .clearApplicationUserData();
-            } else {
-                Toast.makeText(getApplicationContext(), "Requires at least API 19 (KitKat)", Toast.LENGTH_LONG).show();
-            }
-        }
-    };
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
         initVariables();
         init();
+        connectToPeer();
+    }
+
+    private void connectToPeer() {
+        peerAppToApp = (PeerAppToApp) getIntent().getSerializableExtra("PeerAppToApp");
+        if(peerAppToApp != null) {
+            String address = peerAppToApp.getExternalAddress().toString().substring(1);
+            int port = peerAppToApp.getPort();
+            editTextDestinationIP.setText(address);
+            editTextDestinationPort.setText(port + "");
+            peer = new Peer(null, address, port);
+            communication.connectToPeer(peer);
+        }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.main_menu, menu);
+        return true;
+    }
+
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.chain_menu:
+                Intent chainExplorerActivity = new Intent(this, ChainExplorerActivity.class);
+                startActivity(chainExplorerActivity);
+                return true;
+            case R.id.details_menu:
+                Intent detailActivity = new Intent(this, DetailActivity.class);
+                startActivity(detailActivity);
+                return true;
+            case R.id.switch_menu:
+                Intent trustChainActivity = new Intent(this, TrustChainActivity.class);
+                startActivity(trustChainActivity);
+                return true;
+            default:
+                return true;
+        }
     }
 
     private void initVariables() {
         thisActivity = this;
-        localIPText = findViewById(R.id.my_local_ip);
-        externalIPText = findViewById(R.id.my_external_ip);
-        statusText = findViewById(R.id.status);
+        localIPText = (TextView) findViewById(R.id.my_local_ip);
+        externalIPText = (TextView) findViewById(R.id.my_external_ip);
+        statusText = (TextView) findViewById(R.id.status);
         statusText.setMovementMethod(new ScrollingMovementMethod());
-        editTextDestinationIP = findViewById(R.id.destination_IP);
-        editTextDestinationPort = findViewById(R.id.destination_port);
-        connectionButton = findViewById(R.id.connection_button);
-        chainExplorerButton = findViewById(R.id.chain_explorer_button);
-        resetDatabaseButton = findViewById(R.id.reset_database_button);
-        bluetoothButton = findViewById(R.id.bluetooth_connection_button);
+        editTextDestinationIP = (EditText) findViewById(R.id.destination_IP);
+        editTextDestinationPort = (EditText) findViewById(R.id.destination_port);
+        connectionButton = (Button) findViewById(R.id.connection_button);
     }
 
     private void init() {
@@ -143,7 +159,7 @@ public class MainActivity extends AppCompatActivity implements CommunicationList
         //create or load keys
         initKeys();
 
-        if(isStartedFirstTime()) {
+        if (isStartedFirstTime()) {
             MessageProto.TrustChainBlock block = TrustChainBlock.createGenesisBlock(kp);
             dbHelper.insertInDB(block);
         }
@@ -153,11 +169,6 @@ public class MainActivity extends AppCompatActivity implements CommunicationList
         updateIP();
         updateLocalIPField(getLocalIPAddress());
 
-        connectionButton.setOnClickListener(connectionButtonListener);
-        chainExplorerButton.setOnClickListener(chainExplorerButtonListener);
-        bluetoothButton.setOnClickListener(keyOptionsListener);
-        resetDatabaseButton.setOnClickListener(resetDatabaseListener);
-
         //start listening for messages
         communication.start();
 
@@ -165,22 +176,28 @@ public class MainActivity extends AppCompatActivity implements CommunicationList
 
     private void initKeys() {
         kp = Key.loadKeys(getApplicationContext());
-        if(kp == null) {
-            kp = Key.createAndSaveKeys(getApplicationContext());
-            Log.i(TAG, "New keys created" );
+        if (kp == null) {
+            kp = Key.createNewKeyPair();
+            Key.saveKey(getApplicationContext(), Key.DEFAULT_PUB_KEY_FILE, kp.getPublic());
+            Key.saveKey(getApplicationContext(), Key.DEFAULT_PRIV_KEY_FILE, kp.getPrivate());
+            Log.i(TAG, "New keys created");
         }
     }
 
     /**
      * Checks if this is the first time the app is started and returns a boolean value indicating
      * this state.
+     *
      * @return state - false if the app has been initialized before, true if first time app started
      */
     public boolean isStartedFirstTime() {
         // check if a genesis block is present in database
-        MessageProto.TrustChainBlock genesisBlock = dbHelper.getBlock(kp.getPublic().getEncoded(),GENESIS_SEQ);
+        MessageProto.TrustChainBlock genesisBlock = dbHelper.getBlock(kp.getPublic().getEncoded(), GENESIS_SEQ);
 
-        return genesisBlock == null;
+        if (genesisBlock == null) {
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -202,15 +219,18 @@ public class MainActivity extends AppCompatActivity implements CommunicationList
     /**
      * Finds the external IP address of this device by making an API call to https://www.ipify.org/.
      * The networking runs on a separate thread.
+     *
+     * @return a string representation of the device's external IP address
      */
     public void updateIP() {
         Thread thread = new Thread(new Runnable() {
+            @RequiresApi(api = Build.VERSION_CODES.KITKAT)
             @Override
             public void run() {
                 try (java.util.Scanner s = new java.util.Scanner(new java.net.URL("https://api.ipify.org").openStream(), "UTF-8").useDelimiter("\\A")) {
                     final String ip = s.next();
                     // new thread to handle UI updates
-                    MainActivity.this.runOnUiThread(new Runnable() {
+                    TrustChainActivity.this.runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
                             updateExternalIPField(ip);
@@ -227,6 +247,7 @@ public class MainActivity extends AppCompatActivity implements CommunicationList
     /**
      * Finds the local IP address of this device, loops trough network interfaces in order to find it.
      * The address that is not a loopback address is the IP of the device.
+     *
      * @return a string representation of the device's IP address
      */
     public String getLocalIPAddress() {
@@ -235,12 +256,12 @@ public class MainActivity extends AppCompatActivity implements CommunicationList
             for (NetworkInterface netInt : netInterfaces) {
                 List<InetAddress> addresses = Collections.list(netInt.getInetAddresses());
                 for (InetAddress addr : addresses) {
-                    if(addr.isSiteLocalAddress()) {
+                    if (addr.isSiteLocalAddress()) {
                         return addr.getHostAddress();
                     }
                 }
             }
-        } catch(Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return null;
@@ -252,11 +273,10 @@ public class MainActivity extends AppCompatActivity implements CommunicationList
         //just to be sure run it on the ui thread
         //this is not necessary when this function is called from a AsyncTask
         runOnUiThread(new Runnable() {
-                  @Override
-                  public void run() {
-                      TextView statusText = findViewById(R.id.status);
-                      statusText.append(msg);
-                  }
-              });
+            @Override
+            public void run() {
+                ((TextView) findViewById(R.id.status)).append(msg);
+            }
+        });
     }
 }

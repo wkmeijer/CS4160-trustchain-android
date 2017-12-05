@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:padding="4dp"
-    tools:context="nl.tudelft.cs4160.trustchain_android.main.MainActivity">
+    tools:context="nl.tudelft.cs4160.trustchain_android.main.TrustChainActivity">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -57,12 +57,8 @@
                 android:id="@+id/connection_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:onClick="onClickConnect"
                 android:text="@string/connect" />
-            <Button
-                android:id="@+id/chain_explorer_button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/chain_explorer"/>
         </LinearLayout>
 
         <LinearLayout
@@ -70,6 +66,7 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal">
             <Button
+                android:visibility="gone"
                 android:id="@+id/bluetooth_connection_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -77,6 +74,7 @@
 
             <Button
                 android:id="@+id/reset_database_button"
+                android:onClick="onClickReset"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/reset_database_button"/>

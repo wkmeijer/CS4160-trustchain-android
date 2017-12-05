@@ -16,7 +16,7 @@ import nl.tudelft.cs4160.trustchain_android.block.TrustChainBlock;
 import nl.tudelft.cs4160.trustchain_android.block.ValidationResult;
 import nl.tudelft.cs4160.trustchain_android.connection.network.NetworkCommunication;
 import nl.tudelft.cs4160.trustchain_android.database.TrustChainDBHelper;
-import nl.tudelft.cs4160.trustchain_android.main.MainActivity;
+import nl.tudelft.cs4160.trustchain_android.main.TrustChainActivity;
 import nl.tudelft.cs4160.trustchain_android.message.MessageProto;
 
 import static nl.tudelft.cs4160.trustchain_android.Peer.bytesToHex;
@@ -80,6 +80,7 @@ public abstract class Communication {
             }
         }
 
+        // TODO: check this: This piece of code is in python, but I'm not sure what it adds.
         if (sq >= 0) {
             sq = Math.max(GENESIS_SEQ, sq);
         }
@@ -222,7 +223,7 @@ public abstract class Communication {
      * Checks if we should sign the block. For now there is no reason to not sign a block.
      *
      * @param block - The block for which we might want to sign.
-     * @return true
+     * @return
      */
     public static boolean shouldSign(MessageProto.TrustChainBlock block) {
         return true;
@@ -380,7 +381,7 @@ public abstract class Communication {
     /**
      * Connect with a peer, either unknown or known.
      * If the peer is not known, this will send a crawl request, otherwise a half block.
-     * @param peer - The peer that we want to connect to
+     * @param peer
      */
     public void connectToPeer(Peer peer) {
         String identifier = peer.getIpAddress();
@@ -393,7 +394,7 @@ public abstract class Communication {
             peer.setPublicKey(getPublicKey(identifier));
             sendLatestBlocksToPeer(peer);
             try {
-                signBlock(MainActivity.TRANSACTION.getBytes("UTF-8"), peer);
+                signBlock(TrustChainActivity.TRANSACTION.getBytes("UTF-8"), peer);
             } catch (UnsupportedEncodingException e) {
                 e.printStackTrace();
             }
