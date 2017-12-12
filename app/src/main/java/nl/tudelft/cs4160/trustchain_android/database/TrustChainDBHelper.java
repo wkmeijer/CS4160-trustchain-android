@@ -223,7 +223,7 @@ public class TrustChainDBHelper extends SQLiteOpenHelper {
     /**
      * Returns the latest block in the database associated with the given public key.
      * @param pubkey - public key for which to search for blocks
-     * @return the latest block in the database associated with the given public key
+     * @return
      */
     public MessageProto.TrustChainBlock getLatestBlock(byte[] pubkey) {
         return getBlock(pubkey,getMaxSeqNum(pubkey));
@@ -294,7 +294,7 @@ public class TrustChainDBHelper extends SQLiteOpenHelper {
      * @param pubKey - public key of the chain to from which blocks need to be fetched
      * @param seqNum - sequence number of block, the blocks inserted after this block should be returned
      * @param limit - the limit of the amount of blocks to return
-     * @return list of blocks
+     * @return
      */
     public List<MessageProto.TrustChainBlock> crawl(byte[] pubKey, int seqNum, int limit) throws Exception {
         if(limit > 100) {

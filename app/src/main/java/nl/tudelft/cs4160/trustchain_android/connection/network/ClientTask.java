@@ -57,6 +57,8 @@ class ClientTask extends AsyncTask<Void, Void, Void> {
             } catch (UnknownHostException e) {
                 e.printStackTrace();
                 listener.updateLog("\n  Client: Cannot resolve host");
+            } catch (IOException e) {
+                e.printStackTrace();
             } catch (Exception e) {
                 e.printStackTrace();
             } finally {

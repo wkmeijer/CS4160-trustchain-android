@@ -3,6 +3,7 @@ package nl.tudelft.cs4160.trustchain_android;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Base64;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -32,13 +33,18 @@ public class KeyActivity extends AppCompatActivity {
     }
 
     private void init() {
-        buttonNewKey = findViewById(R.id.new_key);
-        textPrivateKey = findViewById(R.id.private_key);
-        signData = findViewById(R.id.sign_data);
-        signedData = findViewById(R.id.signed_data);
-        verifySignature = findViewById(R.id.verify_sig);
+        buttonNewKey = (Button) findViewById(R.id.new_key);
+        textPrivateKey = (TextView) findViewById(R.id.private_key);
+        signData = (Button) findViewById(R.id.sign_data);
+        signedData = (TextView ) findViewById(R.id.signed_data);
+        verifySignature = (Button) findViewById(R.id.verify_sig);
 
-        KeyPair kp = Key.ensureKeysExist(getApplicationContext());
+        KeyPair kp = Key.loadKeys(getApplicationContext());
+        if(kp == null) {
+            kp = Key.createNewKeyPair();
+            Key.saveKey(getApplicationContext(), Key.DEFAULT_PUB_KEY_FILE, kp.getPublic());
+            Key.saveKey(getApplicationContext(), Key.DEFAULT_PRIV_KEY_FILE, kp.getPrivate());
+        }
         textPrivateKey.setText(Base64.encodeToString(kp.getPrivate().getEncoded(), Base64.DEFAULT));
 
         verifySignature.setOnClickListener(new View.OnClickListener() {
@@ -58,7 +64,9 @@ public class KeyActivity extends AppCompatActivity {
         buttonNewKey.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                KeyPair kp = Key.createAndSaveKeys(getApplicationContext());
+                KeyPair kp = Key.createNewKeyPair();
+                Key.saveKey(getApplicationContext(), Key.DEFAULT_PUB_KEY_FILE, kp.getPublic());
+                Key.saveKey(getApplicationContext(), Key.DEFAULT_PRIV_KEY_FILE, kp.getPrivate());
                 textPrivateKey.setText(Base64.encodeToString(kp.getPrivate().getEncoded(), Base64.DEFAULT));
 
             }
@@ -70,7 +78,7 @@ public class KeyActivity extends AppCompatActivity {
                 KeyPair kp = Key.loadKeys(getApplicationContext());
                 byte[] sig = Key.sign( kp.getPrivate(), new byte[] {0x30, 0x30, 0x30, 0x30,0x30, 0x30, 0x30, 0x30});
                 if(sig == null) {
-                    System.out.println("No sig received");
+                    Log.d("TrustChain Log", "No sig received");
                 }
                 signedData.setText(Base64.encodeToString(sig, Base64.DEFAULT));
 
