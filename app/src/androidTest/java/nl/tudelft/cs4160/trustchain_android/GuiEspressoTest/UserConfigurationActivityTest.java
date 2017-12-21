@@ -38,12 +38,13 @@ public class UserConfigurationActivityTest {
             UserConfigurationActivity.class,
             true,
             false);
+    //TODO - no shared preferences anymore but in a class (storing of username)
 
-    @Before
-    public void initSharedPref(){
-        Context context = getInstrumentation().getTargetContext();
-        preferencesEditor = PreferenceManager.getDefaultSharedPreferences(context).edit();
-    }
+//    @Before
+//    public void initSharedPref(){
+//        Context context = getInstrumentation().getTargetContext();
+//        preferencesEditor = PreferenceManager.getDefaultSharedPreferences(context).edit();
+//    }
 
 //    @Test
 //    public void makeNewUsername(){
@@ -58,25 +59,25 @@ public class UserConfigurationActivityTest {
 //        onView(allOf(withId(R.id.peer_id), withText(user))).check(matches(isDisplayed()));
 //    }
 
-    @Test
-    public void usernameAlreadyStored(){
-        fullSharedPrefs();
-        mActivityRule.launchActivity(new Intent());
-
-        // look whether the ID is correctly displayed in the OverviewConnections window.
-        onView(allOf(withId(R.id.peer_id), withText(user))).check(matches(isDisplayed()));
-    }
-
-    private void emptySharedPrefs(){
-        // Set SharedPreferences data
-        preferencesEditor.putString(HASH_ID, null);
-        preferencesEditor.commit();
-    }
-
-    private void fullSharedPrefs(){
-        // Set SharedPreferences data
-        preferencesEditor.putString(HASH_ID, user);
-        preferencesEditor.commit();
-    }
+//    @Test
+//    public void usernameAlreadyStored(){
+//        fullSharedPrefs();
+//        mActivityRule.launchActivity(new Intent());
+//
+//        // look whether the ID is correctly displayed in the OverviewConnections window.
+//        onView(allOf(withId(R.id.peer_id), withText(user))).check(matches(isDisplayed()));
+//    }
+//
+//    private void emptySharedPrefs(){
+//        // Set SharedPreferences data
+//        preferencesEditor.putString(HASH_ID, null);
+//        preferencesEditor.commit();
+//    }
+//
+//    private void fullSharedPrefs(){
+//        // Set SharedPreferences data
+//        preferencesEditor.putString(HASH_ID, user);
+//        preferencesEditor.commit();
+//    }
 
 }

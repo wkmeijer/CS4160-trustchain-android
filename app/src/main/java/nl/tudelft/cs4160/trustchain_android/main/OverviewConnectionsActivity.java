@@ -244,16 +244,16 @@ public class OverviewConnectionsActivity extends AppCompatActivity {
      * Add the intial hard-coded connectable peerAppToApp to the peerAppToApp list.
      */
    public void addInitialPeer() {
-        try {
-            String address = BootstrapIPStorage.getIP(this);
-            if(address != "" && address != null) {
-                addPeer(null, new InetSocketAddress(InetAddress.getByName(address), DEFAULT_PORT), "", PeerAppToApp.OUTGOING);
-            }
-                addPeer(null, new InetSocketAddress(InetAddress.getByName(CONNECTABLE_ADDRESS), DEFAULT_PORT), "", PeerAppToApp.OUTGOING);
-            }
-        catch (UnknownHostException e) {
+       try {
+           String address = BootstrapIPStorage.getIP(this);
+           if (address != "" && address != null) {
+               addPeer(null, new InetSocketAddress(InetAddress.getByName(address), DEFAULT_PORT), "", PeerAppToApp.OUTGOING);
+           } else {
+               addPeer(null, new InetSocketAddress(InetAddress.getByName(CONNECTABLE_ADDRESS), DEFAULT_PORT), "", PeerAppToApp.OUTGOING);
+           }
+       } catch (UnknownHostException e) {
             e.printStackTrace();
-        }
+       }
     }
 
 
