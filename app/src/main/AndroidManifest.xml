@@ -19,6 +19,7 @@
         android:theme="@style/AppTheme">
         <activity
             android:name=".main.TrustChainActivity"
+            android:configChanges="orientation|screenLayout|screenSize"
             android:windowSoftInputMode="stateUnchanged" />
         <activity
             android:name=".KeyActivity"
@@ -41,9 +42,8 @@
         <activity
             android:name=".main.UserConfigurationActivity"
             android:label="@string/app_name"
-            android:theme="@style/AppTheme.NoActionBar">
-
-            <!-- android:screenOrientation="portrait"> -->
+            android:noHistory="true"
+            android:windowSoftInputMode="adjustResize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />

@@ -1,22 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="nl.tudelft.cs4160.trustchain_android.main.BootstrapActivity">
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="20dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginStart="20dp"
         android:orientation="vertical">
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="@android:color/black"
             android:layout_marginTop="40dp"
-            android:text="@string/connect_bootstrap_ip" />
+            android:text="@string/connect_bootstrap_ip"
+            android:textColor="@android:color/black" />
 
         <EditText
             android:id="@+id/bootstrap_IP"
@@ -26,19 +27,18 @@
 
         <View
             android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"/>
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+
         <Button
             android:id="@+id/change_bootstrap"
-            android:layout_width="wrap_content"
-            android:paddingLeft="20dp"
-            android:layout_marginBottom="20dp"
-            android:paddingRight="20dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="20dp"
             android:background="@color/colorPrimary"
-            android:textColor="@android:color/white"
             android:onClick="onClickConnect"
-            android:text="@string/change_bootstrap" />
+            android:text="@string/change_bootstrap"
+            android:textColor="@android:color/white" />
     </LinearLayout>
 
 </android.support.constraint.ConstraintLayout>
