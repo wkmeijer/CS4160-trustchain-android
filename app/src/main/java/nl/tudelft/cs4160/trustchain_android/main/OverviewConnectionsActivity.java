@@ -132,6 +132,7 @@ public class OverviewConnectionsActivity extends AppCompatActivity {
 
     /**
      * Define what should be executed when one of the item in the menu is clicked.
+     *
      * @param item the item in the menu.
      * @return true if everything was executed.
      */
@@ -153,7 +154,7 @@ public class OverviewConnectionsActivity extends AppCompatActivity {
         }
     }
 
-    private void initKey(){
+    private void initKey() {
         KeyPair kp = Key.loadKeys(getApplicationContext());
         if (kp == null) {
             kp = Key.createNewKeyPair();
@@ -234,14 +235,15 @@ public class OverviewConnectionsActivity extends AppCompatActivity {
      * The filled in ip address is passed on to this method.
      * When the callback of the bootstrap activity is successful
      * set this ip address as ConnectableAddress in the preferences.
+     *
      * @param requestCode
      * @param resultCode
-     * @param data the data passed on by the previous activity, in this case the ip address
+     * @param data        the data passed on by the previous activity, in this case the ip address
      */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == 1) {
-            if( resultCode == Activity.RESULT_OK ){
+            if (resultCode == Activity.RESULT_OK) {
                 SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
                 SharedPreferences.Editor editor = preferences.edit();
                 editor.putString("ConnectableAddress", data.getStringExtra("ConnectableAddress"));
@@ -254,15 +256,14 @@ public class OverviewConnectionsActivity extends AppCompatActivity {
     /**
      * Add the intial hard-coded connectable inboxItem to the inboxItem list.
      */
-   public void addInitialPeer() {
+    public void addInitialPeer() {
         try {
             String address = BootstrapIPStorage.getIP(this);
-            if(address != "" && address != null) {
+            if (address != "" && address != null) {
                 addPeer(null, new InetSocketAddress(InetAddress.getByName(address), DEFAULT_PORT), "", PeerAppToApp.OUTGOING);
             }
-                addPeer(null, new InetSocketAddress(InetAddress.getByName(CONNECTABLE_ADDRESS), DEFAULT_PORT), "", PeerAppToApp.OUTGOING);
-            }
-        catch (UnknownHostException e) {
+            addPeer(null, new InetSocketAddress(InetAddress.getByName(CONNECTABLE_ADDRESS), DEFAULT_PORT), "", PeerAppToApp.OUTGOING);
+        } catch (UnknownHostException e) {
             e.printStackTrace();
         }
     }
@@ -488,7 +489,7 @@ public class OverviewConnectionsActivity extends AppCompatActivity {
 
             String ip = address.getAddress().toString();
             PubKeyAndAddressPairStorage.addPubkeyAndAddressPair(this, pubKey, ip);
-            InboxItem i =new InboxItem(id, new ArrayList(), address.getAddress().toString(), pubKey);
+            InboxItem i = new InboxItem(id, new ArrayList(), address.getAddress().toString().replace("/", ""), pubKey, address.getPort());
             InboxItemStorage.addInboxItem(this, i);
 
             Log.d("App-To-App", "Stored following ip for pubkey: " + pubKey + " " + PubKeyAndAddressPairStorage.getAddressByPubkey(this, pubKey));
@@ -613,7 +614,7 @@ public class OverviewConnectionsActivity extends AppCompatActivity {
             @Override
             protected void onPostExecute(InetAddress inetAddress) {
                 super.onPostExecute(inetAddress);
-                if(inetAddress != null) {
+                if (inetAddress != null) {
                     internalSourceAddress = new InetSocketAddress(inetAddress, DEFAULT_PORT);
                     Log.d("App-To-App Log", "Local ip: " + inetAddress);
                     TextView localIp = (TextView) findViewById(R.id.local_ip_address_view);

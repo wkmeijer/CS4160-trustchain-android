@@ -157,9 +157,9 @@ public class TrustChainActivity extends AppCompatActivity implements CompoundBut
         inboxItem = (InboxItem) getIntent().getSerializableExtra("inboxItem");
         if (inboxItem != null) {
             String address = inboxItem.getAddress().toString();
-         //   int port = inboxItem.getAddress().getPort();
+            int port = inboxItem.getPort();
             editTextDestinationIP.setText(address);
-         //   editTextDestinationPort.setText(port + "");
+            editTextDestinationPort.setText(port + "");
         }
     }
 
