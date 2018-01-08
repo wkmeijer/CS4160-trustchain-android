@@ -4,14 +4,15 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.view.View;
-
 import java.util.ArrayList;
 
+import nl.tudelft.cs4160.trustchain_android.Peer;
 import nl.tudelft.cs4160.trustchain_android.R;
-import nl.tudelft.cs4160.trustchain_android.appToApp.PeerAppToApp;
+import nl.tudelft.cs4160.trustchain_android.connection.CommunicationListener;
+import nl.tudelft.cs4160.trustchain_android.connection.CommunicationSingleton;
+import nl.tudelft.cs4160.trustchain_android.message.MessageProto;
 
-public class InboxActivity extends AppCompatActivity {
+public class InboxActivity extends AppCompatActivity implements CommunicationListener {
 
     private RecyclerView mRecyclerView;
     private RecyclerView.Adapter mAdapter;
@@ -29,5 +30,22 @@ public class InboxActivity extends AppCompatActivity {
         // specify an adapter (see also next example)
         mAdapter = new InboxAdapter(mData);
         mRecyclerView.setAdapter(mAdapter);
+
+        CommunicationSingleton.getInstance(this,this).communication.start();
+    }
+
+    @Override
+    public void updateLog(String msg) {
+
+    }
+
+    @Override
+    public void requestPermission(MessageProto.TrustChainBlock block, Peer peer) {
+
+    }
+
+    @Override
+    public void connectionSuccessful(byte[] publicKey) {
+
     }
 }
