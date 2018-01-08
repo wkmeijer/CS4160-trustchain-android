@@ -26,6 +26,11 @@ public class BootstrapActivity extends AppCompatActivity {
         setContentView(R.layout.activity_bootstrap);
     }
 
+    /**
+     * When the user clicks the button to submit the ip address
+     * this activity is finished and the ip is passed on as data to the previous activity.
+     * @param view
+     */
     public void onClickConnect(View view) {
         bootstrapView = (EditText) findViewById(R.id.bootstrap_IP);
         try{
