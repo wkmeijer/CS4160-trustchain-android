@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 import nl.tudelft.cs4160.trustchain_android.inbox.InboxItem;
+import nl.tudelft.cs4160.trustchain_android.message.MessageProto;
 
 /**
  * Created by timbu on 18/12/2017.
@@ -39,12 +40,30 @@ public class InboxItemStorage {
             InboxItem[] inboxItems = new InboxItem[array.length + 1];
             for (int i = 0; i < array.length; i++) {
                 inboxItems[i] = array[i];
-                if(array[i].getPublicKey().equals(inboxItem.getPublicKey())){
+                if (array[i].getPublicKey().equals(inboxItem.getPublicKey())) {
                     return;
                 }
             }
             inboxItems[array.length] = inboxItem;
             SharedPreferencesStorage.writeSharedPreferences(context, INBOX_ITEM_KEY, inboxItems);
+        }
+    }
+
+    public static void addHalfBlock(Context context, String pubKey, MessageProto.TrustChainBlock halfBlock) {
+        InboxItem[] array = SharedPreferencesStorage.readSharedPreferences(context, INBOX_ITEM_KEY, InboxItem[].class);
+
+        if (array == null) {
+            return;
+        } else {
+            InboxItem[] inboxItems = new InboxItem[array.length + 1];
+            for (int i = 0; i < array.length; i++) {
+                inboxItems[i] = array[i];
+                if (array[i].getPublicKey().equals(pubKey)) {
+                    InboxItem item = inboxItems[i];
+                    item.addHalfBlocks(halfBlock);
+                    inboxItems[i] = item;
+                }
+            }
         }
     }
 }

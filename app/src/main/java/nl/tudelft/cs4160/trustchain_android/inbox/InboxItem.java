@@ -44,6 +44,9 @@ public class InboxItem implements Serializable {
     public ArrayList<MessageProto.TrustChainBlock> getHalfBlocks() {
         return halfBlocks;
     }
+    public void addHalfBlocks(MessageProto.TrustChainBlock block) {
+        halfBlocks.add(block);
+    }
 
     public void setHalfBlocks(ArrayList<MessageProto.TrustChainBlock> halfBlocks) {
         this.halfBlocks = halfBlocks;
