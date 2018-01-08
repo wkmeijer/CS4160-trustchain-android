@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.preference.PreferenceManager;
+import android.provider.Telephony;
 import android.support.v7.app.AppCompatActivity;
 import android.telephony.TelephonyManager;
 import android.util.Log;
@@ -42,6 +43,7 @@ import java.util.UUID;
 
 import nl.tudelft.cs4160.trustchain_android.R;
 import nl.tudelft.cs4160.trustchain_android.SharedPreferences.BootstrapIPStorage;
+import nl.tudelft.cs4160.trustchain_android.SharedPreferences.InboxItemStorage;
 import nl.tudelft.cs4160.trustchain_android.SharedPreferences.SharedPreferencesStorage;
 import nl.tudelft.cs4160.trustchain_android.SharedPreferences.UserNameStorage;
 import nl.tudelft.cs4160.trustchain_android.SharedPreferences.PubKeyAndAddressPairStorage;
@@ -59,6 +61,7 @@ import nl.tudelft.cs4160.trustchain_android.bencode.BencodeReadException;
 import nl.tudelft.cs4160.trustchain_android.block.TrustChainBlock;
 import nl.tudelft.cs4160.trustchain_android.chainExplorer.ChainExplorerActivity;
 import nl.tudelft.cs4160.trustchain_android.database.TrustChainDBHelper;
+import nl.tudelft.cs4160.trustchain_android.inbox.InboxItem;
 import nl.tudelft.cs4160.trustchain_android.message.MessageProto;
 
 import static nl.tudelft.cs4160.trustchain_android.Peer.bytesToHex;
@@ -213,7 +216,7 @@ public class OverviewConnectionsActivity extends AppCompatActivity {
     }
 
     /**
-     * Initialize the peerAppToApp lists.
+     * Initialize the inboxItem lists.
      */
     private void initPeerLists() {
         ListView incomingPeerConnectionListView = (ListView) findViewById(R.id.incoming_peer_connection_list_view);
@@ -249,7 +252,7 @@ public class OverviewConnectionsActivity extends AppCompatActivity {
     }
 
     /**
-     * Add the intial hard-coded connectable peerAppToApp to the peerAppToApp list.
+     * Add the intial hard-coded connectable inboxItem to the inboxItem list.
      */
    public void addInitialPeer() {
         try {
@@ -281,7 +284,7 @@ public class OverviewConnectionsActivity extends AppCompatActivity {
     }
 
     /**
-     * Start the thread send thread responsible for sending a {@link IntroductionRequest} to a random peerAppToApp every 5 seconds.
+     * Start the thread send thread responsible for sending a {@link IntroductionRequest} to a random inboxItem every 5 seconds.
      */
     private void startSendThread() {
         sendThread = new Thread(new Runnable() {
@@ -328,7 +331,7 @@ public class OverviewConnectionsActivity extends AppCompatActivity {
      * Send a puncture request.
      *
      * @param peer         the destination.
-     * @param puncturePeer the peerAppToApp to puncture.
+     * @param puncturePeer the inboxItem to puncture.
      * @throws IOException
      */
     private void sendPunctureRequest(PeerAppToApp peer, PeerAppToApp puncturePeer) throws IOException {
@@ -355,7 +358,7 @@ public class OverviewConnectionsActivity extends AppCompatActivity {
      * Send an introduction response.
      *
      * @param peer    the destination.
-     * @param invitee the invitee to which the destination peerAppToApp will send a puncture request.
+     * @param invitee the invitee to which the destination inboxItem will send a puncture request.
      * @throws IOException
      */
     private void sendIntroductionResponse(PeerAppToApp peer, PeerAppToApp invitee) throws IOException {
@@ -373,10 +376,10 @@ public class OverviewConnectionsActivity extends AppCompatActivity {
     }
 
     /**
-     * Send a message to given peerAppToApp.
+     * Send a message to given inboxItem.
      *
      * @param message the message to send.
-     * @param peer    the destination peerAppToApp.
+     * @param peer    the destination inboxItem.
      * @throws IOException
      */
     private synchronized void sendMessage(Message message, PeerAppToApp peer) throws IOException {
@@ -393,10 +396,10 @@ public class OverviewConnectionsActivity extends AppCompatActivity {
     }
 
     /**
-     * Pick a random eligible peerAppToApp/invitee for sending an introduction request to.
+     * Pick a random eligible inboxItem/invitee for sending an introduction request to.
      *
-     * @param excludePeer peerAppToApp to which the invitee is sent.
-     * @return the eligible peerAppToApp if any, else null.
+     * @param excludePeer inboxItem to which the invitee is sent.
+     * @return the eligible inboxItem if any, else null.
      */
     private PeerAppToApp getEligiblePeer(PeerAppToApp excludePeer) {
         List<PeerAppToApp> eligiblePeers = new ArrayList<>();
@@ -439,12 +442,12 @@ public class OverviewConnectionsActivity extends AppCompatActivity {
     }
 
     /**
-     * Resolve a peerAppToApp id or address to a peerAppToApp, else create a new one.
+     * Resolve a inboxItem id or address to a inboxItem, else create a new one.
      *
-     * @param id       the peerAppToApp's unique id.
-     * @param address  the peerAppToApp's address.
-     * @param incoming boolean indicator whether the peerAppToApp is incoming.
-     * @return the resolved or create peerAppToApp.
+     * @param id       the inboxItem's unique id.
+     * @param address  the inboxItem's address.
+     * @param incoming boolean indicator whether the inboxItem is incoming.
+     * @return the resolved or create inboxItem.
      */
     private PeerAppToApp getOrMakePeer(String id, InetSocketAddress address, boolean incoming) {
         if (id != null) {
@@ -485,6 +488,9 @@ public class OverviewConnectionsActivity extends AppCompatActivity {
 
             String ip = address.getAddress().toString();
             PubKeyAndAddressPairStorage.addPubkeyAndAddressPair(this, pubKey, ip);
+            InboxItem i =new InboxItem(id, new ArrayList(), address.getAddress().toString(), pubKey);
+            InboxItemStorage.addInboxItem(this, i);
+
             Log.d("App-To-App", "Stored following ip for pubkey: " + pubKey + " " + PubKeyAndAddressPairStorage.getAddressByPubkey(this, pubKey));
 
             Log.d("App-To-App", "pubkey address map " + SharedPreferencesStorage.getAll(this).toString());
@@ -520,7 +526,7 @@ public class OverviewConnectionsActivity extends AppCompatActivity {
     /**
      * Handle an introduction request. Send a puncture request to the included invitee.
      *
-     * @param peer    the origin peerAppToApp.
+     * @param peer    the origin inboxItem.
      * @param message the message.
      * @throws IOException
      */
@@ -543,7 +549,7 @@ public class OverviewConnectionsActivity extends AppCompatActivity {
     /**
      * Handle an introduction response. Parse incoming PEX peers.
      *
-     * @param peer    the origin peerAppToApp.
+     * @param peer    the origin inboxItem.
      * @param message the message.
      */
     private void handleIntroductionResponse(PeerAppToApp peer, IntroductionResponse message) {
@@ -559,7 +565,7 @@ public class OverviewConnectionsActivity extends AppCompatActivity {
     /**
      * Handle a puncture. Does nothing because the only purpose of a puncture is to punch a hole in the NAT.
      *
-     * @param peer    the origin peerAppToApp.
+     * @param peer    the origin inboxItem.
      * @param message the message.
      * @throws IOException
      */
@@ -567,9 +573,9 @@ public class OverviewConnectionsActivity extends AppCompatActivity {
     }
 
     /**
-     * Handle a puncture request. Sends a puncture to the puncture peerAppToApp included in the message.
+     * Handle a puncture request. Sends a puncture to the puncture inboxItem included in the message.
      *
-     * @param peer    the origin peerAppToApp.
+     * @param peer    the origin inboxItem.
      * @param message the message.
      * @throws IOException
      * @throws MessageException
@@ -646,12 +652,12 @@ public class OverviewConnectionsActivity extends AppCompatActivity {
     }
 
     /**
-     * Add a peerAppToApp to the peerAppToApp list.
+     * Add a inboxItem to the inboxItem list.
      *
-     * @param peerId   the peerAppToApp's id.
-     * @param address  the peerAppToApp's address.
-     * @param incoming whether the peerAppToApp is an incoming peerAppToApp.
-     * @return the added peerAppToApp.
+     * @param peerId   the inboxItem's id.
+     * @param address  the inboxItem's address.
+     * @param incoming whether the inboxItem is an incoming inboxItem.
+     * @return the added inboxItem.
      */
     private synchronized PeerAppToApp addPeer(String peerId, InetSocketAddress address, String username, boolean incoming) {
         if (hashId.equals(peerId)) {
@@ -668,7 +674,7 @@ public class OverviewConnectionsActivity extends AppCompatActivity {
             return null;
         }
         if (wanVote.getAddress() != null && wanVote.getAddress().equals(address)) {
-            Log.d("App-To-App Log", "Not adding peerAppToApp with same address as wanVote");
+            Log.d("App-To-App Log", "Not adding inboxItem with same address as wanVote");
             return null;
         }
         for (PeerAppToApp peer : peerList.getList()) {
@@ -677,7 +683,7 @@ public class OverviewConnectionsActivity extends AppCompatActivity {
         }
         final PeerAppToApp peer = new PeerAppToApp(peerId, address);
         if (incoming) {
-            showToast("New incoming peerAppToApp from " + peer.getAddress());
+            showToast("New incoming inboxItem from " + peer.getAddress());
         }
         new Handler(Looper.getMainLooper()).post(new Runnable() {
 
@@ -757,7 +763,7 @@ public class OverviewConnectionsActivity extends AppCompatActivity {
     }
 
     /**
-     * Update the showed peerAppToApp lists.
+     * Update the showed inboxItem lists.
      */
     private void updatePeerLists() {
         new Handler(Looper.getMainLooper()).post(new Runnable() {
@@ -771,7 +777,7 @@ public class OverviewConnectionsActivity extends AppCompatActivity {
     }
 
     /**
-     * Split the peerAppToApp list between incoming and outgoing peers.
+     * Split the inboxItem list between incoming and outgoing peers.
      */
     private void splitPeerList() {
         List<PeerAppToApp> newIncoming = new ArrayList<>();

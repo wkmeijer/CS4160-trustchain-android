@@ -26,25 +26,18 @@ import android.widget.Toast;
 import java.io.UnsupportedEncodingException;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
-import java.security.KeyPair;
-import java.security.PublicKey;
 import java.util.Collections;
 import java.util.List;
 
 import nl.tudelft.cs4160.trustchain_android.Peer;
 import nl.tudelft.cs4160.trustchain_android.R;
 import nl.tudelft.cs4160.trustchain_android.SharedPreferences.PubKeyAndAddressPairStorage;
-import nl.tudelft.cs4160.trustchain_android.SharedPreferences.SharedPreferencesStorage;
-import nl.tudelft.cs4160.trustchain_android.Util.Key;
 import nl.tudelft.cs4160.trustchain_android.appToApp.PeerAppToApp;
 import nl.tudelft.cs4160.trustchain_android.chainExplorer.ChainExplorerAdapter;
-import nl.tudelft.cs4160.trustchain_android.connection.Communication;
 import nl.tudelft.cs4160.trustchain_android.connection.CommunicationListener;
 import nl.tudelft.cs4160.trustchain_android.connection.CommunicationSingleton;
-import nl.tudelft.cs4160.trustchain_android.connection.network.NetworkCommunication;
 import nl.tudelft.cs4160.trustchain_android.chainExplorer.ChainExplorerActivity;
-import nl.tudelft.cs4160.trustchain_android.database.TrustChainDBHelper;
-import nl.tudelft.cs4160.trustchain_android.inbox.InboxActivity;
+import nl.tudelft.cs4160.trustchain_android.inbox.InboxItem;
 import nl.tudelft.cs4160.trustchain_android.message.MessageProto;
 
 public class TrustChainActivity extends AppCompatActivity implements CompoundButton.OnCheckedChangeListener, CommunicationListener {
@@ -67,19 +60,19 @@ public class TrustChainActivity extends AppCompatActivity implements CompoundBut
     LinearLayout extraInformationPanel;
 
     TrustChainActivity thisActivity;
-    PeerAppToApp peerAppToApp;
+    InboxItem inboxItem;
     Peer peer;
 
     /**
      * Listener for the connection button.
-     * On click a block is created and send to a peerAppToApp.
-     * When we encounter an unknown peerAppToApp, send a crawl request to that peerAppToApp in order to get its
+     * On click a block is created and send to a inboxItem.
+     * When we encounter an unknown inboxItem, send a crawl request to that inboxItem in order to get its
      * public key.
-     * Also, when we want to send a block always send our last 5 blocks to the peerAppToApp so the block
+     * Also, when we want to send a block always send our last 5 blocks to the inboxItem so the block
      * request won't be rejected due to NO_INFO error.
      * <p>
      * This is code to simulate dispersy, note that this does not work properly with a busy network,
-     * because the time delay between sending information to the peerAppToApp and sending the actual
+     * because the time delay between sending information to the inboxItem and sending the actual
      * to-be-signed block could cause gaps.
      * <p>
      * Also note that whatever goes wrong we will never get a valid full block, so the integrity of
@@ -113,7 +106,7 @@ public class TrustChainActivity extends AppCompatActivity implements CompoundBut
             publicKey =
                     CommunicationSingleton.getInstance(this,this).communication.getPublicKey(peer.getIpAddress());
         } else {
-            String pubkeyStr = PubKeyAndAddressPairStorage.getPubKeyByAddress(context, peerAppToApp.getAddress().getAddress().toString());
+            String pubkeyStr = PubKeyAndAddressPairStorage.getPubKeyByAddress(context, inboxItem.getAddress());
             if(pubkeyStr != null) {
                 publicKey = ChainExplorerAdapter.hexStringToByteArray(pubkeyStr);
             }
@@ -161,13 +154,12 @@ public class TrustChainActivity extends AppCompatActivity implements CompoundBut
     }
 
     private void setPeerDetails() {
-        peerAppToApp = (PeerAppToApp) getIntent().getSerializableExtra("PeerAppToApp");
-        if (peerAppToApp != null) {
-            String address = peerAppToApp.getExternalAddress().toString().substring(1);
-            int port = peerAppToApp.getPort();
-            String name = peerAppToApp.getPeerId();
+        inboxItem = (InboxItem) getIntent().getSerializableExtra("inboxItem");
+        if (inboxItem != null) {
+            String address = inboxItem.getAddress().toString();
+         //   int port = inboxItem.getAddress().getPort();
             editTextDestinationIP.setText(address);
-            editTextDestinationPort.setText(port + "");
+         //   editTextDestinationPort.setText(port + "");
         }
     }
 

@@ -4,10 +4,12 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+
 import java.util.ArrayList;
 
 import nl.tudelft.cs4160.trustchain_android.Peer;
 import nl.tudelft.cs4160.trustchain_android.R;
+import nl.tudelft.cs4160.trustchain_android.SharedPreferences.InboxItemStorage;
 import nl.tudelft.cs4160.trustchain_android.connection.CommunicationListener;
 import nl.tudelft.cs4160.trustchain_android.connection.CommunicationSingleton;
 import nl.tudelft.cs4160.trustchain_android.message.MessageProto;
@@ -17,7 +19,7 @@ public class InboxActivity extends AppCompatActivity implements CommunicationLis
     private RecyclerView mRecyclerView;
     private RecyclerView.Adapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
-    private ArrayList<InboxItem> mData = new ArrayList<>();
+    private ArrayList<InboxItem> inboxItems = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,10 +30,23 @@ public class InboxActivity extends AppCompatActivity implements CommunicationLis
         mLayoutManager = new LinearLayoutManager(this);
         mRecyclerView.setLayoutManager(mLayoutManager);
         // specify an adapter (see also next example)
-        mAdapter = new InboxAdapter(mData);
+        mAdapter = new InboxAdapter(inboxItems);
         mRecyclerView.setAdapter(mAdapter);
+        CommunicationSingleton.getInstance(this, this).communication.start();
+        getInboxItems();
+    }
 
-        CommunicationSingleton.getInstance(this,this).communication.start();
+    private void getInboxItems() {
+        inboxItems = new ArrayList<>();
+        inboxItems = InboxItemStorage.getInboxItems(this);
+        mAdapter = new InboxAdapter(inboxItems);
+        mRecyclerView.swapAdapter(mAdapter, false);
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        getInboxItems();
     }
 
     @Override

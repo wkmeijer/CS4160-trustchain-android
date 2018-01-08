@@ -103,9 +103,9 @@ public class InboxAdapter extends RecyclerView.Adapter<InboxAdapter.ViewHolder> 
             InboxItem inboxItem = mDataset.get(position);
             ViewHolderItem h = (ViewHolderItem) holder;
             setOnClickListenerInboxItem(holder, position);
-            h.mUserNameTextView.setText(inboxItem.getPeer().getPeerId());
-            if (inboxItem.getUnreadCounter() > 0) {
-                h.mCounterTextView.setText(inboxItem.getUnreadCounter());
+            h.mUserNameTextView.setText(inboxItem.getUserName());
+            if (inboxItem.getAmountUnread() > 0) {
+                h.mCounterTextView.setText(inboxItem.getAmountUnread());
                 h.mCounterRelativeLayout.setVisibility(View.VISIBLE);
             } else {
                 h.mCounterRelativeLayout.setVisibility(View.GONE);
@@ -130,7 +130,7 @@ public class InboxAdapter extends RecyclerView.Adapter<InboxAdapter.ViewHolder> 
             public void onClick(View view) {
                 Intent intent = new Intent(holder.mWrapperLinearLayout.getContext(), TrustChainActivity.class);
                 InboxItem inboxItem = mDataset.get(position);
-                intent.putExtra("PeerAppToApp", inboxItem.getPeer());
+                intent.putExtra("inboxItem", inboxItem);
                 holder.mWrapperLinearLayout.getContext().startActivity(intent);
             }
         };
