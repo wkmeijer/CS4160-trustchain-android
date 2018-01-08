@@ -12,10 +12,12 @@ import java.util.List;
 import java.util.Map;
 
 import nl.tudelft.cs4160.trustchain_android.Peer;
+import nl.tudelft.cs4160.trustchain_android.SharedPreferences.InboxItemStorage;
 import nl.tudelft.cs4160.trustchain_android.block.TrustChainBlock;
 import nl.tudelft.cs4160.trustchain_android.block.ValidationResult;
 import nl.tudelft.cs4160.trustchain_android.connection.network.NetworkCommunication;
 import nl.tudelft.cs4160.trustchain_android.database.TrustChainDBHelper;
+import nl.tudelft.cs4160.trustchain_android.inbox.InboxItem;
 import nl.tudelft.cs4160.trustchain_android.main.TrustChainActivity;
 import nl.tudelft.cs4160.trustchain_android.message.MessageProto;
 
@@ -332,6 +334,8 @@ public abstract class Communication {
     public void synchronizedReceivedHalfBlock(Peer peer, MessageProto.TrustChainBlock block) {
         Log.i(TAG, "Received half block from peer with IP: " + peer.getIpAddress() + ":" + peer.getPort() +
                 " and public key: " + bytesToHex(peer.getPublicKey()));
+
+        InboxItemStorage.addHalfBlock(CommunicationSingleton.getContext(), bytesToHex(peer.getPublicKey()), block);
 
         addNewPublicKey(peer);
 
