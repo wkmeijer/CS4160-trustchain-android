@@ -33,7 +33,6 @@ public class InboxActivity extends AppCompatActivity implements CommunicationLis
         mAdapter = new InboxAdapter(inboxItems);
         mRecyclerView.setAdapter(mAdapter);
         CommunicationSingleton.getInstance(this, this).communication.start();
-        getInboxItems();
     }
 
     private void getInboxItems() {

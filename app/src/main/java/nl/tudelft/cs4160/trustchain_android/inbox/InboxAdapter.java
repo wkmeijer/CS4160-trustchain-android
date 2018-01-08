@@ -101,14 +101,16 @@ public class InboxAdapter extends RecyclerView.Adapter<InboxAdapter.ViewHolder> 
             setOnClickListenerNewUser(holder);
         } else {
             InboxItem inboxItem = mDataset.get(position);
-            ViewHolderItem h = (ViewHolderItem) holder;
-            setOnClickListenerInboxItem(holder, position);
-            h.mUserNameTextView.setText(inboxItem.getUserName());
-            if (inboxItem.getAmountUnread() > 0) {
-                h.mCounterTextView.setText(inboxItem.getAmountUnread());
-                h.mCounterRelativeLayout.setVisibility(View.VISIBLE);
-            } else {
-                h.mCounterRelativeLayout.setVisibility(View.GONE);
+            if(inboxItem != null) {
+                ViewHolderItem h = (ViewHolderItem) holder;
+                setOnClickListenerInboxItem(holder, position);
+                h.mUserNameTextView.setText(inboxItem.getUserName());
+                if (inboxItem.getAmountUnread() > 0) {
+                    h.mCounterTextView.setText(inboxItem.getAmountUnread() + "");
+                    h.mCounterRelativeLayout.setVisibility(View.VISIBLE);
+                } else {
+                    h.mCounterRelativeLayout.setVisibility(View.GONE);
+                }
             }
         }
     }
