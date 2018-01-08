@@ -49,7 +49,7 @@ public class InboxItemStorage {
         }
     }
 
-    public static void addHalfBlock(Context context, String pubKey, MessageProto.TrustChainBlock halfBlock) {
+    public static void addHalfBlock(Context context, String pubKey, int halfBlockSequenceNumbe) {
         InboxItem[] array = SharedPreferencesStorage.readSharedPreferences(context, INBOX_ITEM_KEY, InboxItem[].class);
 
         if (array == null) {
@@ -60,7 +60,7 @@ public class InboxItemStorage {
                 inboxItems[i] = array[i];
                 if (array[i].getPublicKey().equals(pubKey)) {
                     InboxItem item = inboxItems[i];
-                    item.addHalfBlocks(halfBlock);
+                    item.addHalfBlocks(halfBlockSequenceNumbe);
                     inboxItems[i] = item;
                 }
             }

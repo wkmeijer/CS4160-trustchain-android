@@ -340,7 +340,7 @@ public abstract class Communication {
         Log.i(TAG, "Received half block from peer with IP: " + peer.getIpAddress() + ":" + peer.getPort() +
                 " and public key: " + bytesToHex(peer.getPublicKey()));
 
-        InboxItemStorage.addHalfBlock(CommunicationSingleton.getContext(), bytesToHex(peer.getPublicKey()), block);
+        InboxItemStorage.addHalfBlock(CommunicationSingleton.getContext(), bytesToHex(peer.getPublicKey()), block.getLinkSequenceNumber());
 
         addNewPublicKey(peer);
 

@@ -12,14 +12,14 @@ import nl.tudelft.cs4160.trustchain_android.message.MessageProto;
 
 public class InboxItem implements Serializable {
     private String userName;
-    private ArrayList<MessageProto.TrustChainBlock> halfBlocks;
+    private ArrayList<Integer> halfBlockSequenceNumbers;
     private String address;
     private String publicKey;
     private int port;
 
-    public InboxItem(String userName, ArrayList<MessageProto.TrustChainBlock> halfBlocks, String address, String publicKey, int port) {
+    public InboxItem(String userName, ArrayList<Integer> halfBlockSequenceNumbers, String address, String publicKey, int port) {
         this.userName = userName;
-        this.halfBlocks = halfBlocks;
+        this.halfBlockSequenceNumbers = halfBlockSequenceNumbers;
         this.address = address;
         this.publicKey = publicKey;
         this.port = port;
@@ -41,15 +41,15 @@ public class InboxItem implements Serializable {
         this.userName = userName;
     }
 
-    public ArrayList<MessageProto.TrustChainBlock> getHalfBlocks() {
-        return halfBlocks;
+    public ArrayList<Integer> getHalfBlocks() {
+        return halfBlockSequenceNumbers;
     }
-    public void addHalfBlocks(MessageProto.TrustChainBlock block) {
-        halfBlocks.add(block);
+    public void addHalfBlocks(Integer block) {
+        halfBlockSequenceNumbers.add(block);
     }
 
-    public void setHalfBlocks(ArrayList<MessageProto.TrustChainBlock> halfBlocks) {
-        this.halfBlocks = halfBlocks;
+    public void setHalfBlocks(ArrayList<Integer> halfBlocks) {
+        this.halfBlockSequenceNumbers = halfBlocks;
     }
 
     public String getAddress() {
@@ -69,8 +69,8 @@ public class InboxItem implements Serializable {
     }
 
     public int getAmountUnread() {
-        if (halfBlocks != null) {
-            return halfBlocks.size();
+        if (halfBlockSequenceNumbers != null) {
+            return halfBlockSequenceNumbers.size();
         }
         return 0;
     }
