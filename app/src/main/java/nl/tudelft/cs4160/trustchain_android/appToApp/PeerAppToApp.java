@@ -5,8 +5,6 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 
-import nl.tudelft.cs4160.trustchain_android.main.TrustChainActivity;
-
 /**
  * The peer object. The peer is identified by its unique peer id and keeps track of the last send and receive time.
  * <p/>
