@@ -341,6 +341,7 @@ public abstract class Communication {
                 " and public key: " + bytesToHex(peer.getPublicKey()));
 
         InboxItemStorage.addHalfBlock(CommunicationSingleton.getContext(), bytesToHex(peer.getPublicKey()), block.getLinkSequenceNumber());
+        CommunicationSingleton.getDbHelper().insertInDB(block);
 
         addNewPublicKey(peer);
 

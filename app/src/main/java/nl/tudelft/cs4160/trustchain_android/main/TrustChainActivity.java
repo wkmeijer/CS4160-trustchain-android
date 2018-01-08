@@ -84,11 +84,11 @@ public class TrustChainActivity extends AppCompatActivity implements CompoundBut
         if (isConnected()) {
             TRANSACTION_DATA = messageEditText.getText().toString();
             byte[] transactionData = TRANSACTION_DATA.getBytes("UTF-8");
-            CommunicationSingleton.getInstance(this, this).communication.signBlock(transactionData, peer);
+            CommunicationSingleton.getCommunication().signBlock(transactionData, peer);
         } else {
             peer = new Peer(null, editTextDestinationIP.getText().toString(),
                     Integer.parseInt(editTextDestinationPort.getText().toString()));
-            CommunicationSingleton.getInstance(this, this).communication.connectToPeer(peer);
+            CommunicationSingleton.getCommunication().connectToPeer(peer);
         }
     }
 
@@ -105,7 +105,7 @@ public class TrustChainActivity extends AppCompatActivity implements CompoundBut
         // Try to instantiate public key.
         if (peer != null && peer.getIpAddress() != null) {
             publicKey =
-                    CommunicationSingleton.getInstance(this, this).communication.getPublicKey(peer.getIpAddress());
+                    CommunicationSingleton.getCommunication().getPublicKey(peer.getIpAddress());
         } else {
             String pubkeyStr = PubKeyAndAddressPairStorage.getPubKeyByAddress(context, inboxItem.getAddress());
             if (pubkeyStr != null) {
@@ -122,7 +122,7 @@ public class TrustChainActivity extends AppCompatActivity implements CompoundBut
 
     private boolean isConnected() {
         if (peer != null) {
-            if (CommunicationSingleton.getInstance(this, this).communication.getPublicKey(peer.getIpAddress()) != null) {
+            if (CommunicationSingleton.getCommunication().getPublicKey(peer.getIpAddress()) != null) {
                 return true;
             } else {
                 Log.d("testLogs", "getPublicKey == null");
@@ -203,7 +203,7 @@ public class TrustChainActivity extends AppCompatActivity implements CompoundBut
         developerModeText = (TextView) findViewById(R.id.developer_mode_text);
         switchDeveloperMode = (SwitchCompat) findViewById(R.id.switch_developer_mode);
         switchDeveloperMode.setOnCheckedChangeListener(this);
-        CommunicationSingleton.getInstance(this, this).setCommunicationListener(this);
+        CommunicationSingleton.setCommunicationListener(this);
     }
 
     private void init() {
@@ -309,7 +309,7 @@ public class TrustChainActivity extends AppCompatActivity implements CompoundBut
                     builder.setMessage("Do you want to sign Block[ " + block.getTransaction().toString("UTF-8") + " ] from " + peer.getName() + "?")
                             .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int id) {
-                                    CommunicationSingleton.getInstance(trustChainActivity, trustChainActivity).communication.acceptTransaction(block, peer);
+                                    CommunicationSingleton.getCommunication().acceptTransaction(block, peer);
                                 }
                             })
                             .setNegativeButton("No", new DialogInterface.OnClickListener() {
