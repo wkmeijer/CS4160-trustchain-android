@@ -34,6 +34,10 @@ public class CommunicationSingleton {
         return instance;
     }
 
+    public void setCommunicationListener(CommunicationListener communicationListener) {
+        communication.setCommunicationListener(communicationListener);
+    }
+
     public static Context getContext() {
         return context;
     }

@@ -59,15 +59,20 @@ public abstract class Communication {
 
     }
 
+    public void setCommunicationListener(CommunicationListener listener) {
+        this.listener = listener;
+    }
+
     public CommunicationListener getListener() {
         return listener;
     }
 
     /**
      * Send a crawl request to the peer.
-     * @param peer The peer.
+     *
+     * @param peer      The peer.
      * @param publicKey Public key of me.
-     * @param seqNum Requested sequence number.
+     * @param seqNum    Requested sequence number.
      */
     public void sendCrawlRequest(Peer peer, byte[] publicKey, int seqNum) {
         int sq = seqNum;
@@ -157,9 +162,9 @@ public abstract class Communication {
             Log.e(TAG, "signBlock: Block is not a request.");
             return;
         }
-        MessageProto.TrustChainBlock block = createBlock(null,dbHelper,
+        MessageProto.TrustChainBlock block = createBlock(null, dbHelper,
                 getMyPublicKey(),
-                linkedBlock,peer.getPublicKey());
+                linkedBlock, peer.getPublicKey());
 
         block = sign(block, keyPair.getPrivate());
 
@@ -200,8 +205,8 @@ public abstract class Communication {
         Log.d("testLogs", "trans " + transaction.length);
 
         MessageProto.TrustChainBlock block =
-                createBlock(transaction,dbHelper,
-                        getMyPublicKey(),null,peer.getPublicKey());
+                createBlock(transaction, dbHelper,
+                        getMyPublicKey(), null, peer.getPublicKey());
         block = sign(block, keyPair.getPrivate());
 
         ValidationResult validation;
@@ -225,7 +230,6 @@ public abstract class Communication {
             sendHalfBlock(peer, block);
         }
     }
-
 
 
     /**
@@ -291,8 +295,9 @@ public abstract class Communication {
     /**
      * Process a received message. Checks if the message is a crawl request or a half block
      * and continues with the appropriate action,
+     *
      * @param message The message.
-     * @param peer From the peer.
+     * @param peer    From the peer.
      */
     public void receivedMessage(MessageProto.Message message, Peer peer) {
         Log.d("testlogs", "received message " + message.toString());
@@ -387,7 +392,7 @@ public abstract class Communication {
             // send a crawl request, requesting the last 5 blocks before the received halfblock (if available) of the peer
             sendCrawlRequest(peer, block.getPublicKey().toByteArray(), Math.max(GENESIS_SEQ, block.getSequenceNumber() - 5));
         } else {
-           // signBlock(peer, block);
+            // signBlock(peer, block);
             listener.requestPermission(block, peer);
         }
     }
@@ -396,11 +401,12 @@ public abstract class Communication {
     /**
      * Connect with a peer, either unknown or known.
      * If the peer is not known, this will send a crawl request, otherwise a half block.
+     *
      * @param peer
      */
     public void connectToPeer(Peer peer) {
         String identifier = peer.getIpAddress();
-        if(peer.getDevice() != null) {
+        if (peer.getDevice() != null) {
             identifier = peer.getDevice().getAddress();
         }
         Log.e(TAG, "Identifier: " + identifier);
@@ -409,19 +415,19 @@ public abstract class Communication {
             peer.setPublicKey(getPublicKey(identifier));
             listener.connectionSuccessful(peer.getPublicKey());
             sendLatestBlocksToPeer(peer);
-          //  try {
-           //     signBlock(TrustChainActivity.TRANSACTION_DATA.getBytes("UTF-8"), peer);
-          //  } catch (UnsupportedEncodingException e) {
-          //      e.printStackTrace();
-         //   }
+            //  try {
+            //     signBlock(TrustChainActivity.TRANSACTION_DATA.getBytes("UTF-8"), peer);
+            //  } catch (UnsupportedEncodingException e) {
+            //      e.printStackTrace();
+            //   }
         } else {
             listener.updateLog("Unknown peer, sending crawl request \n");
-            sendCrawlRequest(peer, getMyPublicKey(),-5);
+            sendCrawlRequest(peer, getMyPublicKey(), -5);
         }
     }
 
     public void acceptTransaction(MessageProto.TrustChainBlock block, Peer peer) {
-             signBlock(peer, block);
+        signBlock(peer, block);
     }
 
     public byte[] getMyPublicKey() {

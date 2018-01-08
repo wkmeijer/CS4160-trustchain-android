@@ -54,7 +54,7 @@ public class UserConfigurationActivity extends AppCompatActivity {
     public void OnClickConfirm(View view) {
         EditText userNameInput = (EditText) findViewById(R.id.username);
         if (!userNameInput.getText().toString().matches("")) {
-            Intent myIntent = new Intent(UserConfigurationActivity.this, OverviewConnectionsActivity.class);
+            Intent myIntent = new Intent(UserConfigurationActivity.this, UserConfigurationActivity.class);
             UserNameStorage.setUserName(context, userNameInput.getText().toString());
             myIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
             UserConfigurationActivity.this.startActivity(myIntent);

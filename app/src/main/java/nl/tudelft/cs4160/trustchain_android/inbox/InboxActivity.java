@@ -47,6 +47,7 @@ public class InboxActivity extends AppCompatActivity implements CommunicationLis
     protected void onStart() {
         super.onStart();
         getInboxItems();
+        CommunicationSingleton.getInstance(this, this).setCommunicationListener(this);
     }
 
     @Override
