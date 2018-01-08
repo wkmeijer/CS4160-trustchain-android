@@ -3,6 +3,7 @@ package nl.tudelft.cs4160.trustchain_android;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Base64;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -72,7 +73,7 @@ public class KeyActivity extends AppCompatActivity {
                 KeyPair kp = Key.loadKeys(getApplicationContext());
                 byte[] sig = Key.sign( kp.getPrivate(), new byte[] {0x30, 0x30, 0x30, 0x30,0x30, 0x30, 0x30, 0x30});
                 if(sig == null) {
-                    System.out.println("No sig received");
+                    Log.d("TrustChain Log", "No sig received");
                 }
                 signedData.setText(Base64.encodeToString(sig, Base64.DEFAULT));
 
