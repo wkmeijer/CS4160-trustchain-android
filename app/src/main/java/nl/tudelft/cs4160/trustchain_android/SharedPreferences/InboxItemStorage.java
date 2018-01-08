@@ -62,6 +62,8 @@ public class InboxItemStorage {
                     InboxItem item = inboxItems[i];
                     item.addHalfBlocks(halfBlockSequenceNumbe);
                     inboxItems[i] = item;
+                    SharedPreferencesStorage.writeSharedPreferences(context, INBOX_ITEM_KEY, inboxItems);
+                    return;
                 }
             }
         }
