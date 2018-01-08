@@ -13,6 +13,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import nl.tudelft.cs4160.trustchain_android.R;
 import nl.tudelft.cs4160.trustchain_android.SharedPreferences.UserNameStorage;
+import nl.tudelft.cs4160.trustchain_android.inbox.InboxActivity;
 
 /**
  * Created by Boning on 12/3/2017.
@@ -40,7 +41,7 @@ public class UserConfigurationActivity extends AppCompatActivity {
                 }
             });
         } else {
-            Intent myIntent = new Intent(UserConfigurationActivity.this, OverviewConnectionsActivity.class);
+            Intent myIntent = new Intent(UserConfigurationActivity.this, InboxActivity.class);
             myIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
             UserConfigurationActivity.this.startActivity(myIntent);
         }

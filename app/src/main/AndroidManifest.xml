@@ -43,6 +43,11 @@
             android:label="@string/app_name"
             android:noHistory="true"
             android:windowSoftInputMode="adjustResize">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
         <activity
             android:name=".main.ChainExplorerInfoActivity"
@@ -50,12 +55,7 @@
         <activity
             android:name=".main.BootstrapActivity"
             android:windowSoftInputMode="adjustResize" />
-        <activity android:name=".inbox.InboxActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter></activity>
+        <activity android:name=".inbox.InboxActivity"/>
     </application>
 
 </manifest>
