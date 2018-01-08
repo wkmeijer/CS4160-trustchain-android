@@ -3,9 +3,8 @@ package nl.tudelft.cs4160.trustchain_android.SharedPreferences;
 import android.content.Context;
 
 /**
- * Created by timbu on 18/12/2017.
+ * This class will store the public key and address of the current user locally.
  */
-
 public class PubKeyAndAddressPairStorage {
 
     private final static String PUBKEY_KEY_PREFIX = "PUBKEY_KEY_PREFIX:";
