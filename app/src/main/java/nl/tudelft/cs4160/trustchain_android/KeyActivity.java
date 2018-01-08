@@ -8,6 +8,8 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.w3c.dom.Text;
+
 import java.security.KeyPair;
 import java.security.Security;
 
@@ -32,11 +34,11 @@ public class KeyActivity extends AppCompatActivity {
     }
 
     private void init() {
-        buttonNewKey = findViewById(R.id.new_key);
-        textPrivateKey = findViewById(R.id.private_key);
-        signData = findViewById(R.id.sign_data);
-        signedData = findViewById(R.id.signed_data);
-        verifySignature = findViewById(R.id.verify_sig);
+        buttonNewKey = (Button) findViewById(R.id.new_key);
+        textPrivateKey = (TextView) findViewById(R.id.private_key);
+        signData = (Button) findViewById(R.id.sign_data);
+        signedData = (TextView) findViewById(R.id.signed_data);
+        verifySignature = (Button) findViewById(R.id.verify_sig);
 
         KeyPair kp = Key.ensureKeysExist(getApplicationContext());
         textPrivateKey.setText(Base64.encodeToString(kp.getPrivate().getEncoded(), Base64.DEFAULT));

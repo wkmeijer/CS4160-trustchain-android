@@ -22,6 +22,8 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.w3c.dom.Text;
+
 import java.io.UnsupportedEncodingException;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
@@ -200,9 +202,9 @@ public class TrustChainActivity extends AppCompatActivity implements CompoundBut
 
     private void initVariables() {
         thisActivity = this;
-        localIPText = findViewById(R.id.my_local_ip);
-        externalIPText = findViewById(R.id.my_external_ip);
-        statusText = findViewById(R.id.status);
+        localIPText = (TextView) findViewById(R.id.my_local_ip);
+        externalIPText = (TextView) findViewById(R.id.my_external_ip);
+        statusText = (TextView) findViewById(R.id.status);
         statusText.setMovementMethod(new ScrollingMovementMethod());
 
         editTextDestinationIP = (EditText) findViewById(R.id.destination_IP);
@@ -213,8 +215,8 @@ public class TrustChainActivity extends AppCompatActivity implements CompoundBut
         developerModeText = (TextView) findViewById(R.id.developer_mode_text);
         switchDeveloperMode = (SwitchCompat) findViewById(R.id.switch_developer_mode);
         switchDeveloperMode.setOnCheckedChangeListener(this);
-        editTextDestinationIP = findViewById(R.id.destination_IP);
-        editTextDestinationPort = findViewById(R.id.destination_port);
+        editTextDestinationIP = (EditText) findViewById(R.id.destination_IP);
+        editTextDestinationPort = (EditText) findViewById(R.id.destination_port);
     }
 
     private void init() {
@@ -300,7 +302,7 @@ public class TrustChainActivity extends AppCompatActivity implements CompoundBut
         runOnUiThread(new Runnable() {
                   @Override
                   public void run() {
-                      TextView statusText = findViewById(R.id.status);
+                      TextView statusText = (TextView) findViewById(R.id.status);
                       statusText.append(msg);
                   }
               });

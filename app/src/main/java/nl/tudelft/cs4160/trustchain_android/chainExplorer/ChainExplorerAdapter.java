@@ -86,11 +86,11 @@ public class ChainExplorerAdapter extends BaseAdapter {
         String linkSeqNumStr = displayStringForSequenceNumber(block.getLinkSequenceNumber());
 
         // collapsed view
-        TextView peer = convertView.findViewById(R.id.peer);
-        TextView seqNum = convertView.findViewById(R.id.sequence_number);
-        TextView linkPeer = convertView.findViewById(R.id.link_peer);
-        TextView linkSeqNum = convertView.findViewById(R.id.link_sequence_number);
-        TextView transaction = convertView.findViewById(R.id.transaction);
+        TextView peer = (TextView) convertView.findViewById(R.id.peer);
+        TextView seqNum = (TextView) convertView.findViewById(R.id.sequence_number);
+        TextView linkPeer = (TextView) convertView.findViewById(R.id.link_peer);
+        TextView linkSeqNum = (TextView) convertView.findViewById(R.id.link_sequence_number);
+        TextView transaction = (TextView) convertView.findViewById(R.id.transaction);
 
         // For the collapsed view, set the public keys to the aliases we gave them.
         peer.setText(peerAlias);

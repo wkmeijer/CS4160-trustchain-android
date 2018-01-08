@@ -32,7 +32,9 @@ import nl.tudelft.cs4160.trustchain_android.message.MessageProto;
 import static android.view.Gravity.CENTER;
 import static nl.tudelft.cs4160.trustchain_android.Peer.bytesToHex;
 
-
+/**
+ * This activity will show a chain of a given TrustChain peer.
+ */
 public class ChainExplorerActivity extends AppCompatActivity {
     TrustChainDBHelper dbHelper;
     ChainExplorerAdapter adapter;
@@ -40,12 +42,11 @@ public class ChainExplorerActivity extends AppCompatActivity {
 
     static final String TAG = "ChainExplorerActivity";
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chain_explorer);
-        blocksList = findViewById(R.id.blocks_list);
+        blocksList = (ListView) findViewById(R.id.blocks_list);
 
         // Create a progress bar to display while the list loads
         ProgressBar progressBar = new ProgressBar(this);
@@ -55,7 +56,7 @@ public class ChainExplorerActivity extends AppCompatActivity {
         blocksList.setEmptyView(progressBar);
 
         // Must add the progress bar to the root of the layout
-        ViewGroup root = findViewById(android.R.id.content);
+        ViewGroup root = (ViewGroup) findViewById(android.R.id.content);
         root.addView(progressBar);
 
         init();
@@ -80,7 +81,6 @@ public class ChainExplorerActivity extends AppCompatActivity {
         }
     }
 
-
     private void init() {
         dbHelper = new TrustChainDBHelper(this);
         KeyPair kp = Key.loadKeys(getApplicationContext());
@@ -89,7 +89,6 @@ public class ChainExplorerActivity extends AppCompatActivity {
             publicKey = getIntent().getByteArrayExtra("publicKey");
         } else {
             publicKey = kp.getPublic().getEncoded();
-
         }
         try {
             List<MessageProto.TrustChainBlock> blocks = dbHelper.getBlocks(publicKey);
@@ -107,8 +106,8 @@ public class ChainExplorerActivity extends AppCompatActivity {
         blocksList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                LinearLayout expandedItem = view.findViewById(R.id.expanded_item);
-                ImageView expandArrow = view.findViewById(R.id.expand_arrow);
+                LinearLayout expandedItem = (LinearLayout) view.findViewById(R.id.expanded_item);
+                ImageView expandArrow = (ImageView) view.findViewById(R.id.expand_arrow);
 
                 // Expand the item when it is clicked
                 if (expandedItem.getVisibility() == View.GONE) {

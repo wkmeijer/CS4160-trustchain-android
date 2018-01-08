@@ -29,8 +29,6 @@ public class TrustChainBlock {
     public static final ByteString EMPTY_SIG = ByteString.copyFrom(new byte[] {0x00});
     public static final ByteString EMPTY_PK = ByteString.copyFrom(new byte[] {0x00});
 
-    final static String TAG = "TrustChainBlock";
-
     /**
      * Creates a TrustChain genesis block using protocol buffers.
      * @return block - A MessageProto.TrustChainBlock
