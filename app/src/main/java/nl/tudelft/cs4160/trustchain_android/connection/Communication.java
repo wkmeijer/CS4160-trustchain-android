@@ -1,5 +1,6 @@
 package nl.tudelft.cs4160.trustchain_android.connection;
 
+import android.content.Context;
 import android.util.Log;
 
 import com.google.protobuf.ByteString;
@@ -13,6 +14,7 @@ import java.util.Map;
 
 import nl.tudelft.cs4160.trustchain_android.Peer;
 import nl.tudelft.cs4160.trustchain_android.SharedPreferences.InboxItemStorage;
+import nl.tudelft.cs4160.trustchain_android.Util.Key;
 import nl.tudelft.cs4160.trustchain_android.block.TrustChainBlock;
 import nl.tudelft.cs4160.trustchain_android.block.ValidationResult;
 import nl.tudelft.cs4160.trustchain_android.connection.network.NetworkCommunication;
@@ -50,8 +52,11 @@ public abstract class Communication {
 
     private CommunicationListener listener;
 
+    private Context context;
 
-    public Communication(TrustChainDBHelper dbHelper, KeyPair kp, CommunicationListener listener) {
+
+    public Communication(Context context, TrustChainDBHelper dbHelper, KeyPair kp, CommunicationListener listener) {
+        this.context = context;
         this.dbHelper = dbHelper;
         this.keyPair = kp;
         this.listener = listener;
@@ -432,6 +437,9 @@ public abstract class Communication {
     }
 
     public byte[] getMyPublicKey() {
+        if(keyPair == null) {
+            keyPair = Key.loadKeys(this.context);
+        }
         return keyPair.getPublic().getEncoded();
     }
 

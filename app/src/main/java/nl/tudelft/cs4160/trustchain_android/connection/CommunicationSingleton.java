@@ -26,7 +26,7 @@ public class CommunicationSingleton {
         CommunicationSingleton.dbHelper = new TrustChainDBHelper(context);
         //load keys
         KeyPair kp = Key.loadKeys(context);
-        CommunicationSingleton.communication = new NetworkCommunication(dbHelper, kp, communicationListener);
+        CommunicationSingleton.communication = new NetworkCommunication(context, dbHelper, kp, communicationListener);
         CommunicationSingleton.communication.start();
     }
     public static Communication getCommunication() {
