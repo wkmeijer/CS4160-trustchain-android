@@ -19,11 +19,11 @@ import java.security.KeyPair;
 import nl.tudelft.cs4160.trustchain_android.Peer;
 import nl.tudelft.cs4160.trustchain_android.R;
 import nl.tudelft.cs4160.trustchain_android.Util.Key;
-import nl.tudelft.cs4160.trustchain_android.connection.bluetooth.BluetoothCommunication;
-import nl.tudelft.cs4160.trustchain_android.database.TrustChainDBHelper;
 import nl.tudelft.cs4160.trustchain_android.connection.Communication;
 import nl.tudelft.cs4160.trustchain_android.connection.CommunicationListener;
 import nl.tudelft.cs4160.trustchain_android.message.MessageProto;
+import nl.tudelft.cs4160.trustchain_android.connection.bluetooth.BluetoothCommunication;
+import nl.tudelft.cs4160.trustchain_android.database.TrustChainDBHelper;
 
 public class BluetoothActivity extends AppCompatActivity implements CommunicationListener {
 
