@@ -1,5 +1,6 @@
 package nl.tudelft.cs4160.trustchain_android.inbox;
 
+import android.content.Context;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -35,11 +36,19 @@ public class InboxActivity extends AppCompatActivity implements CommunicationLis
         CommunicationSingleton.initContextAndListener(getApplicationContext(), this);
     }
 
-    private void getInboxItems() {
-        inboxItems = new ArrayList<>();
-        inboxItems = InboxItemStorage.getInboxItems(this);
-        mAdapter = new InboxAdapter(inboxItems);
-        mRecyclerView.swapAdapter(mAdapter, false);
+    synchronized private void getInboxItems() {
+        final Context currContext = this;
+
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                inboxItems = new ArrayList<>();
+                inboxItems = InboxItemStorage.getInboxItems(currContext);
+                mAdapter = new InboxAdapter(inboxItems);
+                mRecyclerView.setAdapter(mAdapter);
+            }
+        });
+
     }
 
     @Override
@@ -51,7 +60,7 @@ public class InboxActivity extends AppCompatActivity implements CommunicationLis
 
     @Override
     public void updateLog(String msg) {
-        //getInboxItems();
+        getInboxItems();
     }
 
     @Override
