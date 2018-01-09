@@ -32,6 +32,7 @@ coverage:
     changes:
       default:
         enabled: yes
+        threshold: null
         if_no_uploads: success
         if_not_found: success
         if_ci_failed: error
