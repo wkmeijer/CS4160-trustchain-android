@@ -23,6 +23,7 @@ coverage:
     patch:
       default:
         enabled: yes
+        target: 10%
         branches: null
         threshold: null
         if_no_uploads: success
