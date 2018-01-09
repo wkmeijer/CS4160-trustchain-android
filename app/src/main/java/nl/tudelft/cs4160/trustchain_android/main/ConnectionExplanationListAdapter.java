@@ -40,6 +40,13 @@ public class ConnectionExplanationListAdapter extends ArrayAdapter {
         this.colorList = colorList;
     }
 
+    /**
+     * Create the view of each item in the list
+     * @param position the position
+     * @param convertView the view
+     * @param parent the parent view
+     * @return a view showing the explanation.
+     */
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
