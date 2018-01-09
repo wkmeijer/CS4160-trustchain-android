@@ -36,6 +36,11 @@ public class InboxActivity extends AppCompatActivity implements CommunicationLis
         CommunicationSingleton.initContextAndListener(getApplicationContext(), this);
     }
 
+    /**
+     * Update the inbox counters. A new adapter is created based on the new state of the inboxes,
+     * which is then set in the recyclerview. This has to run on the main UI thread because
+     * only the original thread that created a view hierarchy can touch its views.
+     */
     synchronized private void getInboxItems() {
         final Context currContext = this;
 
@@ -48,7 +53,6 @@ public class InboxActivity extends AppCompatActivity implements CommunicationLis
                 mRecyclerView.setAdapter(mAdapter);
             }
         });
-
     }
 
     @Override
