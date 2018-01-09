@@ -51,7 +51,7 @@ public class InboxActivity extends AppCompatActivity implements CommunicationLis
 
     @Override
     public void updateLog(String msg) {
-
+        //getInboxItems();
     }
 
     @Override

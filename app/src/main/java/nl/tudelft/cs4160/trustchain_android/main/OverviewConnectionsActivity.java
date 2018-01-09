@@ -488,9 +488,9 @@ public class OverviewConnectionsActivity extends AppCompatActivity {
             String id = message.getPeerId();
             String pubKey = message.getPubKey();
 
-            String ip = address.getAddress().toString();
+            String ip = address.getAddress().toString().replace("/", "");
             PubKeyAndAddressPairStorage.addPubkeyAndAddressPair(this, pubKey, ip);
-            InboxItem i = new InboxItem(id, new ArrayList(), address.getAddress().toString().replace("/", ""), pubKey, address.getPort());
+            InboxItem i = new InboxItem(id, new ArrayList(), ip, pubKey, address.getPort());
             InboxItemStorage.addInboxItem(this, i);
 
             Log.d("App-To-App", "Stored following ip for pubkey: " + pubKey + " " + PubKeyAndAddressPairStorage.getAddressByPubkey(this, pubKey));

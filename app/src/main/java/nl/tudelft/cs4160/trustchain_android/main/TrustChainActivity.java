@@ -32,6 +32,7 @@ import java.util.List;
 import nl.tudelft.cs4160.trustchain_android.Peer;
 import nl.tudelft.cs4160.trustchain_android.R;
 import nl.tudelft.cs4160.trustchain_android.SharedPreferences.PubKeyAndAddressPairStorage;
+import nl.tudelft.cs4160.trustchain_android.SharedPreferences.SharedPreferencesStorage;
 import nl.tudelft.cs4160.trustchain_android.appToApp.PeerAppToApp;
 import nl.tudelft.cs4160.trustchain_android.chainExplorer.ChainExplorerAdapter;
 import nl.tudelft.cs4160.trustchain_android.connection.CommunicationListener;
@@ -104,9 +105,10 @@ public class TrustChainActivity extends AppCompatActivity implements CompoundBut
 
         // Try to instantiate public key.
         if (peer != null && peer.getIpAddress() != null) {
-            publicKey =
-                    CommunicationSingleton.getCommunication().getPublicKey(peer.getIpAddress());
+            publicKey = CommunicationSingleton.getCommunication().getPublicKey(peer.getIpAddress());
         } else {
+            Log.d("App-To-App", "pubkey address map " + SharedPreferencesStorage.getAll(this).toString());
+
             String pubkeyStr = PubKeyAndAddressPairStorage.getPubKeyByAddress(context, inboxItem.getAddress());
             if (pubkeyStr != null) {
                 publicKey = ChainExplorerAdapter.hexStringToByteArray(pubkeyStr);
