@@ -6,7 +6,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.RequiresApi;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SwitchCompat;
@@ -23,30 +22,29 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.w3c.dom.Text;
+
 import java.io.UnsupportedEncodingException;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.security.KeyPair;
-import java.security.PublicKey;
 import java.util.Collections;
 import java.util.List;
 
 import nl.tudelft.cs4160.trustchain_android.Peer;
 import nl.tudelft.cs4160.trustchain_android.R;
 import nl.tudelft.cs4160.trustchain_android.SharedPreferences.PubKeyAndAddressPairStorage;
-import nl.tudelft.cs4160.trustchain_android.SharedPreferences.SharedPreferencesStorage;
 import nl.tudelft.cs4160.trustchain_android.Util.Key;
 import nl.tudelft.cs4160.trustchain_android.appToApp.PeerAppToApp;
 import nl.tudelft.cs4160.trustchain_android.chainExplorer.ChainExplorerAdapter;
+import nl.tudelft.cs4160.trustchain_android.chainExplorer.ChainExplorerActivity;
 import nl.tudelft.cs4160.trustchain_android.connection.Communication;
 import nl.tudelft.cs4160.trustchain_android.connection.CommunicationListener;
 import nl.tudelft.cs4160.trustchain_android.connection.network.NetworkCommunication;
-import nl.tudelft.cs4160.trustchain_android.chainExplorer.ChainExplorerActivity;
 import nl.tudelft.cs4160.trustchain_android.database.TrustChainDBHelper;
 import nl.tudelft.cs4160.trustchain_android.message.MessageProto;
 
 public class TrustChainActivity extends AppCompatActivity implements CompoundButton.OnCheckedChangeListener, CommunicationListener {
-
 
     public static String TRANSACTION_DATA = "Hello world!";
     private final static String TAG = TrustChainActivity.class.toString();
@@ -208,6 +206,7 @@ public class TrustChainActivity extends AppCompatActivity implements CompoundBut
         externalIPText = (TextView) findViewById(R.id.my_external_ip);
         statusText = (TextView) findViewById(R.id.status);
         statusText.setMovementMethod(new ScrollingMovementMethod());
+
         editTextDestinationIP = (EditText) findViewById(R.id.destination_IP);
         editTextDestinationPort = (EditText) findViewById(R.id.destination_port);
         sendButton = (Button) findViewById(R.id.send_button);
@@ -216,7 +215,8 @@ public class TrustChainActivity extends AppCompatActivity implements CompoundBut
         developerModeText = (TextView) findViewById(R.id.developer_mode_text);
         switchDeveloperMode = (SwitchCompat) findViewById(R.id.switch_developer_mode);
         switchDeveloperMode.setOnCheckedChangeListener(this);
-
+        editTextDestinationIP = (EditText) findViewById(R.id.destination_IP);
+        editTextDestinationPort = (EditText) findViewById(R.id.destination_port);
     }
 
     private void init() {
@@ -250,12 +250,9 @@ public class TrustChainActivity extends AppCompatActivity implements CompoundBut
     /**
      * Finds the external IP address of this device by making an API call to https://www.ipify.org/.
      * The networking runs on a separate thread.
-     *
-     * @return a string representation of the device's external IP address
      */
     public void updateIP() {
         Thread thread = new Thread(new Runnable() {
-            @RequiresApi(api = Build.VERSION_CODES.KITKAT)
             @Override
             public void run() {
                 try (java.util.Scanner s = new java.util.Scanner(new java.net.URL("https://api.ipify.org").openStream(), "UTF-8").useDelimiter("\\A")) {
@@ -278,7 +275,6 @@ public class TrustChainActivity extends AppCompatActivity implements CompoundBut
     /**
      * Finds the local IP address of this device, loops trough network interfaces in order to find it.
      * The address that is not a loopback address is the IP of the device.
-     *
      * @return a string representation of the device's IP address
      */
     public String getLocalIPAddress() {
@@ -287,12 +283,12 @@ public class TrustChainActivity extends AppCompatActivity implements CompoundBut
             for (NetworkInterface netInt : netInterfaces) {
                 List<InetAddress> addresses = Collections.list(netInt.getInetAddresses());
                 for (InetAddress addr : addresses) {
-                    if (addr.isSiteLocalAddress()) {
+                    if(addr.isSiteLocalAddress()) {
                         return addr.getHostAddress();
                     }
                 }
             }
-        } catch (Exception e) {
+        } catch(Exception e) {
             e.printStackTrace();
         }
         return null;
@@ -304,11 +300,12 @@ public class TrustChainActivity extends AppCompatActivity implements CompoundBut
         //just to be sure run it on the ui thread
         //this is not necessary when this function is called from a AsyncTask
         runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                ((TextView) findViewById(R.id.status)).append(msg);
-            }
-        });
+                  @Override
+                  public void run() {
+                      TextView statusText = (TextView) findViewById(R.id.status);
+                      statusText.append(msg);
+                  }
+              });
     }
 
     @Override
