@@ -76,14 +76,6 @@ public class ChainExplorerAdapter extends BaseAdapter {
             convertView = LayoutInflater.from(context).inflate(R.layout.item_trustchainblock,
                     parent, false);
         }
-        try {
-            ValidationResult result = TrustChainBlock.validate(block, CommunicationSingleton.getDbHelper());
-            for(String error : result.getErrors()){
-                Log.d("testt", error);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
         // Check if we already know the peer, otherwise add it to the peerList
         ByteString pubKeyByteStr = block.getPublicKey();
         ByteString linkPubKeyByteStr = block.getLinkPublicKey();

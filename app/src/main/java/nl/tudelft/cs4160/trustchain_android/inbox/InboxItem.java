@@ -44,6 +44,7 @@ public class InboxItem implements Serializable {
     public ArrayList<Integer> getHalfBlocks() {
         return halfBlockSequenceNumbers;
     }
+
     public void addHalfBlocks(Integer block) {
         halfBlockSequenceNumbers.add(block);
     }
@@ -73,6 +74,23 @@ public class InboxItem implements Serializable {
             return halfBlockSequenceNumbers.size();
         }
         return 0;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        InboxItem inboxItem = (InboxItem) o;
+
+        if (port != inboxItem.port) return false;
+        if (userName != null ? !userName.equals(inboxItem.userName) : inboxItem.userName != null)
+            return false;
+        if (halfBlockSequenceNumbers != null ? !halfBlockSequenceNumbers.equals(inboxItem.halfBlockSequenceNumbers) : inboxItem.halfBlockSequenceNumbers != null)
+            return false;
+        if (address != null ? !address.equals(inboxItem.address) : inboxItem.address != null)
+            return false;
+        return publicKey != null ? publicKey.equals(inboxItem.publicKey) : inboxItem.publicKey == null;
     }
 
 }
