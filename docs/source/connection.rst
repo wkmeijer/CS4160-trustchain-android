@@ -2,7 +2,9 @@
 Connection to a peer
 ********************
 
-In order to send blocks to other people, you will need to find peers. In this simple app, this has to be done manually. In IPv8, this is done with help of `Dispersy <https://dispersy.readthedocs.io/en/devel/system_overview.html#overlay>`_.
+In order to send blocks to other people, you will need to find peers. This will be done with the help of the underlying communication protocol of ` App-To-App Communicator<https://github.com/Tribler/app-to-app-communicator>`_. This app creates a global connected network without the need for a central server. This is made hard by the NATs and Firewalls of ISPs from the cellular network providers, the home network providers and individual home routers. The App-to-App communication finds a way to get around the NATs by NAT puncturing, for more information about NAT and Firewall traversal see `NAT Traversal < https://www.tribler.org/NATtraversal/>`_.
+
+In IPv8, this is done with help of `Dispersy <https://dispersy.readthedocs.io/en/devel/system_overview.html#overlay>`_.
 
 There are two ways to connect to a peer: either via local network or bluetooth (note that bluetooth is not working perfectly). Therefore
 connecting to a peer is very simple. Find out the IP-address of a peer who has opened the app, listed at the top in the main screen. Fill in the ip address and the port number (default hardcoded as 8080) and press connect. Now the app will go through the steps as explained in :ref:`creating-block-label`.
@@ -25,7 +27,7 @@ If, from looking at the source code, it is not yet clear how the connection is m
 
 The simplest way for connecting via IP, which does not have to deal with possible NAT puncturing or port forwarding is connecting to a local IP on the same WiFi network. A guaranteed method involves setting up a WiFi hotspot on one of the devices and letting the other peer connect to this hotspot. WiFi networks, which make use of IPv6 are not guaranteed to work.
 
-.. figure:: ./images/connection_example.png 
+.. figure:: ./images/connection_example.png
 	:width: 300px
 
 Example of connecting to a peer using on a device using a WiFi hotspot.
@@ -35,7 +37,7 @@ Bluetooth
 ==================================
 Bluetooth works similar to WiFi: a server is created which is listening for messages, and a client send messages to server. However, with WiFi the messages are sent through two different ports and thus two different connections. This is not possible with Bluetoooth so the client will reuse the socket.
 
-.. figure:: ./images/connection_example_bluetooth.jpeg 
+.. figure:: ./images/connection_example_bluetooth.jpeg
 	:width: 300px
 
 
@@ -47,4 +49,4 @@ Links to code
 * `Server implementation (Server.java) <https://github.com/wkmeijer/CS4160-trustchain-android/blob/master/app/src/main/java/nl/tudelft/cs4160/trustchain_android/connection/network/Server.java>`_
 * `ConnectThread implementation (ConnectThread.java) <https://github.com/wkmeijer/CS4160-trustchain-android/blob/master/app/src/main/java/nl/tudelft/cs4160/trustchain_android/connection/bluetooth/ConnectThread.java>`_
 * `AcceptThread implementation (AcceptThread.java) <https://github.com/wkmeijer/CS4160-trustchain-android/blob/master/app/src/main/java/nl/tudelft/cs4160/trustchain_android/connection/bluetooth/AcceptThread.java>`_
-
+* `NAT and Firewall Traversal (Tribler) <https://www.tribler.org/NATtraversal/>`_
