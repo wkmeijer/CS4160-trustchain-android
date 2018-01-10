@@ -199,6 +199,9 @@ public class OverviewConnectionsActivity extends AppCompatActivity {
         ((TextView) findViewById(R.id.peer_id)).setText(hashId);
     }
 
+    /**
+     * Initialize the exit button.
+     */
     private void initExitButton() {
         mExitButton = (Button) findViewById(R.id.exit_button);
         mExitButton.setOnClickListener(new View.OnClickListener() {

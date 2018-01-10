@@ -130,6 +130,10 @@ public class TrustChainActivity extends AppCompatActivity implements CompoundBut
         }
     }
 
+    /**
+     * Checks whether the current peer is connected or not by checking if the peer or its public are not null.
+     * @return
+     */
     private boolean isConnected() {
         if (peer != null) {
             if (communication.getPublicKey(peer.getIpAddress()) != null) {
@@ -164,12 +168,14 @@ public class TrustChainActivity extends AppCompatActivity implements CompoundBut
         setPeerDetails();
     }
 
+    /**
+     * Sets all the information of the current peer.
+     */
     private void setPeerDetails() {
         peerAppToApp = (PeerAppToApp) getIntent().getSerializableExtra("PeerAppToApp");
         if (peerAppToApp != null) {
             String address = peerAppToApp.getExternalAddress().toString().substring(1);
             int port = peerAppToApp.getPort();
-            String name = peerAppToApp.getPeerId();
             editTextDestinationIP.setText(address);
             editTextDestinationPort.setText(port + "");
         }
@@ -182,6 +188,11 @@ public class TrustChainActivity extends AppCompatActivity implements CompoundBut
         return true;
     }
 
+    /**
+     * Initializes the menu on the upper right corner.
+     * @param item
+     * @return
+     */
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.chain_menu:
