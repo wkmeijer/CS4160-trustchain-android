@@ -51,6 +51,7 @@ import nl.tudelft.cs4160.trustchain_android.Util.Key;
 import nl.tudelft.cs4160.trustchain_android.appToApp.PeerAppToApp;
 import nl.tudelft.cs4160.trustchain_android.appToApp.PeerList;
 import nl.tudelft.cs4160.trustchain_android.appToApp.connection.WanVote;
+import nl.tudelft.cs4160.trustchain_android.appToApp.connection.messages.BlockMessage;
 import nl.tudelft.cs4160.trustchain_android.appToApp.connection.messages.IntroductionRequest;
 import nl.tudelft.cs4160.trustchain_android.appToApp.connection.messages.IntroductionResponse;
 import nl.tudelft.cs4160.trustchain_android.appToApp.connection.messages.Message;
@@ -60,6 +61,7 @@ import nl.tudelft.cs4160.trustchain_android.appToApp.connection.messages.Punctur
 import nl.tudelft.cs4160.trustchain_android.bencode.BencodeReadException;
 import nl.tudelft.cs4160.trustchain_android.block.TrustChainBlock;
 import nl.tudelft.cs4160.trustchain_android.chainExplorer.ChainExplorerActivity;
+import nl.tudelft.cs4160.trustchain_android.connection.CommunicationSingleton;
 import nl.tudelft.cs4160.trustchain_android.database.TrustChainDBHelper;
 import nl.tudelft.cs4160.trustchain_android.inbox.InboxActivity;
 import nl.tudelft.cs4160.trustchain_android.inbox.InboxItem;
@@ -67,6 +69,8 @@ import nl.tudelft.cs4160.trustchain_android.message.MessageProto;
 
 import static nl.tudelft.cs4160.trustchain_android.Peer.bytesToHex;
 import static nl.tudelft.cs4160.trustchain_android.block.TrustChainBlock.GENESIS_SEQ;
+import static nl.tudelft.cs4160.trustchain_android.block.TrustChainBlock.createBlock;
+import static nl.tudelft.cs4160.trustchain_android.message.MessageProto.Message.newBuilder;
 
 public class OverviewConnectionsActivity extends AppCompatActivity {
 
@@ -124,6 +128,7 @@ public class OverviewConnectionsActivity extends AppCompatActivity {
         }
     }
 
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
@@ -155,7 +160,7 @@ public class OverviewConnectionsActivity extends AppCompatActivity {
         }
     }
 
-    public void onClickOpenInbox(View view){
+    public void onClickOpenInbox(View view) {
         Intent inboxActivityIntent = new Intent(this, InboxActivity.class);
         startActivity(inboxActivityIntent);
     }
@@ -303,6 +308,7 @@ public class OverviewConnectionsActivity extends AppCompatActivity {
                             PeerAppToApp peer = getEligiblePeer(null);
                             if (peer != null) {
                                 sendIntroductionRequest(peer);
+                                sendBlockMessage(peer);
                             }
                         }
                     } catch (IOException e) {
@@ -331,6 +337,15 @@ public class OverviewConnectionsActivity extends AppCompatActivity {
         String publicKey = bytesToHex(Key.loadKeys(getApplicationContext()).getPublic().getEncoded());
 
         IntroductionRequest request = new IntroductionRequest(hashId, peer.getAddress(), connectionType, networkOperator, publicKey);
+        sendMessage(request, peer);
+    }
+
+    private void sendBlockMessage(PeerAppToApp peer) throws IOException {
+        String publicKey = bytesToHex(Key.loadKeys(getApplicationContext()).getPublic().getEncoded());
+        KeyPair keyPair = Key.loadKeys(this);
+        MessageProto.TrustChainBlock block = createBlock(null, CommunicationSingleton.getDbHelper(), keyPair.getPublic().getEncoded(), null, keyPair.getPublic().getEncoded());
+        MessageProto.Message message = newBuilder().setHalfBlock(block).build();
+        BlockMessage request = new BlockMessage(hashId, peer.getAddress(), publicKey, message);
         sendMessage(request, peer);
     }
 
@@ -523,6 +538,9 @@ public class OverviewConnectionsActivity extends AppCompatActivity {
                 case Message.PUNCTURE_REQUEST:
                     handlePunctureRequest(peer, (PunctureRequest) message);
                     break;
+                case Message.BLOCK_MESSAGE:
+                    handleBlockMessageRequest(peer, (BlockMessage) message);
+
             }
             updatePeerLists();
         } catch (BencodeReadException | IOException | MessageException e) {
@@ -591,6 +609,11 @@ public class OverviewConnectionsActivity extends AppCompatActivity {
         if (!peerList.peerExistsInList(message.getPuncturePeer())) {
             sendPuncture(message.getPuncturePeer());
         }
+    }
+
+    private void handleBlockMessageRequest(PeerAppToApp peer, BlockMessage message) throws IOException, MessageException {
+        MessageProto.Message block = message.getMessageProto();
+        Log.d("testTheStacks", block.toString());
     }
 
     /**
