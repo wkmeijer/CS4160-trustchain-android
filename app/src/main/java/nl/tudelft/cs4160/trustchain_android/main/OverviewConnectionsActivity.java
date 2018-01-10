@@ -52,6 +52,7 @@ import nl.tudelft.cs4160.trustchain_android.SharedPreferences.InboxItemStorage;
 import nl.tudelft.cs4160.trustchain_android.SharedPreferences.SharedPreferencesStorage;
 import nl.tudelft.cs4160.trustchain_android.SharedPreferences.UserNameStorage;
 import nl.tudelft.cs4160.trustchain_android.SharedPreferences.PubKeyAndAddressPairStorage;
+import nl.tudelft.cs4160.trustchain_android.Util.ByteArrayConverter;
 import nl.tudelft.cs4160.trustchain_android.Util.Key;
 import nl.tudelft.cs4160.trustchain_android.appToApp.PeerAppToApp;
 import nl.tudelft.cs4160.trustchain_android.appToApp.PeerList;
@@ -72,7 +73,6 @@ import nl.tudelft.cs4160.trustchain_android.inbox.InboxActivity;
 import nl.tudelft.cs4160.trustchain_android.inbox.InboxItem;
 import nl.tudelft.cs4160.trustchain_android.message.MessageProto;
 
-import static nl.tudelft.cs4160.trustchain_android.Peer.bytesToHex;
 import static nl.tudelft.cs4160.trustchain_android.Util.ByteArrayConverter.hexStringToByteArray;
 import static nl.tudelft.cs4160.trustchain_android.block.TrustChainBlock.GENESIS_SEQ;
 import static nl.tudelft.cs4160.trustchain_android.block.TrustChainBlock.createBlock;
@@ -338,14 +338,14 @@ public class OverviewConnectionsActivity extends AppCompatActivity {
      * @throws IOException
      */
     private void sendIntroductionRequest(PeerAppToApp peer) throws IOException {
-        String publicKey = bytesToHex(Key.loadKeys(getApplicationContext()).getPublic().getEncoded());
+        String publicKey = ByteArrayConverter.bytesToHexString(Key.loadKeys(getApplicationContext()).getPublic().getEncoded());
 
         IntroductionRequest request = new IntroductionRequest(hashId, peer.getAddress(), connectionType, networkOperator, publicKey);
         sendMessage(request, peer);
     }
 
     private void sendBlockMessage(PeerAppToApp peer) throws IOException {
-        String publicKey = bytesToHex(Key.loadKeys(getApplicationContext()).getPublic().getEncoded());
+        String publicKey = ByteArrayConverter.bytesToHexString(Key.loadKeys(getApplicationContext()).getPublic().getEncoded());
         KeyPair keyPair = Key.loadKeys(this);
         MessageProto.TrustChainBlock block = createBlock(new byte[0], new TrustChainDBHelper(this)
                 , keyPair.getPublic().getEncoded(), null, keyPair.getPublic().getEncoded());
@@ -362,7 +362,7 @@ public class OverviewConnectionsActivity extends AppCompatActivity {
      * @throws IOException
      */
     private void sendPunctureRequest(PeerAppToApp peer, PeerAppToApp puncturePeer) throws IOException {
-        String publicKey = bytesToHex(Key.loadKeys(getApplicationContext()).getPublic().getEncoded());
+        String publicKey = ByteArrayConverter.bytesToHexString(Key.loadKeys(getApplicationContext()).getPublic().getEncoded());
 
         PunctureRequest request = new PunctureRequest(hashId, peer.getAddress(), internalSourceAddress, puncturePeer, publicKey);
         sendMessage(request, peer);
@@ -375,7 +375,7 @@ public class OverviewConnectionsActivity extends AppCompatActivity {
      * @throws IOException
      */
     private void sendPuncture(PeerAppToApp peer) throws IOException {
-        String publicKey = bytesToHex(Key.loadKeys(getApplicationContext()).getPublic().getEncoded());
+        String publicKey = ByteArrayConverter.bytesToHexString(Key.loadKeys(getApplicationContext()).getPublic().getEncoded());
 
         Puncture puncture = new Puncture(hashId, peer.getAddress(), internalSourceAddress, publicKey);
         sendMessage(puncture, peer);
@@ -395,7 +395,7 @@ public class OverviewConnectionsActivity extends AppCompatActivity {
                 pexPeers.add(p);
         }
 
-        String publicKey = bytesToHex(Key.loadKeys(getApplicationContext()).getPublic().getEncoded());
+        String publicKey = ByteArrayConverter.bytesToHexString(Key.loadKeys(getApplicationContext()).getPublic().getEncoded());
 
         IntroductionResponse response = new IntroductionResponse(hashId, internalSourceAddress, peer
                 .getAddress(), invitee, connectionType, pexPeers, networkOperator, publicKey);
@@ -410,7 +410,7 @@ public class OverviewConnectionsActivity extends AppCompatActivity {
      * @throws IOException
      */
     private synchronized void sendMessage(Message message, PeerAppToApp peer) throws IOException {
-        String publicKey = bytesToHex(Key.loadKeys(getApplicationContext()).getPublic().getEncoded());
+        String publicKey = ByteArrayConverter.bytesToHexString(Key.loadKeys(getApplicationContext()).getPublic().getEncoded());
         message.putPubKey(publicKey);
 
         Log.d("App-To-App Log", "Sending " + message);

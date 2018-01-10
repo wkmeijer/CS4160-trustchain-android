@@ -14,6 +14,7 @@ import java.util.Map;
 
 import nl.tudelft.cs4160.trustchain_android.Peer;
 import nl.tudelft.cs4160.trustchain_android.SharedPreferences.InboxItemStorage;
+import nl.tudelft.cs4160.trustchain_android.Util.ByteArrayConverter;
 import nl.tudelft.cs4160.trustchain_android.Util.Key;
 import nl.tudelft.cs4160.trustchain_android.block.TrustChainBlock;
 import nl.tudelft.cs4160.trustchain_android.block.ValidationResult;
@@ -23,7 +24,6 @@ import nl.tudelft.cs4160.trustchain_android.inbox.InboxItem;
 import nl.tudelft.cs4160.trustchain_android.main.TrustChainActivity;
 import nl.tudelft.cs4160.trustchain_android.message.MessageProto;
 
-import static nl.tudelft.cs4160.trustchain_android.Peer.bytesToHex;
 import static nl.tudelft.cs4160.trustchain_android.block.TrustChainBlock.GENESIS_SEQ;
 import static nl.tudelft.cs4160.trustchain_android.block.TrustChainBlock.UNKNOWN_SEQ;
 import static nl.tudelft.cs4160.trustchain_android.block.TrustChainBlock.createBlock;
@@ -96,7 +96,7 @@ public abstract class Communication {
             sq = Math.max(GENESIS_SEQ, sq);
         }
 
-        Log.i(TAG, "Requesting crawl of node " + bytesToHex(publicKey) + ":" + sq);
+        Log.i(TAG, "Requesting crawl of node " + ByteArrayConverter.bytesToHexString(publicKey) + ":" + sq);
 
         MessageProto.CrawlRequest crawlRequest =
                 MessageProto.CrawlRequest.newBuilder()
@@ -181,7 +181,7 @@ public abstract class Communication {
             return;
         }
 
-        Log.i(TAG, "Signed block to " + bytesToHex(block.getLinkPublicKey().toByteArray()) +
+        Log.i(TAG, "Signed block to " + ByteArrayConverter.bytesToHexString(block.getLinkPublicKey().toByteArray()) +
                 ", validation result: " + validation.toString());
 
         // only send block if validated correctly
@@ -222,7 +222,7 @@ public abstract class Communication {
             return;
         }
 
-        Log.i(TAG, "Signed block to " + bytesToHex(block.getLinkPublicKey().toByteArray()) +
+        Log.i(TAG, "Signed block to " + ByteArrayConverter.bytesToHexString(block.getLinkPublicKey().toByteArray()) +
                 ", validation result: " + validation.toString());
 
         // only send block if validated correctly
@@ -257,7 +257,7 @@ public abstract class Communication {
         int sq = crawlRequest.getRequestedSequenceNumber();
 
         Log.i(TAG, "Received crawl request from peer with IP: " + peer.getIpAddress() + ":" + peer.getPort() +
-                " and public key: \n" + bytesToHex(peer.getPublicKey()) + "\n for sequence number " + sq);
+                " and public key: \n" + ByteArrayConverter.bytesToHexString(peer.getPublicKey()) + "\n for sequence number " + sq);
 
         // a negative sequence number indicates that the requesting peer wants an offset of blocks
         // starting with the last block
@@ -343,9 +343,9 @@ public abstract class Communication {
      */
     public void synchronizedReceivedHalfBlock(Peer peer, MessageProto.TrustChainBlock block) {
         Log.i(TAG, "Received half block from peer with IP: " + peer.getIpAddress() + ":" + peer.getPort() +
-                " and public key: " + bytesToHex(peer.getPublicKey()));
+                " and public key: " + ByteArrayConverter.bytesToHexString(peer.getPublicKey()));
 
-        InboxItemStorage.addHalfBlock(CommunicationSingleton.getContext(), bytesToHex(peer.getPublicKey()), block.getLinkSequenceNumber());
+        InboxItemStorage.addHalfBlock(CommunicationSingleton.getContext(), ByteArrayConverter.bytesToHexString(peer.getPublicKey()), block.getLinkSequenceNumber());
         CommunicationSingleton.getDbHelper().insertInDB(block);
 
         addNewPublicKey(peer);

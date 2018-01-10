@@ -19,6 +19,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import nl.tudelft.cs4160.trustchain_android.R;
+import nl.tudelft.cs4160.trustchain_android.Util.ByteArrayConverter;
 import nl.tudelft.cs4160.trustchain_android.appToApp.PeerAppToApp;
 import nl.tudelft.cs4160.trustchain_android.block.TrustChainBlock;
 import nl.tudelft.cs4160.trustchain_android.block.ValidationResult;
@@ -28,7 +29,6 @@ import nl.tudelft.cs4160.trustchain_android.main.ChainExplorerInfoActivity;
 import nl.tudelft.cs4160.trustchain_android.main.TrustChainActivity;
 import nl.tudelft.cs4160.trustchain_android.message.MessageProto;
 
-import static nl.tudelft.cs4160.trustchain_android.Peer.bytesToHex;
 import static nl.tudelft.cs4160.trustchain_android.block.TrustChainBlock.pubKeyToString;
 
 public class ChainExplorerAdapter extends BaseAdapter {
@@ -136,21 +136,21 @@ public class ChainExplorerAdapter extends BaseAdapter {
         TextView signature = (TextView) convertView.findViewById(R.id.signature);
         TextView expTransaction = (TextView) convertView.findViewById(R.id.expanded_transaction);
 
-        pubKey.setText(bytesToHex(pubKeyByteStr.toByteArray()));
-        linkPubKey.setText(bytesToHex(linkPubKeyByteStr.toByteArray()));
-        prevHash.setText(bytesToHex(block.getPreviousHash().toByteArray()));
-        signature.setText(bytesToHex(block.getSignature().toByteArray()));
+        pubKey.setText(ByteArrayConverter.bytesToHexString(pubKeyByteStr.toByteArray()));
+        linkPubKey.setText(ByteArrayConverter.bytesToHexString(linkPubKeyByteStr.toByteArray()));
+        prevHash.setText(ByteArrayConverter.bytesToHexString(block.getPreviousHash().toByteArray()));
+        signature.setText(ByteArrayConverter.bytesToHexString(block.getSignature().toByteArray()));
         expTransaction.setText(block.getTransaction().toStringUtf8());
 
         if (peerAlias.equals("me")) {
             ownChainIndicator.setBackgroundColor(ChainColor.getMyColor(context));
         }else{
-            ownChainIndicator.setBackgroundColor(ChainColor.getColor(context,bytesToHex(pubKeyByteStr.toByteArray())));
+            ownChainIndicator.setBackgroundColor(ChainColor.getColor(context,ByteArrayConverter.bytesToHexString(pubKeyByteStr.toByteArray())));
         }
         if (linkPeerAlias.equals("me")) {
             linkChainIndicator.setBackgroundColor(ChainColor.getMyColor(context));
         }else{
-            linkChainIndicator.setBackgroundColor(ChainColor.getColor(context,bytesToHex(pubKeyByteStr.toByteArray())));
+            linkChainIndicator.setBackgroundColor(ChainColor.getColor(context,ByteArrayConverter.bytesToHexString(pubKeyByteStr.toByteArray())));
         }
         return convertView;
     }
