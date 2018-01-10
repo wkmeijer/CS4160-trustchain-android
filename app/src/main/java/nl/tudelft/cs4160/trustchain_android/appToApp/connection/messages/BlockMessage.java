@@ -20,7 +20,7 @@ public class BlockMessage extends Message {
     final protected static String BLOCKMESSAGE = "blockMessage";
 
     public BlockMessage(String peerId, InetSocketAddress destination, String pubKey, MessageProto.Message message) {
-        super(PUNCTURE, peerId, destination, pubKey);
+        super(BLOCK_MESSAGE, peerId, destination, pubKey);
             put(BLOCKMESSAGE, message.toByteString().toStringUtf8());
     }
 

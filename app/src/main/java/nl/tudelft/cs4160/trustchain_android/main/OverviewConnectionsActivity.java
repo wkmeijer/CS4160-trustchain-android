@@ -308,7 +308,7 @@ public class OverviewConnectionsActivity extends AppCompatActivity {
                             PeerAppToApp peer = getEligiblePeer(null);
                             if (peer != null) {
                                 sendIntroductionRequest(peer);
-                                sendBlockMessage(peer);
+                               // sendBlockMessage(peer);
                             }
                         }
                     } catch (IOException e) {
