@@ -24,7 +24,11 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.protobuf.ByteString;
+import com.google.protobuf.InvalidProtocolBufferException;
+
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
@@ -41,6 +45,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.UUID;
 
+import nl.tudelft.cs4160.trustchain_android.Peer;
 import nl.tudelft.cs4160.trustchain_android.R;
 import nl.tudelft.cs4160.trustchain_android.SharedPreferences.BootstrapIPStorage;
 import nl.tudelft.cs4160.trustchain_android.SharedPreferences.InboxItemStorage;
@@ -68,6 +73,7 @@ import nl.tudelft.cs4160.trustchain_android.inbox.InboxItem;
 import nl.tudelft.cs4160.trustchain_android.message.MessageProto;
 
 import static nl.tudelft.cs4160.trustchain_android.Peer.bytesToHex;
+import static nl.tudelft.cs4160.trustchain_android.Util.ByteArrayConverter.hexStringToByteArray;
 import static nl.tudelft.cs4160.trustchain_android.block.TrustChainBlock.GENESIS_SEQ;
 import static nl.tudelft.cs4160.trustchain_android.block.TrustChainBlock.createBlock;
 import static nl.tudelft.cs4160.trustchain_android.message.MessageProto.Message.newBuilder;
@@ -278,8 +284,6 @@ public class OverviewConnectionsActivity extends AppCompatActivity {
             e.printStackTrace();
         }
     }
-
-
     /**
      * Request and display the current connection type.
      */
@@ -308,7 +312,7 @@ public class OverviewConnectionsActivity extends AppCompatActivity {
                             PeerAppToApp peer = getEligiblePeer(null);
                             if (peer != null) {
                                 sendIntroductionRequest(peer);
-                               // sendBlockMessage(peer);
+                                sendBlockMessage(peer);
                             }
                         }
                     } catch (IOException e) {
@@ -343,8 +347,8 @@ public class OverviewConnectionsActivity extends AppCompatActivity {
     private void sendBlockMessage(PeerAppToApp peer) throws IOException {
         String publicKey = bytesToHex(Key.loadKeys(getApplicationContext()).getPublic().getEncoded());
         KeyPair keyPair = Key.loadKeys(this);
-        MessageProto.TrustChainBlock block = createBlock(new byte[0],   new TrustChainDBHelper(this)
-, keyPair.getPublic().getEncoded(), null, keyPair.getPublic().getEncoded());
+        MessageProto.TrustChainBlock block = createBlock(new byte[0], new TrustChainDBHelper(this)
+                , keyPair.getPublic().getEncoded(), null, keyPair.getPublic().getEncoded());
         MessageProto.Message message = newBuilder().setHalfBlock(block).build();
         BlockMessage request = new BlockMessage(hashId, peer.getAddress(), publicKey, message);
         sendMessage(request, peer);

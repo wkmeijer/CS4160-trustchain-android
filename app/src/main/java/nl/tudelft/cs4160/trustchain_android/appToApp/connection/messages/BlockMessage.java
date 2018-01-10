@@ -5,11 +5,9 @@ import com.google.protobuf.InvalidProtocolBufferException;
 
 import java.io.UnsupportedEncodingException;
 import java.net.InetSocketAddress;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
-import nl.tudelft.cs4160.trustchain_android.appToApp.PeerAppToApp;
+import nl.tudelft.cs4160.trustchain_android.Util.ByteArrayConverter;
 import nl.tudelft.cs4160.trustchain_android.message.MessageProto;
 
 /**
@@ -21,7 +19,7 @@ public class BlockMessage extends Message {
 
     public BlockMessage(String peerId, InetSocketAddress destination, String pubKey, MessageProto.Message message) {
         super(BLOCK_MESSAGE, peerId, destination, pubKey);
-            put(BLOCKMESSAGE, message.toByteString().toStringUtf8());
+        put(BLOCKMESSAGE, ByteArrayConverter.bytesToHexString(message.toByteArray()));
     }
 
     public static Message fromMap(Map map) throws MessageException {
@@ -29,14 +27,10 @@ public class BlockMessage extends Message {
         InetSocketAddress destination = Message.createMapAddress((Map) map.get(DESTINATION));
         String pubKey = (String) map.get(PUB_KEY);
         String messageAsString = (String) map.get(BLOCKMESSAGE);
-        ByteString messageAsByteString;
         MessageProto.Message message = null;
         try {
-            messageAsByteString = ByteString.copyFrom(messageAsString, "UTF-8");
-            message = MessageProto.Message.parseFrom(messageAsByteString);
+            message = MessageProto.Message.parseFrom(ByteArrayConverter.hexStringToByteArray(messageAsString));
         } catch (InvalidProtocolBufferException e) {
-            e.printStackTrace();
-        } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
         return new BlockMessage(peerId, destination, pubKey, message);
@@ -44,18 +38,15 @@ public class BlockMessage extends Message {
 
     public MessageProto.Message getMessageProto() throws MessageException {
         String messageAsString = (String) get(BLOCKMESSAGE);
-        ByteString messageAsByteString;
         MessageProto.Message message = null;
         try {
-            messageAsByteString = ByteString.copyFrom(messageAsString, "UTF-8");
-            message = MessageProto.Message.parseFrom(messageAsByteString);
+            message = MessageProto.Message.parseFrom(ByteArrayConverter.hexStringToByteArray(messageAsString));
         } catch (InvalidProtocolBufferException e) {
-            e.printStackTrace();
-        } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
         return message;
     }
+
     public String toString() {
         return "BlockMessage{" + super.toString() + "}";
     }
