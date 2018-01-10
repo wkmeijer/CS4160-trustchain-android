@@ -107,7 +107,9 @@ public abstract class Communication {
         // send the crawl request
         MessageProto.Message message = newBuilder().setCrawlRequest(crawlRequest).build();
 
-        listener.updateLog("Sent crawl request to " + peer.getName() + "\n");
+        if(listener != null) {
+            listener.updateLog("Sent crawl request to " + peer.getName() + "\n");
+        }
         sendMessage(peer, message);
     }
 
@@ -120,7 +122,9 @@ public abstract class Communication {
     public void sendHalfBlock(Peer peer, MessageProto.TrustChainBlock block) {
         MessageProto.Message message = newBuilder().setHalfBlock(block).build();
 
-        listener.updateLog("Sent half block to  " + peer.getName() + "\n");
+        if(listener != null) {
+            listener.updateLog("Sent half block to  " + peer.getName() + "\n");
+        }
         sendMessage(peer, message);
     }
 
@@ -314,9 +318,14 @@ public abstract class Communication {
         if (block.getPublicKey().size() > 0 && crawlRequest.getPublicKey().size() == 0) {
             messageLog += "block received from: " + peer.getName() + "\n" + TrustChainBlock.transferDataToString(block) + "\n";
 
-            listener.updateLog("\nServer: " + messageLog);
+            if(listener != null) {
+                listener.updateLog("\nServer: " + messageLog);
+            }
             peer.setPublicKey(block.getPublicKey().toByteArray());
-            listener.connectionSuccessful(peer.getPublicKey());
+
+            if(listener != null) {
+                listener.connectionSuccessful(peer.getPublicKey());
+            }
 
             //make sure the correct port is set
             peer.setPort(NetworkCommunication.DEFAULT_PORT);
@@ -326,7 +335,10 @@ public abstract class Communication {
         // In case we received a crawlrequest
         if (block.getPublicKey().size() == 0 && crawlRequest.getPublicKey().size() > 0) {
             messageLog += "crawlrequest received from: " + peer.getName() + "\n";
-            listener.updateLog("\nServer: " + messageLog);
+
+            if(listener != null) {
+                listener.updateLog("\nServer: " + messageLog);
+            }
 
             peer.setPublicKey(crawlRequest.getPublicKey().toByteArray());
             this.receivedCrawlRequest(peer, crawlRequest);
@@ -399,7 +411,10 @@ public abstract class Communication {
             sendCrawlRequest(peer, block.getPublicKey().toByteArray(), Math.max(GENESIS_SEQ, block.getSequenceNumber() - 5));
         } else {
             // signBlock(peer, block);
-            listener.requestPermission(block, peer);
+
+            if(listener != null) {
+                listener.requestPermission(block, peer);
+            }
         }
     }
 
@@ -417,9 +432,15 @@ public abstract class Communication {
         }
         Log.e(TAG, "Identifier: " + identifier);
         if (hasPublicKey(identifier)) {
-            listener.updateLog("Sending half block to known peer \n");
+
+            if(listener != null) {
+                listener.updateLog("Sending half block to known peer \n");
+            }
             peer.setPublicKey(getPublicKey(identifier));
-            listener.connectionSuccessful(peer.getPublicKey());
+
+            if(listener != null) {
+                listener.connectionSuccessful(peer.getPublicKey());
+            }
             sendLatestBlocksToPeer(peer);
             //  try {
             //     signBlock(TrustChainActivity.TRANSACTION_DATA.getBytes("UTF-8"), peer);
@@ -427,7 +448,9 @@ public abstract class Communication {
             //      e.printStackTrace();
             //   }
         } else {
-            listener.updateLog("Unknown peer, sending crawl request \n");
+            if(listener != null) {
+                listener.updateLog("Unknown peer, sending crawl request \n");
+            }
             sendCrawlRequest(peer, getMyPublicKey(), -5);
         }
     }

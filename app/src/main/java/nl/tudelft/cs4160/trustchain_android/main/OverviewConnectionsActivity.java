@@ -132,6 +132,7 @@ public class OverviewConnectionsActivity extends AppCompatActivity {
         if (savedInstanceState != null) {
             updatePeerLists();
         }
+        CommunicationSingleton.initContextAndListener(getApplicationContext(), null);
     }
 
 
@@ -312,7 +313,7 @@ public class OverviewConnectionsActivity extends AppCompatActivity {
                             PeerAppToApp peer = getEligiblePeer(null);
                             if (peer != null) {
                                 sendIntroductionRequest(peer);
-                                sendBlockMessage(peer);
+                              //  sendBlockMessage(peer);
                             }
                         }
                     } catch (IOException e) {
@@ -617,8 +618,12 @@ public class OverviewConnectionsActivity extends AppCompatActivity {
     }
 
     private void handleBlockMessageRequest(PeerAppToApp peer, BlockMessage message) throws IOException, MessageException {
-        MessageProto.Message block = message.getMessageProto();
-        Log.d("testTheStacks", block.toString());
+        MessageProto.Message msg = message.getMessageProto();
+        if(msg.getCrawlRequest() == null){
+            MessageProto.TrustChainBlock block = msg.getHalfBlock();
+            InboxItemStorage.addHalfBlock(CommunicationSingleton.getContext(), block.getPublicKey().toString(), block.getLinkSequenceNumber());
+            Log.d("testTheStacks", block.toString());
+        }
     }
 
     /**
