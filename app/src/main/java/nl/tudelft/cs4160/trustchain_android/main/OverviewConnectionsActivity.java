@@ -85,7 +85,7 @@ public class OverviewConnectionsActivity extends AppCompatActivity {
     final static String HASH_ID = "hash_id";
     final static int DEFAULT_PORT = 1873;
     final static int KNOWN_PEER_LIMIT = 10;
-    private static final int BUFFER_SIZE = 2048;
+    private static final int BUFFER_SIZE = 65536;
 
     private TextView mWanVote;
     private Button mExitButton;
