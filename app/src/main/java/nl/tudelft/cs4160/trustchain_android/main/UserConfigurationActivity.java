@@ -18,7 +18,6 @@ import nl.tudelft.cs4160.trustchain_android.R;
 import nl.tudelft.cs4160.trustchain_android.SharedPreferences.UserNameStorage;
 import nl.tudelft.cs4160.trustchain_android.Util.Key;
 import nl.tudelft.cs4160.trustchain_android.connection.CommunicationSingleton;
-import nl.tudelft.cs4160.trustchain_android.inbox.InboxActivity;
 
 /**
  * Created by Boning on 12/3/2017.
@@ -46,7 +45,7 @@ public class UserConfigurationActivity extends AppCompatActivity {
                 }
             });
         } else {
-            Intent myIntent = new Intent(UserConfigurationActivity.this, InboxActivity.class);
+            Intent myIntent = new Intent(UserConfigurationActivity.this, OverviewConnectionsActivity.class);
             myIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
             UserConfigurationActivity.this.startActivity(myIntent);
         }
@@ -59,10 +58,10 @@ public class UserConfigurationActivity extends AppCompatActivity {
     public void OnClickConfirm(View view) {
         EditText userNameInput = (EditText) findViewById(R.id.username);
         if (!userNameInput.getText().toString().matches("")) {
-            Intent myIntent = new Intent(UserConfigurationActivity.this, UserConfigurationActivity.class);
+            Intent myIntent = new Intent(UserConfigurationActivity.this, OverviewConnectionsActivity.class);
             UserNameStorage.setUserName(context, userNameInput.getText().toString());
             myIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            UserConfigurationActivity.this.startActivity(myIntent);
+            this.startActivity(myIntent);
         } else {
             TextView userNot = (TextView) findViewById(R.id.user_notification);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {

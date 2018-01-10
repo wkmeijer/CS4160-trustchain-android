@@ -21,7 +21,9 @@ import java.util.List;
 import nl.tudelft.cs4160.trustchain_android.R;
 import nl.tudelft.cs4160.trustchain_android.appToApp.PeerAppToApp;
 import nl.tudelft.cs4160.trustchain_android.block.TrustChainBlock;
+import nl.tudelft.cs4160.trustchain_android.block.ValidationResult;
 import nl.tudelft.cs4160.trustchain_android.color.ChainColor;
+import nl.tudelft.cs4160.trustchain_android.connection.CommunicationSingleton;
 import nl.tudelft.cs4160.trustchain_android.main.ChainExplorerInfoActivity;
 import nl.tudelft.cs4160.trustchain_android.main.TrustChainActivity;
 import nl.tudelft.cs4160.trustchain_android.message.MessageProto;
@@ -74,7 +76,14 @@ public class ChainExplorerAdapter extends BaseAdapter {
             convertView = LayoutInflater.from(context).inflate(R.layout.item_trustchainblock,
                     parent, false);
         }
-
+        try {
+            ValidationResult result = TrustChainBlock.validate(block, CommunicationSingleton.getDbHelper());
+            for(String error : result.getErrors()){
+                Log.d("testt", error);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         // Check if we already know the peer, otherwise add it to the peerList
         ByteString pubKeyByteStr = block.getPublicKey();
         ByteString linkPubKeyByteStr = block.getLinkPublicKey();

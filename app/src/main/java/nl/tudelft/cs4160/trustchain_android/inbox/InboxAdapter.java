@@ -101,7 +101,7 @@ public class InboxAdapter extends RecyclerView.Adapter<InboxAdapter.ViewHolder> 
             setOnClickListenerNewUser(holder);
         } else {
             InboxItem inboxItem = mDataset.get(position);
-            if(inboxItem != null) {
+            if (inboxItem != null) {
                 ViewHolderItem h = (ViewHolderItem) holder;
                 setOnClickListenerInboxItem(holder, position);
                 h.mUserNameTextView.setText(inboxItem.getUserName());
@@ -120,6 +120,7 @@ public class InboxAdapter extends RecyclerView.Adapter<InboxAdapter.ViewHolder> 
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(holder.mWrapperLinearLayout.getContext(), OverviewConnectionsActivity.class);
+                intent.setFlags(intent.getFlags() | Intent.FLAG_ACTIVITY_NO_HISTORY);
                 holder.mWrapperLinearLayout.getContext().startActivity(intent);
             }
         };

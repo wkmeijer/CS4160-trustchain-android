@@ -61,6 +61,7 @@ import nl.tudelft.cs4160.trustchain_android.bencode.BencodeReadException;
 import nl.tudelft.cs4160.trustchain_android.block.TrustChainBlock;
 import nl.tudelft.cs4160.trustchain_android.chainExplorer.ChainExplorerActivity;
 import nl.tudelft.cs4160.trustchain_android.database.TrustChainDBHelper;
+import nl.tudelft.cs4160.trustchain_android.inbox.InboxActivity;
 import nl.tudelft.cs4160.trustchain_android.inbox.InboxItem;
 import nl.tudelft.cs4160.trustchain_android.message.MessageProto;
 
@@ -69,8 +70,7 @@ import static nl.tudelft.cs4160.trustchain_android.block.TrustChainBlock.GENESIS
 
 public class OverviewConnectionsActivity extends AppCompatActivity {
 
-    //public static String CONNECTABLE_ADDRESS = "145.94.185.61";
-    public static String CONNECTABLE_ADDRESS = "192.168.1.26";
+    public static String CONNECTABLE_ADDRESS = "145.94.181.61";
     final static int UNKNOWN_PEER_LIMIT = 20;
     final static String HASH_ID = "hash_id";
     final static int DEFAULT_PORT = 1873;
@@ -153,6 +153,11 @@ public class OverviewConnectionsActivity extends AppCompatActivity {
             default:
                 return true;
         }
+    }
+
+    public void onClickOpenInbox(View view){
+        Intent inboxActivityIntent = new Intent(this, InboxActivity.class);
+        startActivity(inboxActivityIntent);
     }
 
     private void initKey() {

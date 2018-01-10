@@ -80,5 +80,7 @@
     <string name="color_info">Color is based on the hash of the public key.</string>
 
     <!--- inbox -->
-    <string name="new_user">+ Find new user</string>
+    <string name="new_user">+ Find new users</string>
+    <string name="inbox">Open Inbox</string>
+
 </resources>
