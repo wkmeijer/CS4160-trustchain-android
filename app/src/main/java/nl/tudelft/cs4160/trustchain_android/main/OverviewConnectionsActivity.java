@@ -619,9 +619,10 @@ public class OverviewConnectionsActivity extends AppCompatActivity {
 
     private void handleBlockMessageRequest(PeerAppToApp peer, BlockMessage message) throws IOException, MessageException {
         MessageProto.Message msg = message.getMessageProto();
-        if(msg.getCrawlRequest() == null){
+        if(msg.getCrawlRequest().getPublicKey().size() == 0){
             MessageProto.TrustChainBlock block = msg.getHalfBlock();
             InboxItemStorage.addHalfBlock(CommunicationSingleton.getContext(), block.getPublicKey().toString(), block.getLinkSequenceNumber());
+            CommunicationSingleton.getDbHelper().insertInDB(block);
             Log.d("testTheStacks", block.toString());
         }
     }
