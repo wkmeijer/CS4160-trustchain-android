@@ -343,7 +343,8 @@ public class OverviewConnectionsActivity extends AppCompatActivity {
     private void sendBlockMessage(PeerAppToApp peer) throws IOException {
         String publicKey = bytesToHex(Key.loadKeys(getApplicationContext()).getPublic().getEncoded());
         KeyPair keyPair = Key.loadKeys(this);
-        MessageProto.TrustChainBlock block = createBlock(null, CommunicationSingleton.getDbHelper(), keyPair.getPublic().getEncoded(), null, keyPair.getPublic().getEncoded());
+        MessageProto.TrustChainBlock block = createBlock(new byte[0],   new TrustChainDBHelper(this)
+, keyPair.getPublic().getEncoded(), null, keyPair.getPublic().getEncoded());
         MessageProto.Message message = newBuilder().setHalfBlock(block).build();
         BlockMessage request = new BlockMessage(hashId, peer.getAddress(), publicKey, message);
         sendMessage(request, peer);
