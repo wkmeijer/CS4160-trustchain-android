@@ -1,4 +1,4 @@
-package nl.tudelft.cs4160.trustchain_android.Network;
+package nl.tudelft.cs4160.trustchain_android.network;
 
 import android.content.Context;
 import android.telephony.TelephonyManager;
@@ -8,7 +8,6 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.DatagramChannel;
-import java.security.KeyPair;
 import java.util.ArrayList;
 import java.util.List;
 

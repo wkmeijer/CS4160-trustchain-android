@@ -38,7 +38,7 @@ import java.util.Enumeration;
 import java.util.List;
 import java.util.Random;
 
-import nl.tudelft.cs4160.trustchain_android.Network.Network;
+import nl.tudelft.cs4160.trustchain_android.network.Network;
 import nl.tudelft.cs4160.trustchain_android.Peer;
 import nl.tudelft.cs4160.trustchain_android.R;
 import nl.tudelft.cs4160.trustchain_android.SharedPreferences.BootstrapIPStorage;
