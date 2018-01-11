@@ -1,4 +1,4 @@
-package nl.tudelft.cs4160.trustchain_android.network;
+package nl.tudelft.cs4160.trustchain_android.Network;
 
 import android.content.Context;
 import android.telephony.TelephonyManager;
