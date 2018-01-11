@@ -113,7 +113,6 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Co
         setContentView(R.layout.activity_overview);
         initVariables(savedInstanceState);
         initExitButton();
-        initKey();
         updateConnectionType();
         addInitialPeer();
         startListenThread();
@@ -207,6 +206,8 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Co
         wanVote = new WanVote();
 
         dbHelper = new TrustChainDBHelper(this);
+        initKey();
+
         hashId = UserNameStorage.getUserName(this);
         ((TextView) findViewById(R.id.peer_id)).setText(hashId);
         network = Network.getInstance(getApplicationContext(), channel);
