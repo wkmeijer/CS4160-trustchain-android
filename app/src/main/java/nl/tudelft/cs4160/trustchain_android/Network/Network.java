@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.DatagramChannel;
+import java.security.KeyPair;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -69,7 +70,13 @@ public class Network {
         peerList = new PeerList();
         outBuffer = ByteBuffer.allocate(BUFFER_SIZE);
         hashId = UserNameStorage.getUserName(context);
-        publicKey = ByteArrayConverter.bytesToHexString(Key.loadKeys(context).getPublic().getEncoded());
+
+        KeyPair kp = Key.loadKeys(context);
+        if(kp != null) {
+            publicKey = ByteArrayConverter.bytesToHexString(Key.loadKeys(context).getPublic().getEncoded());
+        } else {
+            publicKey = "bla";
+        }
         this.channel = channel;
     }
 
