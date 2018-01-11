@@ -70,13 +70,7 @@ public class Network {
         peerList = new PeerList();
         outBuffer = ByteBuffer.allocate(BUFFER_SIZE);
         hashId = UserNameStorage.getUserName(context);
-
-        KeyPair kp = Key.loadKeys(context);
-        if(kp != null) {
-            publicKey = ByteArrayConverter.bytesToHexString(Key.loadKeys(context).getPublic().getEncoded());
-        } else {
-            publicKey = "bla";
-        }
+        publicKey = ByteArrayConverter.bytesToHexString(Key.loadKeys(context).getPublic().getEncoded());
         this.channel = channel;
     }
 
