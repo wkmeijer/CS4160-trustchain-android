@@ -71,15 +71,15 @@ public class Network {
 
     private Network() {}
 
-    public static Network getInstance(Context context) {
+    public static Network getInstance(Context context, DatagramChannel channel) {
         if(network == null) {
             network = new Network();
-            network.initVariables(context);
+            network.initVariables(context, channel);
         }
         return network;
     }
 
-    private void initVariables(Context context) {
+    private void initVariables(Context context, DatagramChannel channel) {
         TelephonyManager telephonyManager = ((TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE));
         networkOperator = telephonyManager.getNetworkOperatorName();
 
@@ -88,7 +88,7 @@ public class Network {
         outBuffer = ByteBuffer.allocate(BUFFER_SIZE);
         hashId = UserNameStorage.getUserName(context);
         publicKey = ByteArrayConverter.bytesToHexString(Key.loadKeys(context).getPublic().getEncoded());
-        openChannel();
+        this.channel = channel;
     }
 
     /**
@@ -168,14 +168,5 @@ public class Network {
         channel.send(outBuffer, peer.getAddress());
         peer.sentData();
         //updatePeerLists();
-    }
-
-    private void openChannel() {
-        try {
-            channel = DatagramChannel.open();
-            channel.socket().bind(new InetSocketAddress(DEFAULT_PORT));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 }

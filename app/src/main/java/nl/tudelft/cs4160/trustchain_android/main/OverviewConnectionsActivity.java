@@ -123,11 +123,11 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Co
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        openChannel();
         setContentView(R.layout.activity_overview);
         initVariables(savedInstanceState);
         initExitButton();
         initKey();
-        openChannel();
         updateConnectionType();
         addInitialPeer();
         startListenThread();
@@ -223,7 +223,7 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Co
         dbHelper = new TrustChainDBHelper(this);
         hashId = UserNameStorage.getUserName(this);
         ((TextView) findViewById(R.id.peer_id)).setText(hashId);
-        network = Network.getInstance(getApplicationContext());
+        network = Network.getInstance(getApplicationContext(), channel);
     }
 
     private void initExitButton() {
