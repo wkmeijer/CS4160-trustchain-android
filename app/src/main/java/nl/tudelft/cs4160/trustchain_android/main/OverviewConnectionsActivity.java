@@ -303,6 +303,7 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Co
                             PeerAppToApp peer = getEligiblePeer(null);
                             if (peer != null) {
                                 network.sendIntroductionRequest(peer);
+                                updatePeerLists();
                               //  sendBlockMessage(peer);
                             }
                         }
