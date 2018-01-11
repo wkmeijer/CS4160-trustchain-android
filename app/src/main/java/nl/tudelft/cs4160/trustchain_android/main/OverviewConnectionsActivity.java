@@ -2,20 +2,15 @@ package nl.tudelft.cs4160.trustchain_android.main;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.preference.PreferenceManager;
-import android.provider.Telephony;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.util.Patterns;
 import android.view.Menu;
@@ -27,11 +22,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.protobuf.ByteString;
-import com.google.protobuf.InvalidProtocolBufferException;
-
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
@@ -46,17 +37,15 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Random;
-import java.util.UUID;
 
 import nl.tudelft.cs4160.trustchain_android.Network.Network;
 import nl.tudelft.cs4160.trustchain_android.Peer;
 import nl.tudelft.cs4160.trustchain_android.R;
 import nl.tudelft.cs4160.trustchain_android.SharedPreferences.BootstrapIPStorage;
 import nl.tudelft.cs4160.trustchain_android.SharedPreferences.InboxItemStorage;
+import nl.tudelft.cs4160.trustchain_android.SharedPreferences.PubKeyAndAddressPairStorage;
 import nl.tudelft.cs4160.trustchain_android.SharedPreferences.SharedPreferencesStorage;
 import nl.tudelft.cs4160.trustchain_android.SharedPreferences.UserNameStorage;
-import nl.tudelft.cs4160.trustchain_android.SharedPreferences.PubKeyAndAddressPairStorage;
-import nl.tudelft.cs4160.trustchain_android.Util.ByteArrayConverter;
 import nl.tudelft.cs4160.trustchain_android.Util.Key;
 import nl.tudelft.cs4160.trustchain_android.appToApp.PeerAppToApp;
 import nl.tudelft.cs4160.trustchain_android.appToApp.PeerList;
@@ -78,14 +67,11 @@ import nl.tudelft.cs4160.trustchain_android.inbox.InboxActivity;
 import nl.tudelft.cs4160.trustchain_android.inbox.InboxItem;
 import nl.tudelft.cs4160.trustchain_android.message.MessageProto;
 
-import static nl.tudelft.cs4160.trustchain_android.Util.ByteArrayConverter.hexStringToByteArray;
 import static nl.tudelft.cs4160.trustchain_android.block.TrustChainBlock.GENESIS_SEQ;
-import static nl.tudelft.cs4160.trustchain_android.block.TrustChainBlock.createBlock;
-import static nl.tudelft.cs4160.trustchain_android.message.MessageProto.Message.newBuilder;
 
 public class OverviewConnectionsActivity extends AppCompatActivity implements CommunicationListener {
 
-    public static String CONNECTABLE_ADDRESS = "145.94.185.61";
+    public static String CONNECTABLE_ADDRESS = "87.214.214.173";
     final static int UNKNOWN_PEER_LIMIT = 20;
     final static String HASH_ID = "hash_id";
     final static int DEFAULT_PORT = 1873;

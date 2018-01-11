@@ -1,32 +1,21 @@
 package nl.tudelft.cs4160.trustchain_android.Network;
 
 import android.content.Context;
-import android.net.ConnectivityManager;
-import android.os.Bundle;
 import android.telephony.TelephonyManager;
 import android.util.Log;
-import android.widget.Button;
-import android.widget.TextView;
 
 import java.io.IOException;
-import java.net.DatagramSocket;
 import java.net.InetSocketAddress;
-import java.net.SocketAddress;
-import java.net.SocketOption;
 import java.nio.ByteBuffer;
 import java.nio.channels.DatagramChannel;
-import java.security.KeyPair;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
-import nl.tudelft.cs4160.trustchain_android.R;
 import nl.tudelft.cs4160.trustchain_android.SharedPreferences.UserNameStorage;
 import nl.tudelft.cs4160.trustchain_android.Util.ByteArrayConverter;
 import nl.tudelft.cs4160.trustchain_android.Util.Key;
 import nl.tudelft.cs4160.trustchain_android.appToApp.PeerAppToApp;
 import nl.tudelft.cs4160.trustchain_android.appToApp.PeerList;
-import nl.tudelft.cs4160.trustchain_android.appToApp.connection.WanVote;
 import nl.tudelft.cs4160.trustchain_android.appToApp.connection.messages.BlockMessage;
 import nl.tudelft.cs4160.trustchain_android.appToApp.connection.messages.IntroductionRequest;
 import nl.tudelft.cs4160.trustchain_android.appToApp.connection.messages.IntroductionResponse;
@@ -34,7 +23,6 @@ import nl.tudelft.cs4160.trustchain_android.appToApp.connection.messages.Message
 import nl.tudelft.cs4160.trustchain_android.appToApp.connection.messages.Puncture;
 import nl.tudelft.cs4160.trustchain_android.appToApp.connection.messages.PunctureRequest;
 import nl.tudelft.cs4160.trustchain_android.database.TrustChainDBHelper;
-import nl.tudelft.cs4160.trustchain_android.main.PeerListAdapter;
 import nl.tudelft.cs4160.trustchain_android.message.MessageProto;
 
 import static nl.tudelft.cs4160.trustchain_android.block.TrustChainBlock.createBlock;
@@ -45,12 +33,6 @@ import static nl.tudelft.cs4160.trustchain_android.message.MessageProto.Message.
  */
 
 public class Network {
-
-    public static String CONNECTABLE_ADDRESS = "145.94.185.61";
-    final static int UNKNOWN_PEER_LIMIT = 20;
-    final static String HASH_ID = "hash_id";
-    final static int DEFAULT_PORT = 1873;
-    final static int KNOWN_PEER_LIMIT = 10;
     private static final int BUFFER_SIZE = 65536;
 
     private DatagramChannel channel;
