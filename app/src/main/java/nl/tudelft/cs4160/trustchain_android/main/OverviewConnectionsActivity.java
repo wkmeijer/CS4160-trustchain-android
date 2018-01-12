@@ -291,7 +291,6 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
                             PeerAppToApp peer = getEligiblePeer(null);
                             if (peer != null) {
                                 network.sendIntroductionRequest(peer);
-                                updatePeerLists();
                               //  sendBlockMessage(peer);
                             }
                         }
@@ -659,7 +658,8 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
     /**
      * Update the showed inboxItem lists.
      */
-    private void updatePeerLists() {
+    @Override
+    public void updatePeerLists() {
         new Handler(Looper.getMainLooper()).post(new Runnable() {
             @Override
             public void run() {

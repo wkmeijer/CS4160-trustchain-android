@@ -8,4 +8,5 @@ import nl.tudelft.cs4160.trustchain_android.connection.CommunicationListener;
 
 public interface NetworkCommunicationListener extends CommunicationListener {
     void updateInternalSourceAddress(String address);
+    void updatePeerLists();
 }

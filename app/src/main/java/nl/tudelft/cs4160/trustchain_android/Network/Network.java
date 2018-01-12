@@ -165,7 +165,7 @@ public class Network {
         outBuffer.flip();
         channel.send(outBuffer, peer.getAddress());
         peer.sentData();
-        //updatePeerLists();
+        networkCommunicationListener.updatePeerLists();
     }
 
     private void showLocalIpAddress() {
