@@ -268,9 +268,9 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Co
         try {
             String address = BootstrapIPStorage.getIP(this);
             if (address != "" && address != null) {
-                addPeer(null, new InetSocketAddress(InetAddress.getByName(address), DEFAULT_PORT), "", PeerAppToApp.OUTGOING);
+                addPeer(null, new InetSocketAddress(InetAddress.getByName(address), DEFAULT_PORT), PeerAppToApp.OUTGOING);
             }
-            addPeer(null, new InetSocketAddress(InetAddress.getByName(CONNECTABLE_ADDRESS), DEFAULT_PORT), "", PeerAppToApp.OUTGOING);
+            addPeer(null, new InetSocketAddress(InetAddress.getByName(CONNECTABLE_ADDRESS), DEFAULT_PORT), PeerAppToApp.OUTGOING);
         } catch (UnknownHostException e) {
             e.printStackTrace();
         }
@@ -384,7 +384,7 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Co
                 return peer;
             }
         }
-        return addPeer(id, address, "", incoming);
+        return addPeer(id, address, incoming);
     }
 
 
@@ -587,7 +587,7 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Co
      * @param incoming whether the inboxItem is an incoming inboxItem.
      * @return the added inboxItem.
      */
-    private synchronized PeerAppToApp addPeer(String peerId, InetSocketAddress address, String username, boolean incoming) {
+    private synchronized PeerAppToApp addPeer(String peerId, InetSocketAddress address, boolean incoming) {
         if (hashId.equals(peerId)) {
             Log.d("App-To-App Log", "Not adding self");
             PeerAppToApp self = null;

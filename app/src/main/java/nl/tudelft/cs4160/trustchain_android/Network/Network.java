@@ -60,10 +60,11 @@ public class Network {
     private String publicKey;
     private TrustChainDBHelper dbHelper;
 
-    private Network() {}
+    private Network() {
+    }
 
     public static Network getInstance(Context context, DatagramChannel channel) {
-        if(network == null) {
+        if (network == null) {
             network = new Network();
             network.initVariables(context, channel);
         }
