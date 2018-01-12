@@ -1,16 +1,24 @@
 package nl.tudelft.cs4160.trustchain_android.Network;
 
 import android.content.Context;
+import android.os.AsyncTask;
 import android.telephony.TelephonyManager;
 import android.util.Log;
+import android.widget.TextView;
 
 import java.io.IOException;
+import java.net.Inet4Address;
+import java.net.InetAddress;
 import java.net.InetSocketAddress;
+import java.net.NetworkInterface;
+import java.net.SocketException;
 import java.nio.ByteBuffer;
 import java.nio.channels.DatagramChannel;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.List;
 
+import nl.tudelft.cs4160.trustchain_android.R;
 import nl.tudelft.cs4160.trustchain_android.SharedPreferences.UserNameStorage;
 import nl.tudelft.cs4160.trustchain_android.Util.ByteArrayConverter;
 import nl.tudelft.cs4160.trustchain_android.Util.Key;
@@ -34,6 +42,7 @@ import static nl.tudelft.cs4160.trustchain_android.message.MessageProto.Message.
 
 public class Network {
     private static final int BUFFER_SIZE = 65536;
+    private final static int DEFAULT_PORT = 1873;
 
     private DatagramChannel channel;
 
@@ -71,6 +80,8 @@ public class Network {
         hashId = UserNameStorage.getUserName(context);
         publicKey = ByteArrayConverter.bytesToHexString(Key.loadKeys(context).getPublic().getEncoded());
         this.channel = channel;
+
+        showLocalIpAddress();
     }
 
     /**
@@ -150,5 +161,36 @@ public class Network {
         channel.send(outBuffer, peer.getAddress());
         peer.sentData();
         //updatePeerLists();
+    }
+
+    private void showLocalIpAddress() {
+        new AsyncTask<Void, Void, InetAddress>() {
+
+            @Override
+            protected InetAddress doInBackground(Void... params) {
+                try {
+                    for (Enumeration en = NetworkInterface.getNetworkInterfaces(); en.hasMoreElements(); ) {
+                        NetworkInterface intf = (NetworkInterface) en.nextElement();
+                        for (Enumeration enumIpAddr = intf.getInetAddresses(); enumIpAddr.hasMoreElements(); ) {
+                            InetAddress inetAddress = (InetAddress) enumIpAddr.nextElement();
+                            if (!inetAddress.isLoopbackAddress() && inetAddress instanceof Inet4Address) {
+                                return inetAddress;
+                            }
+                        }
+                    }
+                } catch (SocketException ex) {
+                    ex.printStackTrace();
+                }
+                return null;
+            }
+
+            @Override
+            protected void onPostExecute(InetAddress inetAddress) {
+                super.onPostExecute(inetAddress);
+                if (inetAddress != null) {
+                    internalSourceAddress = new InetSocketAddress(inetAddress, DEFAULT_PORT);
+                }
+            }
+        }.execute();
     }
 }

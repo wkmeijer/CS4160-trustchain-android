@@ -71,7 +71,7 @@ import static nl.tudelft.cs4160.trustchain_android.block.TrustChainBlock.GENESIS
 
 public class OverviewConnectionsActivity extends AppCompatActivity implements CommunicationListener {
 
-    public static String CONNECTABLE_ADDRESS = "87.214.214.173";
+    public static String CONNECTABLE_ADDRESS = "145.94.194.94";
     final static int UNKNOWN_PEER_LIMIT = 20;
     final static String HASH_ID = "hash_id";
     final static int DEFAULT_PORT = 1873;
