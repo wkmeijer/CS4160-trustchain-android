@@ -39,6 +39,7 @@ import java.util.List;
 import java.util.Random;
 
 import nl.tudelft.cs4160.trustchain_android.Network.Network;
+import nl.tudelft.cs4160.trustchain_android.Network.NetworkCommunicationListener;
 import nl.tudelft.cs4160.trustchain_android.Peer;
 import nl.tudelft.cs4160.trustchain_android.R;
 import nl.tudelft.cs4160.trustchain_android.SharedPreferences.BootstrapIPStorage;
@@ -69,7 +70,7 @@ import nl.tudelft.cs4160.trustchain_android.message.MessageProto;
 
 import static nl.tudelft.cs4160.trustchain_android.block.TrustChainBlock.GENESIS_SEQ;
 
-public class OverviewConnectionsActivity extends AppCompatActivity implements CommunicationListener {
+public class OverviewConnectionsActivity extends AppCompatActivity implements NetworkCommunicationListener {
 
     public static String CONNECTABLE_ADDRESS = "145.94.194.94";
     final static int UNKNOWN_PEER_LIMIT = 20;
@@ -117,7 +118,6 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Co
         addInitialPeer();
         startListenThread();
         startSendThread();
-        showLocalIpAddress();
         initPeerLists();
         if (savedInstanceState != null) {
             updatePeerLists();
@@ -211,6 +211,7 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Co
         hashId = UserNameStorage.getUserName(this);
         ((TextView) findViewById(R.id.peer_id)).setText(hashId);
         network = Network.getInstance(getApplicationContext(), channel);
+        network.setCallBackListener(this);
     }
 
     private void initExitButton() {
@@ -413,7 +414,7 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Co
 
             if (wanVote.vote(message.getDestination())) {
                 Log.d("App-To-App Log", "Address changed to " + wanVote.getAddress());
-                showLocalIpAddress();
+                updateInternalSourceAddress(wanVote.getAddress().toString());
             }
             setWanvote(wanVote.getAddress().toString());
             PeerAppToApp peer = getOrMakePeer(id, address, PeerAppToApp.INCOMING);
@@ -514,42 +515,7 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Co
         }
     }
 
-    /**
-     * Show the local IP address.
-     */
-    private void showLocalIpAddress() {
-        new AsyncTask<Void, Void, InetAddress>() {
 
-            @Override
-            protected InetAddress doInBackground(Void... params) {
-                try {
-                    for (Enumeration en = NetworkInterface.getNetworkInterfaces(); en.hasMoreElements(); ) {
-                        NetworkInterface intf = (NetworkInterface) en.nextElement();
-                        for (Enumeration enumIpAddr = intf.getInetAddresses(); enumIpAddr.hasMoreElements(); ) {
-                            InetAddress inetAddress = (InetAddress) enumIpAddr.nextElement();
-                            if (!inetAddress.isLoopbackAddress() && inetAddress instanceof Inet4Address) {
-                                return inetAddress;
-                            }
-                        }
-                    }
-                } catch (SocketException ex) {
-                    ex.printStackTrace();
-                }
-                return null;
-            }
-
-            @Override
-            protected void onPostExecute(InetAddress inetAddress) {
-                super.onPostExecute(inetAddress);
-                if (inetAddress != null) {
-                    internalSourceAddress = new InetSocketAddress(inetAddress, DEFAULT_PORT);
-                    Log.d("App-To-App Log", "Local ip: " + inetAddress);
-                    TextView localIp = (TextView) findViewById(R.id.local_ip_address_view);
-                    localIp.setText(inetAddress.toString());
-                }
-            }
-        }.execute();
-    }
 
     /**
      * Set the external ip field based on the WAN vote.
@@ -799,9 +765,17 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Co
     public void connectionSuccessful(byte[] publicKey) {
 
     }
+
     @Override
     public void requestPermission(final MessageProto.TrustChainBlock block, final Peer peer) {
 
+    }
+
+    @Override
+    public void updateInternalSourceAddress(String address) {
+        Log.d("App-To-App Log", "Local ip: " + address);
+        TextView localIp = (TextView) findViewById(R.id.local_ip_address_view);
+        localIp.setText(address);
     }
 
 }

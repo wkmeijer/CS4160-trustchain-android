@@ -4,7 +4,6 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.telephony.TelephonyManager;
 import android.util.Log;
-import android.widget.TextView;
 
 import java.io.IOException;
 import java.net.Inet4Address;
@@ -18,7 +17,6 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 
-import nl.tudelft.cs4160.trustchain_android.R;
 import nl.tudelft.cs4160.trustchain_android.SharedPreferences.UserNameStorage;
 import nl.tudelft.cs4160.trustchain_android.Util.ByteArrayConverter;
 import nl.tudelft.cs4160.trustchain_android.Util.Key;
@@ -30,6 +28,7 @@ import nl.tudelft.cs4160.trustchain_android.appToApp.connection.messages.Introdu
 import nl.tudelft.cs4160.trustchain_android.appToApp.connection.messages.Message;
 import nl.tudelft.cs4160.trustchain_android.appToApp.connection.messages.Puncture;
 import nl.tudelft.cs4160.trustchain_android.appToApp.connection.messages.PunctureRequest;
+import nl.tudelft.cs4160.trustchain_android.connection.CommunicationListener;
 import nl.tudelft.cs4160.trustchain_android.database.TrustChainDBHelper;
 import nl.tudelft.cs4160.trustchain_android.message.MessageProto;
 
@@ -59,6 +58,7 @@ public class Network {
     private static Network network;
     private String publicKey;
     private TrustChainDBHelper dbHelper;
+    private NetworkCommunicationListener networkCommunicationListener;
 
     private Network() {
     }
@@ -69,6 +69,10 @@ public class Network {
             network.initVariables(context, channel);
         }
         return network;
+    }
+
+    public void setCallBackListener(NetworkCommunicationListener networkCommunicationListener) {
+        this.networkCommunicationListener = networkCommunicationListener;
     }
 
     private void initVariables(Context context, DatagramChannel channel) {
@@ -191,6 +195,7 @@ public class Network {
                 if (inetAddress != null) {
                     internalSourceAddress = new InetSocketAddress(inetAddress, DEFAULT_PORT);
                 }
+                networkCommunicationListener.updateInternalSourceAddress(internalSourceAddress.toString());
             }
         }.execute();
     }
