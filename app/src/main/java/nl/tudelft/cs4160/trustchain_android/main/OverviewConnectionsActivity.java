@@ -71,6 +71,7 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
     private Thread listenThread;
     private TrustChainDBHelper dbHelper;
     private Network network;
+    private PeerHandler peerHandler;
 
     /**
      * Initialize views, start send and receive threads if necessary.
@@ -165,19 +166,28 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
 
     private void initVariables(Bundle savedInstanceState) {
         mWanVote = (TextView) findViewById(R.id.wanvote);
-
+        peerHandler = new PeerHandler(UserNameStorage.getUserName(this));
         dbHelper = new TrustChainDBHelper(this);
         initKey();
         network = Network.getInstance(getApplicationContext(), channel);
 
         if (savedInstanceState != null) {
             ArrayList<PeerAppToApp> list = (ArrayList<PeerAppToApp>) savedInstanceState.getSerializable("peers");
-            network.setPeersFromSavedInstance(list);
+            setPeersFromSavedInstance(list);
         }
-        network.setPeerListener(this);
+
+        setPeerListener(this);
         network.setNetworkCommunicationListener(this);
         network.updateConnectionType((ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE));
-        ((TextView) findViewById(R.id.peer_id)).setText(network.getPeerHandler().getHashId());
+        ((TextView) findViewById(R.id.peer_id)).setText(peerHandler.getHashId());
+    }
+
+    public void setPeersFromSavedInstance(ArrayList<PeerAppToApp> peers) {
+        getPeerHandler().setPeerList(peers);
+    }
+
+    public void setPeerListener(PeerListener peerListener) {
+        getPeerHandler().setPeerListener(peerListener);
     }
 
     /**
@@ -199,9 +209,9 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
     private void initPeerLists() {
         ListView incomingPeerConnectionListView = (ListView) findViewById(R.id.incoming_peer_connection_list_view);
         ListView outgoingPeerConnectionListView = (ListView) findViewById(R.id.outgoing_peer_connection_list_view);
-        incomingPeerAdapter = new PeerListAdapter(getApplicationContext(), R.layout.peer_connection_list_item, network.getPeerHandler().getIncomingList(), PeerAppToApp.INCOMING);
+        incomingPeerAdapter = new PeerListAdapter(getApplicationContext(), R.layout.peer_connection_list_item, peerHandler.getIncomingList(), PeerAppToApp.INCOMING);
         incomingPeerConnectionListView.setAdapter(incomingPeerAdapter);
-        outgoingPeerAdapter = new PeerListAdapter(getApplicationContext(), R.layout.peer_connection_list_item, network.getPeerHandler().getOutgoingList(), PeerAppToApp.OUTGOING);
+        outgoingPeerAdapter = new PeerListAdapter(getApplicationContext(), R.layout.peer_connection_list_item, peerHandler.getOutgoingList(), PeerAppToApp.OUTGOING);
         outgoingPeerConnectionListView.setAdapter(outgoingPeerAdapter);
     }
 
@@ -237,9 +247,9 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
         try {
             String address = BootstrapIPStorage.getIP(this);
             if (address != null && !address.equals("")) {
-                network.getPeerHandler().addPeer(null, new InetSocketAddress(InetAddress.getByName(address), DEFAULT_PORT), PeerAppToApp.OUTGOING);
+                peerHandler.addPeer(null, new InetSocketAddress(InetAddress.getByName(address), DEFAULT_PORT), PeerAppToApp.OUTGOING);
             }
-            network.getPeerHandler().addPeer(null, new InetSocketAddress(InetAddress.getByName(CONNECTABLE_ADDRESS), DEFAULT_PORT), PeerAppToApp.OUTGOING);
+            peerHandler.addPeer(null, new InetSocketAddress(InetAddress.getByName(CONNECTABLE_ADDRESS), DEFAULT_PORT), PeerAppToApp.OUTGOING);
         } catch (UnknownHostException e) {
             e.printStackTrace();
        }
@@ -255,8 +265,8 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
             public void run() {
                 do {
                     try {
-                        if (network.getPeerHandler().size() > 0) {
-                            PeerAppToApp peer = network.getPeerHandler().getEligiblePeer(null);
+                        if (peerHandler.size() > 0) {
+                            PeerAppToApp peer = peerHandler.getEligiblePeer(null);
                             if (peer != null) {
                                 network.sendIntroductionRequest(peer);
                               //  sendBlockMessage(peer);
@@ -329,7 +339,7 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
         new Handler(Looper.getMainLooper()).post(new Runnable() {
             @Override
             public void run() {
-                network.getPeerHandler().splitPeerList();
+                peerHandler.splitPeerList();
                 incomingPeerAdapter.notifyDataSetChanged();
                 outgoingPeerAdapter.notifyDataSetChanged();
             }
@@ -362,22 +372,22 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putSerializable("peers", network.getPeerHandler().getPeerList());
+        outState.putSerializable("peers", peerHandler.getPeerList());
 
         super.onSaveInstanceState(outState);
     }
 
     public void updateWan(Message message) throws MessageException {
-        if (network.getPeerHandler().getWanVote().vote(message.getDestination())) {
-            Log.d("App-To-App Log", "Address changed to " + network.getPeerHandler().getWanVote().getAddress());
-            updateInternalSourceAddress(network.getPeerHandler().getWanVote().getAddress().toString());
+        if (peerHandler.getWanVote().vote(message.getDestination())) {
+            Log.d("App-To-App Log", "Address changed to " + peerHandler.getWanVote().getAddress());
+            updateInternalSourceAddress(peerHandler.getWanVote().getAddress().toString());
         }
-        setWanvote(network.getPeerHandler().getWanVote().getAddress().toString());
+        setWanvote(peerHandler.getWanVote().getAddress().toString());
     }
 
     @Override
     public PeerAppToApp getOrMakePeer(String id, InetSocketAddress address, boolean incoming) {
-        return this.network.getPeerHandler().getOrMakePeer(id, address,incoming);
+        return peerHandler.getOrMakePeer(id, address,incoming);
     }
 
     /**
@@ -429,5 +439,10 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
     @Override
     public void updateOutgoingPeers() {
         outgoingPeerAdapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public PeerHandler getPeerHandler() {
+        return peerHandler;
     }
 }

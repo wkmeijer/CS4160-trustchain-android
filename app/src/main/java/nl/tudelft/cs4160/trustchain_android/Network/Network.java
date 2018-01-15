@@ -25,8 +25,6 @@ import nl.tudelft.cs4160.trustchain_android.SharedPreferences.UserNameStorage;
 import nl.tudelft.cs4160.trustchain_android.Util.ByteArrayConverter;
 import nl.tudelft.cs4160.trustchain_android.Util.Key;
 import nl.tudelft.cs4160.trustchain_android.appToApp.PeerAppToApp;
-import nl.tudelft.cs4160.trustchain_android.appToApp.PeerHandler;
-import nl.tudelft.cs4160.trustchain_android.appToApp.connection.PeerListener;
 import nl.tudelft.cs4160.trustchain_android.appToApp.connection.messages.BlockMessage;
 import nl.tudelft.cs4160.trustchain_android.appToApp.connection.messages.IntroductionRequest;
 import nl.tudelft.cs4160.trustchain_android.appToApp.connection.messages.IntroductionResponse;
@@ -51,8 +49,6 @@ public class Network {
     public final static int DEFAULT_PORT = 1873;
 
     private DatagramChannel channel;
-
-    private PeerHandler peerHandler;
     private String hashId;
 
     private boolean willExit = false;
@@ -81,28 +77,15 @@ public class Network {
         Network.networkCommunicationListener = networkCommunicationListener;
     }
 
-    public void setPeerListener(PeerListener peerListener) {
-        this.peerHandler.setPeerListener(peerListener);
-    }
-
-    public PeerHandler getPeerHandler() {
-        return peerHandler;
-    }
-
     private void initVariables(Context context, DatagramChannel channel) {
         TelephonyManager telephonyManager = ((TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE));
         networkOperator = telephonyManager.getNetworkOperatorName();
         dbHelper = new TrustChainDBHelper(context);
-        peerHandler = new PeerHandler(UserNameStorage.getUserName(context));
         outBuffer = ByteBuffer.allocate(BUFFER_SIZE);
         hashId = UserNameStorage.getUserName(context);
         publicKey = ByteArrayConverter.bytesToHexString(Key.loadKeys(context).getPublic().getEncoded());
         this.channel = channel;
         showLocalIpAddress();
-    }
-
-    public void setPeersFromSavedInstance(ArrayList<PeerAppToApp> peers) {
-        this.peerHandler.setPeerList(peers);
     }
 
     /**
@@ -174,7 +157,7 @@ public class Network {
      */
     private void sendIntroductionResponse(PeerAppToApp peer, PeerAppToApp invitee) throws IOException {
         List<PeerAppToApp> pexPeers = new ArrayList<>();
-        for (PeerAppToApp p : peerHandler.getPeerList()) {
+        for (PeerAppToApp p : networkCommunicationListener.getPeerHandler().getPeerList()) {
             if (p.hasReceivedData() && p.getPeerId() != null && p.isAlive())
                 pexPeers.add(p);
         }
@@ -275,8 +258,8 @@ public class Network {
     private void handleIntroductionRequest(PeerAppToApp peer, IntroductionRequest message) throws IOException {
         peer.setNetworkOperator(message.getNetworkOperator());
         peer.setConnectionType((int) message.getConnectionType());
-        if (getPeerHandler().size() > 1) {
-            PeerAppToApp invitee = getPeerHandler().getEligiblePeer(peer);
+        if (networkCommunicationListener.getPeerHandler().size() > 1) {
+            PeerAppToApp invitee = networkCommunicationListener.getPeerHandler().getEligiblePeer(peer);
             if (invitee != null) {
                 sendIntroductionResponse(peer, invitee);
                 sendPunctureRequest(invitee, peer);
@@ -299,8 +282,8 @@ public class Network {
         peer.setNetworkOperator(message.getNetworkOperator());
         List<PeerAppToApp> pex = message.getPex();
         for (PeerAppToApp pexPeer : pex) {
-            if (getPeerHandler().hashId.equals(pexPeer.getPeerId())) continue;
-            getPeerHandler().getOrMakePeer(pexPeer.getPeerId(), pexPeer.getAddress(), PeerAppToApp.OUTGOING);
+            if (networkCommunicationListener.getPeerHandler().hashId.equals(pexPeer.getPeerId())) continue;
+            networkCommunicationListener.getPeerHandler().getOrMakePeer(pexPeer.getPeerId(), pexPeer.getAddress(), PeerAppToApp.OUTGOING);
         }
     }
 
@@ -322,7 +305,7 @@ public class Network {
      * @throws MessageException
      */
     private void handlePunctureRequest(PeerAppToApp peer, PunctureRequest message) throws IOException, MessageException {
-        if (!getPeerHandler().peerExistsInList(message.getPuncturePeer())) {
+        if (!networkCommunicationListener.getPeerHandler().peerExistsInList(message.getPuncturePeer())) {
             sendPuncture(message.getPuncturePeer());
         }
     }
