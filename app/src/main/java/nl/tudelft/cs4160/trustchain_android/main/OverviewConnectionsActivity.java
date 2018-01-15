@@ -224,7 +224,7 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
                 SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
                 SharedPreferences.Editor editor = preferences.edit();
                 editor.putString("ConnectableAddress", data.getStringExtra("ConnectableAddress"));
-                editor.commit();
+                editor.apply();
                 addInitialPeer();
             }
         }
