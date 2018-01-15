@@ -58,7 +58,8 @@ public class Network {
     private TrustChainDBHelper dbHelper;
     private static NetworkCommunicationListener networkCommunicationListener;
 
-    private Network() {}
+    private Network() {
+    }
 
     public static Network getInstance(Context context, DatagramChannel channel) {
         if (network == null) {
@@ -79,7 +80,9 @@ public class Network {
         outBuffer = ByteBuffer.allocate(BUFFER_SIZE);
         hashId = UserNameStorage.getUserName(context);
         publicKey = ByteArrayConverter.bytesToHexString(Key.loadKeys(context).getPublic().getEncoded());
-        this.channel = channel;
+        if(channel != null){
+            this.channel = channel;
+        }
         showLocalIpAddress();
     }
 
@@ -113,8 +116,7 @@ public class Network {
         sendMessage(request, peer);
     }
 
-    public void sendBlockMessage(PeerAppToApp peer) throws IOException {
-        MessageProto.TrustChainBlock block = createBlock(new byte[0], dbHelper, publicKey.getBytes(), null, publicKey.getBytes());
+    public void sendBlockMessage(PeerAppToApp peer, MessageProto.TrustChainBlock block) throws IOException {
         MessageProto.Message message = newBuilder().setHalfBlock(block).build();
         BlockMessage request = new BlockMessage(hashId, peer.getAddress(), publicKey, message);
         sendMessage(request, peer);
@@ -178,7 +180,7 @@ public class Network {
         outBuffer.flip();
         channel.send(outBuffer, peer.getAddress());
         peer.sentData();
-        if(networkCommunicationListener != null) {
+        if (networkCommunicationListener != null) {
             networkCommunicationListener.updatePeerLists();
         }
     }
@@ -212,7 +214,7 @@ public class Network {
 
             Log.d("Network", "pubkey address map " + SharedPreferencesStorage.getAll(context).toString());
 
-            if(networkCommunicationListener != null) {
+            if (networkCommunicationListener != null) {
                 networkCommunicationListener.updateWan(message);
 
                 PeerAppToApp peer = networkCommunicationListener.getOrMakePeer(id, address, PeerAppToApp.INCOMING);
@@ -268,7 +270,7 @@ public class Network {
             if (inetAddress != null) {
                 internalSourceAddress = new InetSocketAddress(inetAddress, OverviewConnectionsActivity.DEFAULT_PORT);
             }
-            if(networkCommunicationListener != null) {
+            if (networkCommunicationListener != null) {
                 networkCommunicationListener.updateInternalSourceAddress(internalSourceAddress.toString());
             }
         }
