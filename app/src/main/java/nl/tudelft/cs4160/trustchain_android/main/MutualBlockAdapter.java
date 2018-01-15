@@ -95,11 +95,11 @@ public class MutualBlockAdapter extends RecyclerView.Adapter<MutualBlockAdapter.
         public ViewHolder(View itemView) {
             super(itemView);
             blockStatTextView = (TextView) itemView.findViewById(R.id.blockStatus);
-            userNameTextView = (TextView) itemView.findViewById(R.id.user);
-            peerNameTextView = (TextView) itemView.findViewById(R.id.peer);
-            seqNumTextView = (TextView) itemView.findViewById(R.id.sequence_number);
-            linkSeqNumTextView = (TextView) itemView.findViewById(R.id.link_sequence_number);
-            transactionTextView = (TextView) itemView.findViewById(R.id.transaction);
+            userNameTextView = (TextView) itemView.findViewById(R.id.userMutualBlock);
+            peerNameTextView = (TextView) itemView.findViewById(R.id.peerMutualBlock);
+            seqNumTextView = (TextView) itemView.findViewById(R.id.sequenceNumberMutualBlock);
+            linkSeqNumTextView = (TextView) itemView.findViewById(R.id.linkSeqNumMutualBlock);
+            transactionTextView = (TextView) itemView.findViewById(R.id.transactionMutualBlock);
         }
     }
 
