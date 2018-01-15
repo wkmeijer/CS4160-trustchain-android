@@ -132,7 +132,7 @@ public class Network {
      * @param puncturePeer the inboxItem to puncture.
      * @throws IOException
      */
-    private void sendPunctureRequest(PeerAppToApp peer, PeerAppToApp puncturePeer) throws IOException {
+    public void sendPunctureRequest(PeerAppToApp peer, PeerAppToApp puncturePeer) throws IOException {
         PunctureRequest request = new PunctureRequest(hashId, peer.getAddress(), internalSourceAddress, puncturePeer, publicKey);
         sendMessage(request, peer);
     }
@@ -143,7 +143,7 @@ public class Network {
      * @param peer the destination.
      * @throws IOException
      */
-    private void sendPuncture(PeerAppToApp peer) throws IOException {
+    public void sendPuncture(PeerAppToApp peer) throws IOException {
         Puncture puncture = new Puncture(hashId, peer.getAddress(), internalSourceAddress, publicKey);
         sendMessage(puncture, peer);
     }
@@ -155,7 +155,7 @@ public class Network {
      * @param invitee the invitee to which the destination inboxItem will send a puncture request.
      * @throws IOException
      */
-    private void sendIntroductionResponse(PeerAppToApp peer, PeerAppToApp invitee) throws IOException {
+    public void sendIntroductionResponse(PeerAppToApp peer, PeerAppToApp invitee) throws IOException {
         List<PeerAppToApp> pexPeers = new ArrayList<>();
         for (PeerAppToApp p : networkCommunicationListener.getPeerHandler().getPeerList()) {
             if (p.hasReceivedData() && p.getPeerId() != null && p.isAlive())
@@ -226,97 +226,25 @@ public class Network {
                 peer.received(data);
                 switch (message.getType()) {
                     case Message.INTRODUCTION_REQUEST:
-                        handleIntroductionRequest(peer, (IntroductionRequest) message);
+                        networkCommunicationListener.handleIntroductionRequest(peer, (IntroductionRequest) message);
                         break;
                     case Message.INTRODUCTION_RESPONSE:
-                        handleIntroductionResponse(peer, (IntroductionResponse) message);
+                        networkCommunicationListener.handleIntroductionResponse(peer, (IntroductionResponse) message);
                         break;
                     case Message.PUNCTURE:
-                        handlePuncture(peer, (Puncture) message);
+                        networkCommunicationListener.handlePuncture(peer, (Puncture) message);
                         break;
                     case Message.PUNCTURE_REQUEST:
-                        handlePunctureRequest(peer, (PunctureRequest) message);
+                        networkCommunicationListener.handlePunctureRequest(peer, (PunctureRequest) message);
                         break;
                     case Message.BLOCK_MESSAGE:
-                        handleBlockMessageRequest(peer, (BlockMessage) message);
+                        networkCommunicationListener.handleBlockMessageRequest(peer, (BlockMessage) message);
 
                 }
                 networkCommunicationListener.updatePeerLists();
             }
         } catch (BencodeReadException | IOException | MessageException e) {
             e.printStackTrace();
-        }
-    }
-
-    /**
-     * Handle an introduction request. Send a puncture request to the included invitee.
-     *
-     * @param peer    the origin inboxItem.
-     * @param message the message.
-     * @throws IOException
-     */
-    private void handleIntroductionRequest(PeerAppToApp peer, IntroductionRequest message) throws IOException {
-        peer.setNetworkOperator(message.getNetworkOperator());
-        peer.setConnectionType((int) message.getConnectionType());
-        if (networkCommunicationListener.getPeerHandler().size() > 1) {
-            PeerAppToApp invitee = networkCommunicationListener.getPeerHandler().getEligiblePeer(peer);
-            if (invitee != null) {
-                sendIntroductionResponse(peer, invitee);
-                sendPunctureRequest(invitee, peer);
-                Log.d("Network", "Introducing " + invitee.getAddress() + " to " + peer.getAddress());
-            }
-        } else {
-            Log.d("Network", "Peerlist too small, can't handle introduction request");
-            sendIntroductionResponse(peer, null);
-        }
-    }
-
-    /**
-     * Handle an introduction response. Parse incoming PEX peers.
-     *
-     * @param peer    the origin inboxItem.
-     * @param message the message.
-     */
-    private void handleIntroductionResponse(PeerAppToApp peer, IntroductionResponse message) {
-        peer.setConnectionType((int) message.getConnectionType());
-        peer.setNetworkOperator(message.getNetworkOperator());
-        List<PeerAppToApp> pex = message.getPex();
-        for (PeerAppToApp pexPeer : pex) {
-            if (networkCommunicationListener.getPeerHandler().hashId.equals(pexPeer.getPeerId())) continue;
-            networkCommunicationListener.getPeerHandler().getOrMakePeer(pexPeer.getPeerId(), pexPeer.getAddress(), PeerAppToApp.OUTGOING);
-        }
-    }
-
-    /**
-     * Handle a puncture. Does nothing because the only purpose of a puncture is to punch a hole in the NAT.
-     *
-     * @param peer    the origin inboxItem.
-     * @param message the message.
-     * @throws IOException
-     */
-    private void handlePuncture(PeerAppToApp peer, Puncture message) throws IOException {}
-
-    /**
-     * Handle a puncture request. Sends a puncture to the puncture inboxItem included in the message.
-     *
-     * @param peer    the origin inboxItem.
-     * @param message the message.
-     * @throws IOException
-     * @throws MessageException
-     */
-    private void handlePunctureRequest(PeerAppToApp peer, PunctureRequest message) throws IOException, MessageException {
-        if (!networkCommunicationListener.getPeerHandler().peerExistsInList(message.getPuncturePeer())) {
-            sendPuncture(message.getPuncturePeer());
-        }
-    }
-
-    private void handleBlockMessageRequest(PeerAppToApp peer, BlockMessage message) throws IOException, MessageException {
-        MessageProto.Message msg = message.getMessageProto();
-        if(msg.getCrawlRequest().getPublicKey().size() == 0){
-            MessageProto.TrustChainBlock block = msg.getHalfBlock();
-            InboxItemStorage.addHalfBlock(CommunicationSingleton.getContext(), block.getPublicKey().toString(), block.getLinkSequenceNumber());
-            CommunicationSingleton.getDbHelper().insertInDB(block);
-            Log.d("testTheStacks", block.toString());
         }
     }
 

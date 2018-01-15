@@ -23,6 +23,11 @@ public interface NetworkCommunicationListener extends CommunicationListener {
     void updatePeerLists();
     void updateWan(Message message) throws MessageException;
     void updateConnectionType(int connectionType, String typename, String subtypename);
+    void handleIntroductionRequest(PeerAppToApp peer, IntroductionRequest message) throws IOException;
+    void handleIntroductionResponse(PeerAppToApp peer, IntroductionResponse message);
+    void handlePunctureRequest(PeerAppToApp peer, PunctureRequest message) throws IOException, MessageException;
+    void handleBlockMessageRequest(PeerAppToApp peer, BlockMessage message) throws IOException, MessageException;
+    void handlePuncture(PeerAppToApp peer, Puncture message) throws IOException;
     PeerAppToApp getOrMakePeer(String id, InetSocketAddress address, boolean incoming);
     PeerHandler getPeerHandler();
 }

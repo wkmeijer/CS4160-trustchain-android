@@ -332,6 +332,83 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
     }
 
     /**
+     * Handle an introduction request. Send a puncture request to the included invitee.
+     *
+     * @param peer    the origin inboxItem.
+     * @param message the message.
+     * @throws IOException
+     */
+    @Override
+    public void handleIntroductionRequest(PeerAppToApp peer, IntroductionRequest message) throws IOException {
+        peer.setNetworkOperator(message.getNetworkOperator());
+        peer.setConnectionType((int) message.getConnectionType());
+        if (getPeerHandler().size() > 1) {
+            PeerAppToApp invitee = getPeerHandler().getEligiblePeer(peer);
+            if (invitee != null) {
+                network.sendIntroductionResponse(peer, invitee);
+                network.sendPunctureRequest(invitee, peer);
+                Log.d("Network", "Introducing " + invitee.getAddress() + " to " + peer.getAddress());
+            }
+        } else {
+            Log.d("Network", "Peerlist too small, can't handle introduction request");
+            network.sendIntroductionResponse(peer, null);
+        }
+    }
+
+    /**
+     * Handle an introduction response. Parse incoming PEX peers.
+     *
+     * @param peer    the origin inboxItem.
+     * @param message the message.
+     */
+    @Override
+    public void handleIntroductionResponse(PeerAppToApp peer, IntroductionResponse message) {
+        peer.setConnectionType((int) message.getConnectionType());
+        peer.setNetworkOperator(message.getNetworkOperator());
+        List<PeerAppToApp> pex = message.getPex();
+        for (PeerAppToApp pexPeer : pex) {
+            if (getPeerHandler().hashId.equals(pexPeer.getPeerId())) continue;
+            getPeerHandler().getOrMakePeer(pexPeer.getPeerId(), pexPeer.getAddress(), PeerAppToApp.OUTGOING);
+        }
+    }
+
+    /**
+     * Handle a puncture. Does nothing because the only purpose of a puncture is to punch a hole in the NAT.
+     *
+     * @param peer    the origin inboxItem.
+     * @param message the message.
+     * @throws IOException
+     */
+    @Override
+    public void handlePuncture(PeerAppToApp peer, Puncture message) throws IOException {}
+
+    /**
+     * Handle a puncture request. Sends a puncture to the puncture inboxItem included in the message.
+     *
+     * @param peer    the origin inboxItem.
+     * @param message the message.
+     * @throws IOException
+     * @throws MessageException
+     */
+    @Override
+    public void handlePunctureRequest(PeerAppToApp peer, PunctureRequest message) throws IOException, MessageException {
+        if (!getPeerHandler().peerExistsInList(message.getPuncturePeer())) {
+            network.sendPuncture(message.getPuncturePeer());
+        }
+    }
+
+    @Override
+    public void handleBlockMessageRequest(PeerAppToApp peer, BlockMessage message) throws IOException, MessageException {
+        MessageProto.Message msg = message.getMessageProto();
+        if(msg.getCrawlRequest().getPublicKey().size() == 0){
+            MessageProto.TrustChainBlock block = msg.getHalfBlock();
+            InboxItemStorage.addHalfBlock(CommunicationSingleton.getContext(), block.getPublicKey().toString(), block.getLinkSequenceNumber());
+            CommunicationSingleton.getDbHelper().insertInDB(block);
+            Log.d("testTheStacks", block.toString());
+        }
+    }
+
+    /**
      * Update the showed inboxItem lists.
      */
     @Override
@@ -357,16 +434,6 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
             e.printStackTrace();
         }
         super.onDestroy();
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
     }
 
     @Override
