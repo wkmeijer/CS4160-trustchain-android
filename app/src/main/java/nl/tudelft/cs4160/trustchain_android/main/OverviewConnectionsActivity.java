@@ -64,7 +64,6 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
     final static int DEFAULT_PORT = 1873;
     private static final int BUFFER_SIZE = 65536;
     private TextView mWanVote;
-    private Button mExitButton;
     private PeerListAdapter incomingPeerAdapter;
     private PeerListAdapter outgoingPeerAdapter;
     private DatagramChannel channel;
@@ -185,7 +184,7 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
      * Initialize the exit button.
      */
     private void initExitButton() {
-        mExitButton = (Button) findViewById(R.id.exit_button);
+        Button mExitButton = (Button) findViewById(R.id.exit_button);
         mExitButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -237,7 +236,7 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
     public void addInitialPeer() {
         try {
             String address = BootstrapIPStorage.getIP(this);
-            if (address != "" && address != null) {
+            if (address != null && !address.equals("")) {
                 network.getPeerHandler().addPeer(null, new InetSocketAddress(InetAddress.getByName(address), DEFAULT_PORT), PeerAppToApp.OUTGOING);
             }
             network.getPeerHandler().addPeer(null, new InetSocketAddress(InetAddress.getByName(CONNECTABLE_ADDRESS), DEFAULT_PORT), PeerAppToApp.OUTGOING);
@@ -389,7 +388,8 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
      */
     @Override
     public void updateConnectionType(int connectionType, String typename, String subtypename) {
-        ((TextView) findViewById(R.id.connection_type)).setText(typename + " " + subtypename);
+        String connectionTypeStr = typename + " " + subtypename;
+        ((TextView) findViewById(R.id.connection_type)).setText(connectionTypeStr);
     }
 
     @Override
