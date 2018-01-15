@@ -11,7 +11,9 @@ import java.util.List;
 import java.util.Random;
 
 import nl.tudelft.cs4160.trustchain_android.SharedPreferences.UserNameStorage;
+import nl.tudelft.cs4160.trustchain_android.appToApp.connection.PeerListener;
 import nl.tudelft.cs4160.trustchain_android.appToApp.connection.WanVote;
+import nl.tudelft.cs4160.trustchain_android.main.PeerListAdapter;
 
 /**
  * Created by timbu on 02/12/2017.
@@ -22,19 +24,24 @@ public class PeerHandler {
     final static int KNOWN_PEER_LIMIT = 10;
     final static String HASH_ID = "hash_id";
     private ArrayList<PeerAppToApp> list;
+    private List<PeerAppToApp> incomingList = new ArrayList<>();
+    private List<PeerAppToApp> outgoingList = new ArrayList<>();
+    private PeerListener peerListener;
     public String hashId;
     private WanVote wanVote;
 
-    public PeerHandler(ArrayList<PeerAppToApp> list, String hashId) {
+    public PeerHandler(ArrayList<PeerAppToApp> list, String hashId, PeerListener peerListener) {
         this.list = list;
         this.hashId = hashId;
-        wanVote = new WanVote();
+        this.wanVote = new WanVote();
+        this.peerListener = peerListener;
     }
 
-    public PeerHandler(String hashId) {
+    public PeerHandler(String hashId, PeerListener peerListener) {
         this.list = new ArrayList<>();
         this.hashId = hashId;
-        wanVote = new WanVote();
+        this.wanVote = new WanVote();
+        this.peerListener = peerListener;
     }
 
     public ArrayList<PeerAppToApp> getList() {
@@ -117,13 +124,14 @@ public class PeerHandler {
                 list.add(peer);
                 trimPeers();
                 splitPeerList();
-                incomingPeerAdapter.notifyDataSetChanged();
-                outgoingPeerAdapter.notifyDataSetChanged();
+                peerListener.updateIncomingPeers();
+                peerListener.updateOutgoingPeers();
                 Log.d("App-To-App Log", "Added " + peer);
             }
         });
         return peer;
     }
+
     /**
      * Split the inboxItem list between incoming and outgoing peers.
      */
@@ -264,5 +272,17 @@ public class PeerHandler {
 
     public String getHashId() {
         return hashId;
+    }
+
+    public WanVote getWanVote() {
+        return wanVote;
+    }
+
+    public List<PeerAppToApp> getIncomingList() {
+        return incomingList;
+    }
+
+    public List<PeerAppToApp> getOutgoingList() {
+        return outgoingList;
     }
 }
