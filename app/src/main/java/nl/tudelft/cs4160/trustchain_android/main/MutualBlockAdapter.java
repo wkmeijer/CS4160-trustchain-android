@@ -6,6 +6,7 @@ import android.text.Layout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import org.w3c.dom.Text;
@@ -41,10 +42,10 @@ public class MutualBlockAdapter extends RecyclerView.Adapter<MutualBlockAdapter.
      */
     @Override
     public MutualBlockAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-        View mutualBlockView = inflater.inflate(R.layout.item_mutualblock, parent, false);
-        ViewHolder viewHolder = new ViewHolder(mutualBlockView);
-        return viewHolder;
+        LinearLayout v = (LinearLayout) LayoutInflater.from(parent.getContext())
+                .inflate(R.layout.item_mutualblock, parent, false);
+        // set the view's size, margins, paddings and layout parameters
+        return new ViewHolder(v);
     }
 
     /**
@@ -63,9 +64,9 @@ public class MutualBlockAdapter extends RecyclerView.Adapter<MutualBlockAdapter.
             TextView peerNameTv = viewHolder.peerNameTextView;
             peerNameTv.setText(mutualBlockItem.getPeerName());
             TextView seqNumTv = viewHolder.seqNumTextView;
-            seqNumTv.setText(mutualBlockItem.getSeqNum());
+            seqNumTv.setText("" + mutualBlockItem.getSeqNum());
             TextView linkSeqNumTv = viewHolder.linkSeqNumTextView;
-            linkSeqNumTv.setText(mutualBlockItem.getLinkSeqNum());
+            linkSeqNumTv.setText("" + mutualBlockItem.getLinkSeqNum());
             TextView transTv = viewHolder.transactionTextView;
             transTv.setText(mutualBlockItem.getTransaction());
         }

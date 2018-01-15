@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.support.annotation.RequiresApi;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SwitchCompat;
 import android.text.method.ScrollingMovementMethod;
@@ -44,13 +45,14 @@ import nl.tudelft.cs4160.trustchain_android.inbox.InboxItem;
 import nl.tudelft.cs4160.trustchain_android.message.MessageProto;
 
 public class TrustChainActivity extends AppCompatActivity implements CompoundButton.OnCheckedChangeListener, CommunicationListener {
-
-
     public static String TRANSACTION_DATA = "Hello world!";
     private final static String TAG = TrustChainActivity.class.toString();
     private Context context;
 
     boolean developerMode = false;
+    private RecyclerView mRecyclerView;
+    private RecyclerView.Adapter mAdapter;
+    private RecyclerView.LayoutManager mLayoutManager;
     TextView externalIPText;
     TextView localIPText;
     TextView statusText;
@@ -160,16 +162,18 @@ public class TrustChainActivity extends AppCompatActivity implements CompoundBut
     }
 
     /**
-     +     * Initialize the recycle view that will show the mutual blocks of the user and the other peer.
-     +     */
-     private void initializeMutualBlockRecycleView() {
-                RecyclerView rvMutualBlocks = (RecyclerView) findViewById(R.id.mutualBlocksList);
-                //ArrayList<MutualBlockItem> mutualBlockList = findMutualBlocks(CommunicationSingleton.getDbHelper());
-         ArrayList<MutualBlockItem> mutualBlockList = new ArrayList<>();
-         mutualBlockList.add(new MutualBlockItem("Clinton", 0, 0, "Test", "555"));
-                MutualBlockAdapter mbAdapter = new MutualBlockAdapter(this, mutualBlockList);
-                rvMutualBlocks.setAdapter(mbAdapter);
-            }
+     * +     * Initialize the recycle view that will show the mutual blocks of the user and the other peer.
+     * +
+     */
+    private void initializeMutualBlockRecycleView() {
+        //ArrayList<MutualBlockItem> mutualBlockList = findMutualBlocks(CommunicationSingleton.getDbHelper());
+        ArrayList<MutualBlockItem> mutualBlockList = new ArrayList<>();
+        mutualBlockList.add(new MutualBlockItem("Clinton", 0, 0, "Test", "555"));
+        mLayoutManager = new LinearLayoutManager(this);
+        mAdapter = new MutualBlockAdapter(this, mutualBlockList);
+        mRecyclerView.setLayoutManager(mLayoutManager);
+        mRecyclerView.setAdapter(mAdapter);
+    }
 
     private void setPeerDetails() {
         inboxItem = (InboxItem) getIntent().getSerializableExtra("inboxItem");
@@ -218,6 +222,7 @@ public class TrustChainActivity extends AppCompatActivity implements CompoundBut
         messageEditText = (EditText) findViewById(R.id.message_edit_text);
         extraInformationPanel = (LinearLayout) findViewById(R.id.extra_information_panel);
         developerModeText = (TextView) findViewById(R.id.developer_mode_text);
+        mRecyclerView = (RecyclerView) findViewById(R.id.mutualBlocksRecyclerView);
         switchDeveloperMode = (SwitchCompat) findViewById(R.id.switch_developer_mode);
         switchDeveloperMode.setOnCheckedChangeListener(this);
         CommunicationSingleton.setCommunicationListener(this);
@@ -345,7 +350,7 @@ public class TrustChainActivity extends AppCompatActivity implements CompoundBut
 
     @Override
     public void connectionSuccessful(byte[] publicKey) {
-        if(this.peer != null && publicKey != null) {
+        if (this.peer != null && publicKey != null) {
             this.peer.setPublicKey(publicKey);
         }
         enableMessage();
