@@ -4,30 +4,26 @@ package nl.tudelft.cs4160.trustchain_android.appToAppTest;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Mockito;
 
 import java.net.InetSocketAddress;
 import java.util.ArrayList;
 
 import nl.tudelft.cs4160.trustchain_android.appToApp.PeerAppToApp;
-import nl.tudelft.cs4160.trustchain_android.appToApp.PeerList;
+import nl.tudelft.cs4160.trustchain_android.appToApp.PeerHandler;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.validateMockitoUsage;
-import static org.mockito.Mockito.when;
 
 /**
  * Created by Boning on 12/17/2017.
  */
 
-public class PeerListTest {
-    private PeerList peerlist;
+public class PeerHandlerTest {
+    private PeerHandler peerlist;
     private ArrayList<PeerAppToApp> originalIpList;
     private ArrayList<PeerAppToApp> expectedIpList;
     InetSocketAddress rnadomInet = new InetSocketAddress(200);
@@ -50,7 +46,7 @@ public class PeerListTest {
         expectedIpList.add(peer2);
         expectedIpList.add(peer3);
 
-        peerlist = new PeerList(originalIpList);
+        peerlist = new PeerHandler(originalIpList);
     }
 
     @Test
@@ -80,7 +76,7 @@ public class PeerListTest {
 
     @Test
     public void testCertainMethods() {
-        peerlist = new PeerList();
+        peerlist = new PeerHandler();
         PeerAppToApp peer = new PeerAppToApp("peer", rnadomInet);
         peerlist.add(peer);
         assertEquals(1, peerlist.size());
