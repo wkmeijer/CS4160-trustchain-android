@@ -48,7 +48,6 @@ import static nl.tudelft.cs4160.trustchain_android.message.MessageProto.Message.
 public class Network {
     private static final int BUFFER_SIZE = 65536;
     private DatagramChannel channel;
-    private PeerHandler peerHandler;
     private String hashId;
     private int connectionType;
     private ByteBuffer outBuffer;
