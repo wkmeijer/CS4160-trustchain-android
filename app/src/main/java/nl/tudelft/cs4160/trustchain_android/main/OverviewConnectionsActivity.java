@@ -61,7 +61,7 @@ import static nl.tudelft.cs4160.trustchain_android.block.TrustChainBlock.GENESIS
 public class OverviewConnectionsActivity extends AppCompatActivity implements NetworkCommunicationListener, PeerListener {
 
     public static String CONNECTABLE_ADDRESS = "145.94.193.165";
-    final static int DEFAULT_PORT = 1873;
+    public final static int DEFAULT_PORT = 1873;
     private static final int BUFFER_SIZE = 65536;
     private TextView mWanVote;
     private PeerListAdapter incomingPeerAdapter;

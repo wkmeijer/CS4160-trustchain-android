@@ -48,7 +48,7 @@ import static nl.tudelft.cs4160.trustchain_android.message.MessageProto.Message.
  */
 public class Network {
     private static final int BUFFER_SIZE = 65536;
-    private final static int DEFAULT_PORT = 1873;
+    public final static int DEFAULT_PORT = 1873;
 
     private DatagramChannel channel;
 
@@ -59,13 +59,13 @@ public class Network {
 
     private int connectionType;
     private ByteBuffer outBuffer;
-    private InetSocketAddress internalSourceAddress;
+    private static InetSocketAddress internalSourceAddress;
     private String networkOperator;
 
     private static Network network;
     private String publicKey;
     private TrustChainDBHelper dbHelper;
-    private NetworkCommunicationListener networkCommunicationListener;
+    private static NetworkCommunicationListener networkCommunicationListener;
 
     private Network() {}
 
@@ -78,7 +78,7 @@ public class Network {
     }
 
     public void setNetworkCommunicationListener(NetworkCommunicationListener networkCommunicationListener) {
-        this.networkCommunicationListener = networkCommunicationListener;
+        Network.networkCommunicationListener = networkCommunicationListener;
     }
 
     public void setPeerListener(PeerListener peerListener) {
@@ -200,43 +200,14 @@ public class Network {
         outBuffer.flip();
         channel.send(outBuffer, peer.getAddress());
         peer.sentData();
-        if(networkCommunicationListener!=null) {
+        if(networkCommunicationListener != null) {
             networkCommunicationListener.updatePeerLists();
         }
     }
 
     private void showLocalIpAddress() {
-        new AsyncTask<Void, Void, InetAddress>() {
-
-            @Override
-            protected InetAddress doInBackground(Void... params) {
-                try {
-                    for (Enumeration en = NetworkInterface.getNetworkInterfaces(); en.hasMoreElements(); ) {
-                        NetworkInterface intf = (NetworkInterface) en.nextElement();
-                        for (Enumeration enumIpAddr = intf.getInetAddresses(); enumIpAddr.hasMoreElements(); ) {
-                            InetAddress inetAddress = (InetAddress) enumIpAddr.nextElement();
-                            if (!inetAddress.isLoopbackAddress() && inetAddress instanceof Inet4Address) {
-                                return inetAddress;
-                            }
-                        }
-                    }
-                } catch (SocketException ex) {
-                    ex.printStackTrace();
-                }
-                return null;
-            }
-
-            @Override
-            protected void onPostExecute(InetAddress inetAddress) {
-                super.onPostExecute(inetAddress);
-                if (inetAddress != null) {
-                    internalSourceAddress = new InetSocketAddress(inetAddress, DEFAULT_PORT);
-                }
-                if(networkCommunicationListener !=null) {
-                    networkCommunicationListener.updateInternalSourceAddress(internalSourceAddress.toString());
-                }
-            }
-        }.execute();
+        ShowLocalIPTask showLocalIPTask = new ShowLocalIPTask();
+        showLocalIPTask.execute();
     }
 
 
@@ -256,14 +227,14 @@ public class Network {
 
             String ip = address.getAddress().toString().replace("/", "");
             PubKeyAndAddressPairStorage.addPubkeyAndAddressPair(context, pubKey, ip);
-            InboxItem i = new InboxItem(id, new ArrayList(), ip, pubKey, address.getPort());
+            InboxItem i = new InboxItem(id, new ArrayList<Integer>(), ip, pubKey, address.getPort());
             InboxItemStorage.addInboxItem(context, i);
 
             Log.d("Network", "Stored following ip for pubkey: " + pubKey + " " + PubKeyAndAddressPairStorage.getAddressByPubkey(context, pubKey));
 
             Log.d("Network", "pubkey address map " + SharedPreferencesStorage.getAll(context).toString());
 
-            if(networkCommunicationListener!=null) {
+            if(networkCommunicationListener != null) {
                 networkCommunicationListener.updateWan(message);
 
                 PeerAppToApp peer = networkCommunicationListener.getOrMakePeer(id, address, PeerAppToApp.INCOMING);
@@ -363,6 +334,37 @@ public class Network {
             InboxItemStorage.addHalfBlock(CommunicationSingleton.getContext(), block.getPublicKey().toString(), block.getLinkSequenceNumber());
             CommunicationSingleton.getDbHelper().insertInDB(block);
             Log.d("testTheStacks", block.toString());
+        }
+    }
+
+    static class ShowLocalIPTask extends AsyncTask<Void, Void, InetAddress> {
+        @Override
+        protected InetAddress doInBackground(Void... params) {
+            try {
+                for (Enumeration en = NetworkInterface.getNetworkInterfaces(); en.hasMoreElements(); ) {
+                    NetworkInterface intf = (NetworkInterface) en.nextElement();
+                    for (Enumeration enumIpAddr = intf.getInetAddresses(); enumIpAddr.hasMoreElements(); ) {
+                        InetAddress inetAddress = (InetAddress) enumIpAddr.nextElement();
+                        if (!inetAddress.isLoopbackAddress() && inetAddress instanceof Inet4Address) {
+                            return inetAddress;
+                        }
+                    }
+                }
+            } catch (SocketException ex) {
+                ex.printStackTrace();
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(InetAddress inetAddress) {
+            super.onPostExecute(inetAddress);
+            if (inetAddress != null) {
+                internalSourceAddress = new InetSocketAddress(inetAddress, DEFAULT_PORT);
+            }
+            if(networkCommunicationListener != null) {
+                networkCommunicationListener.updateInternalSourceAddress(internalSourceAddress.toString());
+            }
         }
     }
 }
