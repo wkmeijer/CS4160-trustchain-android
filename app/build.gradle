@@ -6,11 +6,12 @@ android {
     buildToolsVersion '26.0.2'
     defaultConfig {
         applicationId "nl.tudelft.cs4160.trustchain_android"
-        minSdkVersion 17
+        minSdkVersion 19
         targetSdkVersion 25
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        multiDexEnabled true
     }
 
     buildTypes {

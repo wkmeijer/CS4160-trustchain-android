@@ -38,6 +38,12 @@ public class PeerTest extends TestCase {
     }
 
     @Test
+    public void testDevice() {
+        Peer peer1 = new Peer(new byte[] {0x00}, id1, port);
+        assertNull(peer1.getDevice());
+    }
+
+    @Test
     public void testFunctions() {
         Peer peer1 = new Peer(null, id1, port);
         byte[] pubkey = new byte[]{0x00};

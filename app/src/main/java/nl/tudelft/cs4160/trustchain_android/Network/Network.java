@@ -94,7 +94,6 @@ public class Network {
         TelephonyManager telephonyManager = ((TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE));
         networkOperator = telephonyManager.getNetworkOperatorName();
         ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-        updateConnectionType(cm);
         dbHelper = new TrustChainDBHelper(context);
         peerHandler = new PeerHandler(UserNameStorage.getUserName(context));
         outBuffer = ByteBuffer.allocate(BUFFER_SIZE);
@@ -111,8 +110,7 @@ public class Network {
     /**
      * Request and display the current connection type.
      */
-    private void updateConnectionType(ConnectivityManager cm) {
-
+    public void updateConnectionType(ConnectivityManager cm) {
         try {
             cm.getActiveNetworkInfo().getType();
         } catch (Exception e) {

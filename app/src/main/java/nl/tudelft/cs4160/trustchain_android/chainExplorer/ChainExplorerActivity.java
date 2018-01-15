@@ -32,7 +32,9 @@ import nl.tudelft.cs4160.trustchain_android.message.MessageProto;
 
 import static android.view.Gravity.CENTER;
 
-
+/**
+ * This activity will show a chain of a given TrustChain peer.
+ */
 public class ChainExplorerActivity extends AppCompatActivity {
     TrustChainDBHelper dbHelper;
     ChainExplorerAdapter adapter;
@@ -40,12 +42,23 @@ public class ChainExplorerActivity extends AppCompatActivity {
 
     static final String TAG = "ChainExplorerActivity";
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chain_explorer);
         blocksList = (ListView) findViewById(R.id.blocks_list);
+
+        // Create a progress bar to display while the list loads
+        ProgressBar progressBar = new ProgressBar(this);
+        progressBar.setLayoutParams(new LinearLayout.LayoutParams(GridLayout.LayoutParams.WRAP_CONTENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT, CENTER));
+        progressBar.setIndeterminate(true);
+        blocksList.setEmptyView(progressBar);
+
+        // Must add the progress bar to the root of the layout
+        ViewGroup root = (ViewGroup) findViewById(android.R.id.content);
+        root.addView(progressBar);
+
         init();
     }
 
@@ -68,7 +81,6 @@ public class ChainExplorerActivity extends AppCompatActivity {
         }
     }
 
-
     private void init() {
         dbHelper = new TrustChainDBHelper(this);
         KeyPair kp = Key.loadKeys(getApplicationContext());
@@ -77,7 +89,6 @@ public class ChainExplorerActivity extends AppCompatActivity {
             publicKey = getIntent().getByteArrayExtra("publicKey");
         } else {
             publicKey = kp.getPublic().getEncoded();
-
         }
         try {
             List<MessageProto.TrustChainBlock> blocks = dbHelper.getBlocks(publicKey);

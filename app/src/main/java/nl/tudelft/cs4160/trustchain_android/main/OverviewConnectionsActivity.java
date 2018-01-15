@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -59,7 +60,7 @@ import static nl.tudelft.cs4160.trustchain_android.block.TrustChainBlock.GENESIS
 
 public class OverviewConnectionsActivity extends AppCompatActivity implements NetworkCommunicationListener, PeerListener {
 
-    public static String CONNECTABLE_ADDRESS = "145.94.185.68";
+    public static String CONNECTABLE_ADDRESS = "145.94.193.165";
     final static int DEFAULT_PORT = 1873;
     private static final int BUFFER_SIZE = 65536;
     private TextView mWanVote;
@@ -134,9 +135,7 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
     private void initKey() {
         KeyPair kp = Key.loadKeys(getApplicationContext());
         if (kp == null) {
-            kp = Key.createNewKeyPair();
-            Key.saveKey(getApplicationContext(), Key.DEFAULT_PUB_KEY_FILE, kp.getPublic());
-            Key.saveKey(getApplicationContext(), Key.DEFAULT_PRIV_KEY_FILE, kp.getPrivate());
+            kp = Key.createAndSaveKeys(getApplicationContext());
         }
         if (isStartedFirstTime(dbHelper, kp)) {
             MessageProto.TrustChainBlock block = TrustChainBlock.createGenesisBlock(kp);
@@ -178,9 +177,13 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
         }
         network.setPeerListener(this);
         network.setNetworkCommunicationListener(this);
+        network.updateConnectionType((ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE));
         ((TextView) findViewById(R.id.peer_id)).setText(network.getPeerHandler().getHashId());
     }
 
+    /**
+     * Initialize the exit button.
+     */
     private void initExitButton() {
         mExitButton = (Button) findViewById(R.id.exit_button);
         mExitButton.setOnClickListener(new View.OnClickListener() {
@@ -240,7 +243,7 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
             network.getPeerHandler().addPeer(null, new InetSocketAddress(InetAddress.getByName(CONNECTABLE_ADDRESS), DEFAULT_PORT), PeerAppToApp.OUTGOING);
         } catch (UnknownHostException e) {
             e.printStackTrace();
-        }
+       }
     }
 
 
