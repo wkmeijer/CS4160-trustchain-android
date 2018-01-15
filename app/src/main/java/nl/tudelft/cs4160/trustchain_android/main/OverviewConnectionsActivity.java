@@ -65,7 +65,6 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
     private static final int BUFFER_SIZE = 65536;
     private PeerListAdapter incomingPeerAdapter;
     private PeerListAdapter outgoingPeerAdapter;
-    private DatagramChannel channel;
     private Thread sendThread;
     private Thread listenThread;
     private TrustChainDBHelper dbHelper;
@@ -80,7 +79,6 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        openChannel();
         setContentView(R.layout.activity_overview);
         initVariables(savedInstanceState);
         initExitButton();
@@ -154,20 +152,11 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
         return (genesisBlock == null);
     }
 
-    private void openChannel() {
-        try {
-            channel = DatagramChannel.open();
-            channel.socket().bind(new InetSocketAddress(DEFAULT_PORT));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
     private void initVariables(Bundle savedInstanceState) {
         peerHandler = new PeerHandler(UserNameStorage.getUserName(this));
         dbHelper = new TrustChainDBHelper(this);
         initKey();
-        network = Network.getInstance(getApplicationContext(), channel);
+        network = Network.getInstance(getApplicationContext());
 
         if (savedInstanceState != null) {
             ArrayList<PeerAppToApp> list = (ArrayList<PeerAppToApp>) savedInstanceState.getSerializable("peers");
@@ -303,7 +292,7 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
                     ByteBuffer inputBuffer = ByteBuffer.allocate(BUFFER_SIZE);
                     while (!Thread.interrupted()) {
                         inputBuffer.clear();
-                        SocketAddress address = channel.receive(inputBuffer);
+                        SocketAddress address = network.receive(inputBuffer);
                         inputBuffer.flip();
                         network.dataReceived(context, inputBuffer, (InetSocketAddress) address);
                     }
@@ -427,12 +416,7 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
     protected void onDestroy() {
         listenThread.interrupt();
         sendThread.interrupt();
-        channel.socket().close();
-        try {
-            channel.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        network.closeChannel();
         super.onDestroy();
     }
 

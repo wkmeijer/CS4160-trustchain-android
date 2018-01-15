@@ -110,17 +110,22 @@ public class TrustChainActivity extends AppCompatActivity implements CompoundBut
 
     public void onClickSend(View view) throws UnsupportedEncodingException {
         Log.d("testLogs", "onClickSend");
-        network = Network.getInstance(getApplicationContext(), null);
+        network = Network.getInstance(getApplicationContext());
         network.setNetworkCommunicationListener(this);
         PublicKey publicKey = Key.loadKeys(this).getPublic();
 
         byte[] transactionData = messageEditText.getText().toString().getBytes("UTF-8");
-        MessageProto.TrustChainBlock block = createBlock(transactionData, CommunicationSingleton.getDbHelper(), publicKey.getEncoded(), null, ByteArrayConverter.hexStringToByteArray(inboxItemOtherPeer.getPublicKey()));
-        try {
-            network.sendBlockMessage(inboxItemOtherPeer.getPeerAppToApp(),block);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        final MessageProto.TrustChainBlock block = createBlock(transactionData, CommunicationSingleton.getDbHelper(), publicKey.getEncoded(), null, ByteArrayConverter.hexStringToByteArray(inboxItemOtherPeer.getPublicKey()));
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        network.sendBlockMessage(inboxItemOtherPeer.getPeerAppToApp(), block);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }).start();
     }
 
 

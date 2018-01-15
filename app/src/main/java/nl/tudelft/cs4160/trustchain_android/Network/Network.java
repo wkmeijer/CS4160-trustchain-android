@@ -11,6 +11,7 @@ import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.NetworkInterface;
+import java.net.SocketAddress;
 import java.net.SocketException;
 import java.nio.ByteBuffer;
 import java.nio.channels.DatagramChannel;
@@ -61,10 +62,10 @@ public class Network {
     private Network() {
     }
 
-    public static Network getInstance(Context context, DatagramChannel channel) {
+    public static Network getInstance(Context context) {
         if (network == null) {
             network = new Network();
-            network.initVariables(context, channel);
+            network.initVariables(context);
         }
         return network;
     }
@@ -73,17 +74,37 @@ public class Network {
         Network.networkCommunicationListener = networkCommunicationListener;
     }
 
-    private void initVariables(Context context, DatagramChannel channel) {
+    private void initVariables(Context context) {
         TelephonyManager telephonyManager = ((TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE));
         networkOperator = telephonyManager.getNetworkOperatorName();
         dbHelper = new TrustChainDBHelper(context);
         outBuffer = ByteBuffer.allocate(BUFFER_SIZE);
         hashId = UserNameStorage.getUserName(context);
         publicKey = ByteArrayConverter.bytesToHexString(Key.loadKeys(context).getPublic().getEncoded());
-        if(channel != null){
-            this.channel = channel;
-        }
+        openChannel();
         showLocalIpAddress();
+    }
+
+    private void openChannel() {
+        try {
+            channel = DatagramChannel.open();
+            channel.socket().bind(new InetSocketAddress(OverviewConnectionsActivity.DEFAULT_PORT));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public SocketAddress receive(ByteBuffer inputBuffer) throws IOException {
+        return channel.receive(inputBuffer);
+    }
+
+    public void closeChannel() {
+        channel.socket().close();
+        try {
+            channel.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     /**
