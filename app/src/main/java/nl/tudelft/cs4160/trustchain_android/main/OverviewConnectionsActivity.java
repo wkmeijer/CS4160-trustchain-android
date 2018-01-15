@@ -170,7 +170,6 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
 
         dbHelper = new TrustChainDBHelper(this);
         initKey();
-        ((TextView) findViewById(R.id.peer_id)).setText(network.getPeerHandler().getHashId());
         network = Network.getInstance(getApplicationContext(), channel);
 
         if (savedInstanceState != null) {
@@ -179,6 +178,7 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
         }
         network.setPeerListener(this);
         network.setNetworkCommunicationListener(this);
+        ((TextView) findViewById(R.id.peer_id)).setText(network.getPeerHandler().getHashId());
     }
 
     private void initExitButton() {

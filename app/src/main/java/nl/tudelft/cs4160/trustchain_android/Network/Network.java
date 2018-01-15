@@ -122,7 +122,9 @@ public class Network {
         String typename = cm.getActiveNetworkInfo().getTypeName();
         String subtypeName = cm.getActiveNetworkInfo().getSubtypeName();
 
-        networkCommunicationListener.updateConnectionType(connectionType, typename, subtypeName);
+        if (networkCommunicationListener != null) {
+            networkCommunicationListener.updateConnectionType(connectionType, typename, subtypeName);
+        }
     }
 
     /**
@@ -201,7 +203,9 @@ public class Network {
         outBuffer.flip();
         channel.send(outBuffer, peer.getAddress());
         peer.sentData();
-        networkCommunicationListener.updatePeerLists();
+        if(networkCommunicationListener!=null) {
+            networkCommunicationListener.updatePeerLists();
+        }
     }
 
     private void showLocalIpAddress() {
@@ -231,7 +235,9 @@ public class Network {
                 if (inetAddress != null) {
                     internalSourceAddress = new InetSocketAddress(inetAddress, DEFAULT_PORT);
                 }
-                networkCommunicationListener.updateInternalSourceAddress(internalSourceAddress.toString());
+                if(networkCommunicationListener !=null) {
+                    networkCommunicationListener.updateInternalSourceAddress(internalSourceAddress.toString());
+                }
             }
         }.execute();
     }
@@ -260,30 +266,32 @@ public class Network {
 
             Log.d("App-To-App", "pubkey address map " + SharedPreferencesStorage.getAll(context).toString());
 
-            networkCommunicationListener.updateWan(message);
+            if(networkCommunicationListener!=null) {
+                networkCommunicationListener.updateWan(message);
 
-            PeerAppToApp peer = networkCommunicationListener.getOrMakePeer(id, address, PeerAppToApp.INCOMING);
+                PeerAppToApp peer = networkCommunicationListener.getOrMakePeer(id, address, PeerAppToApp.INCOMING);
 
-            if (peer == null) return;
-            peer.received(data);
-            switch (message.getType()) {
-                case Message.INTRODUCTION_REQUEST:
-                    networkCommunicationListener.handleIntroductionRequest(peer, (IntroductionRequest) message);
-                    break;
-                case Message.INTRODUCTION_RESPONSE:
-                    networkCommunicationListener.handleIntroductionResponse(peer, (IntroductionResponse) message);
-                    break;
-                case Message.PUNCTURE:
-                    networkCommunicationListener.handlePuncture(peer, (Puncture) message);
-                    break;
-                case Message.PUNCTURE_REQUEST:
-                    networkCommunicationListener.handlePunctureRequest(peer, (PunctureRequest) message);
-                    break;
-                case Message.BLOCK_MESSAGE:
-                    networkCommunicationListener.handleBlockMessageRequest(peer, (BlockMessage) message);
+                if (peer == null) return;
+                peer.received(data);
+                switch (message.getType()) {
+                    case Message.INTRODUCTION_REQUEST:
+                        networkCommunicationListener.handleIntroductionRequest(peer, (IntroductionRequest) message);
+                        break;
+                    case Message.INTRODUCTION_RESPONSE:
+                        networkCommunicationListener.handleIntroductionResponse(peer, (IntroductionResponse) message);
+                        break;
+                    case Message.PUNCTURE:
+                        networkCommunicationListener.handlePuncture(peer, (Puncture) message);
+                        break;
+                    case Message.PUNCTURE_REQUEST:
+                        networkCommunicationListener.handlePunctureRequest(peer, (PunctureRequest) message);
+                        break;
+                    case Message.BLOCK_MESSAGE:
+                        networkCommunicationListener.handleBlockMessageRequest(peer, (BlockMessage) message);
 
+                }
+                networkCommunicationListener.updatePeerLists();
             }
-            networkCommunicationListener.updatePeerLists();
         } catch (BencodeReadException | IOException | MessageException e) {
             e.printStackTrace();
         }
