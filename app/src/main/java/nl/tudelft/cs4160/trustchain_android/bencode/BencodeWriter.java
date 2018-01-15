@@ -19,6 +19,8 @@ import java.io.OutputStream;
 import java.util.List;
 import java.util.Map;
 
+import nl.tudelft.cs4160.trustchain_android.message.MessageProto;
+
 /**
  * A BencodeWriter writes Bencoded values into an {@link OutputStream}.
  *
@@ -114,6 +116,8 @@ public final class BencodeWriter implements Closeable, Flushable {
         }
         out.write('e');
     }
+
+
 
     /**
      * Writes a bencoded value to the <code>OutputStream</code>. The value must

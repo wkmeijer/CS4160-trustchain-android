@@ -131,12 +131,13 @@ public class PeerListAdapter extends ArrayAdapter<PeerAppToApp> {
         View.OnClickListener onClickListener = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                int pos = (int) v.getTag();
+               /* int pos = (int) v.getTag();
                 PeerAppToApp peer = getItem(pos);
                 Intent intent = new Intent(context, TrustChainActivity.class);
                 intent.putExtra("PeerAppToApp", peer);
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                context.startActivity(intent);
+                context.startActivity(intent);*/
+               // ToDo tmp disabled
             }
         };
         mTableLayoutConnection.setOnClickListener(onClickListener);

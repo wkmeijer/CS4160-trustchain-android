@@ -4,6 +4,8 @@ import android.bluetooth.BluetoothDevice;
 
 import java.util.Arrays;
 
+import nl.tudelft.cs4160.trustchain_android.Util.ByteArrayConverter;
+
 /**
  * The peer object that is used to identify a TrustChain user.
  * The peer is identified by its unique public key, which is generated.
@@ -77,20 +79,10 @@ public class Peer {
 
     public String toString() {
         String res = "<Peer: [";
-        res += publicKey + ":" + port + ",PubKey: " + bytesToHex(publicKey) + "]>";
+        res += publicKey + ":" + port + ",PubKey: " + ByteArrayConverter.bytesToHexString(publicKey) + "]>";
         return res;
     }
 
-    private final static char[] hexArray = "0123456789ABCDEF".toCharArray();
-    public static String bytesToHex(byte[] bytes) {
-        char[] hexChars = new char[bytes.length * 2];
-        for ( int j = 0; j < bytes.length; j++ ) {
-            int v = bytes[j] & 0xFF;
-            hexChars[j * 2] = hexArray[v >>> 4];
-            hexChars[j * 2 + 1] = hexArray[v & 0x0F];
-        }
-        return new String(hexChars);
-    }
 
     @Override
     public boolean equals(Object o) {

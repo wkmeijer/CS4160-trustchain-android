@@ -11,8 +11,13 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.TextView;
+
+import java.security.KeyPair;
+
 import nl.tudelft.cs4160.trustchain_android.R;
 import nl.tudelft.cs4160.trustchain_android.SharedPreferences.UserNameStorage;
+import nl.tudelft.cs4160.trustchain_android.Util.Key;
+import nl.tudelft.cs4160.trustchain_android.connection.CommunicationSingleton;
 
 /**
  * The user is able to set his/her own username in this class.
@@ -59,7 +64,7 @@ public class UserConfigurationActivity extends AppCompatActivity {
             Intent myIntent = new Intent(UserConfigurationActivity.this, OverviewConnectionsActivity.class);
             UserNameStorage.setUserName(context, userNameInput.getText().toString());
             myIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            UserConfigurationActivity.this.startActivity(myIntent);
+            this.startActivity(myIntent);
         } else {
             TextView userNot = (TextView) findViewById(R.id.user_notification);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
