@@ -2,34 +2,22 @@ package nl.tudelft.cs4160.trustchain_android.chainExplorer;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.TableLayout;
 import android.widget.TextView;
 
 import com.google.protobuf.ByteString;
-
-import org.w3c.dom.Text;
 
 import java.util.HashMap;
 import java.util.List;
 
 import nl.tudelft.cs4160.trustchain_android.R;
 import nl.tudelft.cs4160.trustchain_android.Util.ByteArrayConverter;
-import nl.tudelft.cs4160.trustchain_android.appToApp.PeerAppToApp;
 import nl.tudelft.cs4160.trustchain_android.block.TrustChainBlock;
-import nl.tudelft.cs4160.trustchain_android.block.ValidationResult;
 import nl.tudelft.cs4160.trustchain_android.color.ChainColor;
-import nl.tudelft.cs4160.trustchain_android.connection.CommunicationSingleton;
-import nl.tudelft.cs4160.trustchain_android.main.ChainExplorerInfoActivity;
-import nl.tudelft.cs4160.trustchain_android.main.TrustChainActivity;
 import nl.tudelft.cs4160.trustchain_android.message.MessageProto;
-
-import static nl.tudelft.cs4160.trustchain_android.block.TrustChainBlock.pubKeyToString;
 
 public class ChainExplorerAdapter extends BaseAdapter {
     static final String TAG = "ChainExplorerAdapter";

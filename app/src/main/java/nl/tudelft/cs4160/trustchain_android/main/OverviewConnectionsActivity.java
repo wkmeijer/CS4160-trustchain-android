@@ -134,9 +134,7 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
     private void initKey() {
         KeyPair kp = Key.loadKeys(getApplicationContext());
         if (kp == null) {
-            kp = Key.createNewKeyPair();
-            Key.saveKey(getApplicationContext(), Key.DEFAULT_PUB_KEY_FILE, kp.getPublic());
-            Key.saveKey(getApplicationContext(), Key.DEFAULT_PRIV_KEY_FILE, kp.getPrivate());
+            kp = Key.createAndSaveKeys(getApplicationContext());
         }
         if (isStartedFirstTime(dbHelper, kp)) {
             MessageProto.TrustChainBlock block = TrustChainBlock.createGenesisBlock(kp);
@@ -181,6 +179,9 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
         ((TextView) findViewById(R.id.peer_id)).setText(network.getPeerHandler().getHashId());
     }
 
+    /**
+     * Initialize the exit button.
+     */
     private void initExitButton() {
         mExitButton = (Button) findViewById(R.id.exit_button);
         mExitButton.setOnClickListener(new View.OnClickListener() {
@@ -240,7 +241,7 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
             network.getPeerHandler().addPeer(null, new InetSocketAddress(InetAddress.getByName(CONNECTABLE_ADDRESS), DEFAULT_PORT), PeerAppToApp.OUTGOING);
         } catch (UnknownHostException e) {
             e.printStackTrace();
-        }
+       }
     }
 
 

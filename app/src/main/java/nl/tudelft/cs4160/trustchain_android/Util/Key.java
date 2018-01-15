@@ -10,19 +10,15 @@ import org.spongycastle.jce.ECNamedCurveTable;
 import org.spongycastle.jce.provider.BouncyCastleProvider;
 import org.spongycastle.jce.spec.ECParameterSpec;
 
-import java.security.InvalidAlgorithmParameterException;
-import java.security.InvalidKeyException;
 import java.security.KeyFactory;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
-import java.security.NoSuchProviderException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.SecureRandom;
 import java.security.Security;
 import java.security.Signature;
-import java.security.SignatureException;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
@@ -42,11 +38,36 @@ public class Key {
 
 
     /**
+     * If no key can be loaded, create a new keypair.
+     * @param context
+     * @return
+     */
+    public static KeyPair ensureKeysExist(Context context) {
+        KeyPair keyPair = loadKeys(context);
+        if (keyPair == null) {
+            return createAndSaveKeys(context);
+        }
+        return keyPair;
+    }
+
+    /**
      * Creates a new curve25519 KeyPair.
      * @return KeyPair.
      */
     public static KeyPair createNewKeyPair() {
         return createNewKeyPair("curve25519", "ECDSA", PROVIDER, true);
+    }
+
+    /**
+     * Creates a new keypair and saves it directly under the default key files.
+     * @param context
+     * @return
+     */
+    public static KeyPair createAndSaveKeys(Context context) {
+        KeyPair kp = Key.createNewKeyPair();
+        Key.saveKey(context, Key.DEFAULT_PUB_KEY_FILE, kp.getPublic());
+        Key.saveKey(context, Key.DEFAULT_PRIV_KEY_FILE, kp.getPrivate());
+        return kp;
     }
 
     /**
@@ -64,11 +85,7 @@ public class Key {
             KeyPairGenerator g = KeyPairGenerator.getInstance(algorithm, provider);
             g.initialize(ecSpec, new SecureRandom());
             keyPair = g.generateKeyPair();
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        } catch (NoSuchProviderException e) {
-            e.printStackTrace();
-        } catch (InvalidAlgorithmParameterException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return keyPair;
@@ -103,13 +120,7 @@ public class Key {
             sig.initSign(privateKey);
             sig.update(data);
             return sig.sign();
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        } catch (NoSuchProviderException e) {
-            e.printStackTrace();
-        } catch (InvalidKeyException e) {
-            e.printStackTrace();
-        } catch (SignatureException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return null;
@@ -128,13 +139,7 @@ public class Key {
             sig.initVerify(publicKey);
             sig.update(msg);
             return sig.verify(rawSig);
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        } catch (NoSuchProviderException e) {
-            e.printStackTrace();
-        } catch (InvalidKeyException e) {
-            e.printStackTrace();
-        } catch (SignatureException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return false;

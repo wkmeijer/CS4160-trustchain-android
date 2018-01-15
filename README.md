@@ -7,4 +7,4 @@ We have tried to make the code clear. However, this app was not build by Android
 
 Documentation
 =============
-The documentation for this project can be found at [ReadTheDocs](http://trustchain-android.readthedocs.org>).
+The documentation for this project can be found at [ReadTheDocs](http://trustchain-android.readthedocs.org).
