@@ -114,11 +114,12 @@ public class Network {
     private void updateConnectionType(ConnectivityManager cm) {
 
         try {
-            int connectionType = cm.getActiveNetworkInfo().getType();
+            cm.getActiveNetworkInfo().getType();
         } catch (Exception e) {
             return;
         }
 
+        connectionType = cm.getActiveNetworkInfo().getType();
         String typename = cm.getActiveNetworkInfo().getTypeName();
         String subtypeName = cm.getActiveNetworkInfo().getSubtypeName();
 
