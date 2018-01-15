@@ -92,7 +92,6 @@ public class Network {
     private void initVariables(Context context, DatagramChannel channel) {
         TelephonyManager telephonyManager = ((TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE));
         networkOperator = telephonyManager.getNetworkOperatorName();
-        ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         dbHelper = new TrustChainDBHelper(context);
         peerHandler = new PeerHandler(UserNameStorage.getUserName(context));
         outBuffer = ByteBuffer.allocate(BUFFER_SIZE);
@@ -195,7 +194,7 @@ public class Network {
     private synchronized void sendMessage(Message message, PeerAppToApp peer) throws IOException {
         message.putPubKey(publicKey);
 
-        Log.d("App-To-App Log", "Sending " + message);
+        Log.d("Network", "Sending " + message);
         outBuffer.clear();
         message.writeToByteBuffer(outBuffer);
         outBuffer.flip();
@@ -250,7 +249,7 @@ public class Network {
     public void dataReceived(Context context, ByteBuffer data, InetSocketAddress address) {
         try {
             Message message = Message.createFromByteBuffer(data);
-            Log.d("App-To-App Log", "Received " + message);
+            Log.d("Network", "Received " + message);
 
             String id = message.getPeerId();
             String pubKey = message.getPubKey();
@@ -260,9 +259,9 @@ public class Network {
             InboxItem i = new InboxItem(id, new ArrayList(), ip, pubKey, address.getPort());
             InboxItemStorage.addInboxItem(context, i);
 
-            Log.d("App-To-App", "Stored following ip for pubkey: " + pubKey + " " + PubKeyAndAddressPairStorage.getAddressByPubkey(context, pubKey));
+            Log.d("Network", "Stored following ip for pubkey: " + pubKey + " " + PubKeyAndAddressPairStorage.getAddressByPubkey(context, pubKey));
 
-            Log.d("App-To-App", "pubkey address map " + SharedPreferencesStorage.getAll(context).toString());
+            Log.d("Network", "pubkey address map " + SharedPreferencesStorage.getAll(context).toString());
 
             if(networkCommunicationListener!=null) {
                 networkCommunicationListener.updateWan(message);
@@ -310,10 +309,10 @@ public class Network {
             if (invitee != null) {
                 sendIntroductionResponse(peer, invitee);
                 sendPunctureRequest(invitee, peer);
-                Log.d("App-To-App Log", "Introducing " + invitee.getAddress() + " to " + peer.getAddress());
+                Log.d("Network", "Introducing " + invitee.getAddress() + " to " + peer.getAddress());
             }
         } else {
-            Log.d("App-To-App Log", "Peerlist too small, can't handle introduction request");
+            Log.d("Network", "Peerlist too small, can't handle introduction request");
             sendIntroductionResponse(peer, null);
         }
     }
