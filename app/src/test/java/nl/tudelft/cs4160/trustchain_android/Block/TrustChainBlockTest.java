@@ -18,6 +18,7 @@ import java.security.PrivateKey;
 import java.security.PublicKey;
 
 import nl.tudelft.cs4160.trustchain_android.Peer;
+import nl.tudelft.cs4160.trustchain_android.Util.ByteArrayConverter;
 import nl.tudelft.cs4160.trustchain_android.Util.Key;
 import nl.tudelft.cs4160.trustchain_android.block.TrustChainBlock;
 import nl.tudelft.cs4160.trustchain_android.database.TrustChainDBHelper;
@@ -60,7 +61,7 @@ public class TrustChainBlockTest {
     @Test
     public void publicKeyGenesisBlockTest() {
         MessageProto.TrustChainBlock block = TrustChainBlock.createGenesisBlock(keyPair);
-        assertEquals(bytesToHex(keyPair.getPublic().getEncoded()), bytesToHex(block.getPublicKey().toByteArray()));
+        assertEquals(ByteArrayConverter.bytesToHexString(keyPair.getPublic().getEncoded()), ByteArrayConverter.bytesToHexString(block.getPublicKey().toByteArray()));
     }
 
     @Test
@@ -72,13 +73,13 @@ public class TrustChainBlockTest {
     @Test
     public void publicKeyBlockTest() {
         MessageProto.TrustChainBlock block = TrustChainBlock.createBlock(transaction, dbHelper, pubKey, genesisBlock, linkKey);
-        assertEquals(bytesToHex(pubKey), bytesToHex(block.getPublicKey().toByteArray()));
+        assertEquals( ByteArrayConverter.bytesToHexString(pubKey),  ByteArrayConverter.bytesToHexString(block.getPublicKey().toByteArray()));
     }
 
     @Test
     public void linkPublicKeyBlockTest() {
         MessageProto.TrustChainBlock block = TrustChainBlock.createBlock(transaction, dbHelper, pubKey, genesisBlock, linkKey);
-        assertEquals(bytesToHex(keyPair.getPublic().getEncoded()), bytesToHex(block.getLinkPublicKey().toByteArray()));
+        assertEquals( ByteArrayConverter.bytesToHexString(keyPair.getPublic().getEncoded()),  ByteArrayConverter.bytesToHexString(block.getLinkPublicKey().toByteArray()));
     }
 
     @Test
