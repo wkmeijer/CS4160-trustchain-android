@@ -36,11 +36,15 @@ import nl.tudelft.cs4160.trustchain_android.Peer;
 import nl.tudelft.cs4160.trustchain_android.R;
 import nl.tudelft.cs4160.trustchain_android.SharedPreferences.PubKeyAndAddressPairStorage;
 import nl.tudelft.cs4160.trustchain_android.SharedPreferences.SharedPreferencesStorage;
+import nl.tudelft.cs4160.trustchain_android.Util.ByteArrayConverter;
 import nl.tudelft.cs4160.trustchain_android.appToApp.PeerAppToApp;
+import nl.tudelft.cs4160.trustchain_android.block.TrustChainBlock;
+import nl.tudelft.cs4160.trustchain_android.block.ValidationResult;
 import nl.tudelft.cs4160.trustchain_android.chainExplorer.ChainExplorerAdapter;
 import nl.tudelft.cs4160.trustchain_android.connection.CommunicationListener;
 import nl.tudelft.cs4160.trustchain_android.connection.CommunicationSingleton;
 import nl.tudelft.cs4160.trustchain_android.chainExplorer.ChainExplorerActivity;
+import nl.tudelft.cs4160.trustchain_android.database.TrustChainDBHelper;
 import nl.tudelft.cs4160.trustchain_android.inbox.InboxItem;
 import nl.tudelft.cs4160.trustchain_android.message.MessageProto;
 
@@ -162,17 +166,47 @@ public class TrustChainActivity extends AppCompatActivity implements CompoundBut
     }
 
     /**
-     * +     * Initialize the recycle view that will show the mutual blocks of the user and the other peer.
-     * +
+     * Initialize the recycle view that will show the mutual blocks of the user and the other peer.
+     *
      */
     private void initializeMutualBlockRecycleView() {
-        //ArrayList<MutualBlockItem> mutualBlockList = findMutualBlocks(CommunicationSingleton.getDbHelper());
-        ArrayList<MutualBlockItem> mutualBlockList = new ArrayList<>();
-        mutualBlockList.add(new MutualBlockItem("Clinton", 0, 0, "Test", "555"));
+        ArrayList<MutualBlockItem> mutualBlockList = findMutualBlocks(CommunicationSingleton.getDbHelper());
         mLayoutManager = new LinearLayoutManager(this);
         mAdapter = new MutualBlockAdapter(this, mutualBlockList);
         mRecyclerView.setLayoutManager(mLayoutManager);
         mRecyclerView.setAdapter(mAdapter);
+    }
+
+    /**
+     * Find blocks that both the user and the other peer has in common.
+     * @param dbHelper the database helper.
+     * @return a list of mutual blocks.
+     */
+    private ArrayList<MutualBlockItem> findMutualBlocks(TrustChainDBHelper dbHelper) {
+        ArrayList<MutualBlockItem> mutualBlocks = new ArrayList<>();
+        for(MessageProto.TrustChainBlock block: dbHelper.getAllBlocks()) {
+            if (ByteArrayConverter.bytesToHexString(block.getLinkPublicKey().toByteArray()).equals(inboxItem.getPublicKey())) {
+                String blockStatus = "Status of Block: ";
+                int validationResultStatus = ValidationResult.NO_INFO;
+
+                try {
+                    validationResultStatus = TrustChainBlock.validate(block, dbHelper).getStatus();
+                }
+                catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+                if (validationResultStatus != ValidationResult.VALID) {
+                    blockStatus += "Not signed by both parties";
+                }
+                else {
+                    blockStatus += "Signed by both parties";
+                }
+
+                mutualBlocks.add(new MutualBlockItem(inboxItem.getUserName(), block.getSequenceNumber(), block.getLinkSequenceNumber(), blockStatus, block.getTransaction().toStringUtf8()));
+            }
+        }
+        return mutualBlocks;
     }
 
     private void setPeerDetails() {
