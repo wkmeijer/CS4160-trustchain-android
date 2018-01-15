@@ -330,7 +330,9 @@ public class TrustChainActivity extends AppCompatActivity implements CompoundBut
 
     @Override
     public void connectionSuccessful(byte[] publicKey) {
-        this.peer.setPublicKey(publicKey);
+        if(this.peer != null && publicKey != null) {
+            this.peer.setPublicKey(publicKey);
+        }
         enableMessage();
     }
 
