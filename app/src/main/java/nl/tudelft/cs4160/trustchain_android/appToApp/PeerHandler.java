@@ -115,11 +115,9 @@ public class PeerHandler {
         }
         final PeerAppToApp peer = new PeerAppToApp(peerId, address);
         new Handler(Looper.getMainLooper()).post(new Runnable() {
-
             @Override
             public void run() {
                 peerList.add(peer);
-                trimPeers();
                 splitPeerList();
                 peerListener.updateIncomingPeers();
                 peerListener.updateOutgoingPeers();
@@ -202,69 +200,6 @@ public class PeerHandler {
             }
         }
         return addPeer(id, address, incoming);
-    }
-
-
-    /**
-     * Deletes the oldest peers based on constant limits {@value KNOWN_PEER_LIMIT} and {@value UNKNOWN_PEER_LIMIT}.
-     */
-    private void trimPeers() {
-        limitKnownPeers(KNOWN_PEER_LIMIT);
-        limitUnknownPeers(UNKNOWN_PEER_LIMIT);
-    }
-
-    /**
-     * Limit the amount of known peers by deleting the oldest peers.
-     *
-     * @param limit the limit.
-     */
-    private void limitKnownPeers(int limit) {
-        if (peerList.size() < limit) return;
-        int knownPeers = 0;
-        PeerAppToApp oldestPeer = null;
-        long oldestDate = System.currentTimeMillis();
-        for (PeerAppToApp peer : peerList) {
-            if (peer.hasReceivedData()) {
-                knownPeers++;
-                if (peer.getCreationTime() < oldestDate) {
-                    oldestDate = peer.getCreationTime();
-                    oldestPeer = peer;
-                }
-            }
-        }
-        if (knownPeers > limit) {
-            peerList.remove(oldestPeer);
-        }
-        if (knownPeers - 1 > limit) {
-            limitKnownPeers(limit);
-        }
-    }
-
-    /**
-     * Limit the amount of known peers by deleting the oldest peers.
-     *
-     * @param limit the limit.
-     */
-    private void limitUnknownPeers(int limit) {
-        if (peerList.size() < limit) return;
-        int unknownPeers = 0;
-        PeerAppToApp oldestPeer = null;
-        long oldestDate = System.currentTimeMillis();
-        for (PeerAppToApp peer : peerList) {
-            if (!peer.hasReceivedData()) {
-                unknownPeers++;
-                if (peer.getCreationTime() < oldestDate) {
-                    oldestDate = peer.getCreationTime();
-                    oldestPeer = peer;
-                }
-            }
-        }
-        if (unknownPeers > limit) {
-            peerList.remove(oldestPeer);
-        }
-        if (unknownPeers - 1 > limit) {
-            limitKnownPeers(limit);
-        }
     }
 
     public String getHashId() {
