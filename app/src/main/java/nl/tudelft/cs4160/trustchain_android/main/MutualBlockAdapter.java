@@ -64,9 +64,9 @@ public class MutualBlockAdapter extends RecyclerView.Adapter<MutualBlockAdapter.
             TextView peerNameTv = viewHolder.peerNameTextView;
             peerNameTv.setText(mutualBlockItem.getPeerName());
             TextView seqNumTv = viewHolder.seqNumTextView;
-            seqNumTv.setText("" + mutualBlockItem.getSeqNum());
+            seqNumTv.setText(Integer.toString(mutualBlockItem.getSeqNum()));
             TextView linkSeqNumTv = viewHolder.linkSeqNumTextView;
-            linkSeqNumTv.setText("" + mutualBlockItem.getLinkSeqNum());
+            linkSeqNumTv.setText(Integer.toString(mutualBlockItem.getLinkSeqNum()));
             TextView transTv = viewHolder.transactionTextView;
             transTv.setText(mutualBlockItem.getTransaction());
         }
