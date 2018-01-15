@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 
 import nl.tudelft.cs4160.trustchain_android.appToApp.PeerAppToApp;
+import nl.tudelft.cs4160.trustchain_android.appToApp.PeerHandler;
 import nl.tudelft.cs4160.trustchain_android.appToApp.connection.messages.BlockMessage;
 import nl.tudelft.cs4160.trustchain_android.appToApp.connection.messages.IntroductionRequest;
 import nl.tudelft.cs4160.trustchain_android.appToApp.connection.messages.IntroductionResponse;
@@ -20,12 +21,13 @@ import nl.tudelft.cs4160.trustchain_android.connection.CommunicationListener;
 public interface NetworkCommunicationListener extends CommunicationListener {
     void updateInternalSourceAddress(String address);
     void updatePeerLists();
-    void handleIntroductionRequest(PeerAppToApp peer, IntroductionRequest message) throws IOException, MessageException;
-    void handleIntroductionResponse(PeerAppToApp peer, IntroductionResponse message) throws IOException, MessageException;
-    void handlePuncture(PeerAppToApp peer, Puncture message) throws IOException;
-    void handlePunctureRequest(PeerAppToApp peer, PunctureRequest message) throws IOException, MessageException;
-    void handleBlockMessageRequest(PeerAppToApp peer, BlockMessage message) throws IOException, MessageException;
     void updateWan(Message message) throws MessageException;
     void updateConnectionType(int connectionType, String typename, String subtypename);
+    void handleIntroductionRequest(PeerAppToApp peer, IntroductionRequest message) throws IOException;
+    void handleIntroductionResponse(PeerAppToApp peer, IntroductionResponse message);
+    void handlePunctureRequest(PeerAppToApp peer, PunctureRequest message) throws IOException, MessageException;
+    void handleBlockMessageRequest(PeerAppToApp peer, BlockMessage message) throws IOException, MessageException;
+    void handlePuncture(PeerAppToApp peer, Puncture message) throws IOException;
     PeerAppToApp getOrMakePeer(String id, InetSocketAddress address, boolean incoming);
+    PeerHandler getPeerHandler();
 }

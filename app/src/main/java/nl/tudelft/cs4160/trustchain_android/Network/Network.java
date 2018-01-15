@@ -26,7 +26,6 @@ import nl.tudelft.cs4160.trustchain_android.Util.ByteArrayConverter;
 import nl.tudelft.cs4160.trustchain_android.Util.Key;
 import nl.tudelft.cs4160.trustchain_android.appToApp.PeerAppToApp;
 import nl.tudelft.cs4160.trustchain_android.appToApp.PeerHandler;
-import nl.tudelft.cs4160.trustchain_android.appToApp.connection.PeerListener;
 import nl.tudelft.cs4160.trustchain_android.appToApp.connection.messages.BlockMessage;
 import nl.tudelft.cs4160.trustchain_android.appToApp.connection.messages.IntroductionRequest;
 import nl.tudelft.cs4160.trustchain_android.appToApp.connection.messages.IntroductionResponse;
@@ -37,6 +36,7 @@ import nl.tudelft.cs4160.trustchain_android.appToApp.connection.messages.Punctur
 import nl.tudelft.cs4160.trustchain_android.bencode.BencodeReadException;
 import nl.tudelft.cs4160.trustchain_android.database.TrustChainDBHelper;
 import nl.tudelft.cs4160.trustchain_android.inbox.InboxItem;
+import nl.tudelft.cs4160.trustchain_android.main.OverviewConnectionsActivity;
 import nl.tudelft.cs4160.trustchain_android.message.MessageProto;
 
 import static nl.tudelft.cs4160.trustchain_android.block.TrustChainBlock.createBlock;
@@ -45,24 +45,21 @@ import static nl.tudelft.cs4160.trustchain_android.message.MessageProto.Message.
 /**
  * Created by michiel on 11-1-2018.
  */
-
 public class Network {
     private static final int BUFFER_SIZE = 65536;
-    private final static int DEFAULT_PORT = 1873;
     private DatagramChannel channel;
     private PeerHandler peerHandler;
     private String hashId;
     private int connectionType;
     private ByteBuffer outBuffer;
-    private InetSocketAddress internalSourceAddress;
+    private static InetSocketAddress internalSourceAddress;
     private String networkOperator;
     private static Network network;
     private String publicKey;
     private TrustChainDBHelper dbHelper;
-    private NetworkCommunicationListener networkCommunicationListener;
+    private static NetworkCommunicationListener networkCommunicationListener;
 
-    private Network() {
-    }
+    private Network() {}
 
     public static Network getInstance(Context context, DatagramChannel channel) {
         if (network == null) {
@@ -73,32 +70,18 @@ public class Network {
     }
 
     public void setNetworkCommunicationListener(NetworkCommunicationListener networkCommunicationListener) {
-        this.networkCommunicationListener = networkCommunicationListener;
-    }
-
-    public void setPeerListener(PeerListener peerListener) {
-        this.peerHandler.setPeerListener(peerListener);
-    }
-
-    public PeerHandler getPeerHandler() {
-        return peerHandler;
+        Network.networkCommunicationListener = networkCommunicationListener;
     }
 
     private void initVariables(Context context, DatagramChannel channel) {
         TelephonyManager telephonyManager = ((TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE));
         networkOperator = telephonyManager.getNetworkOperatorName();
-        ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         dbHelper = new TrustChainDBHelper(context);
-        peerHandler = new PeerHandler(UserNameStorage.getUserName(context));
         outBuffer = ByteBuffer.allocate(BUFFER_SIZE);
         hashId = UserNameStorage.getUserName(context);
         publicKey = ByteArrayConverter.bytesToHexString(Key.loadKeys(context).getPublic().getEncoded());
         this.channel = channel;
         showLocalIpAddress();
-    }
-
-    public void setPeersFromSavedInstance(ArrayList<PeerAppToApp> peers) {
-        this.peerHandler.setPeerList(peers);
     }
 
     /**
@@ -170,7 +153,7 @@ public class Network {
      */
     public void sendIntroductionResponse(PeerAppToApp peer, PeerAppToApp invitee) throws IOException {
         List<PeerAppToApp> pexPeers = new ArrayList<>();
-        for (PeerAppToApp p : peerHandler.getPeerList()) {
+        for (PeerAppToApp p : networkCommunicationListener.getPeerHandler().getPeerList()) {
             if (p.hasReceivedData() && p.getPeerId() != null && p.isAlive())
                 pexPeers.add(p);
         }
@@ -187,52 +170,23 @@ public class Network {
      * @param peer    the destination inboxItem.
      * @throws IOException
      */
-    public synchronized void sendMessage(Message message, PeerAppToApp peer) throws IOException {
+    private synchronized void sendMessage(Message message, PeerAppToApp peer) throws IOException {
         message.putPubKey(publicKey);
 
-        Log.d("App-To-App Log", "Sending " + message);
+        Log.d("Network", "Sending " + message);
         outBuffer.clear();
         message.writeToByteBuffer(outBuffer);
         outBuffer.flip();
         channel.send(outBuffer, peer.getAddress());
         peer.sentData();
-        if(networkCommunicationListener!=null) {
+        if(networkCommunicationListener != null) {
             networkCommunicationListener.updatePeerLists();
         }
     }
 
     private void showLocalIpAddress() {
-        new AsyncTask<Void, Void, InetAddress>() {
-
-            @Override
-            protected InetAddress doInBackground(Void... params) {
-                try {
-                    for (Enumeration en = NetworkInterface.getNetworkInterfaces(); en.hasMoreElements(); ) {
-                        NetworkInterface intf = (NetworkInterface) en.nextElement();
-                        for (Enumeration enumIpAddr = intf.getInetAddresses(); enumIpAddr.hasMoreElements(); ) {
-                            InetAddress inetAddress = (InetAddress) enumIpAddr.nextElement();
-                            if (!inetAddress.isLoopbackAddress() && inetAddress instanceof Inet4Address) {
-                                return inetAddress;
-                            }
-                        }
-                    }
-                } catch (SocketException ex) {
-                    ex.printStackTrace();
-                }
-                return null;
-            }
-
-            @Override
-            protected void onPostExecute(InetAddress inetAddress) {
-                super.onPostExecute(inetAddress);
-                if (inetAddress != null) {
-                    internalSourceAddress = new InetSocketAddress(inetAddress, DEFAULT_PORT);
-                }
-                if(networkCommunicationListener !=null) {
-                    networkCommunicationListener.updateInternalSourceAddress(internalSourceAddress.toString());
-                }
-            }
-        }.execute();
+        ShowLocalIPTask showLocalIPTask = new ShowLocalIPTask();
+        showLocalIPTask.execute();
     }
 
 
@@ -245,21 +199,21 @@ public class Network {
     public void dataReceived(Context context, ByteBuffer data, InetSocketAddress address) {
         try {
             Message message = Message.createFromByteBuffer(data);
-            Log.d("App-To-App Log", "Received " + message);
+            Log.d("Network", "Received " + message);
 
             String id = message.getPeerId();
             String pubKey = message.getPubKey();
 
             String ip = address.getAddress().toString().replace("/", "");
             PubKeyAndAddressPairStorage.addPubkeyAndAddressPair(context, pubKey, ip);
-            InboxItem i = new InboxItem(id, new ArrayList(), ip, pubKey, address.getPort());
+            InboxItem i = new InboxItem(id, new ArrayList<Integer>(), ip, pubKey, address.getPort());
             InboxItemStorage.addInboxItem(context, i);
 
-            Log.d("App-To-App", "Stored following ip for pubkey: " + pubKey + " " + PubKeyAndAddressPairStorage.getAddressByPubkey(context, pubKey));
+            Log.d("Network", "Stored following ip for pubkey: " + pubKey + " " + PubKeyAndAddressPairStorage.getAddressByPubkey(context, pubKey));
 
-            Log.d("App-To-App", "pubkey address map " + SharedPreferencesStorage.getAll(context).toString());
+            Log.d("Network", "pubkey address map " + SharedPreferencesStorage.getAll(context).toString());
 
-            if(networkCommunicationListener!=null) {
+            if(networkCommunicationListener != null) {
                 networkCommunicationListener.updateWan(message);
 
                 PeerAppToApp peer = networkCommunicationListener.getOrMakePeer(id, address, PeerAppToApp.INCOMING);
@@ -290,5 +244,34 @@ public class Network {
         }
     }
 
+    static class ShowLocalIPTask extends AsyncTask<Void, Void, InetAddress> {
+        @Override
+        protected InetAddress doInBackground(Void... params) {
+            try {
+                for (Enumeration en = NetworkInterface.getNetworkInterfaces(); en.hasMoreElements(); ) {
+                    NetworkInterface intf = (NetworkInterface) en.nextElement();
+                    for (Enumeration enumIpAddr = intf.getInetAddresses(); enumIpAddr.hasMoreElements(); ) {
+                        InetAddress inetAddress = (InetAddress) enumIpAddr.nextElement();
+                        if (!inetAddress.isLoopbackAddress() && inetAddress instanceof Inet4Address) {
+                            return inetAddress;
+                        }
+                    }
+                }
+            } catch (SocketException ex) {
+                ex.printStackTrace();
+            }
+            return null;
+        }
 
+        @Override
+        protected void onPostExecute(InetAddress inetAddress) {
+            super.onPostExecute(inetAddress);
+            if (inetAddress != null) {
+                internalSourceAddress = new InetSocketAddress(inetAddress, OverviewConnectionsActivity.DEFAULT_PORT);
+            }
+            if(networkCommunicationListener != null) {
+                networkCommunicationListener.updateInternalSourceAddress(internalSourceAddress.toString());
+            }
+        }
+    }
 }
