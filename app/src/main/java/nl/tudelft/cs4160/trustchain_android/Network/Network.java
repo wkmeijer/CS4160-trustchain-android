@@ -46,7 +46,6 @@ import static nl.tudelft.cs4160.trustchain_android.message.MessageProto.Message.
 /**
  * Created by michiel on 11-1-2018.
  */
-
 public class Network {
     private static final int BUFFER_SIZE = 65536;
     private final static int DEFAULT_PORT = 1873;
@@ -151,7 +150,7 @@ public class Network {
      * @param puncturePeer the inboxItem to puncture.
      * @throws IOException
      */
-    public void sendPunctureRequest(PeerAppToApp peer, PeerAppToApp puncturePeer) throws IOException {
+    private void sendPunctureRequest(PeerAppToApp peer, PeerAppToApp puncturePeer) throws IOException {
         PunctureRequest request = new PunctureRequest(hashId, peer.getAddress(), internalSourceAddress, puncturePeer, publicKey);
         sendMessage(request, peer);
     }
@@ -162,7 +161,7 @@ public class Network {
      * @param peer the destination.
      * @throws IOException
      */
-    public void sendPuncture(PeerAppToApp peer) throws IOException {
+    private void sendPuncture(PeerAppToApp peer) throws IOException {
         Puncture puncture = new Puncture(hashId, peer.getAddress(), internalSourceAddress, publicKey);
         sendMessage(puncture, peer);
     }
@@ -174,7 +173,7 @@ public class Network {
      * @param invitee the invitee to which the destination inboxItem will send a puncture request.
      * @throws IOException
      */
-    public void sendIntroductionResponse(PeerAppToApp peer, PeerAppToApp invitee) throws IOException {
+    private void sendIntroductionResponse(PeerAppToApp peer, PeerAppToApp invitee) throws IOException {
         List<PeerAppToApp> pexPeers = new ArrayList<>();
         for (PeerAppToApp p : peerHandler.getPeerList()) {
             if (p.hasReceivedData() && p.getPeerId() != null && p.isAlive())
@@ -193,7 +192,7 @@ public class Network {
      * @param peer    the destination inboxItem.
      * @throws IOException
      */
-    public synchronized void sendMessage(Message message, PeerAppToApp peer) throws IOException {
+    private synchronized void sendMessage(Message message, PeerAppToApp peer) throws IOException {
         message.putPubKey(publicKey);
 
         Log.d("App-To-App Log", "Sending " + message);
@@ -303,7 +302,7 @@ public class Network {
      * @param message the message.
      * @throws IOException
      */
-    public void handleIntroductionRequest(PeerAppToApp peer, IntroductionRequest message) throws IOException {
+    private void handleIntroductionRequest(PeerAppToApp peer, IntroductionRequest message) throws IOException {
         peer.setNetworkOperator(message.getNetworkOperator());
         peer.setConnectionType((int) message.getConnectionType());
         if (getPeerHandler().size() > 1) {
@@ -325,7 +324,7 @@ public class Network {
      * @param peer    the origin inboxItem.
      * @param message the message.
      */
-    public void handleIntroductionResponse(PeerAppToApp peer, IntroductionResponse message) {
+    private void handleIntroductionResponse(PeerAppToApp peer, IntroductionResponse message) {
         peer.setConnectionType((int) message.getConnectionType());
         peer.setNetworkOperator(message.getNetworkOperator());
         List<PeerAppToApp> pex = message.getPex();
@@ -342,7 +341,7 @@ public class Network {
      * @param message the message.
      * @throws IOException
      */
-    public void handlePuncture(PeerAppToApp peer, Puncture message) throws IOException {}
+    private void handlePuncture(PeerAppToApp peer, Puncture message) throws IOException {}
 
     /**
      * Handle a puncture request. Sends a puncture to the puncture inboxItem included in the message.
@@ -352,13 +351,13 @@ public class Network {
      * @throws IOException
      * @throws MessageException
      */
-    public void handlePunctureRequest(PeerAppToApp peer, PunctureRequest message) throws IOException, MessageException {
+    private void handlePunctureRequest(PeerAppToApp peer, PunctureRequest message) throws IOException, MessageException {
         if (!getPeerHandler().peerExistsInList(message.getPuncturePeer())) {
             sendPuncture(message.getPuncturePeer());
         }
     }
 
-    public void handleBlockMessageRequest(PeerAppToApp peer, BlockMessage message) throws IOException, MessageException {
+    private void handleBlockMessageRequest(PeerAppToApp peer, BlockMessage message) throws IOException, MessageException {
         MessageProto.Message msg = message.getMessageProto();
         if(msg.getCrawlRequest().getPublicKey().size() == 0){
             MessageProto.TrustChainBlock block = msg.getHalfBlock();
