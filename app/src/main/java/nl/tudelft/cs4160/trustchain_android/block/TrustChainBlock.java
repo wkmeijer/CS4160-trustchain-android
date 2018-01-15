@@ -15,11 +15,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import nl.tudelft.cs4160.trustchain_android.Util.ByteArrayConverter;
 import nl.tudelft.cs4160.trustchain_android.Util.Key;
 import nl.tudelft.cs4160.trustchain_android.database.TrustChainDBHelper;
 import nl.tudelft.cs4160.trustchain_android.message.MessageProto;
 
-import static nl.tudelft.cs4160.trustchain_android.Peer.bytesToHex;
 import static nl.tudelft.cs4160.trustchain_android.Util.Util.ellipsize;
 
 public class TrustChainBlock {
@@ -369,12 +369,12 @@ public class TrustChainBlock {
 
     public static String toString(MessageProto.TrustChainBlock block){
         String res = "Trustchainblock: {\n";
-        res += "\tPublic key: " + bytesToHex(block.getPublicKey().toByteArray()) + "\n";
+        res += "\tPublic key: " + ByteArrayConverter.bytesToHexString(block.getPublicKey().toByteArray()) + "\n";
         res += "\tSequence Number: " + block.getSequenceNumber() + "\n";
-        res += "\tLink Public Key: " + bytesToHex(block.getLinkPublicKey().toByteArray()) + "\n";
+        res += "\tLink Public Key: " + ByteArrayConverter.bytesToHexString(block.getLinkPublicKey().toByteArray()) + "\n";
         res += "\tLink Sequence Number: " + block.getLinkSequenceNumber() + "\n";
-        res += "\tPrevious Hash: " + bytesToHex(block.getPreviousHash().toByteArray()) + "\n";
-        res += "\tSignature: " + bytesToHex(block.getSignature().toByteArray()) + "\n";
+        res += "\tPrevious Hash: " + ByteArrayConverter.bytesToHexString(block.getPreviousHash().toByteArray()) + "\n";
+        res += "\tSignature: " + ByteArrayConverter.bytesToHexString(block.getSignature().toByteArray()) + "\n";
         res += "\tTransaction: \n" + block.getTransaction().toStringUtf8() + "\n";
         res += "}";
         return res;
@@ -417,7 +417,7 @@ public class TrustChainBlock {
     public static String pubKeyToString(byte[] pubKey, int maxLength){
         String res;
         int length = pubKey.length;
-        res = ellipsize(bytesToHex(pubKey), maxLength);
+        res = ellipsize(ByteArrayConverter.bytesToHexString(pubKey), maxLength);
         res += " (size: " + length + ")";
         return res;
     }

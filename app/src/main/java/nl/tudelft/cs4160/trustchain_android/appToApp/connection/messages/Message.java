@@ -28,6 +28,7 @@ public abstract class Message extends HashMap {
     public final static int INTRODUCTION_RESPONSE = 2;
     public final static int PUNCTURE_REQUEST = 3;
     public final static int PUNCTURE = 4;
+    public final static int BLOCK_MESSAGE = 5;
 
     final protected static String TYPE = "type";
     final protected static String DESTINATION = "destination";
@@ -75,6 +76,8 @@ public abstract class Message extends HashMap {
                 return Puncture.fromMap(dict);
             case PUNCTURE_REQUEST:
                 return PunctureRequest.fromMap(dict);
+            case BLOCK_MESSAGE:
+                return BlockMessage.fromMap(dict);
             default:
                 throw new MessageException("Unknown message");
         }

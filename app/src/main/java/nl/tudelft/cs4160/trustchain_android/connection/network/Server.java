@@ -52,7 +52,9 @@ class Server {
             try {
                 serverSocket = new ServerSocket(SocketServerPORT);
 
-                listener.updateLog("Server is waiting for messages...");
+                if (listener != null) {
+                    listener.updateLog("Server is waiting for messages...");
+                }
 
                 while (true) {
                     messageLog = "";
@@ -98,7 +100,10 @@ class Server {
                 e.printStackTrace();
                 responseLog += "Something wrong! " + e.toString() + "\n";
             } finally {
-                listener.updateLog("\n  Server: " + responseLog);
+
+                if (listener != null) {
+                    listener.updateLog("\n  Server: " + responseLog);
+                }
             }
         }
 

@@ -5,14 +5,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.preference.PreferenceManager;
-import android.provider.Telephony;
 import android.support.v7.app.AppCompatActivity;
-import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.util.Patterns;
 import android.view.Menu;
@@ -22,83 +19,58 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.io.IOException;
-import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
-import java.net.NetworkInterface;
 import java.net.SocketAddress;
-import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 import java.nio.channels.DatagramChannel;
 import java.security.KeyPair;
 import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.List;
-import java.util.Random;
-import java.util.UUID;
 
+import nl.tudelft.cs4160.trustchain_android.Network.Network;
+import nl.tudelft.cs4160.trustchain_android.Network.NetworkCommunicationListener;
+import nl.tudelft.cs4160.trustchain_android.Peer;
 import nl.tudelft.cs4160.trustchain_android.R;
 import nl.tudelft.cs4160.trustchain_android.SharedPreferences.BootstrapIPStorage;
 import nl.tudelft.cs4160.trustchain_android.SharedPreferences.InboxItemStorage;
-import nl.tudelft.cs4160.trustchain_android.SharedPreferences.SharedPreferencesStorage;
 import nl.tudelft.cs4160.trustchain_android.SharedPreferences.UserNameStorage;
-import nl.tudelft.cs4160.trustchain_android.SharedPreferences.PubKeyAndAddressPairStorage;
 import nl.tudelft.cs4160.trustchain_android.Util.Key;
 import nl.tudelft.cs4160.trustchain_android.appToApp.PeerAppToApp;
-import nl.tudelft.cs4160.trustchain_android.appToApp.PeerList;
-import nl.tudelft.cs4160.trustchain_android.appToApp.connection.WanVote;
+import nl.tudelft.cs4160.trustchain_android.appToApp.PeerHandler;
+import nl.tudelft.cs4160.trustchain_android.appToApp.connection.PeerListener;
+import nl.tudelft.cs4160.trustchain_android.appToApp.connection.messages.BlockMessage;
 import nl.tudelft.cs4160.trustchain_android.appToApp.connection.messages.IntroductionRequest;
 import nl.tudelft.cs4160.trustchain_android.appToApp.connection.messages.IntroductionResponse;
 import nl.tudelft.cs4160.trustchain_android.appToApp.connection.messages.Message;
 import nl.tudelft.cs4160.trustchain_android.appToApp.connection.messages.MessageException;
 import nl.tudelft.cs4160.trustchain_android.appToApp.connection.messages.Puncture;
 import nl.tudelft.cs4160.trustchain_android.appToApp.connection.messages.PunctureRequest;
-import nl.tudelft.cs4160.trustchain_android.bencode.BencodeReadException;
 import nl.tudelft.cs4160.trustchain_android.block.TrustChainBlock;
 import nl.tudelft.cs4160.trustchain_android.chainExplorer.ChainExplorerActivity;
+import nl.tudelft.cs4160.trustchain_android.connection.CommunicationSingleton;
 import nl.tudelft.cs4160.trustchain_android.database.TrustChainDBHelper;
 import nl.tudelft.cs4160.trustchain_android.inbox.InboxActivity;
-import nl.tudelft.cs4160.trustchain_android.inbox.InboxItem;
 import nl.tudelft.cs4160.trustchain_android.message.MessageProto;
 
-import static nl.tudelft.cs4160.trustchain_android.Peer.bytesToHex;
 import static nl.tudelft.cs4160.trustchain_android.block.TrustChainBlock.GENESIS_SEQ;
 
-public class OverviewConnectionsActivity extends AppCompatActivity {
+public class OverviewConnectionsActivity extends AppCompatActivity implements NetworkCommunicationListener, PeerListener {
 
-    public static String CONNECTABLE_ADDRESS = "145.94.181.13";
-    final static int UNKNOWN_PEER_LIMIT = 20;
-    final static String HASH_ID = "hash_id";
-    final static int DEFAULT_PORT = 1873;
-    final static int KNOWN_PEER_LIMIT = 10;
-    private static final int BUFFER_SIZE = 2048;
-
-    private TextView mWanVote;
-    private Button mExitButton;
+    public static String CONNECTABLE_ADDRESS = "145.94.193.165";
+    public final static int DEFAULT_PORT = 1873;
+    private static final int BUFFER_SIZE = 65536;
     private PeerListAdapter incomingPeerAdapter;
     private PeerListAdapter outgoingPeerAdapter;
     private DatagramChannel channel;
-
-    private PeerList peerList;
-    private List<PeerAppToApp> incomingList = new ArrayList<>();
-    private List<PeerAppToApp> outgoingList = new ArrayList<>();
-    private String hashId;
-    private String networkOperator;
-    private WanVote wanVote;
-    private int connectionType;
-    private ByteBuffer outBuffer;
-    private InetSocketAddress internalSourceAddress;
-
     private Thread sendThread;
     private Thread listenThread;
-
-    private boolean willExit = false;
-
     private TrustChainDBHelper dbHelper;
+    private Network network;
+    private PeerHandler peerHandler;
 
     /**
      * Initialize views, start send and receive threads if necessary.
@@ -108,21 +80,20 @@ public class OverviewConnectionsActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        openChannel();
         setContentView(R.layout.activity_overview);
         initVariables(savedInstanceState);
         initExitButton();
-        initKey();
-        openChannel();
-        updateConnectionType();
         addInitialPeer();
         startListenThread();
         startSendThread();
-        showLocalIpAddress();
         initPeerLists();
         if (savedInstanceState != null) {
             updatePeerLists();
         }
+        CommunicationSingleton.initContextAndListener(getApplicationContext(), null);
     }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -155,7 +126,7 @@ public class OverviewConnectionsActivity extends AppCompatActivity {
         }
     }
 
-    public void onClickOpenInbox(View view){
+    public void onClickOpenInbox(View view) {
         Intent inboxActivityIntent = new Intent(this, InboxActivity.class);
         startActivity(inboxActivityIntent);
     }
@@ -193,31 +164,38 @@ public class OverviewConnectionsActivity extends AppCompatActivity {
     }
 
     private void initVariables(Bundle savedInstanceState) {
-        TelephonyManager telephonyManager = ((TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE));
-        networkOperator = telephonyManager.getNetworkOperatorName();
-        if (savedInstanceState != null) {
-            peerList = new PeerList((ArrayList<PeerAppToApp>) savedInstanceState.getSerializable("peers"));
-        } else {
-            peerList = new PeerList();
-        }
-        wanVote = new WanVote();
-        outBuffer = ByteBuffer.allocate(BUFFER_SIZE);
-        mWanVote = (TextView) findViewById(R.id.wanvote);
-
+        peerHandler = new PeerHandler(UserNameStorage.getUserName(this));
         dbHelper = new TrustChainDBHelper(this);
-        hashId = UserNameStorage.getUserName(this);
-        ((TextView) findViewById(R.id.peer_id)).setText(hashId);
+        initKey();
+        network = Network.getInstance(getApplicationContext(), channel);
+
+        if (savedInstanceState != null) {
+            ArrayList<PeerAppToApp> list = (ArrayList<PeerAppToApp>) savedInstanceState.getSerializable("peers");
+            setPeersFromSavedInstance(list);
+        }
+
+        setPeerListener(this);
+        network.setNetworkCommunicationListener(this);
+        network.updateConnectionType((ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE));
+        ((TextView) findViewById(R.id.peer_id)).setText(peerHandler.getHashId());
+    }
+
+    public void setPeersFromSavedInstance(ArrayList<PeerAppToApp> peers) {
+        getPeerHandler().setPeerList(peers);
+    }
+
+    public void setPeerListener(PeerListener peerListener) {
+        getPeerHandler().setPeerListener(peerListener);
     }
 
     /**
      * Initialize the exit button.
      */
     private void initExitButton() {
-        mExitButton = (Button) findViewById(R.id.exit_button);
+        Button mExitButton = (Button) findViewById(R.id.exit_button);
         mExitButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                willExit = true;
                 finish();
             }
         });
@@ -229,9 +207,9 @@ public class OverviewConnectionsActivity extends AppCompatActivity {
     private void initPeerLists() {
         ListView incomingPeerConnectionListView = (ListView) findViewById(R.id.incoming_peer_connection_list_view);
         ListView outgoingPeerConnectionListView = (ListView) findViewById(R.id.outgoing_peer_connection_list_view);
-        incomingPeerAdapter = new PeerListAdapter(getApplicationContext(), R.layout.peer_connection_list_item, incomingList, PeerAppToApp.INCOMING);
+        incomingPeerAdapter = new PeerListAdapter(getApplicationContext(), R.layout.peer_connection_list_item, peerHandler.getIncomingList(), PeerAppToApp.INCOMING);
         incomingPeerConnectionListView.setAdapter(incomingPeerAdapter);
-        outgoingPeerAdapter = new PeerListAdapter(getApplicationContext(), R.layout.peer_connection_list_item, outgoingList, PeerAppToApp.OUTGOING);
+        outgoingPeerAdapter = new PeerListAdapter(getApplicationContext(), R.layout.peer_connection_list_item, peerHandler.getOutgoingList(), PeerAppToApp.OUTGOING);
         outgoingPeerConnectionListView.setAdapter(outgoingPeerAdapter);
     }
 
@@ -254,7 +232,7 @@ public class OverviewConnectionsActivity extends AppCompatActivity {
                 SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
                 SharedPreferences.Editor editor = preferences.edit();
                 editor.putString("ConnectableAddress", data.getStringExtra("ConnectableAddress"));
-                editor.commit();
+                editor.apply();
                 addInitialPeer();
             }
         }
@@ -263,35 +241,19 @@ public class OverviewConnectionsActivity extends AppCompatActivity {
     /**
      * Add the intial hard-coded connectable inboxItem to the inboxItem list.
      */
-
    public void addInitialPeer() {
        try {
            String address = BootstrapIPStorage.getIP(this);
            if (address != "" && address != null) {
-               addPeer(null, new InetSocketAddress(InetAddress.getByName(address), DEFAULT_PORT), "", PeerAppToApp.OUTGOING);
+               peerHandler.addPeer(null, new InetSocketAddress(InetAddress.getByName(address), DEFAULT_PORT), PeerAppToApp.OUTGOING);
            } else {
-               addPeer(null, new InetSocketAddress(InetAddress.getByName(CONNECTABLE_ADDRESS), DEFAULT_PORT), "", PeerAppToApp.OUTGOING);
+               peerHandler.addPeer(null, new InetSocketAddress(InetAddress.getByName(CONNECTABLE_ADDRESS), DEFAULT_PORT), PeerAppToApp.OUTGOING);
            }
        } catch (UnknownHostException e) {
             e.printStackTrace();
        }
     }
 
-
-    /**
-     * Request and display the current connection type.
-     */
-    private void updateConnectionType() {
-        ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-        try {
-            connectionType = cm.getActiveNetworkInfo().getType();
-        } catch (Exception e) {
-            showToast("Can't connect: no active network");
-            return;
-        }
-        ((TextView) findViewById(R.id.connection_type))
-                .setText(cm.getActiveNetworkInfo().getTypeName() + " " + cm.getActiveNetworkInfo().getSubtypeName());
-    }
 
     /**
      * Start the thread send thread responsible for sending a {@link IntroductionRequest} to a random inboxItem every 5 seconds.
@@ -302,10 +264,11 @@ public class OverviewConnectionsActivity extends AppCompatActivity {
             public void run() {
                 do {
                     try {
-                        if (peerList.size() > 0) {
-                            PeerAppToApp peer = getEligiblePeer(null);
+                        if (peerHandler.size() > 0) {
+                            PeerAppToApp peer = peerHandler.getEligiblePeer(null);
                             if (peer != null) {
-                                sendIntroductionRequest(peer);
+                                network.sendIntroductionRequest(peer);
+                              //  sendBlockMessage(peer);
                             }
                         }
                     } catch (IOException e) {
@@ -324,113 +287,15 @@ public class OverviewConnectionsActivity extends AppCompatActivity {
         Log.d("App-To-App Log", "Send thread started");
     }
 
-    /**
-     * Send an introduction request.
-     *
-     * @param peer the destination.
-     * @throws IOException
-     */
-    private void sendIntroductionRequest(PeerAppToApp peer) throws IOException {
-        String publicKey = bytesToHex(Key.loadKeys(getApplicationContext()).getPublic().getEncoded());
 
-        IntroductionRequest request = new IntroductionRequest(hashId, peer.getAddress(), connectionType, networkOperator, publicKey);
-        sendMessage(request, peer);
-    }
 
     /**
-     * Send a puncture request.
-     *
-     * @param peer         the destination.
-     * @param puncturePeer the inboxItem to puncture.
-     * @throws IOException
-     */
-    private void sendPunctureRequest(PeerAppToApp peer, PeerAppToApp puncturePeer) throws IOException {
-        String publicKey = bytesToHex(Key.loadKeys(getApplicationContext()).getPublic().getEncoded());
-
-        PunctureRequest request = new PunctureRequest(hashId, peer.getAddress(), internalSourceAddress, puncturePeer, publicKey);
-        sendMessage(request, peer);
-    }
-
-    /**
-     * Send a puncture.
-     *
-     * @param peer the destination.
-     * @throws IOException
-     */
-    private void sendPuncture(PeerAppToApp peer) throws IOException {
-        String publicKey = bytesToHex(Key.loadKeys(getApplicationContext()).getPublic().getEncoded());
-
-        Puncture puncture = new Puncture(hashId, peer.getAddress(), internalSourceAddress, publicKey);
-        sendMessage(puncture, peer);
-    }
-
-    /**
-     * Send an introduction response.
-     *
-     * @param peer    the destination.
-     * @param invitee the invitee to which the destination inboxItem will send a puncture request.
-     * @throws IOException
-     */
-    private void sendIntroductionResponse(PeerAppToApp peer, PeerAppToApp invitee) throws IOException {
-        List<PeerAppToApp> pexPeers = new ArrayList<>();
-        for (PeerAppToApp p : peerList.getList()) {
-            if (p.hasReceivedData() && p.getPeerId() != null && p.isAlive())
-                pexPeers.add(p);
-        }
-
-        String publicKey = bytesToHex(Key.loadKeys(getApplicationContext()).getPublic().getEncoded());
-
-        IntroductionResponse response = new IntroductionResponse(hashId, internalSourceAddress, peer
-                .getAddress(), invitee, connectionType, pexPeers, networkOperator, publicKey);
-        sendMessage(response, peer);
-    }
-
-    /**
-     * Send a message to given inboxItem.
-     *
-     * @param message the message to send.
-     * @param peer    the destination inboxItem.
-     * @throws IOException
-     */
-    private synchronized void sendMessage(Message message, PeerAppToApp peer) throws IOException {
-        String publicKey = bytesToHex(Key.loadKeys(getApplicationContext()).getPublic().getEncoded());
-        message.putPubKey(publicKey);
-
-        Log.d("App-To-App Log", "Sending " + message);
-        outBuffer.clear();
-        message.writeToByteBuffer(outBuffer);
-        outBuffer.flip();
-        channel.send(outBuffer, peer.getAddress());
-        peer.sentData();
-        updatePeerLists();
-    }
-
-    /**
-     * Pick a random eligible inboxItem/invitee for sending an introduction request to.
-     *
-     * @param excludePeer inboxItem to which the invitee is sent.
-     * @return the eligible inboxItem if any, else null.
-     */
-    private PeerAppToApp getEligiblePeer(PeerAppToApp excludePeer) {
-        List<PeerAppToApp> eligiblePeers = new ArrayList<>();
-        for (PeerAppToApp p : peerList.getList()) {
-            if (p.isAlive() && !p.equals(excludePeer)) {
-                eligiblePeers.add(p);
-            }
-        }
-        if (eligiblePeers.size() == 0) {
-            Log.d("App-To-App Log", "No elegible peers!");
-            return null;
-        }
-        Random random = new Random();
-        return eligiblePeers.get(random.nextInt(eligiblePeers.size()));
-    }
-
-    /**
-     * Start the listen thread. The thread opens a new {@link DatagramChannel} and calls {@link OverviewConnectionsActivity#dataReceived(ByteBuffer,
+     * Start the listen thread. The thread opens a new {@link DatagramChannel} and calls {@link Network#dataReceived(Context, ByteBuffer,
      * InetSocketAddress)} for each incoming datagram.
      */
     private void startListenThread() {
+        final Context context = this;
+
         listenThread = new Thread(new Runnable() {
             @Override
             public void run() {
@@ -440,7 +305,7 @@ public class OverviewConnectionsActivity extends AppCompatActivity {
                         inputBuffer.clear();
                         SocketAddress address = channel.receive(inputBuffer);
                         inputBuffer.flip();
-                        dataReceived(inputBuffer, (InetSocketAddress) address);
+                        network.dataReceived(context, inputBuffer, (InetSocketAddress) address);
                     }
                 } catch (IOException e) {
                     Log.d("App-To-App Log", "Listen thread stopped");
@@ -452,85 +317,18 @@ public class OverviewConnectionsActivity extends AppCompatActivity {
     }
 
     /**
-     * Resolve a inboxItem id or address to a inboxItem, else create a new one.
+     * Set the external ip field based on the WAN vote.
      *
-     * @param id       the inboxItem's unique id.
-     * @param address  the inboxItem's address.
-     * @param incoming boolean indicator whether the inboxItem is incoming.
-     * @return the resolved or create inboxItem.
+     * @param ip the ip address.
      */
-    private PeerAppToApp getOrMakePeer(String id, InetSocketAddress address, boolean incoming) {
-        if (id != null) {
-            for (PeerAppToApp peer : peerList.getList()) {
-                if (id.equals(peer.getPeerId())) {
-                    if (!address.equals(peer.getAddress())) {
-                        Log.d("App-To-App Log", "Peer address differs from known address");
-                        peer.setAddress(address);
-                        peerList.removeDuplicates();
-                    }
-                    return peer;
-                }
+    private void setWanvote(final String ip) {
+        new Handler(getMainLooper()).post(new Runnable() {
+            @Override
+            public void run() {
+                TextView mWanVote = (TextView) findViewById(R.id.wanvote);
+                mWanVote.setText(ip);
             }
-        }
-        for (PeerAppToApp peer : peerList.getList()) {
-            if (peer.getAddress().equals(address)) {
-                if (id != null) peer.setPeerId(id);
-                return peer;
-            }
-        }
-        return addPeer(id, address, "", incoming);
-    }
-
-
-    /**
-     * Handle incoming data.
-     *
-     * @param data    the data {@link ByteBuffer}.
-     * @param address the incoming address.
-     */
-    private void dataReceived(ByteBuffer data, InetSocketAddress address) {
-        try {
-            Message message = Message.createFromByteBuffer(data);
-            Log.d("App-To-App Log", "Received " + message);
-
-            String id = message.getPeerId();
-            String pubKey = message.getPubKey();
-
-            String ip = address.getAddress().toString().replace("/", "");
-            PubKeyAndAddressPairStorage.addPubkeyAndAddressPair(this, pubKey, ip);
-            InboxItem i = new InboxItem(id, new ArrayList(), ip, pubKey, address.getPort());
-            InboxItemStorage.addInboxItem(this, i);
-
-            Log.d("App-To-App", "Stored following ip for pubkey: " + pubKey + " " + PubKeyAndAddressPairStorage.getAddressByPubkey(this, pubKey));
-
-            Log.d("App-To-App", "pubkey address map " + SharedPreferencesStorage.getAll(this).toString());
-
-            if (wanVote.vote(message.getDestination())) {
-                Log.d("App-To-App Log", "Address changed to " + wanVote.getAddress());
-                showLocalIpAddress();
-            }
-            setWanvote(wanVote.getAddress().toString());
-            PeerAppToApp peer = getOrMakePeer(id, address, PeerAppToApp.INCOMING);
-            if (peer == null) return;
-            peer.received(data);
-            switch (message.getType()) {
-                case Message.INTRODUCTION_REQUEST:
-                    handleIntroductionRequest(peer, (IntroductionRequest) message);
-                    break;
-                case Message.INTRODUCTION_RESPONSE:
-                    handleIntroductionResponse(peer, (IntroductionResponse) message);
-                    break;
-                case Message.PUNCTURE:
-                    handlePuncture(peer, (Puncture) message);
-                    break;
-                case Message.PUNCTURE_REQUEST:
-                    handlePunctureRequest(peer, (PunctureRequest) message);
-                    break;
-            }
-            updatePeerLists();
-        } catch (BencodeReadException | IOException | MessageException e) {
-            e.printStackTrace();
-        }
+        });
     }
 
     /**
@@ -540,19 +338,20 @@ public class OverviewConnectionsActivity extends AppCompatActivity {
      * @param message the message.
      * @throws IOException
      */
-    private void handleIntroductionRequest(PeerAppToApp peer, IntroductionRequest message) throws IOException {
+    @Override
+    public void handleIntroductionRequest(PeerAppToApp peer, IntroductionRequest message) throws IOException {
         peer.setNetworkOperator(message.getNetworkOperator());
         peer.setConnectionType((int) message.getConnectionType());
-        if (peerList.size() > 1) {
-            PeerAppToApp invitee = getEligiblePeer(peer);
+        if (getPeerHandler().size() > 1) {
+            PeerAppToApp invitee = getPeerHandler().getEligiblePeer(peer);
             if (invitee != null) {
-                sendIntroductionResponse(peer, invitee);
-                sendPunctureRequest(invitee, peer);
-                Log.d("App-To-App Log", "Introducing " + invitee.getAddress() + " to " + peer.getAddress());
+                network.sendIntroductionResponse(peer, invitee);
+                network.sendPunctureRequest(invitee, peer);
+                Log.d("Network", "Introducing " + invitee.getAddress() + " to " + peer.getAddress());
             }
         } else {
-            Log.d("App-To-App Log", "Peerlist too small, can't handle introduction request");
-            sendIntroductionResponse(peer, null);
+            Log.d("Network", "Peerlist too small, can't handle introduction request");
+            network.sendIntroductionResponse(peer, null);
         }
     }
 
@@ -562,13 +361,14 @@ public class OverviewConnectionsActivity extends AppCompatActivity {
      * @param peer    the origin inboxItem.
      * @param message the message.
      */
-    private void handleIntroductionResponse(PeerAppToApp peer, IntroductionResponse message) {
+    @Override
+    public void handleIntroductionResponse(PeerAppToApp peer, IntroductionResponse message) {
         peer.setConnectionType((int) message.getConnectionType());
         peer.setNetworkOperator(message.getNetworkOperator());
         List<PeerAppToApp> pex = message.getPex();
         for (PeerAppToApp pexPeer : pex) {
-            if (hashId.equals(pexPeer.getPeerId())) continue;
-            getOrMakePeer(pexPeer.getPeerId(), pexPeer.getAddress(), PeerAppToApp.OUTGOING);
+            if (getPeerHandler().hashId.equals(pexPeer.getPeerId())) continue;
+            getPeerHandler().getOrMakePeer(pexPeer.getPeerId(), pexPeer.getAddress(), PeerAppToApp.OUTGOING);
         }
     }
 
@@ -579,8 +379,8 @@ public class OverviewConnectionsActivity extends AppCompatActivity {
      * @param message the message.
      * @throws IOException
      */
-    private void handlePuncture(PeerAppToApp peer, Puncture message) throws IOException {
-    }
+    @Override
+    public void handlePuncture(PeerAppToApp peer, Puncture message) throws IOException {}
 
     /**
      * Handle a puncture request. Sends a puncture to the puncture inboxItem included in the message.
@@ -590,233 +390,37 @@ public class OverviewConnectionsActivity extends AppCompatActivity {
      * @throws IOException
      * @throws MessageException
      */
-    private void handlePunctureRequest(PeerAppToApp peer, PunctureRequest message) throws IOException, MessageException {
-        if (!peerList.peerExistsInList(message.getPuncturePeer())) {
-            sendPuncture(message.getPuncturePeer());
+    @Override
+    public void handlePunctureRequest(PeerAppToApp peer, PunctureRequest message) throws IOException, MessageException {
+        if (!getPeerHandler().peerExistsInList(message.getPuncturePeer())) {
+            network.sendPuncture(message.getPuncturePeer());
         }
     }
 
-    /**
-     * Show the local IP address.
-     */
-    private void showLocalIpAddress() {
-        new AsyncTask<Void, Void, InetAddress>() {
-
-            @Override
-            protected InetAddress doInBackground(Void... params) {
-                try {
-                    for (Enumeration en = NetworkInterface.getNetworkInterfaces(); en.hasMoreElements(); ) {
-                        NetworkInterface intf = (NetworkInterface) en.nextElement();
-                        for (Enumeration enumIpAddr = intf.getInetAddresses(); enumIpAddr.hasMoreElements(); ) {
-                            InetAddress inetAddress = (InetAddress) enumIpAddr.nextElement();
-                            if (!inetAddress.isLoopbackAddress() && inetAddress instanceof Inet4Address) {
-                                return inetAddress;
-                            }
-                        }
-                    }
-                } catch (SocketException ex) {
-                    ex.printStackTrace();
-                }
-                return null;
-            }
-
-            @Override
-            protected void onPostExecute(InetAddress inetAddress) {
-                super.onPostExecute(inetAddress);
-                if (inetAddress != null) {
-                    internalSourceAddress = new InetSocketAddress(inetAddress, DEFAULT_PORT);
-                    Log.d("App-To-App Log", "Local ip: " + inetAddress);
-                    TextView localIp = (TextView) findViewById(R.id.local_ip_address_view);
-                    localIp.setText(inetAddress.toString());
-                }
-            }
-        }.execute();
-    }
-
-    /**
-     * Set the external ip field based on the WAN vote.
-     *
-     * @param ip the ip address.
-     */
-    private void setWanvote(final String ip) {
-        new Handler(getMainLooper()).post(new Runnable() {
-            @Override
-            public void run() {
-                mWanVote.setText(ip);
-            }
-        });
-    }
-
-    /**
-     * Show a toast.
-     *
-     * @param toast the text to show.
-     */
-    private void showToast(final String toast) {
-        new Handler(getMainLooper()).post(new Runnable() {
-            @Override
-            public void run() {
-                Toast.makeText(getApplicationContext(), toast, Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
-
-    /**
-     * Add a inboxItem to the inboxItem list.
-     *
-     * @param peerId   the inboxItem's id.
-     * @param address  the inboxItem's address.
-     * @param incoming whether the inboxItem is an incoming inboxItem.
-     * @return the added inboxItem.
-     */
-    private synchronized PeerAppToApp addPeer(String peerId, InetSocketAddress address, String username, boolean incoming) {
-        if (hashId.equals(peerId)) {
-            Log.d("App-To-App Log", "Not adding self");
-            PeerAppToApp self = null;
-            for (PeerAppToApp p : peerList.getList()) {
-                if (p.getAddress().equals(wanVote.getAddress()))
-                    self = p;
-            }
-            if (self != null) {
-                peerList.getList().remove(self);
-                Log.d("App-To-App Log", "Removed self");
-            }
-            return null;
-        }
-        if (wanVote.getAddress() != null && wanVote.getAddress().equals(address)) {
-            Log.d("App-To-App Log", "Not adding inboxItem with same address as wanVote");
-            return null;
-        }
-        for (PeerAppToApp peer : peerList.getList()) {
-            if (peer.getPeerId() != null && peer.getPeerId().equals(peerId)) return peer;
-            if (peer.getAddress().equals(address)) return peer;
-        }
-        final PeerAppToApp peer = new PeerAppToApp(peerId, address);
-        if (incoming) {
-            showToast("New incoming inboxItem from " + peer.getAddress());
-        }
-        new Handler(Looper.getMainLooper()).post(new Runnable() {
-
-            @Override
-            public void run() {
-                peerList.add(peer);
-                trimPeers();
-                splitPeerList();
-                incomingPeerAdapter.notifyDataSetChanged();
-                outgoingPeerAdapter.notifyDataSetChanged();
-                Log.d("App-To-App Log", "Added " + peer);
-            }
-        });
-        return peer;
-    }
-
-    /**
-     * Deletes the oldest peers based on constant limits {@value KNOWN_PEER_LIMIT} and {@value UNKNOWN_PEER_LIMIT}.
-     */
-    private void trimPeers() {
-        limitKnownPeers(KNOWN_PEER_LIMIT);
-        limitUnknownPeers(UNKNOWN_PEER_LIMIT);
-    }
-
-    /**
-     * Limit the amount of known peers by deleting the oldest peers.
-     *
-     * @param limit the limit.
-     */
-    private void limitKnownPeers(int limit) {
-        if (peerList.size() < limit) return;
-        int knownPeers = 0;
-        PeerAppToApp oldestPeer = null;
-        long oldestDate = System.currentTimeMillis();
-        for (PeerAppToApp peer : peerList.getList()) {
-            if (peer.hasReceivedData()) {
-                knownPeers++;
-                if (peer.getCreationTime() < oldestDate) {
-                    oldestDate = peer.getCreationTime();
-                    oldestPeer = peer;
-                }
-            }
-        }
-        if (knownPeers > limit) {
-            peerList.remove(oldestPeer);
-        }
-        if (knownPeers - 1 > limit) {
-            limitKnownPeers(limit);
-        }
-    }
-
-    /**
-     * Limit the amount of known peers by deleting the oldest peers.
-     *
-     * @param limit the limit.
-     */
-    private void limitUnknownPeers(int limit) {
-        if (peerList.size() < limit) return;
-        int unknownPeers = 0;
-        PeerAppToApp oldestPeer = null;
-        long oldestDate = System.currentTimeMillis();
-        for (PeerAppToApp peer : peerList.getList()) {
-            if (!peer.hasReceivedData()) {
-                unknownPeers++;
-                if (peer.getCreationTime() < oldestDate) {
-                    oldestDate = peer.getCreationTime();
-                    oldestPeer = peer;
-                }
-            }
-        }
-        if (unknownPeers > limit) {
-            peerList.remove(oldestPeer);
-        }
-        if (unknownPeers - 1 > limit) {
-            limitKnownPeers(limit);
+    @Override
+    public void handleBlockMessageRequest(PeerAppToApp peer, BlockMessage message) throws IOException, MessageException {
+        MessageProto.Message msg = message.getMessageProto();
+        if(msg.getCrawlRequest().getPublicKey().size() == 0){
+            MessageProto.TrustChainBlock block = msg.getHalfBlock();
+            InboxItemStorage.addHalfBlock(CommunicationSingleton.getContext(), block.getPublicKey().toString(), block.getLinkSequenceNumber());
+            CommunicationSingleton.getDbHelper().insertInDB(block);
+            Log.d("testTheStacks", block.toString());
         }
     }
 
     /**
      * Update the showed inboxItem lists.
      */
-    private void updatePeerLists() {
+    @Override
+    public void updatePeerLists() {
         new Handler(Looper.getMainLooper()).post(new Runnable() {
             @Override
             public void run() {
-                splitPeerList();
+                peerHandler.splitPeerList();
                 incomingPeerAdapter.notifyDataSetChanged();
                 outgoingPeerAdapter.notifyDataSetChanged();
             }
         });
-    }
-
-    /**
-     * Split the inboxItem list between incoming and outgoing peers.
-     */
-    private void splitPeerList() {
-        List<PeerAppToApp> newIncoming = new ArrayList<>();
-        List<PeerAppToApp> newOutgoing = new ArrayList<>();
-        for (PeerAppToApp peer : peerList.getList()) {
-            if (peer.hasReceivedData()) {
-                newIncoming.add(peer);
-            } else {
-                newOutgoing.add(peer);
-            }
-        }
-        if (!newIncoming.equals(incomingList)) {
-            incomingList.clear();
-            incomingList.addAll(newIncoming);
-        }
-        if (!newOutgoing.equals(outgoingList)) {
-            outgoingList.clear();
-            outgoingList.addAll(newOutgoing);
-        }
-    }
-
-    /**
-     * Check whether an ip address is valid.
-     *
-     * @param s the text to check for validity.
-     * @return the validity.
-     */
-    private boolean isValidIp(String s) {
-        return Patterns.IP_ADDRESS.matcher(s).matches();
     }
 
     @Override
@@ -833,20 +437,85 @@ public class OverviewConnectionsActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onStop() {
-        super.onStop();
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-    }
-
-    @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putSerializable("peers", peerList.getList());
+        outState.putSerializable("peers", peerHandler.getPeerList());
 
         super.onSaveInstanceState(outState);
+    }
+
+    public void updateWan(Message message) throws MessageException {
+        if (peerHandler.getWanVote().vote(message.getDestination())) {
+            Log.d("App-To-App Log", "Address changed to " + peerHandler.getWanVote().getAddress());
+            updateInternalSourceAddress(peerHandler.getWanVote().getAddress().toString());
+        }
+        setWanvote(peerHandler.getWanVote().getAddress().toString());
+    }
+
+    @Override
+    public PeerAppToApp getOrMakePeer(String id, InetSocketAddress address, boolean incoming) {
+        return peerHandler.getOrMakePeer(id, address,incoming);
+    }
+
+    /**
+     * Display connectionType
+     * @param connectionType
+     * @param typename
+     * @param subtypename
+     */
+    @Override
+    public void updateConnectionType(int connectionType, String typename, String subtypename) {
+        String connectionTypeStr = typename + " " + subtypename;
+        ((TextView) findViewById(R.id.connection_type)).setText(connectionTypeStr);
+    }
+
+    @Override
+    public void updateLog(final String msg) {
+        //just to be sure run it on the ui thread
+        //this is not necessary when this function is called from a AsyncTask
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                ((TextView) findViewById(R.id.status)).append(msg);
+            }
+        });
+    }
+
+    @Override
+    public void connectionSuccessful(byte[] publicKey) {
+
+    }
+
+    @Override
+    public void requestPermission(final MessageProto.TrustChainBlock block, final Peer peer) {
+
+    }
+
+    @Override
+    public void updateInternalSourceAddress(final String address) {
+        Log.d("App-To-App Log", "Local ip: " + address);
+
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                TextView localIp = (TextView) findViewById(R.id.local_ip_address_view);
+                localIp.setText(address);
+            }
+        });
+    }
+
+    @Override
+    public void updateIncomingPeers() {
+        incomingPeerAdapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public void updateOutgoingPeers() {
+        outgoingPeerAdapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public PeerHandler getPeerHandler() {
+        return peerHandler;
     }
 }

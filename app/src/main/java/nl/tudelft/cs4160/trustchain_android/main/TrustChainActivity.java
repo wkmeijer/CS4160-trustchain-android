@@ -37,7 +37,6 @@ import nl.tudelft.cs4160.trustchain_android.SharedPreferences.PubKeyAndAddressPa
 import nl.tudelft.cs4160.trustchain_android.SharedPreferences.SharedPreferencesStorage;
 import nl.tudelft.cs4160.trustchain_android.Util.ByteArrayConverter;
 
-import nl.tudelft.cs4160.trustchain_android.appToApp.PeerAppToApp;
 import nl.tudelft.cs4160.trustchain_android.block.TrustChainBlock;
 import nl.tudelft.cs4160.trustchain_android.block.ValidationResult;
 import nl.tudelft.cs4160.trustchain_android.chainExplorer.ChainExplorerAdapter;
@@ -219,7 +218,6 @@ public class TrustChainActivity extends AppCompatActivity implements CompoundBut
      * Sets all the information of the current peer.
      */
     private void setPeerDetails() {
-
         inboxItem = (InboxItem) getIntent().getSerializableExtra("inboxItem");
         if (inboxItem != null) {
             String address = inboxItem.getAddress().toString();
