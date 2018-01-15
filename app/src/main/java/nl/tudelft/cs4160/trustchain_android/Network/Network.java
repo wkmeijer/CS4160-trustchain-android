@@ -119,6 +119,7 @@ public class Network {
             return;
         }
 
+        connectionType = cm.getActiveNetworkInfo().getType();
         String typename = cm.getActiveNetworkInfo().getTypeName();
         String subtypeName = cm.getActiveNetworkInfo().getSubtypeName();
 

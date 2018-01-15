@@ -90,7 +90,6 @@ public class PeerHandlerTest {
         assertEquals(
                 peerlist.getWanVote().getAddress(), null);
     }
-
     @After
     public void resetMocks() {
         validateMockitoUsage();
