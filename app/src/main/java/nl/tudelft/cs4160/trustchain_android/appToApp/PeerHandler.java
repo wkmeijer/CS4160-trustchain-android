@@ -20,8 +20,6 @@ import nl.tudelft.cs4160.trustchain_android.main.PeerListAdapter;
  */
 
 public class PeerHandler {
-    final static int UNKNOWN_PEER_LIMIT = 20;
-    final static int KNOWN_PEER_LIMIT = 10;
     private ArrayList<PeerAppToApp> peerList;
     private List<PeerAppToApp> incomingList = new ArrayList<>();
     private List<PeerAppToApp> outgoingList = new ArrayList<>();

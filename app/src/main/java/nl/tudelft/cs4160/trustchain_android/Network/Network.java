@@ -49,19 +49,13 @@ import static nl.tudelft.cs4160.trustchain_android.message.MessageProto.Message.
 public class Network {
     private static final int BUFFER_SIZE = 65536;
     private final static int DEFAULT_PORT = 1873;
-
     private DatagramChannel channel;
-
     private PeerHandler peerHandler;
     private String hashId;
-
-    private boolean willExit = false;
-
     private int connectionType;
     private ByteBuffer outBuffer;
     private InetSocketAddress internalSourceAddress;
     private String networkOperator;
-
     private static Network network;
     private String publicKey;
     private TrustChainDBHelper dbHelper;
