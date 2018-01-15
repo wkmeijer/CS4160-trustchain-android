@@ -22,62 +22,59 @@ import nl.tudelft.cs4160.trustchain_android.main.PeerListAdapter;
 public class PeerHandler {
     final static int UNKNOWN_PEER_LIMIT = 20;
     final static int KNOWN_PEER_LIMIT = 10;
-    final static String HASH_ID = "hash_id";
-    private ArrayList<PeerAppToApp> list;
+    private ArrayList<PeerAppToApp> peerList;
     private List<PeerAppToApp> incomingList = new ArrayList<>();
     private List<PeerAppToApp> outgoingList = new ArrayList<>();
     private PeerListener peerListener;
     public String hashId;
     private WanVote wanVote;
 
-    public PeerHandler(ArrayList<PeerAppToApp> list, String hashId, PeerListener peerListener) {
-        this.list = list;
+    public PeerHandler(ArrayList<PeerAppToApp> list, String hashId) {
+        this.peerList = list;
         this.hashId = hashId;
         this.wanVote = new WanVote();
-        this.peerListener = peerListener;
     }
 
-    public PeerHandler(String hashId, PeerListener peerListener) {
-        this.list = new ArrayList<>();
+    public PeerHandler(String hashId) {
+        this.peerList = new ArrayList<>();
         this.hashId = hashId;
         this.wanVote = new WanVote();
-        this.peerListener = peerListener;
     }
 
-    public ArrayList<PeerAppToApp> getList() {
-        return list;
+    public void setPeerListener(PeerListener peerListener){
+        this.peerListener = peerListener;
     }
 
     /**
      * Remove duplicate peers from the peerlist.
      */
     public void removeDuplicates() {
-        for (int i = 0; i < list.size(); i++) {
-            PeerAppToApp p1 = list.get(i);
-            for (int j = 0; j < list.size(); j++) {
-                PeerAppToApp p2 = list.get(j);
+        for (int i = 0; i < peerList.size(); i++) {
+            PeerAppToApp p1 = peerList.get(i);
+            for (int j = 0; j < peerList.size(); j++) {
+                PeerAppToApp p2 = peerList.get(j);
                 if (j != i && p1.getPeerId() != null && p1.getPeerId().equals(p2.getPeerId())) {
-                    list.remove(p2);
+                    peerList.remove(p2);
                 }
             }
         }
     }
 
     public void add(PeerAppToApp p) {
-        this.list.add(p);
+        this.peerList.add(p);
     }
 
     public void remove(PeerAppToApp p) {
-        this.list.remove(p);
+        this.peerList.remove(p);
     }
 
     public int size() {
-        return list.size();
+        return peerList.size();
     }
 
     public boolean peerExistsInList(PeerAppToApp peer) {
         if (peer.getPeerId() == null) return false;
-        for (PeerAppToApp p : this.list) {
+        for (PeerAppToApp p : this.peerList) {
             if (peer.getPeerId().equals(p.getPeerId())) {
                 return true;
             }
@@ -98,12 +95,12 @@ public class PeerHandler {
         if (hashId.equals(peerId)) {
             Log.d("App-To-App Log", "Not adding self");
             PeerAppToApp self = null;
-            for (PeerAppToApp p : list) {
+            for (PeerAppToApp p : peerList) {
                 if (p.getAddress().equals(wanVote.getAddress()))
                     self = p;
             }
             if (self != null) {
-                list.remove(self);
+                peerList.remove(self);
                 Log.d("App-To-App Log", "Removed self");
             }
             return null;
@@ -112,7 +109,7 @@ public class PeerHandler {
             Log.d("App-To-App Log", "Not adding inboxItem with same address as wanVote");
             return null;
         }
-        for (PeerAppToApp peer : list) {
+        for (PeerAppToApp peer : peerList) {
             if (peer.getPeerId() != null && peer.getPeerId().equals(peerId)) return peer;
             if (peer.getAddress().equals(address)) return peer;
         }
@@ -121,7 +118,7 @@ public class PeerHandler {
 
             @Override
             public void run() {
-                list.add(peer);
+                peerList.add(peer);
                 trimPeers();
                 splitPeerList();
                 peerListener.updateIncomingPeers();
@@ -138,7 +135,7 @@ public class PeerHandler {
     public void splitPeerList() {
         List<PeerAppToApp> newIncoming = new ArrayList<>();
         List<PeerAppToApp> newOutgoing = new ArrayList<>();
-        for (PeerAppToApp peer : list) {
+        for (PeerAppToApp peer : peerList) {
             if (peer.hasReceivedData()) {
                 newIncoming.add(peer);
             } else {
@@ -164,7 +161,7 @@ public class PeerHandler {
      */
     public PeerAppToApp getEligiblePeer(PeerAppToApp excludePeer) {
         List<PeerAppToApp> eligiblePeers = new ArrayList<>();
-        for (PeerAppToApp p : list) {
+        for (PeerAppToApp p : peerList) {
             if (p.isAlive() && !p.equals(excludePeer)) {
                 eligiblePeers.add(p);
             }
@@ -187,7 +184,7 @@ public class PeerHandler {
      */
     public PeerAppToApp getOrMakePeer(String id, InetSocketAddress address, boolean incoming) {
         if (id != null) {
-            for (PeerAppToApp peer : list) {
+            for (PeerAppToApp peer : peerList) {
                 if (id.equals(peer.getPeerId())) {
                     if (!address.equals(peer.getAddress())) {
                         Log.d("App-To-App Log", "Peer address differs from known address");
@@ -198,7 +195,7 @@ public class PeerHandler {
                 }
             }
         }
-        for (PeerAppToApp peer : list) {
+        for (PeerAppToApp peer : peerList) {
             if (peer.getAddress().equals(address)) {
                 if (id != null) peer.setPeerId(id);
                 return peer;
@@ -222,11 +219,11 @@ public class PeerHandler {
      * @param limit the limit.
      */
     private void limitKnownPeers(int limit) {
-        if (list.size() < limit) return;
+        if (peerList.size() < limit) return;
         int knownPeers = 0;
         PeerAppToApp oldestPeer = null;
         long oldestDate = System.currentTimeMillis();
-        for (PeerAppToApp peer : list) {
+        for (PeerAppToApp peer : peerList) {
             if (peer.hasReceivedData()) {
                 knownPeers++;
                 if (peer.getCreationTime() < oldestDate) {
@@ -236,7 +233,7 @@ public class PeerHandler {
             }
         }
         if (knownPeers > limit) {
-            list.remove(oldestPeer);
+            peerList.remove(oldestPeer);
         }
         if (knownPeers - 1 > limit) {
             limitKnownPeers(limit);
@@ -249,11 +246,11 @@ public class PeerHandler {
      * @param limit the limit.
      */
     private void limitUnknownPeers(int limit) {
-        if (list.size() < limit) return;
+        if (peerList.size() < limit) return;
         int unknownPeers = 0;
         PeerAppToApp oldestPeer = null;
         long oldestDate = System.currentTimeMillis();
-        for (PeerAppToApp peer : list) {
+        for (PeerAppToApp peer : peerList) {
             if (!peer.hasReceivedData()) {
                 unknownPeers++;
                 if (peer.getCreationTime() < oldestDate) {
@@ -263,7 +260,7 @@ public class PeerHandler {
             }
         }
         if (unknownPeers > limit) {
-            list.remove(oldestPeer);
+            peerList.remove(oldestPeer);
         }
         if (unknownPeers - 1 > limit) {
             limitKnownPeers(limit);
@@ -284,5 +281,13 @@ public class PeerHandler {
 
     public List<PeerAppToApp> getOutgoingList() {
         return outgoingList;
+    }
+
+    public ArrayList<PeerAppToApp> getPeerList() {
+        return peerList;
+    }
+
+    public void setPeerList(ArrayList<PeerAppToApp> peerList) {
+        this.peerList = peerList;
     }
 }

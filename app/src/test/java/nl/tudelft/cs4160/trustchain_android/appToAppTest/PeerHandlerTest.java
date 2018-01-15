@@ -46,13 +46,14 @@ public class PeerHandlerTest {
         expectedIpList.add(peer2);
         expectedIpList.add(peer3);
 
-        peerlist = new PeerHandler(originalIpList);
+        peerlist = new PeerHandler("name");
+        peerlist.setPeerList(originalIpList);
     }
 
     @Test
     public void removeDuplicatesTest(){
         peerlist.removeDuplicates();
-        ArrayList<PeerAppToApp> newIPPeerList = peerlist.getList();
+        ArrayList<PeerAppToApp> newIPPeerList = peerlist.getPeerList();
         boolean failed = false;
 
         for (PeerAppToApp peer: newIPPeerList) {
@@ -76,7 +77,7 @@ public class PeerHandlerTest {
 
     @Test
     public void testCertainMethods() {
-        peerlist = new PeerHandler();
+        peerlist = new PeerHandler("name");
         PeerAppToApp peer = new PeerAppToApp("peer", rnadomInet);
         peerlist.add(peer);
         assertEquals(1, peerlist.size());

@@ -1,6 +1,7 @@
 package nl.tudelft.cs4160.trustchain_android.Network;
 
 import android.content.Context;
+import android.net.ConnectivityManager;
 import android.os.AsyncTask;
 import android.telephony.TelephonyManager;
 import android.util.Log;
@@ -25,6 +26,7 @@ import nl.tudelft.cs4160.trustchain_android.Util.ByteArrayConverter;
 import nl.tudelft.cs4160.trustchain_android.Util.Key;
 import nl.tudelft.cs4160.trustchain_android.appToApp.PeerAppToApp;
 import nl.tudelft.cs4160.trustchain_android.appToApp.PeerHandler;
+import nl.tudelft.cs4160.trustchain_android.appToApp.connection.PeerListener;
 import nl.tudelft.cs4160.trustchain_android.appToApp.connection.messages.BlockMessage;
 import nl.tudelft.cs4160.trustchain_android.appToApp.connection.messages.IntroductionRequest;
 import nl.tudelft.cs4160.trustchain_android.appToApp.connection.messages.IntroductionResponse;
@@ -50,7 +52,7 @@ public class Network {
 
     private DatagramChannel channel;
 
-    private PeerHandler peerList;
+    private PeerHandler peerHandler;
     private String hashId;
 
     private boolean willExit = false;
@@ -76,22 +78,51 @@ public class Network {
         return network;
     }
 
-    public void setCallBackListener(NetworkCommunicationListener networkCommunicationListener) {
+    public void setNetworkCommunicationListener(NetworkCommunicationListener networkCommunicationListener) {
         this.networkCommunicationListener = networkCommunicationListener;
+    }
+
+    public void setPeerListener(PeerListener peerListener) {
+        this.peerHandler.setPeerListener(peerListener);
+    }
+
+    public PeerHandler getPeerHandler() {
+        return peerHandler;
     }
 
     private void initVariables(Context context, DatagramChannel channel) {
         TelephonyManager telephonyManager = ((TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE));
         networkOperator = telephonyManager.getNetworkOperatorName();
-
+        ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        updateConnectionType(cm);
         dbHelper = new TrustChainDBHelper(context);
-        peerList = new PeerHandler();
+        peerHandler = new PeerHandler(UserNameStorage.getUserName(context));
         outBuffer = ByteBuffer.allocate(BUFFER_SIZE);
         hashId = UserNameStorage.getUserName(context);
         publicKey = ByteArrayConverter.bytesToHexString(Key.loadKeys(context).getPublic().getEncoded());
         this.channel = channel;
-
         showLocalIpAddress();
+    }
+
+    public void setPeersFromSavedInstance(ArrayList<PeerAppToApp> peers) {
+        this.peerHandler.setPeerList(peers);
+    }
+
+    /**
+     * Request and display the current connection type.
+     */
+    private void updateConnectionType(ConnectivityManager cm) {
+
+        try {
+            int connectionType = cm.getActiveNetworkInfo().getType();
+        } catch (Exception e) {
+            return;
+        }
+
+        String typename = cm.getActiveNetworkInfo().getTypeName();
+        String subtypeName = cm.getActiveNetworkInfo().getSubtypeName();
+
+        networkCommunicationListener.updateConnectionType(connectionType, typename, subtypeName);
     }
 
     /**
@@ -144,7 +175,7 @@ public class Network {
      */
     public void sendIntroductionResponse(PeerAppToApp peer, PeerAppToApp invitee) throws IOException {
         List<PeerAppToApp> pexPeers = new ArrayList<>();
-        for (PeerAppToApp p : peerList.getList()) {
+        for (PeerAppToApp p : peerHandler.getPeerList()) {
             if (p.hasReceivedData() && p.getPeerId() != null && p.isAlive())
                 pexPeers.add(p);
         }
@@ -257,4 +288,6 @@ public class Network {
             e.printStackTrace();
         }
     }
+
+
 }
