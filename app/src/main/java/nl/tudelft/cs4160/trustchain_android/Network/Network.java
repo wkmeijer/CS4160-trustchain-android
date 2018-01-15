@@ -114,7 +114,7 @@ public class Network {
     private void updateConnectionType(ConnectivityManager cm) {
 
         try {
-            int connectionType = cm.getActiveNetworkInfo().getType();
+            cm.getActiveNetworkInfo().getType();
         } catch (Exception e) {
             return;
         }

@@ -414,18 +414,6 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
         });
     }
 
-
-
-    /**
-     * Check whether an ip address is valid.
-     *
-     * @param s the text to check for validity.
-     * @return the validity.
-     */
-    private boolean isValidIp(String s) {
-        return Patterns.IP_ADDRESS.matcher(s).matches();
-    }
-
     @Override
     protected void onDestroy() {
         listenThread.interrupt();
