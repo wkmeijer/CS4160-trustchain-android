@@ -1,6 +1,8 @@
 package nl.tudelft.cs4160.trustchain_android.appToAppTest;
 
 
+import android.util.Log;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -8,6 +10,7 @@ import org.junit.Test;
 import java.net.InetSocketAddress;
 import java.util.ArrayList;
 
+import nl.tudelft.cs4160.trustchain_android.Peer;
 import nl.tudelft.cs4160.trustchain_android.appToApp.PeerAppToApp;
 import nl.tudelft.cs4160.trustchain_android.appToApp.PeerHandler;
 
@@ -27,6 +30,7 @@ public class PeerHandlerTest {
     private ArrayList<PeerAppToApp> originalIpList;
     private ArrayList<PeerAppToApp> expectedIpList;
     InetSocketAddress rnadomInet = new InetSocketAddress(200);
+    private String randomHashIdName = "randomHashIdName";
 
     @Before
     public void initialization() {
@@ -46,7 +50,7 @@ public class PeerHandlerTest {
         expectedIpList.add(peer2);
         expectedIpList.add(peer3);
 
-        peerlist = new PeerHandler("name");
+        peerlist = new PeerHandler(randomHashIdName);
         peerlist.setPeerList(originalIpList);
     }
 
@@ -90,6 +94,76 @@ public class PeerHandlerTest {
         assertEquals(
                 peerlist.getWanVote().getAddress(), null);
     }
+
+    @Test
+    public void testSetPeerlist() {
+
+        PeerAppToApp peer1 = new PeerAppToApp("peer1", rnadomInet);
+        PeerAppToApp peer2 = new PeerAppToApp("peer2", rnadomInet);
+        PeerAppToApp peer3 = new PeerAppToApp("peer3", rnadomInet);
+        ArrayList<PeerAppToApp> list = new ArrayList<PeerAppToApp>();
+        list.add(peer1);
+        list.add(peer2);
+        list.add(peer3);
+        list.add(peer1);
+
+        peerlist.setPeerList(list);
+        assertEquals(
+                peerlist.getPeerList().toString(), list.toString());
+    }
+
+    @Test
+    public void testPeerlistAdd() {
+        int size = peerlist.getPeerList().size();
+        PeerAppToApp peer2 = new PeerAppToApp("peer2", rnadomInet);
+        peerlist.add(peer2);
+        assertEquals(
+                peerlist.getPeerList().size(), size + 1);
+    }
+
+
+    @Test
+    public void testPeerListGetHash() {
+        assertEquals(peerlist.getHashId(), randomHashIdName);
+    }
+
+    @Test
+    public void testRemoveAPeers() {
+        int size = peerlist.getPeerList().size();
+        peerlist.remove(originalIpList.get(0));
+        assertEquals(peerlist.getPeerList().size(), size - 1);
+    }
+
+
+    @Test
+    public void testExistsIn() {
+        assertTrue(peerlist.peerExistsInList(originalIpList.get(0)));
+    }
+
+    @Test
+    public void testNotExistsIn() {
+        assertFalse(peerlist.peerExistsInList(new PeerAppToApp("peerA??", new InetSocketAddress(202))));
+    }
+    @Test
+    public void testAddPeer() {
+        PeerAppToApp randomPeer = new PeerAppToApp("peerA??", new InetSocketAddress(202));
+        peerlist.add(randomPeer);
+        assertTrue(peerlist.peerExistsInList(randomPeer));
+    }
+    @Test
+    public void testAddPeerAlreadyInList() {
+        int size = peerlist.getPeerList().size();
+        peerlist.add(originalIpList.get(0));
+        assertEquals(peerlist.getPeerList().size(), size);
+    }
+    @Test
+    public void testSplitList() {
+        int size = peerlist.getPeerList().size();
+        peerlist.splitPeerList();
+        assertEquals(size, peerlist.getIncomingList().size() + peerlist.getOutgoingList().size());
+    }
+
+
     @After
     public void resetMocks() {
         validateMockitoUsage();

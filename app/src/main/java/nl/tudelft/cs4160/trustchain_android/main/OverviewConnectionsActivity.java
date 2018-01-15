@@ -413,7 +413,7 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
             }
         });
     }
-    
+
     @Override
     protected void onDestroy() {
         listenThread.interrupt();
