@@ -1,9 +1,11 @@
 package nl.tudelft.cs4160.trustchain_android.Network;
 
 import android.content.Context;
+import android.net.ConnectivityManager;
 import android.os.AsyncTask;
 import android.telephony.TelephonyManager;
 import android.util.Log;
+import android.widget.TextView;
 
 import java.io.IOException;
 import java.net.Inet4Address;
@@ -17,6 +19,7 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 
+import nl.tudelft.cs4160.trustchain_android.R;
 import nl.tudelft.cs4160.trustchain_android.SharedPreferences.InboxItemStorage;
 import nl.tudelft.cs4160.trustchain_android.SharedPreferences.PubKeyAndAddressPairStorage;
 import nl.tudelft.cs4160.trustchain_android.SharedPreferences.SharedPreferencesStorage;
@@ -84,6 +87,9 @@ public class Network {
         TelephonyManager telephonyManager = ((TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE));
         networkOperator = telephonyManager.getNetworkOperatorName();
 
+        ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        updateConnectionType(cm);
+
         dbHelper = new TrustChainDBHelper(context);
         peerList = new PeerList();
         outBuffer = ByteBuffer.allocate(BUFFER_SIZE);
@@ -92,6 +98,24 @@ public class Network {
         this.channel = channel;
 
         showLocalIpAddress();
+    }
+
+
+    /**
+     * Request and display the current connection type.
+     */
+    private void updateConnectionType(ConnectivityManager cm) {
+
+        try {
+            int connectionType = cm.getActiveNetworkInfo().getType();
+        } catch (Exception e) {
+            return;
+        }
+
+        String typename = cm.getActiveNetworkInfo().getTypeName();
+        String subtypeName = cm.getActiveNetworkInfo().getSubtypeName();
+
+        networkCommunicationListener.updateConnectionType(connectionType, typename, subtypeName);
     }
 
     /**

@@ -102,7 +102,6 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
         setContentView(R.layout.activity_overview);
         initVariables(savedInstanceState);
         initExitButton();
-        updateConnectionType();
         addInitialPeer();
         startListenThread();
         startSendThread();
@@ -670,27 +669,23 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
         super.onSaveInstanceState(outState);
     }
 
-    /**
-     * Request and display the current connection type.
-     */
-    public void updateConnectionType() {
-        ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-
-        try {
-            int connectionType = cm.getActiveNetworkInfo().getType();
-        } catch (Exception e) {
-            return;
-        }
-        ((TextView) findViewById(R.id.connection_type))
-                .setText(cm.getActiveNetworkInfo().getTypeName() + " " + cm.getActiveNetworkInfo().getSubtypeName());
-    }
-
     public void updateWan(Message message) throws MessageException {
         if (wanVote.vote(message.getDestination())) {
             Log.d("App-To-App Log", "Address changed to " + wanVote.getAddress());
             updateInternalSourceAddress(wanVote.getAddress().toString());
         }
         setWanvote(wanVote.getAddress().toString());
+    }
+
+    /**
+     * Display connectionType
+     * @param connectionType
+     * @param typename
+     * @param subtypename
+     */
+    @Override
+    public void updateConnectionType(int connectionType, String typename, String subtypename) {
+        ((TextView) findViewById(R.id.connection_type)).setText(typename + " " + subtypename);
     }
 
     @Override
