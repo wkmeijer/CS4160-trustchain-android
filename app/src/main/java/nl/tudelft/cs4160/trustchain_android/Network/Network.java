@@ -17,6 +17,9 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 
+import nl.tudelft.cs4160.trustchain_android.SharedPreferences.InboxItemStorage;
+import nl.tudelft.cs4160.trustchain_android.SharedPreferences.PubKeyAndAddressPairStorage;
+import nl.tudelft.cs4160.trustchain_android.SharedPreferences.SharedPreferencesStorage;
 import nl.tudelft.cs4160.trustchain_android.SharedPreferences.UserNameStorage;
 import nl.tudelft.cs4160.trustchain_android.Util.ByteArrayConverter;
 import nl.tudelft.cs4160.trustchain_android.Util.Key;
@@ -26,10 +29,13 @@ import nl.tudelft.cs4160.trustchain_android.appToApp.connection.messages.BlockMe
 import nl.tudelft.cs4160.trustchain_android.appToApp.connection.messages.IntroductionRequest;
 import nl.tudelft.cs4160.trustchain_android.appToApp.connection.messages.IntroductionResponse;
 import nl.tudelft.cs4160.trustchain_android.appToApp.connection.messages.Message;
+import nl.tudelft.cs4160.trustchain_android.appToApp.connection.messages.MessageException;
 import nl.tudelft.cs4160.trustchain_android.appToApp.connection.messages.Puncture;
 import nl.tudelft.cs4160.trustchain_android.appToApp.connection.messages.PunctureRequest;
+import nl.tudelft.cs4160.trustchain_android.bencode.BencodeReadException;
 import nl.tudelft.cs4160.trustchain_android.connection.CommunicationListener;
 import nl.tudelft.cs4160.trustchain_android.database.TrustChainDBHelper;
+import nl.tudelft.cs4160.trustchain_android.inbox.InboxItem;
 import nl.tudelft.cs4160.trustchain_android.message.MessageProto;
 
 import static nl.tudelft.cs4160.trustchain_android.block.TrustChainBlock.createBlock;
@@ -198,5 +204,58 @@ public class Network {
                 networkCommunicationListener.updateInternalSourceAddress(internalSourceAddress.toString());
             }
         }.execute();
+    }
+
+
+    /**
+     * Handle incoming data.
+     *
+     * @param data    the data {@link ByteBuffer}.
+     * @param address the incoming address.
+     */
+    public void dataReceived(Context context, ByteBuffer data, InetSocketAddress address) {
+        try {
+            Message message = Message.createFromByteBuffer(data);
+            Log.d("App-To-App Log", "Received " + message);
+
+            String id = message.getPeerId();
+            String pubKey = message.getPubKey();
+
+            String ip = address.getAddress().toString().replace("/", "");
+            PubKeyAndAddressPairStorage.addPubkeyAndAddressPair(context, pubKey, ip);
+            InboxItem i = new InboxItem(id, new ArrayList(), ip, pubKey, address.getPort());
+            InboxItemStorage.addInboxItem(context, i);
+
+            Log.d("App-To-App", "Stored following ip for pubkey: " + pubKey + " " + PubKeyAndAddressPairStorage.getAddressByPubkey(context, pubKey));
+
+            Log.d("App-To-App", "pubkey address map " + SharedPreferencesStorage.getAll(context).toString());
+
+            networkCommunicationListener.updateWan(message);
+
+            PeerAppToApp peer = networkCommunicationListener.getOrMakePeer(id, address, PeerAppToApp.INCOMING);
+
+            if (peer == null) return;
+            peer.received(data);
+            switch (message.getType()) {
+                case Message.INTRODUCTION_REQUEST:
+                    networkCommunicationListener.handleIntroductionRequest(peer, (IntroductionRequest) message);
+                    break;
+                case Message.INTRODUCTION_RESPONSE:
+                    networkCommunicationListener.handleIntroductionResponse(peer, (IntroductionResponse) message);
+                    break;
+                case Message.PUNCTURE:
+                    networkCommunicationListener.handlePuncture(peer, (Puncture) message);
+                    break;
+                case Message.PUNCTURE_REQUEST:
+                    networkCommunicationListener.handlePunctureRequest(peer, (PunctureRequest) message);
+                    break;
+                case Message.BLOCK_MESSAGE:
+                    networkCommunicationListener.handleBlockMessageRequest(peer, (BlockMessage) message);
+
+            }
+            networkCommunicationListener.updatePeerLists();
+        } catch (BencodeReadException | IOException | MessageException e) {
+            e.printStackTrace();
+        }
     }
 }

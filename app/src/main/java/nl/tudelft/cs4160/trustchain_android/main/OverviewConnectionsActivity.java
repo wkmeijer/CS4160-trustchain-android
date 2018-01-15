@@ -72,7 +72,7 @@ import static nl.tudelft.cs4160.trustchain_android.block.TrustChainBlock.GENESIS
 
 public class OverviewConnectionsActivity extends AppCompatActivity implements NetworkCommunicationListener {
 
-    public static String CONNECTABLE_ADDRESS = "145.94.194.94";
+    public static String CONNECTABLE_ADDRESS = "145.94.185.68";
     final static int UNKNOWN_PEER_LIMIT = 20;
     final static String HASH_ID = "hash_id";
     final static int DEFAULT_PORT = 1873;
@@ -333,10 +333,12 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
     }
 
     /**
-     * Start the listen thread. The thread opens a new {@link DatagramChannel} and calls {@link OverviewConnectionsActivity#dataReceived(ByteBuffer,
+     * Start the listen thread. The thread opens a new {@link DatagramChannel} and calls {@link Network#dataReceived(Context, ByteBuffer,
      * InetSocketAddress)} for each incoming datagram.
      */
     private void startListenThread() {
+        final Context context = this;
+
         listenThread = new Thread(new Runnable() {
             @Override
             public void run() {
@@ -346,7 +348,7 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
                         inputBuffer.clear();
                         SocketAddress address = channel.receive(inputBuffer);
                         inputBuffer.flip();
-                        dataReceived(inputBuffer, (InetSocketAddress) address);
+                        network.dataReceived(context, inputBuffer, (InetSocketAddress) address);
                     }
                 } catch (IOException e) {
                     Log.d("App-To-App Log", "Listen thread stopped");
@@ -365,7 +367,7 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
      * @param incoming boolean indicator whether the inboxItem is incoming.
      * @return the resolved or create inboxItem.
      */
-    private PeerAppToApp getOrMakePeer(String id, InetSocketAddress address, boolean incoming) {
+    public PeerAppToApp getOrMakePeer(String id, InetSocketAddress address, boolean incoming) {
         if (id != null) {
             for (PeerAppToApp peer : peerList.getList()) {
                 if (id.equals(peer.getPeerId())) {
@@ -387,61 +389,6 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
         return addPeer(id, address, incoming);
     }
 
-
-    /**
-     * Handle incoming data.
-     *
-     * @param data    the data {@link ByteBuffer}.
-     * @param address the incoming address.
-     */
-    private void dataReceived(ByteBuffer data, InetSocketAddress address) {
-        try {
-            Message message = Message.createFromByteBuffer(data);
-            Log.d("App-To-App Log", "Received " + message);
-
-            String id = message.getPeerId();
-            String pubKey = message.getPubKey();
-
-            String ip = address.getAddress().toString().replace("/", "");
-            PubKeyAndAddressPairStorage.addPubkeyAndAddressPair(this, pubKey, ip);
-            InboxItem i = new InboxItem(id, new ArrayList(), ip, pubKey, address.getPort());
-            InboxItemStorage.addInboxItem(this, i);
-
-            Log.d("App-To-App", "Stored following ip for pubkey: " + pubKey + " " + PubKeyAndAddressPairStorage.getAddressByPubkey(this, pubKey));
-
-            Log.d("App-To-App", "pubkey address map " + SharedPreferencesStorage.getAll(this).toString());
-
-            if (wanVote.vote(message.getDestination())) {
-                Log.d("App-To-App Log", "Address changed to " + wanVote.getAddress());
-                updateInternalSourceAddress(wanVote.getAddress().toString());
-            }
-            setWanvote(wanVote.getAddress().toString());
-            PeerAppToApp peer = getOrMakePeer(id, address, PeerAppToApp.INCOMING);
-            if (peer == null) return;
-            peer.received(data);
-            switch (message.getType()) {
-                case Message.INTRODUCTION_REQUEST:
-                    handleIntroductionRequest(peer, (IntroductionRequest) message);
-                    break;
-                case Message.INTRODUCTION_RESPONSE:
-                    handleIntroductionResponse(peer, (IntroductionResponse) message);
-                    break;
-                case Message.PUNCTURE:
-                    handlePuncture(peer, (Puncture) message);
-                    break;
-                case Message.PUNCTURE_REQUEST:
-                    handlePunctureRequest(peer, (PunctureRequest) message);
-                    break;
-                case Message.BLOCK_MESSAGE:
-                    handleBlockMessageRequest(peer, (BlockMessage) message);
-
-            }
-            updatePeerLists();
-        } catch (BencodeReadException | IOException | MessageException e) {
-            e.printStackTrace();
-        }
-    }
-
     /**
      * Handle an introduction request. Send a puncture request to the included invitee.
      *
@@ -449,7 +396,7 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
      * @param message the message.
      * @throws IOException
      */
-    private void handleIntroductionRequest(PeerAppToApp peer, IntroductionRequest message) throws IOException {
+    public void handleIntroductionRequest(PeerAppToApp peer, IntroductionRequest message) throws IOException {
         peer.setNetworkOperator(message.getNetworkOperator());
         peer.setConnectionType((int) message.getConnectionType());
         if (peerList.size() > 1) {
@@ -471,7 +418,7 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
      * @param peer    the origin inboxItem.
      * @param message the message.
      */
-    private void handleIntroductionResponse(PeerAppToApp peer, IntroductionResponse message) {
+    public void handleIntroductionResponse(PeerAppToApp peer, IntroductionResponse message) {
         peer.setConnectionType((int) message.getConnectionType());
         peer.setNetworkOperator(message.getNetworkOperator());
         List<PeerAppToApp> pex = message.getPex();
@@ -488,7 +435,7 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
      * @param message the message.
      * @throws IOException
      */
-    private void handlePuncture(PeerAppToApp peer, Puncture message) throws IOException {
+    public void handlePuncture(PeerAppToApp peer, Puncture message) throws IOException {
     }
 
     /**
@@ -499,13 +446,13 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
      * @throws IOException
      * @throws MessageException
      */
-    private void handlePunctureRequest(PeerAppToApp peer, PunctureRequest message) throws IOException, MessageException {
+    public void handlePunctureRequest(PeerAppToApp peer, PunctureRequest message) throws IOException, MessageException {
         if (!peerList.peerExistsInList(message.getPuncturePeer())) {
             network.sendPuncture(message.getPuncturePeer());
         }
     }
 
-    private void handleBlockMessageRequest(PeerAppToApp peer, BlockMessage message) throws IOException, MessageException {
+    public void handleBlockMessageRequest(PeerAppToApp peer, BlockMessage message) throws IOException, MessageException {
         MessageProto.Message msg = message.getMessageProto();
         if(msg.getCrawlRequest().getPublicKey().size() == 0){
             MessageProto.TrustChainBlock block = msg.getHalfBlock();
@@ -748,6 +695,14 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
         }
         ((TextView) findViewById(R.id.connection_type))
                 .setText(cm.getActiveNetworkInfo().getTypeName() + " " + cm.getActiveNetworkInfo().getSubtypeName());
+    }
+
+    public void updateWan(Message message) throws MessageException {
+        if (wanVote.vote(message.getDestination())) {
+            Log.d("App-To-App Log", "Address changed to " + wanVote.getAddress());
+            updateInternalSourceAddress(wanVote.getAddress().toString());
+        }
+        setWanvote(wanVote.getAddress().toString());
     }
 
     @Override
