@@ -29,8 +29,6 @@ public class TrustChainBlock {
     public static final ByteString EMPTY_SIG = ByteString.copyFrom(new byte[] {0x00});
     public static final ByteString EMPTY_PK = ByteString.copyFrom(new byte[] {0x00});
 
-    final static String TAG = "TrustChainBlock";
-
     /**
      * Creates a TrustChain genesis block using protocol buffers.
      * @return block - A MessageProto.TrustChainBlock
@@ -280,7 +278,7 @@ public class TrustChainBlock {
             }
             // If the known block is not equal to block in db, and the signatures are valid, we have
             // a double signed PK/seqNum. Fraud!
-            if(!hash(dbBlock).equals(hash(block)) && !errors.contains("Invalid signature") &&
+            if(!Arrays.equals(hash(block),hash(dbBlock)) && !errors.contains("Invalid signature") &&
                     !errors.contains("Public key not valid")) {
                 result.setInvalid();
                 errors.add("Double sign fraud");
@@ -357,7 +355,7 @@ public class TrustChainBlock {
      * method is implemented.
      * @param block - The block containing the to-be-checked transaction.
      * @param db - Database to validate against
-     * @return
+     * @return a VALID validation result
      */
     public static ValidationResult validateTransaction(MessageProto.TrustChainBlock block, SQLiteDatabase db) {
         return new ValidationResult();

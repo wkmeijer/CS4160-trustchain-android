@@ -8,7 +8,6 @@ import nl.tudelft.cs4160.trustchain_android.R;
 
 public class DetailActivity extends AppCompatActivity {
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

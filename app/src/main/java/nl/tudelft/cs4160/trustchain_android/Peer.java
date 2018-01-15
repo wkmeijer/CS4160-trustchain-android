@@ -5,9 +5,10 @@ import android.bluetooth.BluetoothDevice;
 import java.util.Arrays;
 
 /**
+ * The peer object that is used to identify a TrustChain user.
+ * The peer is identified by its unique public key, which is generated.
  * Created by wkmeijer on 20-10-17.
  */
-
 public class Peer {
     private byte[] publicKey;
     private String ipAddress;
@@ -15,12 +16,26 @@ public class Peer {
     private BluetoothDevice device;
     private String name;
 
+    /**
+     * Create a peer with a specific name.
+     * @param pubKey
+     * @param ip
+     * @param port
+     * @param name
+     */
     public Peer(byte[] pubKey, String ip, int port, String name) {
         this.publicKey = pubKey;
         this.ipAddress = ip;
         this.port = port;
         this.name = name;
     }
+
+    /**
+     * If no name is provided, the ip will be used as name.
+     * @param pubKey
+     * @param ip
+     * @param port
+     */
     public Peer(byte[] pubKey, String ip, int port) {
         this.publicKey = pubKey;
         this.ipAddress = ip;
@@ -59,7 +74,6 @@ public class Peer {
     public void setPort(int port) {
         this.port = port;
     }
-
 
     public String toString() {
         String res = "<Peer: [";

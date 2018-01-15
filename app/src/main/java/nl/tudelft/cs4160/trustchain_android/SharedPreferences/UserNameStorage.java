@@ -3,9 +3,8 @@ package nl.tudelft.cs4160.trustchain_android.SharedPreferences;
 import android.content.Context;
 
 /**
- * Created by timbu on 18/12/2017.
+ * This class will store the chosen username of the user locally.
  */
-
 public class UserNameStorage {
 
     static String userNameStorage = "userNameStorage";

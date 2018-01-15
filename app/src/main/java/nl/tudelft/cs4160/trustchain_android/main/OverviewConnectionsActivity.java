@@ -163,9 +163,7 @@ public class OverviewConnectionsActivity extends AppCompatActivity {
     private void initKey() {
         KeyPair kp = Key.loadKeys(getApplicationContext());
         if (kp == null) {
-            kp = Key.createNewKeyPair();
-            Key.saveKey(getApplicationContext(), Key.DEFAULT_PUB_KEY_FILE, kp.getPublic());
-            Key.saveKey(getApplicationContext(), Key.DEFAULT_PRIV_KEY_FILE, kp.getPrivate());
+            kp = Key.createAndSaveKeys(getApplicationContext());
         }
         if (isStartedFirstTime(dbHelper, kp)) {
             MessageProto.TrustChainBlock block = TrustChainBlock.createGenesisBlock(kp);
@@ -211,6 +209,9 @@ public class OverviewConnectionsActivity extends AppCompatActivity {
         ((TextView) findViewById(R.id.peer_id)).setText(hashId);
     }
 
+    /**
+     * Initialize the exit button.
+     */
     private void initExitButton() {
         mExitButton = (Button) findViewById(R.id.exit_button);
         mExitButton.setOnClickListener(new View.OnClickListener() {
@@ -262,16 +263,18 @@ public class OverviewConnectionsActivity extends AppCompatActivity {
     /**
      * Add the intial hard-coded connectable inboxItem to the inboxItem list.
      */
-    public void addInitialPeer() {
-        try {
-            String address = BootstrapIPStorage.getIP(this);
-            if (address != "" && address != null) {
-                addPeer(null, new InetSocketAddress(InetAddress.getByName(address), DEFAULT_PORT), "", PeerAppToApp.OUTGOING);
-            }
-            addPeer(null, new InetSocketAddress(InetAddress.getByName(CONNECTABLE_ADDRESS), DEFAULT_PORT), "", PeerAppToApp.OUTGOING);
-        } catch (UnknownHostException e) {
+
+   public void addInitialPeer() {
+       try {
+           String address = BootstrapIPStorage.getIP(this);
+           if (address != "" && address != null) {
+               addPeer(null, new InetSocketAddress(InetAddress.getByName(address), DEFAULT_PORT), "", PeerAppToApp.OUTGOING);
+           } else {
+               addPeer(null, new InetSocketAddress(InetAddress.getByName(CONNECTABLE_ADDRESS), DEFAULT_PORT), "", PeerAppToApp.OUTGOING);
+           }
+       } catch (UnknownHostException e) {
             e.printStackTrace();
-        }
+       }
     }
 
 

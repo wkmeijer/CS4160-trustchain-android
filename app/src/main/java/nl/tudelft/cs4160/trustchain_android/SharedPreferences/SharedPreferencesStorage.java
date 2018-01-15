@@ -9,13 +9,18 @@ import com.google.gson.GsonBuilder;
 import java.util.Map;
 
 /**
- * Created by timbu on 18/12/2017.
+ * The class that holds all the functions necessary to store data locally.
  */
-
 public final class SharedPreferencesStorage {
     public static final String PREFS_NAME = "MyPrefsFile";
     private static Gson gson;
 
+    /**
+     * Returns the string value that should be stored under some given key.
+     * @param context
+     * @param key
+     * @return
+     */
     public static String readSharedPreferences(Context context, String key) {
         SharedPreferences settings = context.getSharedPreferences(PREFS_NAME, 0);
 
@@ -27,6 +32,12 @@ public final class SharedPreferencesStorage {
         }
     }
 
+    /**
+     * Stores a given String value under a given key.
+     * @param context
+     * @param key
+     * @param value
+     */
     public static void writeSharedPreferences(Context context, String key, String value) {
         SharedPreferences settings = context.getSharedPreferences(PREFS_NAME, 0);
         SharedPreferences.Editor editor = settings.edit();
@@ -34,13 +45,11 @@ public final class SharedPreferencesStorage {
         editor.apply();
     }
 
-    public static void writeSharedPreferences(Context context, String key, int value) {
-        SharedPreferences settings = context.getSharedPreferences(PREFS_NAME, 0);
-        SharedPreferences.Editor editor = settings.edit();
-        editor.putInt(key, value);
-        editor.apply();
-    }
-
+    /**
+     * Gets all locally stored values.
+     * @param context
+     * @return
+     */
     public static Map<String, ?> getAll(Context context) {
         SharedPreferences settings = context.getSharedPreferences(PREFS_NAME, 0);
         return settings.getAll();
