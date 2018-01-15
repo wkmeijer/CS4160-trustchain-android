@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.support.annotation.RequiresApi;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SwitchCompat;
 import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
@@ -26,6 +27,7 @@ import android.widget.Toast;
 import java.io.UnsupportedEncodingException;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -154,7 +156,20 @@ public class TrustChainActivity extends AppCompatActivity implements CompoundBut
         initVariables();
         init();
         setPeerDetails();
+        initializeMutualBlockRecycleView();
     }
+
+    /**
+     +     * Initialize the recycle view that will show the mutual blocks of the user and the other peer.
+     +     */
+     private void initializeMutualBlockRecycleView() {
+                RecyclerView rvMutualBlocks = (RecyclerView) findViewById(R.id.mutualBlocksList);
+                //ArrayList<MutualBlockItem> mutualBlockList = findMutualBlocks(CommunicationSingleton.getDbHelper());
+         ArrayList<MutualBlockItem> mutualBlockList = new ArrayList<>();
+         mutualBlockList.add(new MutualBlockItem("Clinton", 0, 0, "Test", "555"));
+                MutualBlockAdapter mbAdapter = new MutualBlockAdapter(this, mutualBlockList);
+                rvMutualBlocks.setAdapter(mbAdapter);
+            }
 
     private void setPeerDetails() {
         inboxItem = (InboxItem) getIntent().getSerializableExtra("inboxItem");
