@@ -77,7 +77,10 @@ public class PeerAppToApp implements Serializable {
     }
 
     public InetAddress getExternalAddress() {
-        return address.getAddress();
+        if (address != null) {
+            return address.getAddress();
+        }
+        return null;
     }
 
     public InetSocketAddress getAddress() {
