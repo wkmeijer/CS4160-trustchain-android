@@ -5,13 +5,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.util.Patterns;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -21,6 +21,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import java.io.IOException;
+import java.lang.ref.WeakReference;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
@@ -30,6 +31,8 @@ import java.nio.channels.DatagramChannel;
 import java.security.KeyPair;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import nl.tudelft.cs4160.trustchain_android.Network.Network;
 import nl.tudelft.cs4160.trustchain_android.Network.NetworkCommunicationListener;
@@ -242,15 +245,44 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
      * Add the intial hard-coded connectable inboxItem to the inboxItem list.
      */
     public void addInitialPeer() {
+        String address = BootstrapIPStorage.getIP(this);
+        CreateInetSocketAddressTask createInetSocketAddressTask = new CreateInetSocketAddressTask(this);
         try {
-            String address = BootstrapIPStorage.getIP(this);
             if (address != null && !address.equals("")) {
-                peerHandler.addPeer(null, new InetSocketAddress(InetAddress.getByName(address), DEFAULT_PORT), PeerAppToApp.OUTGOING);
+                createInetSocketAddressTask.execute(address, String.valueOf(DEFAULT_PORT));
+            } else {
+                createInetSocketAddressTask.execute(CONNECTABLE_ADDRESS, String.valueOf(DEFAULT_PORT));
             }
-            peerHandler.addPeer(null, new InetSocketAddress(InetAddress.getByName(CONNECTABLE_ADDRESS), DEFAULT_PORT), PeerAppToApp.OUTGOING);
-        } catch (UnknownHostException e) {
+        } catch (Exception e) {
             e.printStackTrace();
-       }
+        }
+    }
+
+    private static class CreateInetSocketAddressTask extends AsyncTask<String, Void, InetSocketAddress> {
+        private WeakReference<OverviewConnectionsActivity> activityReference;
+
+        CreateInetSocketAddressTask(OverviewConnectionsActivity context) {
+            activityReference = new WeakReference<>(context);
+        }
+
+        @Override
+        protected InetSocketAddress doInBackground(String... params) {
+            InetSocketAddress inetSocketAddress = null;
+            OverviewConnectionsActivity activity = activityReference.get();
+            if (activity == null) return null;
+
+            try {
+                InetAddress connectableAddress = InetAddress.getByName(params[0]);
+                int port = Integer.parseInt(params[1]);
+                inetSocketAddress = new InetSocketAddress(connectableAddress, port);
+
+                activity.peerHandler.addPeer(null, inetSocketAddress, PeerAppToApp.OUTGOING);
+            } catch (UnknownHostException e) {
+                e.printStackTrace();
+            }
+
+            return inetSocketAddress;
+        }
     }
 
 

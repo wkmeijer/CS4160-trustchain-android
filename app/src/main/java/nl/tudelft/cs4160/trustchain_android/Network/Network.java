@@ -46,6 +46,8 @@ import static nl.tudelft.cs4160.trustchain_android.message.MessageProto.Message.
  * Created by michiel on 11-1-2018.
  */
 public class Network {
+    private final String TAG = this.getClass().getName();
+
     private static final int BUFFER_SIZE = 65536;
     private DatagramChannel channel;
     private String hashId;
@@ -172,7 +174,7 @@ public class Network {
     private synchronized void sendMessage(Message message, PeerAppToApp peer) throws IOException {
         message.putPubKey(publicKey);
 
-        Log.d("Network", "Sending " + message);
+        Log.d(TAG, "Sending " + message);
         outBuffer.clear();
         message.writeToByteBuffer(outBuffer);
         outBuffer.flip();
@@ -198,19 +200,21 @@ public class Network {
     public void dataReceived(Context context, ByteBuffer data, InetSocketAddress address) {
         try {
             Message message = Message.createFromByteBuffer(data);
-            Log.d("Network", "Received " + message);
+            Log.d(TAG, "Received " + message);
 
             String id = message.getPeerId();
             String pubKey = message.getPubKey();
 
-            String ip = address.getAddress().toString().replace("/", "");
-            PubKeyAndAddressPairStorage.addPubkeyAndAddressPair(context, pubKey, ip);
-            InboxItem i = new InboxItem(id, new ArrayList<Integer>(), ip, pubKey, address.getPort());
-            InboxItemStorage.addInboxItem(context, i);
+            if(pubKey != null) {
+                String ip = address.getAddress().toString().replace("/", "");
+                PubKeyAndAddressPairStorage.addPubkeyAndAddressPair(context, pubKey, ip);
+                InboxItem i = new InboxItem(id, new ArrayList<Integer>(), ip, pubKey, address.getPort());
+                InboxItemStorage.addInboxItem(context, i);
 
-            Log.d("Network", "Stored following ip for pubkey: " + pubKey + " " + PubKeyAndAddressPairStorage.getAddressByPubkey(context, pubKey));
+                Log.d(TAG, "Stored following ip for pubkey: " + pubKey + " " + PubKeyAndAddressPairStorage.getAddressByPubkey(context, pubKey));
 
-            Log.d("Network", "pubkey address map " + SharedPreferencesStorage.getAll(context).toString());
+                Log.d(TAG, "pubkey address map " + SharedPreferencesStorage.getAll(context).toString());
+            }
 
             if(networkCommunicationListener != null) {
                 networkCommunicationListener.updateWan(message);
@@ -243,7 +247,7 @@ public class Network {
         }
     }
 
-    static class ShowLocalIPTask extends AsyncTask<Void, Void, InetAddress> {
+    private static class ShowLocalIPTask extends AsyncTask<Void, Void, InetAddress> {
         @Override
         protected InetAddress doInBackground(Void... params) {
             try {
