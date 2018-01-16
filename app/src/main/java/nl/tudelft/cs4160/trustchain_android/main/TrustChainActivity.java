@@ -116,6 +116,7 @@ public class TrustChainActivity extends AppCompatActivity implements CompoundBut
 
         byte[] transactionData = messageEditText.getText().toString().getBytes("UTF-8");
         final MessageProto.TrustChainBlock block = createBlock(transactionData, CommunicationSingleton.getDbHelper(), publicKey.getEncoded(), null, ByteArrayConverter.hexStringToByteArray(inboxItemOtherPeer.getPublicKey()));
+        TrustChainBlock.sign(block,Key.loadKeys(getApplicationContext()).getPrivate());
             new Thread(new Runnable() {
                 @Override
                 public void run() {
@@ -141,7 +142,7 @@ public class TrustChainActivity extends AppCompatActivity implements CompoundBut
 
         // Try to instantiate public key.
         if (peer != null && peer.getIpAddress() != null) {
-            publicKey = CommunicationSingleton.getCommunication().getPublicKey(peer.getIpAddress());
+            publicKey = this.inboxItemOtherPeer.getPublicKey().getBytes();
         } else {
             Log.d("App-To-App", "pubkey address map " + SharedPreferencesStorage.getAll(this).toString());
 
@@ -158,24 +159,6 @@ public class TrustChainActivity extends AppCompatActivity implements CompoundBut
         }
     }
 
-    /**
-     * Checks whether the current peer is connected or not by checking if the peer or its public are not null.
-     *
-     * @return
-     */
-    private boolean isConnected() {
-        if (peer != null) {
-            if (CommunicationSingleton.getCommunication().getPublicKey(peer.getIpAddress()) != null) {
-                return true;
-            } else {
-                Log.d("testLogs", "getPublicKey == null");
-            }
-        } else {
-
-            Log.d("testLogs", "peer == null");
-        }
-        return false;
-    }
 
     private void enableMessage() {
         runOnUiThread(new Runnable() {
@@ -195,7 +178,6 @@ public class TrustChainActivity extends AppCompatActivity implements CompoundBut
         setContentView(R.layout.activity_main);
         initVariables();
         init();
-   //     setPeerDetails();
     //    initializeMutualBlockRecycleView();
     }
 
@@ -241,18 +223,6 @@ public class TrustChainActivity extends AppCompatActivity implements CompoundBut
         return mutualBlocks;
     }
 
-    /**
-     * Sets all the information of the current peer.
-     */
-    private void setPeerDetails() {
-        inboxItemOtherPeer = (InboxItem) getIntent().getSerializableExtra("inboxItemOtherPeer");
-        if (inboxItemOtherPeer != null) {
-            String address = inboxItemOtherPeer.getAddress().toString();
-            int port = inboxItemOtherPeer.getPort();
-            editTextDestinationIP.setText(address);
-            editTextDestinationPort.setText(port + "");
-        }
-    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -300,7 +270,6 @@ public class TrustChainActivity extends AppCompatActivity implements CompoundBut
         mRecyclerView = (RecyclerView) findViewById(R.id.mutualBlocksRecyclerView);
         switchDeveloperMode = (SwitchCompat) findViewById(R.id.switch_developer_mode);
         switchDeveloperMode.setOnCheckedChangeListener(this);
-        CommunicationSingleton.setCommunicationListener(this);
         editTextDestinationIP = (EditText) findViewById(R.id.destination_IP);
         editTextDestinationPort = (EditText) findViewById(R.id.destination_port);
     }
@@ -406,7 +375,7 @@ public class TrustChainActivity extends AppCompatActivity implements CompoundBut
                     builder.setMessage("Do you want to sign Block[ " + block.getTransaction().toString("UTF-8") + " ] from " + peer.getName() + "?")
                             .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int id) {
-                                    CommunicationSingleton.getCommunication().acceptTransaction(block, peer);
+                                    //CommunicationSingleton.getCommunication().acceptTransaction(block, peer);
                                 }
                             })
                             .setNegativeButton("No", new DialogInterface.OnClickListener() {

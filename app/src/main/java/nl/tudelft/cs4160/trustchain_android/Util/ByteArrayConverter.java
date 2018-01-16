@@ -2,6 +2,8 @@ package nl.tudelft.cs4160.trustchain_android.Util;
 
 import android.util.Log;
 
+import com.google.protobuf.ByteString;
+
 /**
  * Created by timbu on 10/01/2018.
  */
@@ -9,6 +11,10 @@ import android.util.Log;
 public class ByteArrayConverter {
 
     private final static char[] hexArray = "0123456789ABCDEF".toCharArray();
+
+    public static String byteStringToString(ByteString byteString) {
+        return bytesToHexString(byteString.toByteArray());
+    }
 
     public static String bytesToHexString(byte[] bytes) {
         char[] hexChars = new char[bytes.length * 2];

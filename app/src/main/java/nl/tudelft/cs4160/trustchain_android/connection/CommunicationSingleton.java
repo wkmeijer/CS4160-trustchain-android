@@ -18,7 +18,7 @@ public class CommunicationSingleton {
     private static Communication communication;
     private static TrustChainDBHelper dbHelper;
 
-    private CommunicationSingleton(Context context, CommunicationListener communicationListener) {
+    private CommunicationSingleton(Context context) {
     }
 
     public static void initContextAndListener(Context context, CommunicationListener communicationListener){
@@ -37,9 +37,6 @@ public class CommunicationSingleton {
         return dbHelper;
     }
 
-    public static void setCommunicationListener(CommunicationListener communicationListener) {
-        communication.setCommunicationListener(communicationListener);
-    }
 
     public static Context getContext() {
         return context;
