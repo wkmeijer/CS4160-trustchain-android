@@ -203,14 +203,16 @@ public class Network {
             String id = message.getPeerId();
             String pubKey = message.getPubKey();
 
-            String ip = address.getAddress().toString().replace("/", "");
-            PubKeyAndAddressPairStorage.addPubkeyAndAddressPair(context, pubKey, ip);
-            InboxItem i = new InboxItem(id, new ArrayList<Integer>(), ip, pubKey, address.getPort());
-            InboxItemStorage.addInboxItem(context, i);
+            if(pubKey != null) {
+                String ip = address.getAddress().toString().replace("/", "");
+                PubKeyAndAddressPairStorage.addPubkeyAndAddressPair(context, pubKey, ip);
+                InboxItem i = new InboxItem(id, new ArrayList<Integer>(), ip, pubKey, address.getPort());
+                InboxItemStorage.addInboxItem(context, i);
 
-            Log.d("Network", "Stored following ip for pubkey: " + pubKey + " " + PubKeyAndAddressPairStorage.getAddressByPubkey(context, pubKey));
+                Log.d("Network", "Stored following ip for pubkey: " + pubKey + " " + PubKeyAndAddressPairStorage.getAddressByPubkey(context, pubKey));
 
-            Log.d("Network", "pubkey address map " + SharedPreferencesStorage.getAll(context).toString());
+                Log.d("Network", "pubkey address map " + SharedPreferencesStorage.getAll(context).toString());
+            }
 
             if(networkCommunicationListener != null) {
                 networkCommunicationListener.updateWan(message);
