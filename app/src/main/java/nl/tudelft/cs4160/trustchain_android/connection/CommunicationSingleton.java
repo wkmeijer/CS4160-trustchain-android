@@ -15,7 +15,6 @@ import nl.tudelft.cs4160.trustchain_android.database.TrustChainDBHelper;
 public class CommunicationSingleton {
     private static CommunicationSingleton instance = null;
     private static Context context;
-    private static Communication communication;
     private static TrustChainDBHelper dbHelper;
 
     private CommunicationSingleton(Context context) {
@@ -24,13 +23,6 @@ public class CommunicationSingleton {
     public static void initContextAndListener(Context context, CommunicationListener communicationListener){
         CommunicationSingleton.context = context;
         CommunicationSingleton.dbHelper = new TrustChainDBHelper(context);
-        //load keys
-        KeyPair kp = Key.loadKeys(context);
-        CommunicationSingleton.communication = new NetworkCommunication(context, dbHelper, kp, communicationListener);
-        CommunicationSingleton.communication.start();
-    }
-    public static Communication getCommunication() {
-        return communication;
     }
 
     public static TrustChainDBHelper getDbHelper() {
