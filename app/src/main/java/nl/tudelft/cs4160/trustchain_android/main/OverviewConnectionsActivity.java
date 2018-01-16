@@ -31,6 +31,8 @@ import java.nio.channels.DatagramChannel;
 import java.security.KeyPair;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import nl.tudelft.cs4160.trustchain_android.Network.Network;
 import nl.tudelft.cs4160.trustchain_android.Network.NetworkCommunicationListener;
@@ -72,7 +74,6 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
     private TrustChainDBHelper dbHelper;
     private Network network;
     private PeerHandler peerHandler;
-    public boolean socketReady;
 
     /**
      * Initialize views, start send and receive threads if necessary.
@@ -87,7 +88,6 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
         initVariables(savedInstanceState);
         initExitButton();
         addInitialPeer();
-        while(!socketReady) {}
         startListenThread();
         startSendThread();
         initPeerLists();
@@ -167,7 +167,6 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
     }
 
     private void initVariables(Bundle savedInstanceState) {
-        socketReady = false;
         peerHandler = new PeerHandler(UserNameStorage.getUserName(this));
         dbHelper = new TrustChainDBHelper(this);
         initKey();
@@ -248,11 +247,14 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
     public void addInitialPeer() {
         String address = BootstrapIPStorage.getIP(this);
         CreateInetSocketAddressTask createInetSocketAddressTask = new CreateInetSocketAddressTask(this);
-
-        if (address != null && !address.equals("")) {
-            createInetSocketAddressTask.execute(address, String.valueOf(DEFAULT_PORT));
-        } else {
-            createInetSocketAddressTask.execute(CONNECTABLE_ADDRESS, String.valueOf(DEFAULT_PORT));
+        try {
+            if (address != null && !address.equals("")) {
+                createInetSocketAddressTask.execute(address, String.valueOf(DEFAULT_PORT));
+            } else {
+                createInetSocketAddressTask.execute(CONNECTABLE_ADDRESS, String.valueOf(DEFAULT_PORT));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
@@ -265,7 +267,7 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
 
         @Override
         protected InetSocketAddress doInBackground(String... params) {
-            InetSocketAddress inetSocketAddress;
+            InetSocketAddress inetSocketAddress = null;
             OverviewConnectionsActivity activity = activityReference.get();
             if (activity == null) return null;
 
@@ -275,12 +277,11 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
                 inetSocketAddress = new InetSocketAddress(connectableAddress, port);
 
                 activity.peerHandler.addPeer(null, inetSocketAddress, PeerAppToApp.OUTGOING);
-                activity.socketReady = true;
             } catch (UnknownHostException e) {
                 e.printStackTrace();
             }
 
-            return null;
+            return inetSocketAddress;
         }
     }
 
