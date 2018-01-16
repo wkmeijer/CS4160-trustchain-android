@@ -247,7 +247,7 @@ public class Network {
         }
     }
 
-    static class ShowLocalIPTask extends AsyncTask<Void, Void, InetAddress> {
+    private static class ShowLocalIPTask extends AsyncTask<Void, Void, InetAddress> {
         @Override
         protected InetAddress doInBackground(Void... params) {
             try {

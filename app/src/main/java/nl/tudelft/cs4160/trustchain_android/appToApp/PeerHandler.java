@@ -1,18 +1,26 @@
 package nl.tudelft.cs4160.trustchain_android.appToApp;
 
+import android.os.AsyncTask;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
 
+import java.lang.ref.WeakReference;
 import java.lang.reflect.Array;
+import java.net.Inet4Address;
+import java.net.InetAddress;
 import java.net.InetSocketAddress;
+import java.net.NetworkInterface;
+import java.net.SocketException;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.List;
 import java.util.Random;
 
 import nl.tudelft.cs4160.trustchain_android.SharedPreferences.UserNameStorage;
 import nl.tudelft.cs4160.trustchain_android.appToApp.connection.PeerListener;
 import nl.tudelft.cs4160.trustchain_android.appToApp.connection.WanVote;
+import nl.tudelft.cs4160.trustchain_android.main.OverviewConnectionsActivity;
 import nl.tudelft.cs4160.trustchain_android.main.PeerListAdapter;
 
 /**
@@ -112,6 +120,7 @@ public class PeerHandler {
             if (peer.getAddress().equals(address)) return peer;
         }
         final PeerAppToApp peer = new PeerAppToApp(peerId, address);
+
         new Handler(Looper.getMainLooper()).post(new Runnable() {
             @Override
             public void run() {
@@ -125,7 +134,7 @@ public class PeerHandler {
         return peer;
     }
 
-    /**
+        /**
      * Split the inboxItem list between incoming and outgoing peers.
      */
     public void splitPeerList() {

@@ -79,7 +79,10 @@ public class PeerListAdapter extends ArrayAdapter<PeerAppToApp> {
                 holder.mStatusIndicator.setTextColor(context.getResources().getColor(R.color.colorStatusCantConnect));
             }
         }
-        holder.mDestinationAddress.setText(String.format("%s:%d", peer.getExternalAddress().toString().substring(1), peer.getPort()));
+
+        if(peer.getExternalAddress() != null) {
+            holder.mDestinationAddress.setText(String.format("%s:%d", peer.getExternalAddress().toString().substring(1), peer.getPort()));
+        }
 
         if (System.currentTimeMillis() - peer.getLastSendTime() < 200) {
             animate(holder.mSentIndicator);
