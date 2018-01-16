@@ -246,17 +246,14 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
      * Add the intial hard-coded connectable inboxItem to the inboxItem list.
      */
     public void addInitialPeer() {
-        try {
-            String address = BootstrapIPStorage.getIP(this);
-            if (address != null && !address.equals("")) {
-                peerHandler.addPeer(null, new InetSocketAddress(InetAddress.getByName(address), DEFAULT_PORT), PeerAppToApp.OUTGOING);
-            }
-            CreateInetSocketAddressTask createInetSocketAddressTask = new CreateInetSocketAddressTask(this);
-            createInetSocketAddressTask.execute(CONNECTABLE_ADDRESS, String.valueOf(DEFAULT_PORT));
+        String address = BootstrapIPStorage.getIP(this);
+        CreateInetSocketAddressTask createInetSocketAddressTask = new CreateInetSocketAddressTask(this);
 
-        } catch (UnknownHostException e) {
-            e.printStackTrace();
-       }
+        if (address != null && !address.equals("")) {
+            createInetSocketAddressTask.execute(address, String.valueOf(DEFAULT_PORT));
+        } else {
+            createInetSocketAddressTask.execute(CONNECTABLE_ADDRESS, String.valueOf(DEFAULT_PORT));
+        }
     }
 
     private static class CreateInetSocketAddressTask extends AsyncTask<String, Void, InetSocketAddress> {
@@ -271,7 +268,6 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
             InetSocketAddress inetSocketAddress;
             OverviewConnectionsActivity activity = activityReference.get();
             if (activity == null) return null;
-
 
             try {
                 InetAddress connectableAddress = InetAddress.getByName(params[0]);
