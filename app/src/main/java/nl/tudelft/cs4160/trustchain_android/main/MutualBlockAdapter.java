@@ -6,6 +6,7 @@ import android.text.Layout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -57,8 +58,16 @@ public class MutualBlockAdapter extends RecyclerView.Adapter<MutualBlockAdapter.
     public void onBindViewHolder(MutualBlockAdapter.ViewHolder viewHolder, int position) {
         MutualBlockItem mutualBlockItem = mutualBlocks.get(position);
         if (mutualBlockItem != null) {
-            TextView blockStatTv = viewHolder.blockStatTextView;
-            blockStatTv.setText(mutualBlockItem.getBlockStatus());
+            if (mutualBlockItem.getBlockStatus() == "Signed"){
+                TextView blockStatTv = viewHolder.blockStatTextView;
+                blockStatTv.setBackgroundColor(0xFF00FF00); // set background color green
+                blockStatTv.setText(mutualBlockItem.getBlockStatus());
+                TextView signButton = viewHolder.signButton;
+                signButton.setVisibility(View.GONE);
+            } else {
+                TextView blockStatTv = viewHolder.blockStatTextView;
+                blockStatTv.setText(mutualBlockItem.getBlockStatus());
+            }
             TextView userNameTv = viewHolder.userNameTextView;
             userNameTv.setText(UserNameStorage.getUserName(context));
             TextView peerNameTv = viewHolder.peerNameTextView;
@@ -88,6 +97,7 @@ public class MutualBlockAdapter extends RecyclerView.Adapter<MutualBlockAdapter.
         TextView seqNumTextView;
         TextView linkSeqNumTextView;
         TextView transactionTextView;
+        Button signButton;
 
         /**
          * Constructor.
@@ -101,6 +111,7 @@ public class MutualBlockAdapter extends RecyclerView.Adapter<MutualBlockAdapter.
             seqNumTextView = (TextView) itemView.findViewById(R.id.sequenceNumberMutualBlock);
             linkSeqNumTextView = (TextView) itemView.findViewById(R.id.linkSeqNumMutualBlock);
             transactionTextView = (TextView) itemView.findViewById(R.id.transactionMutualBlock);
+            signButton = (Button) itemView.findViewById(R.id.sign_button);
         }
     }
 

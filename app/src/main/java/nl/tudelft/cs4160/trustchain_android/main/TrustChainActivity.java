@@ -126,9 +126,9 @@ public class TrustChainActivity extends AppCompatActivity implements CompoundBut
                 }
 
                 if (validationResultStatus != ValidationResult.VALID) {
-                    blockStatus += "Not signed by both parties";
+                    blockStatus += "Awaiting your signing";
                 } else {
-                    blockStatus += "Signed by both parties";
+                    blockStatus += "Signed";
                 }
 
                 mutualBlocks.add(new MutualBlockItem(inboxItemOtherPeer.getUserName(), block.getSequenceNumber(), block.getLinkSequenceNumber(), blockStatus, block.getTransaction().toStringUtf8()));
@@ -389,12 +389,6 @@ public class TrustChainActivity extends AppCompatActivity implements CompoundBut
         }
     }
 
-    /**
-     * Init the trustchain_menu
-     *
-     * @param menu
-     * @return
-     */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
