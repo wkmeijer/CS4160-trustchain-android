@@ -129,6 +129,20 @@
 
     </LinearLayout>
 
+    <!--The sign button-->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:padding="5dp">
+
+        <Button
+            android:id="@+id/sign_button"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="@string/sign_block"/>
+    </LinearLayout>
+
     <!--<TableLayout-->
     <!--android:id="@+id/expanded_item"-->
     <!--android:layout_width="match_parent"-->
