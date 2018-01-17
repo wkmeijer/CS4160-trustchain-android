@@ -423,9 +423,14 @@ public abstract class Communication {
      * If the peer is not known, this will send a crawl request, otherwise a half block.
 <<<<<<< HEAD
      *
+     * @param peer - The peer that we want to connect to
+=======
+<<<<<<< HEAD
+     *
      * @param peer
 =======
      * @param peer - The peer that we want to connect to
+>>>>>>> develop
 >>>>>>> develop
      */
     public void connectToPeer(Peer peer) {
