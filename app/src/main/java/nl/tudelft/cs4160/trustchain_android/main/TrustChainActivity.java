@@ -32,6 +32,7 @@ import java.net.NetworkInterface;
 import java.nio.channels.DatagramChannel;
 import java.security.PublicKey;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -178,7 +179,7 @@ public class TrustChainActivity extends AppCompatActivity implements CompoundBut
         setContentView(R.layout.activity_main);
         initVariables();
         init();
-    //    initializeMutualBlockRecycleView();
+        initializeMutualBlockRecycleView();
     }
 
     /**
@@ -193,7 +194,7 @@ public class TrustChainActivity extends AppCompatActivity implements CompoundBut
     }
 
     /**
-     * Find blocks that both the user and the other peer has in common.
+     * Find blocks that both the user and the other peer have in common.
      *
      * @param dbHelper the database helper.
      * @return a list of mutual blocks.
@@ -201,7 +202,9 @@ public class TrustChainActivity extends AppCompatActivity implements CompoundBut
     private ArrayList<MutualBlockItem> findMutualBlocks(TrustChainDBHelper dbHelper) {
         ArrayList<MutualBlockItem> mutualBlocks = new ArrayList<>();
         for (MessageProto.TrustChainBlock block : dbHelper.getAllBlocks()) {
-            if (ByteArrayConverter.bytesToHexString(block.getLinkPublicKey().toByteArray()).equals(inboxItemOtherPeer.getPublicKey())) {
+            if (ByteArrayConverter.bytesToHexString(block.getLinkPublicKey().toByteArray()).equals(inboxItemOtherPeer.getPublicKey())
+                    || ByteArrayConverter.byteStringToString(block.getPublicKey()).equals(inboxItemOtherPeer.getPublicKey()))
+            {
                 String blockStatus = "Status of Block: ";
                 int validationResultStatus = ValidationResult.NO_INFO;
 
