@@ -19,15 +19,15 @@ public final class MessageProto {
       com.google.protobuf.MessageOrBuilder {
 
     /**
-     * <code>.message.TrustChainBlock halfBlock = 1;</code>
+     * <code>.message.TrustChainBlockHelper halfBlock = 1;</code>
      */
     boolean hasHalfBlock();
     /**
-     * <code>.message.TrustChainBlock halfBlock = 1;</code>
+     * <code>.message.TrustChainBlockHelper halfBlock = 1;</code>
      */
     nl.tudelft.cs4160.trustchain_android.message.MessageProto.TrustChainBlock getHalfBlock();
     /**
-     * <code>.message.TrustChainBlock halfBlock = 1;</code>
+     * <code>.message.TrustChainBlockHelper halfBlock = 1;</code>
      */
     nl.tudelft.cs4160.trustchain_android.message.MessageProto.TrustChainBlockOrBuilder getHalfBlockOrBuilder();
 
@@ -140,19 +140,19 @@ public final class MessageProto {
     public static final int HALFBLOCK_FIELD_NUMBER = 1;
     private nl.tudelft.cs4160.trustchain_android.message.MessageProto.TrustChainBlock halfBlock_;
     /**
-     * <code>.message.TrustChainBlock halfBlock = 1;</code>
+     * <code>.message.TrustChainBlockHelper halfBlock = 1;</code>
      */
     public boolean hasHalfBlock() {
       return halfBlock_ != null;
     }
     /**
-     * <code>.message.TrustChainBlock halfBlock = 1;</code>
+     * <code>.message.TrustChainBlockHelper halfBlock = 1;</code>
      */
     public nl.tudelft.cs4160.trustchain_android.message.MessageProto.TrustChainBlock getHalfBlock() {
       return halfBlock_ == null ? nl.tudelft.cs4160.trustchain_android.message.MessageProto.TrustChainBlock.getDefaultInstance() : halfBlock_;
     }
     /**
-     * <code>.message.TrustChainBlock halfBlock = 1;</code>
+     * <code>.message.TrustChainBlockHelper halfBlock = 1;</code>
      */
     public nl.tudelft.cs4160.trustchain_android.message.MessageProto.TrustChainBlockOrBuilder getHalfBlockOrBuilder() {
       return getHalfBlock();
@@ -509,13 +509,13 @@ public final class MessageProto {
       private com.google.protobuf.SingleFieldBuilderV3<
           nl.tudelft.cs4160.trustchain_android.message.MessageProto.TrustChainBlock, nl.tudelft.cs4160.trustchain_android.message.MessageProto.TrustChainBlock.Builder, nl.tudelft.cs4160.trustchain_android.message.MessageProto.TrustChainBlockOrBuilder> halfBlockBuilder_;
       /**
-       * <code>.message.TrustChainBlock halfBlock = 1;</code>
+       * <code>.message.TrustChainBlockHelper halfBlock = 1;</code>
        */
       public boolean hasHalfBlock() {
         return halfBlockBuilder_ != null || halfBlock_ != null;
       }
       /**
-       * <code>.message.TrustChainBlock halfBlock = 1;</code>
+       * <code>.message.TrustChainBlockHelper halfBlock = 1;</code>
        */
       public nl.tudelft.cs4160.trustchain_android.message.MessageProto.TrustChainBlock getHalfBlock() {
         if (halfBlockBuilder_ == null) {
@@ -525,7 +525,7 @@ public final class MessageProto {
         }
       }
       /**
-       * <code>.message.TrustChainBlock halfBlock = 1;</code>
+       * <code>.message.TrustChainBlockHelper halfBlock = 1;</code>
        */
       public Builder setHalfBlock(nl.tudelft.cs4160.trustchain_android.message.MessageProto.TrustChainBlock value) {
         if (halfBlockBuilder_ == null) {
@@ -541,7 +541,7 @@ public final class MessageProto {
         return this;
       }
       /**
-       * <code>.message.TrustChainBlock halfBlock = 1;</code>
+       * <code>.message.TrustChainBlockHelper halfBlock = 1;</code>
        */
       public Builder setHalfBlock(
           nl.tudelft.cs4160.trustchain_android.message.MessageProto.TrustChainBlock.Builder builderForValue) {
@@ -555,7 +555,7 @@ public final class MessageProto {
         return this;
       }
       /**
-       * <code>.message.TrustChainBlock halfBlock = 1;</code>
+       * <code>.message.TrustChainBlockHelper halfBlock = 1;</code>
        */
       public Builder mergeHalfBlock(nl.tudelft.cs4160.trustchain_android.message.MessageProto.TrustChainBlock value) {
         if (halfBlockBuilder_ == null) {
@@ -573,7 +573,7 @@ public final class MessageProto {
         return this;
       }
       /**
-       * <code>.message.TrustChainBlock halfBlock = 1;</code>
+       * <code>.message.TrustChainBlockHelper halfBlock = 1;</code>
        */
       public Builder clearHalfBlock() {
         if (halfBlockBuilder_ == null) {
@@ -587,7 +587,7 @@ public final class MessageProto {
         return this;
       }
       /**
-       * <code>.message.TrustChainBlock halfBlock = 1;</code>
+       * <code>.message.TrustChainBlockHelper halfBlock = 1;</code>
        */
       public nl.tudelft.cs4160.trustchain_android.message.MessageProto.TrustChainBlock.Builder getHalfBlockBuilder() {
         
@@ -595,7 +595,7 @@ public final class MessageProto {
         return getHalfBlockFieldBuilder().getBuilder();
       }
       /**
-       * <code>.message.TrustChainBlock halfBlock = 1;</code>
+       * <code>.message.TrustChainBlockHelper halfBlock = 1;</code>
        */
       public nl.tudelft.cs4160.trustchain_android.message.MessageProto.TrustChainBlockOrBuilder getHalfBlockOrBuilder() {
         if (halfBlockBuilder_ != null) {
@@ -606,7 +606,7 @@ public final class MessageProto {
         }
       }
       /**
-       * <code>.message.TrustChainBlock halfBlock = 1;</code>
+       * <code>.message.TrustChainBlockHelper halfBlock = 1;</code>
        */
       private com.google.protobuf.SingleFieldBuilderV3<
           nl.tudelft.cs4160.trustchain_android.message.MessageProto.TrustChainBlock, nl.tudelft.cs4160.trustchain_android.message.MessageProto.TrustChainBlock.Builder, nl.tudelft.cs4160.trustchain_android.message.MessageProto.TrustChainBlockOrBuilder> 
@@ -788,7 +788,7 @@ public final class MessageProto {
   }
 
   public interface TrustChainBlockOrBuilder extends
-      // @@protoc_insertion_point(interface_extends:message.TrustChainBlock)
+      // @@protoc_insertion_point(interface_extends:message.TrustChainBlockHelper)
       com.google.protobuf.MessageOrBuilder {
 
     /**
@@ -827,14 +827,14 @@ public final class MessageProto {
     com.google.protobuf.ByteString getTransaction();
   }
   /**
-   * Protobuf type {@code message.TrustChainBlock}
+   * Protobuf type {@code message.TrustChainBlockHelper}
    */
   public  static final class TrustChainBlock extends
       com.google.protobuf.GeneratedMessageV3 implements
-      // @@protoc_insertion_point(message_implements:message.TrustChainBlock)
+      // @@protoc_insertion_point(message_implements:message.TrustChainBlockHelper)
       TrustChainBlockOrBuilder {
   private static final long serialVersionUID = 0L;
-    // Use TrustChainBlock.newBuilder() to construct.
+    // Use TrustChainBlockHelper.newBuilder() to construct.
     private TrustChainBlock(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
       super(builder);
     }
@@ -1216,11 +1216,11 @@ public final class MessageProto {
       return builder;
     }
     /**
-     * Protobuf type {@code message.TrustChainBlock}
+     * Protobuf type {@code message.TrustChainBlockHelper}
      */
     public static final class Builder extends
         com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
-        // @@protoc_insertion_point(builder_implements:message.TrustChainBlock)
+        // @@protoc_insertion_point(builder_implements:message.TrustChainBlockHelper)
         nl.tudelft.cs4160.trustchain_android.message.MessageProto.TrustChainBlockOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor
           getDescriptor() {
@@ -1234,7 +1234,7 @@ public final class MessageProto {
                 nl.tudelft.cs4160.trustchain_android.message.MessageProto.TrustChainBlock.class, nl.tudelft.cs4160.trustchain_android.message.MessageProto.TrustChainBlock.Builder.class);
       }
 
-      // Construct using nl.tudelft.cs4160.trustchain_android.message.MessageProto.TrustChainBlock.newBuilder()
+      // Construct using nl.tudelft.cs4160.trustchain_android.message.MessageProto.TrustChainBlockHelper.newBuilder()
       private Builder() {
         maybeForceBuilderInitialization();
       }
@@ -1590,10 +1590,10 @@ public final class MessageProto {
       }
 
 
-      // @@protoc_insertion_point(builder_scope:message.TrustChainBlock)
+      // @@protoc_insertion_point(builder_scope:message.TrustChainBlockHelper)
     }
 
-    // @@protoc_insertion_point(class_scope:message.TrustChainBlock)
+    // @@protoc_insertion_point(class_scope:message.TrustChainBlockHelper)
     private static final nl.tudelft.cs4160.trustchain_android.message.MessageProto.TrustChainBlock DEFAULT_INSTANCE;
     static {
       DEFAULT_INSTANCE = new nl.tudelft.cs4160.trustchain_android.message.MessageProto.TrustChainBlock();
@@ -2231,7 +2231,7 @@ public final class MessageProto {
     java.lang.String[] descriptorData = {
       "\n2nl/tudelft/cs4160/trustchain_android/M" +
       "essage.proto\022\007message\"c\n\007Message\022+\n\thalf" +
-      "Block\030\001 \001(\0132\030.message.TrustChainBlock\022+\n" +
+      "Block\030\001 \001(\0132\030.message.TrustChainBlockHelper\022+\n" +
       "\014crawlRequest\030\002 \001(\0132\025.message.CrawlReque" +
       "st\"\264\001\n\017TrustChainBlock\022\022\n\npublic_key\030\001 \001" +
       "(\014\022\027\n\017sequence_number\030\002 \001(\005\022\027\n\017link_publ" +

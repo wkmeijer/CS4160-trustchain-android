@@ -8,14 +8,10 @@ import android.support.v7.widget.RecyclerView;
 
 import java.util.ArrayList;
 
-import nl.tudelft.cs4160.trustchain_android.Peer;
 import nl.tudelft.cs4160.trustchain_android.R;
 import nl.tudelft.cs4160.trustchain_android.SharedPreferences.InboxItemStorage;
-import nl.tudelft.cs4160.trustchain_android.connection.CommunicationListener;
-import nl.tudelft.cs4160.trustchain_android.connection.CommunicationSingleton;
-import nl.tudelft.cs4160.trustchain_android.message.MessageProto;
 
-public class InboxActivity extends AppCompatActivity implements CommunicationListener {
+public class InboxActivity extends AppCompatActivity  {
 
     private RecyclerView mRecyclerView;
     private RecyclerView.Adapter mAdapter;
@@ -58,20 +54,5 @@ public class InboxActivity extends AppCompatActivity implements CommunicationLis
     protected void onStart() {
         super.onStart();
         getInboxItems();
-    }
-
-    @Override
-    public void updateLog(String msg) {
-        getInboxItems();
-    }
-
-    @Override
-    public void requestPermission(MessageProto.TrustChainBlock block, Peer peer) {
-
-    }
-
-    @Override
-    public void connectionSuccessful(byte[] publicKey) {
-
     }
 }

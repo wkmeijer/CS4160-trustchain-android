@@ -31,8 +31,6 @@ import java.nio.channels.DatagramChannel;
 import java.security.KeyPair;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 import nl.tudelft.cs4160.trustchain_android.Network.Network;
 import nl.tudelft.cs4160.trustchain_android.Network.NetworkCommunicationListener;
@@ -53,14 +51,13 @@ import nl.tudelft.cs4160.trustchain_android.appToApp.connection.messages.Message
 import nl.tudelft.cs4160.trustchain_android.appToApp.connection.messages.MessageException;
 import nl.tudelft.cs4160.trustchain_android.appToApp.connection.messages.Puncture;
 import nl.tudelft.cs4160.trustchain_android.appToApp.connection.messages.PunctureRequest;
-import nl.tudelft.cs4160.trustchain_android.block.TrustChainBlock;
+import nl.tudelft.cs4160.trustchain_android.block.TrustChainBlockHelper;
 import nl.tudelft.cs4160.trustchain_android.chainExplorer.ChainExplorerActivity;
-import nl.tudelft.cs4160.trustchain_android.connection.CommunicationSingleton;
 import nl.tudelft.cs4160.trustchain_android.database.TrustChainDBHelper;
 import nl.tudelft.cs4160.trustchain_android.inbox.InboxActivity;
 import nl.tudelft.cs4160.trustchain_android.message.MessageProto;
 
-import static nl.tudelft.cs4160.trustchain_android.block.TrustChainBlock.GENESIS_SEQ;
+import static nl.tudelft.cs4160.trustchain_android.block.TrustChainBlockHelper.GENESIS_SEQ;
 
 public class OverviewConnectionsActivity extends AppCompatActivity implements NetworkCommunicationListener, PeerListener {
 
@@ -93,7 +90,6 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
         if (savedInstanceState != null) {
             updatePeerLists();
         }
-        CommunicationSingleton.initContextAndListener(getApplicationContext(), null);
     }
 
 
@@ -139,7 +135,7 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
             kp = Key.createAndSaveKeys(getApplicationContext());
         }
         if (isStartedFirstTime(dbHelper, kp)) {
-            MessageProto.TrustChainBlock block = TrustChainBlock.createGenesisBlock(kp);
+            MessageProto.TrustChainBlock block = TrustChainBlockHelper.createGenesisBlock(kp);
             dbHelper.insertInDB(block);
         }
     }
@@ -289,7 +285,7 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
                             PeerAppToApp peer = peerHandler.getEligiblePeer(null);
                             if (peer != null) {
                                 network.sendIntroductionRequest(peer);
-                              //  sendBlockMessage(peer);
+                                //  sendBlockMessage(peer);
                             }
                         }
                     } catch (IOException e) {
@@ -307,7 +303,6 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
         sendThread.start();
         Log.d("App-To-App Log", "Send thread started");
     }
-
 
 
     /**
@@ -401,7 +396,8 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
      * @throws IOException
      */
     @Override
-    public void handlePuncture(PeerAppToApp peer, Puncture message) throws IOException {}
+    public void handlePuncture(PeerAppToApp peer, Puncture message) throws IOException {
+    }
 
     /**
      * Handle a puncture request. Sends a puncture to the puncture inboxItem included in the message.
@@ -421,10 +417,10 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
     @Override
     public void handleBlockMessageRequest(PeerAppToApp peer, BlockMessage message) throws IOException, MessageException {
         MessageProto.Message msg = message.getMessageProto();
-        if(msg.getCrawlRequest().getPublicKey().size() == 0){
+        if (msg.getCrawlRequest().getPublicKey().size() == 0) {
             MessageProto.TrustChainBlock block = msg.getHalfBlock();
-            InboxItemStorage.addHalfBlock(CommunicationSingleton.getContext(), ByteArrayConverter.byteStringToString(block.getPublicKey()), block.getLinkSequenceNumber());
-            CommunicationSingleton.getDbHelper().insertInDB(block);
+            InboxItemStorage.addHalfBlock(this, ByteArrayConverter.byteStringToString(block.getPublicKey()), block.getLinkSequenceNumber());
+            new TrustChainDBHelper(this).insertInDB(block);
             Log.d("testTheStacks", block.toString());
         }
     }
@@ -470,11 +466,12 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
 
     @Override
     public PeerAppToApp getOrMakePeer(String id, InetSocketAddress address, boolean incoming) {
-        return peerHandler.getOrMakePeer(id, address,incoming);
+        return peerHandler.getOrMakePeer(id, address, incoming);
     }
 
     /**
      * Display connectionType
+     *
      * @param connectionType
      * @param typename
      * @param subtypename
@@ -483,28 +480,6 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
     public void updateConnectionType(int connectionType, String typename, String subtypename) {
         String connectionTypeStr = typename + " " + subtypename;
         ((TextView) findViewById(R.id.connection_type)).setText(connectionTypeStr);
-    }
-
-    @Override
-    public void updateLog(final String msg) {
-        //just to be sure run it on the ui thread
-        //this is not necessary when this function is called from a AsyncTask
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                ((TextView) findViewById(R.id.status)).append(msg);
-            }
-        });
-    }
-
-    @Override
-    public void connectionSuccessful(byte[] publicKey) {
-
-    }
-
-    @Override
-    public void requestPermission(final MessageProto.TrustChainBlock block, final Peer peer) {
-
     }
 
     @Override

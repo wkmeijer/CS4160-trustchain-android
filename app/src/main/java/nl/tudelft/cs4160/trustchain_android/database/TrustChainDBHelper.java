@@ -6,16 +6,14 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Base64;
-import android.util.Log;
 
 import com.google.protobuf.ByteString;
 
-import java.security.PublicKey;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import nl.tudelft.cs4160.trustchain_android.block.TrustChainBlock;
+import nl.tudelft.cs4160.trustchain_android.block.TrustChainBlockHelper;
 import nl.tudelft.cs4160.trustchain_android.message.MessageProto;
 
 public class TrustChainDBHelper extends SQLiteOpenHelper {
@@ -86,7 +84,7 @@ public class TrustChainDBHelper extends SQLiteOpenHelper {
         values.put(TrustChainDBContract.BlockEntry.COLUMN_NAME_LINK_SEQUENCE_NUMBER, block.getLinkSequenceNumber());
         values.put(TrustChainDBContract.BlockEntry.COLUMN_NAME_PREVIOUS_HASH, Base64.encodeToString(block.getPreviousHash().toByteArray(), Base64.DEFAULT));
         values.put(TrustChainDBContract.BlockEntry.COLUMN_NAME_SIGNATURE, Base64.encodeToString(block.getSignature().toByteArray(), Base64.DEFAULT));
-        values.put(TrustChainDBContract.BlockEntry.COLUMN_NAME_BLOCK_HASH, Base64.encodeToString(TrustChainBlock.hash(block), Base64.DEFAULT));
+        values.put(TrustChainDBContract.BlockEntry.COLUMN_NAME_BLOCK_HASH, Base64.encodeToString(TrustChainBlockHelper.hash(block), Base64.DEFAULT));
 
         return db.insert(TrustChainDBContract.BlockEntry.TABLE_NAME, null, values);
     }
@@ -168,7 +166,7 @@ public class TrustChainDBHelper extends SQLiteOpenHelper {
      *
      * @param pubkey    - Public key of the block of which to find the previous block in the chain
      * @param seqNumber - Sequence number of block of which to find the previous block in the chain
-     * @return The previous TrustChainBlock in the chain
+     * @return The previous TrustChainBlockHelper in the chain
      */
     public MessageProto.TrustChainBlock getBlockBefore(byte[] pubkey, int seqNumber) {
         SQLiteDatabase dbReadable = getReadableDatabase();
@@ -204,7 +202,7 @@ public class TrustChainDBHelper extends SQLiteOpenHelper {
      *
      * @param pubkey    - Public key of the block of which to find the previous block in the chain
      * @param seqNumber - Sequence number of block of which to find the previous block in the chain
-     * @return The next TrustChainBlock in the chain
+     * @return The next TrustChainBlockHelper in the chain
      */
     public MessageProto.TrustChainBlock getBlockAfter(byte[] pubkey, int seqNumber) {
         SQLiteDatabase dbReadable = getReadableDatabase();

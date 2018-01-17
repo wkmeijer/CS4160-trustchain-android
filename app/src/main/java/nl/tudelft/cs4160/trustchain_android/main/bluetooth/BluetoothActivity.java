@@ -19,13 +19,10 @@ import java.security.KeyPair;
 import nl.tudelft.cs4160.trustchain_android.Peer;
 import nl.tudelft.cs4160.trustchain_android.R;
 import nl.tudelft.cs4160.trustchain_android.Util.Key;
-import nl.tudelft.cs4160.trustchain_android.connection.Communication;
-import nl.tudelft.cs4160.trustchain_android.connection.CommunicationListener;
 import nl.tudelft.cs4160.trustchain_android.message.MessageProto;
-import nl.tudelft.cs4160.trustchain_android.connection.bluetooth.BluetoothCommunication;
 import nl.tudelft.cs4160.trustchain_android.database.TrustChainDBHelper;
 
-public class BluetoothActivity extends AppCompatActivity implements CommunicationListener {
+public class BluetoothActivity extends AppCompatActivity  {
 
     private final static String TAG = BluetoothActivity.class.getName();
 
@@ -37,7 +34,6 @@ public class BluetoothActivity extends AppCompatActivity implements Communicatio
 
 
     private TrustChainDBHelper dbHelper;
-    private Communication communication;
     private KeyPair kp;
 
     private TextView textViewLog;
@@ -50,7 +46,6 @@ public class BluetoothActivity extends AppCompatActivity implements Communicatio
             Log.e(TAG, "pressed " + device.getName() + "\nUUID: " +device.getUuids()[0].getUuid());
 
             Peer peer = new Peer(device);
-            communication.connectToPeer(peer);
         }
     };
 
@@ -92,8 +87,6 @@ public class BluetoothActivity extends AppCompatActivity implements Communicatio
         kp = Key.loadKeys(getApplicationContext());
 
         //start listening for messages via bluetooth
-        communication = new BluetoothCommunication(this, dbHelper, kp, this, btAdapter);
-        communication.start();
 
     }
 
@@ -127,9 +120,6 @@ public class BluetoothActivity extends AppCompatActivity implements Communicatio
         super.onDestroy();
 
         //close the communication
-        if (communication != null) {
-            communication.stop();
-        }
     }
 
     private void addToLog(final String msg) {
@@ -141,20 +131,4 @@ public class BluetoothActivity extends AppCompatActivity implements Communicatio
         });
     }
 
-
-    @Override
-    public void updateLog(String msg) {
-        addToLog(msg);
-    }
-
-    @Override
-    public void requestPermission(MessageProto.TrustChainBlock block, Peer peer) {
-        // TODO: This needs to be implemented, but Bluetooth currently does not work.
-    }
-
-    @Override
-    public void connectionSuccessful(byte[] publicKey) {
-
-        // TODO: This needs to be implemented, but Bluetooth currently does not work.
-    }
 }

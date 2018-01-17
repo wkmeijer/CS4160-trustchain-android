@@ -15,7 +15,7 @@ import java.util.List;
 
 import nl.tudelft.cs4160.trustchain_android.R;
 import nl.tudelft.cs4160.trustchain_android.Util.ByteArrayConverter;
-import nl.tudelft.cs4160.trustchain_android.block.TrustChainBlock;
+import nl.tudelft.cs4160.trustchain_android.block.TrustChainBlockHelper;
 import nl.tudelft.cs4160.trustchain_android.color.ChainColor;
 import nl.tudelft.cs4160.trustchain_android.message.MessageProto;
 
@@ -31,7 +31,7 @@ public class ChainExplorerAdapter extends BaseAdapter {
         this.blocksList = blocksList;
         // put my public key in the peerList
         peerList.put(ByteString.copyFrom(myPubKey), "me");
-        peerList.put(TrustChainBlock.EMPTY_PK, "unknown");
+        peerList.put(TrustChainBlockHelper.EMPTY_PK, "unknown");
     }
 
     @Override
@@ -50,7 +50,7 @@ public class ChainExplorerAdapter extends BaseAdapter {
     }
 
     /**
-     * Puts the data from a TrustChainBlock object into the item textview.
+     * Puts the data from a TrustChainBlockHelper object into the item textview.
      *
      * @param position
      * @param convertView
