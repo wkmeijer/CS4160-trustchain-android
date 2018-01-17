@@ -133,8 +133,10 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:visibility="gone"
-        android:padding="5dp">
+        android:visibility="visible"
+        android:padding="5dp"
+        android:layout_marginTop="-10dp"
+        android:background="@color/colorPrimary">
 
         <Button
             android:id="@+id/sign_button"

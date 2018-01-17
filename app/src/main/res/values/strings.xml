@@ -28,7 +28,7 @@
     <string name="invalid_signature">Invalid signature</string>
     <string name="chain_explorer">TrustChain Explorer</string>
     <string name="title_activity_bluetooth">BluetoothActivity</string>
-    <string name="sign_block">Sign the block</string>
+    <string name="sign_block">Sign this block</string>
 
     <string name="item_public_key">Public key:</string>
     <string name="item_link_public_key">Link public key:</string>
