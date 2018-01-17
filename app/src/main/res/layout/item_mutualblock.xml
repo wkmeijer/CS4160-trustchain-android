@@ -136,13 +136,15 @@
         android:visibility="visible"
         android:padding="5dp"
         android:layout_marginTop="-10dp"
-        android:background="@color/colorPrimary">
+        android:id="@+id/sign_layout">
 
         <Button
             android:id="@+id/sign_button"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:text="@string/sign_block"/>
+            android:text="@string/sign_block"
+            android:onClick="onClickSignBlock"
+            android:background="@color/colorPrimary"/>
     </LinearLayout>
 
     <!--<TableLayout-->

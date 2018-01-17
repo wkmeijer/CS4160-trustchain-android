@@ -415,6 +415,14 @@ public class TrustChainActivity extends AppCompatActivity implements CompoundBut
         }
     }
 
+    private void onClickSignBlock(View view) {
+        // TODO: sign block and remove from mutual block
+        // probably removing from the mutualblock list will be done automatically, because status
+        // wil change to signed.
+
+        initializeMutualBlockRecycleView();     // Reload the current view
+    }
+
     @Override
     public void updateInternalSourceAddress(String address) {
 
