@@ -41,6 +41,7 @@ import nl.tudelft.cs4160.trustchain_android.R;
 import nl.tudelft.cs4160.trustchain_android.SharedPreferences.BootstrapIPStorage;
 import nl.tudelft.cs4160.trustchain_android.SharedPreferences.InboxItemStorage;
 import nl.tudelft.cs4160.trustchain_android.SharedPreferences.UserNameStorage;
+import nl.tudelft.cs4160.trustchain_android.Util.ByteArrayConverter;
 import nl.tudelft.cs4160.trustchain_android.Util.Key;
 import nl.tudelft.cs4160.trustchain_android.appToApp.PeerAppToApp;
 import nl.tudelft.cs4160.trustchain_android.appToApp.PeerHandler;
@@ -63,12 +64,11 @@ import static nl.tudelft.cs4160.trustchain_android.block.TrustChainBlock.GENESIS
 
 public class OverviewConnectionsActivity extends AppCompatActivity implements NetworkCommunicationListener, PeerListener {
 
-    public static String CONNECTABLE_ADDRESS = "145.94.193.165";
+    public static String CONNECTABLE_ADDRESS = "130.161.211.254";
     public final static int DEFAULT_PORT = 1873;
     private static final int BUFFER_SIZE = 65536;
     private PeerListAdapter incomingPeerAdapter;
     private PeerListAdapter outgoingPeerAdapter;
-    private DatagramChannel channel;
     private Thread sendThread;
     private Thread listenThread;
     private TrustChainDBHelper dbHelper;
@@ -83,7 +83,6 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        openChannel();
         setContentView(R.layout.activity_overview);
         initVariables(savedInstanceState);
         initExitButton();
@@ -157,20 +156,11 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
         return (genesisBlock == null);
     }
 
-    private void openChannel() {
-        try {
-            channel = DatagramChannel.open();
-            channel.socket().bind(new InetSocketAddress(DEFAULT_PORT));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
     private void initVariables(Bundle savedInstanceState) {
         peerHandler = new PeerHandler(UserNameStorage.getUserName(this));
         dbHelper = new TrustChainDBHelper(this);
         initKey();
-        network = Network.getInstance(getApplicationContext(), channel);
+        network = Network.getInstance(getApplicationContext());
 
         if (savedInstanceState != null) {
             ArrayList<PeerAppToApp> list = (ArrayList<PeerAppToApp>) savedInstanceState.getSerializable("peers");
@@ -334,7 +324,7 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
                     ByteBuffer inputBuffer = ByteBuffer.allocate(BUFFER_SIZE);
                     while (!Thread.interrupted()) {
                         inputBuffer.clear();
-                        SocketAddress address = channel.receive(inputBuffer);
+                        SocketAddress address = network.receive(inputBuffer);
                         inputBuffer.flip();
                         network.dataReceived(context, inputBuffer, (InetSocketAddress) address);
                     }
@@ -433,7 +423,7 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
         MessageProto.Message msg = message.getMessageProto();
         if(msg.getCrawlRequest().getPublicKey().size() == 0){
             MessageProto.TrustChainBlock block = msg.getHalfBlock();
-            InboxItemStorage.addHalfBlock(CommunicationSingleton.getContext(), block.getPublicKey().toString(), block.getLinkSequenceNumber());
+            InboxItemStorage.addHalfBlock(CommunicationSingleton.getContext(), ByteArrayConverter.byteStringToString(block.getPublicKey()), block.getLinkSequenceNumber());
             CommunicationSingleton.getDbHelper().insertInDB(block);
             Log.d("testTheStacks", block.toString());
         }
@@ -458,12 +448,7 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
     protected void onDestroy() {
         listenThread.interrupt();
         sendThread.interrupt();
-        channel.socket().close();
-        try {
-            channel.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        network.closeChannel();
         super.onDestroy();
     }
 
@@ -523,10 +508,16 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
     }
 
     @Override
-    public void updateInternalSourceAddress(String address) {
+    public void updateInternalSourceAddress(final String address) {
         Log.d("App-To-App Log", "Local ip: " + address);
-        TextView localIp = (TextView) findViewById(R.id.local_ip_address_view);
-        localIp.setText(address);
+
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                TextView localIp = (TextView) findViewById(R.id.local_ip_address_view);
+                localIp.setText(address);
+            }
+        });
     }
 
     @Override

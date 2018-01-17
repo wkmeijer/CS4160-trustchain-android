@@ -51,10 +51,13 @@ public class InboxItemStorage {
 
     public static void addHalfBlock(Context context, String pubKey, int halfBlockSequenceNumbe) {
         InboxItem[] array = SharedPreferencesStorage.readSharedPreferences(context, INBOX_ITEM_KEY, InboxItem[].class);
+
         if (array == null) {
             return;
         } else {
             for (int i = 0; i < array.length; i++) {
+                String p = pubKey;
+                String p2 = array[i].getPublicKey();
                 if (array[i].getPublicKey().equals(pubKey)) {
                     InboxItem item = array[i];
                     item.addHalfBlocks(halfBlockSequenceNumbe);

@@ -11,6 +11,7 @@ import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.NetworkInterface;
+import java.net.SocketAddress;
 import java.net.SocketException;
 import java.nio.ByteBuffer;
 import java.nio.channels.DatagramChannel;
@@ -25,7 +26,6 @@ import nl.tudelft.cs4160.trustchain_android.SharedPreferences.UserNameStorage;
 import nl.tudelft.cs4160.trustchain_android.Util.ByteArrayConverter;
 import nl.tudelft.cs4160.trustchain_android.Util.Key;
 import nl.tudelft.cs4160.trustchain_android.appToApp.PeerAppToApp;
-import nl.tudelft.cs4160.trustchain_android.appToApp.PeerHandler;
 import nl.tudelft.cs4160.trustchain_android.appToApp.connection.messages.BlockMessage;
 import nl.tudelft.cs4160.trustchain_android.appToApp.connection.messages.IntroductionRequest;
 import nl.tudelft.cs4160.trustchain_android.appToApp.connection.messages.IntroductionResponse;
@@ -38,8 +38,6 @@ import nl.tudelft.cs4160.trustchain_android.database.TrustChainDBHelper;
 import nl.tudelft.cs4160.trustchain_android.inbox.InboxItem;
 import nl.tudelft.cs4160.trustchain_android.main.OverviewConnectionsActivity;
 import nl.tudelft.cs4160.trustchain_android.message.MessageProto;
-
-import static nl.tudelft.cs4160.trustchain_android.block.TrustChainBlock.createBlock;
 import static nl.tudelft.cs4160.trustchain_android.message.MessageProto.Message.newBuilder;
 
 /**
@@ -60,12 +58,13 @@ public class Network {
     private TrustChainDBHelper dbHelper;
     private static NetworkCommunicationListener networkCommunicationListener;
 
-    private Network() {}
+    private Network() {
+    }
 
-    public static Network getInstance(Context context, DatagramChannel channel) {
+    public static Network getInstance(Context context) {
         if (network == null) {
             network = new Network();
-            network.initVariables(context, channel);
+            network.initVariables(context);
         }
         return network;
     }
@@ -74,15 +73,37 @@ public class Network {
         Network.networkCommunicationListener = networkCommunicationListener;
     }
 
-    private void initVariables(Context context, DatagramChannel channel) {
+    private void initVariables(Context context) {
         TelephonyManager telephonyManager = ((TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE));
         networkOperator = telephonyManager.getNetworkOperatorName();
         dbHelper = new TrustChainDBHelper(context);
         outBuffer = ByteBuffer.allocate(BUFFER_SIZE);
         hashId = UserNameStorage.getUserName(context);
         publicKey = ByteArrayConverter.bytesToHexString(Key.loadKeys(context).getPublic().getEncoded());
-        this.channel = channel;
+        openChannel();
         showLocalIpAddress();
+    }
+
+    private void openChannel() {
+        try {
+            channel = DatagramChannel.open();
+            channel.socket().bind(new InetSocketAddress(OverviewConnectionsActivity.DEFAULT_PORT));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public SocketAddress receive(ByteBuffer inputBuffer) throws IOException {
+        return channel.receive(inputBuffer);
+    }
+
+    public void closeChannel() {
+        channel.socket().close();
+        try {
+            channel.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -115,8 +136,7 @@ public class Network {
         sendMessage(request, peer);
     }
 
-    public void sendBlockMessage(PeerAppToApp peer) throws IOException {
-        MessageProto.TrustChainBlock block = createBlock(new byte[0], dbHelper, publicKey.getBytes(), null, publicKey.getBytes());
+    public void sendBlockMessage(PeerAppToApp peer, MessageProto.TrustChainBlock block) throws IOException {
         MessageProto.Message message = newBuilder().setHalfBlock(block).build();
         BlockMessage request = new BlockMessage(hashId, peer.getAddress(), publicKey, message);
         sendMessage(request, peer);
@@ -180,7 +200,7 @@ public class Network {
         outBuffer.flip();
         channel.send(outBuffer, peer.getAddress());
         peer.sentData();
-        if(networkCommunicationListener != null) {
+        if (networkCommunicationListener != null) {
             networkCommunicationListener.updatePeerLists();
         }
     }
@@ -216,7 +236,7 @@ public class Network {
                 Log.d(TAG, "pubkey address map " + SharedPreferencesStorage.getAll(context).toString());
             }
 
-            if(networkCommunicationListener != null) {
+            if (networkCommunicationListener != null) {
                 networkCommunicationListener.updateWan(message);
 
                 PeerAppToApp peer = networkCommunicationListener.getOrMakePeer(id, address, PeerAppToApp.INCOMING);
@@ -272,7 +292,7 @@ public class Network {
             if (inetAddress != null) {
                 internalSourceAddress = new InetSocketAddress(inetAddress, OverviewConnectionsActivity.DEFAULT_PORT);
             }
-            if(networkCommunicationListener != null) {
+            if (networkCommunicationListener != null) {
                 networkCommunicationListener.updateInternalSourceAddress(internalSourceAddress.toString());
             }
         }

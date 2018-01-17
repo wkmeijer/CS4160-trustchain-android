@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.net.InetSocketAddress;
 import java.util.ArrayList;
 
+import nl.tudelft.cs4160.trustchain_android.appToApp.PeerAppToApp;
 import nl.tudelft.cs4160.trustchain_android.message.MessageProto;
 
 /**
@@ -91,6 +92,10 @@ public class InboxItem implements Serializable {
         if (address != null ? !address.equals(inboxItem.address) : inboxItem.address != null)
             return false;
         return publicKey != null ? publicKey.equals(inboxItem.publicKey) : inboxItem.publicKey == null;
+    }
+
+    public PeerAppToApp getPeerAppToApp(){
+       return new PeerAppToApp(userName, new InetSocketAddress(address,port));
     }
 
 }

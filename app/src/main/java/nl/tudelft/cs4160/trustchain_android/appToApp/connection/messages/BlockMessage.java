@@ -1,9 +1,6 @@
 package nl.tudelft.cs4160.trustchain_android.appToApp.connection.messages;
 
-import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
-
-import java.io.UnsupportedEncodingException;
 import java.net.InetSocketAddress;
 import java.util.Map;
 
