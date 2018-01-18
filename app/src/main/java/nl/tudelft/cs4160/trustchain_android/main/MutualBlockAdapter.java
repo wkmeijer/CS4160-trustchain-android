@@ -70,6 +70,7 @@ public class MutualBlockAdapter extends RecyclerView.Adapter<MutualBlockAdapter.
                 blockStatTv.setText(mutualBlockItem.getBlockStatus());
                 TextView signButton = viewHolder.signButton;
                 signButton.setVisibility(View.GONE);
+                setOnClickListenerSignBlock(viewHolder, position);
             } else {
                 TextView blockStatTv = viewHolder.blockStatTextView;
                 blockStatTv.setText(mutualBlockItem.getBlockStatus());

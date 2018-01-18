@@ -143,11 +143,10 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:text="@string/sign_block"
-            android:onClick="onClickSignBlock"
             android:background="@color/colorPrimary"/>
-    </LinearLayout>
+</LinearLayout>
 
-    <!--<TableLayout-->
+<!--<TableLayout-->
     <!--android:id="@+id/expanded_item"-->
     <!--android:layout_width="match_parent"-->
     <!--android:layout_height="wrap_content"-->

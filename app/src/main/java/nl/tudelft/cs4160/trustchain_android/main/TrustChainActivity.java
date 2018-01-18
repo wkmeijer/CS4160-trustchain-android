@@ -341,7 +341,7 @@ public class TrustChainActivity extends AppCompatActivity implements CompoundBut
 
 
     /**
-     * TODO This method should be moved to the adapter -> then onclick block/button this popup should appear
+     * This method signs the half blcok when agreed with the pop-up.
      *
      * @param block
      */
