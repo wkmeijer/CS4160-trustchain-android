@@ -362,7 +362,7 @@ public class TrustChainActivity extends AppCompatActivity implements CompoundBut
                     builder.setMessage("Do you want to sign Block[ " + block.getTransaction().toString("UTF-8") + " ] from " + inboxItemOtherPeer.getUserName() + "?")
                             .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int id) {
-                                    // signAndSendHalfBlock();
+                                    signAndSendHalfBlock(block);
                                 }
                             })
                             .setNegativeButton("DELETE", new DialogInterface.OnClickListener() {
@@ -422,9 +422,4 @@ public class TrustChainActivity extends AppCompatActivity implements CompoundBut
         }
     }
 
-    /**
-     * Return the InboxItem of the other peer.
-     * @return inboxItemOtherPeer - the inbox item of the other peer in the trustchain activity.
-     */
-    public InboxItem getInboxItemOtherPeer(){return inboxItemOtherPeer;}
 }
