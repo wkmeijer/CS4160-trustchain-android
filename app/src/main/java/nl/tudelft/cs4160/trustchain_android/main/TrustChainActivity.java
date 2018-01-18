@@ -13,6 +13,7 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SwitchCompat;
 import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
+import android.util.Xml;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -84,12 +85,14 @@ public class TrustChainActivity extends AppCompatActivity implements CompoundBut
     Peer peer;
 
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         this.context = this;
         DBHelper = new TrustChainDBHelper(this);
         inboxItemOtherPeer = (InboxItem) getIntent().getSerializableExtra("inboxItem");
+        peer = new Peer(inboxItemOtherPeer.getPublicKey().getBytes(),inboxItemOtherPeer.getAddress(),inboxItemOtherPeer.getPort());
         setContentView(R.layout.activity_main);
         initVariables();
         init();

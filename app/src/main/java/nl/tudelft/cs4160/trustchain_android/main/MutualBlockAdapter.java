@@ -30,7 +30,6 @@ public class MutualBlockAdapter extends RecyclerView.Adapter<MutualBlockAdapter.
 
     private ArrayList<MutualBlockItem> mutualBlocks;
     private Context context;
-    private TrustChainActivity trustChainActivity = (TrustChainActivity) context;
 
     /**
      * Constructor.
@@ -64,16 +63,16 @@ public class MutualBlockAdapter extends RecyclerView.Adapter<MutualBlockAdapter.
     public void onBindViewHolder(MutualBlockAdapter.ViewHolder viewHolder, int position) {
         MutualBlockItem mutualBlockItem = mutualBlocks.get(position);
         if (mutualBlockItem != null) {
+            Button signButton = viewHolder.signButton;
             if (mutualBlockItem.getBlockStatus() == "Signed"){
                 TextView blockStatTv = viewHolder.blockStatTextView;
                 blockStatTv.setBackgroundColor(0xFF00FF00); // set background color green
                 blockStatTv.setText(mutualBlockItem.getBlockStatus());
-                TextView signButton = viewHolder.signButton;
                 signButton.setVisibility(View.GONE);
-                setOnClickListenerSignBlock(viewHolder, position);
             } else {
                 TextView blockStatTv = viewHolder.blockStatTextView;
                 blockStatTv.setText(mutualBlockItem.getBlockStatus());
+                setOnClickListenerSignBlock(viewHolder, position);
             }
             TextView userNameTv = viewHolder.userNameTextView;
             userNameTv.setText(UserNameStorage.getUserName(context));
@@ -96,7 +95,7 @@ public class MutualBlockAdapter extends RecyclerView.Adapter<MutualBlockAdapter.
         View.OnClickListener mOnClickListener = new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                trustChainActivity.requestPermission(mutualBlocks.get(position).getBlock());
+                ((TrustChainActivity)context).requestPermission(mutualBlocks.get(position).getBlock());
             }
         };
         holder.signButton.setOnClickListener(mOnClickListener);
