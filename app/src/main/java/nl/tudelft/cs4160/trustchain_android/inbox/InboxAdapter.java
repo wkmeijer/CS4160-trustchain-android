@@ -29,13 +29,11 @@ public class InboxAdapter extends RecyclerView.Adapter<InboxAdapter.ViewHolder> 
     public static class ViewHolderItem extends ViewHolder {
         // each data item is just a string in this case
         public TextView mUserNameTextView;
-        public TextView mCounterTextView;
         public RelativeLayout mCounterRelativeLayout;
 
         public ViewHolderItem(LinearLayout v) {
             super(v);
             mUserNameTextView = (TextView) v.findViewById(R.id.userNameTextView);
-            mCounterTextView = (TextView) v.findViewById(R.id.counterTextView);
             mCounterRelativeLayout = (RelativeLayout) v.findViewById(R.id.counterRelativeLayout);
 
         }
@@ -106,22 +104,37 @@ public class InboxAdapter extends RecyclerView.Adapter<InboxAdapter.ViewHolder> 
                 setOnClickListenerInboxItem(holder, position);
                 h.mUserNameTextView.setText(inboxItem.getUserName());
                 if (inboxItem.getAmountUnread() > 0) {
-                    h.mCounterTextView.setText(inboxItem.getAmountUnread() + "");
                     h.mCounterRelativeLayout.setVisibility(View.VISIBLE);
                 } else {
                     h.mCounterRelativeLayout.setVisibility(View.GONE);
                 }
             }
         }
+
+        /*
+        if (peer.hasReceivedData()) {
+            if (peer.isAlive()) {
+                holder.mStatusIndicator.setTextColor(context.getResources().getColor(R.color.colorStatusConnected));
+            } else {
+                holder.mStatusIndicator.setTextColor(context.getResources().getColor(R.color.colorStatusCantConnect));
+            }
+        } else {
+            if (peer.isAlive()) {
+                holder.mStatusIndicator.setTextColor(context.getResources().getColor(R.color.colorStatusConnecting));
+            } else {
+                holder.mStatusIndicator.setTextColor(context.getResources().getColor(R.color.colorStatusCantConnect));
+            }
+        }
+        */
     }
 
     private void setOnClickListenerNewUser(final ViewHolder holder) {
         View.OnClickListener mOnClickListener = new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(holder.mWrapperLinearLayout.getContext(), OverviewConnectionsActivity.class);
-                intent.setFlags(intent.getFlags() | Intent.FLAG_ACTIVITY_NO_HISTORY);
-                holder.mWrapperLinearLayout.getContext().startActivity(intent);
+                //.FINISH() TODO does this work?
+                InboxActivity i = (InboxActivity) holder.mWrapperLinearLayout.getContext();
+                i.finish();
             }
         };
         holder.mWrapperLinearLayout.setOnClickListener(mOnClickListener);
