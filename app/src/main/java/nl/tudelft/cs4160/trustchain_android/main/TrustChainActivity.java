@@ -344,9 +344,8 @@ public class TrustChainActivity extends AppCompatActivity implements CompoundBut
      * TODO This method should be moved to the adapter -> then onclick block/button this popup should appear
      *
      * @param block
-     * @param peer
      */
-    public void requestPermission(final MessageProto.TrustChainBlock block, final Peer peer) {
+    public void requestPermission(final MessageProto.TrustChainBlock block) {
         //just to be sure run it on the ui thread
         //this is not necessary when this function is called from a AsyncTask
         final TrustChainActivity trustChainActivity = this;
@@ -360,10 +359,10 @@ public class TrustChainActivity extends AppCompatActivity implements CompoundBut
                     builder = new AlertDialog.Builder(context);
                 }
                 try {
-                    builder.setMessage("Do you want to sign Block[ " + block.getTransaction().toString("UTF-8") + " ] from " + peer.getName() + "?")
+                    builder.setMessage("Do you want to sign Block[ " + block.getTransaction().toString("UTF-8") + " ] from " + inboxItemOtherPeer.getUserName() + "?")
                             .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int id) {
-                                   // signAndSendHalfBlock();
+                                    // signAndSendHalfBlock();
                                 }
                             })
                             .setNegativeButton("DELETE", new DialogInterface.OnClickListener() {
