@@ -62,6 +62,8 @@
     <string name="ip">ip</string>
     <string name="incoming">Incoming</string>
     <string name="outgoing">outgoing</string>
+    <string name="left_connections">Active Peers</string>
+    <string name="right_connections">New Peers</string>
     <string name="connection">Connection</string>
     <string name="connectable_ratio">Connectable\nratio</string>
     <string name="connectable_peers">Connectable\nPeers</string>

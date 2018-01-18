@@ -34,6 +34,11 @@
             android:textStyle="bold"
             tools:text="User Name" />
 
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+
         <TextView
             android:id="@+id/addressTextView"
             android:layout_width="wrap_content"
@@ -42,16 +47,11 @@
             android:textStyle="bold"
             tools:text="192.168.1.1:4242" />
 
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1" />
-
 
         <RelativeLayout
             android:layout_width="35dp"
-            android:layout_marginEnd="@dimen/activity_horizontal_margin"
             android:layout_height="35dp"
+            android:layout_marginEnd="@dimen/activity_horizontal_margin"
             android:layout_marginStart="@dimen/activity_horizontal_margin"
             android:gravity="center_vertical">
 
@@ -65,7 +65,7 @@
                 android:layout_width="17dp"
                 android:layout_height="17dp"
                 android:layout_marginStart="15dp"
-                android:layout_marginTop="10dp"
+                android:layout_marginTop="12dp"
                 android:visibility="visible">
 
                 <ImageView
@@ -78,8 +78,10 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:gravity="center"
+                    android:text="!"
                     android:textColor="@android:color/white"
-                    tools:text="!" />
+                    android:textSize="10sp"
+                    android:textStyle="bold" />
             </RelativeLayout>
 
         </RelativeLayout>

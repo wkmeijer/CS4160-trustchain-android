@@ -30,11 +30,13 @@ public class InboxAdapter extends RecyclerView.Adapter<InboxAdapter.ViewHolder> 
         // each data item is just a string in this case
         public TextView mUserNameTextView;
         public RelativeLayout mCounterRelativeLayout;
+        public TextView mAddressTextView;
 
         public ViewHolderItem(LinearLayout v) {
             super(v);
             mUserNameTextView = (TextView) v.findViewById(R.id.userNameTextView);
             mCounterRelativeLayout = (RelativeLayout) v.findViewById(R.id.counterRelativeLayout);
+            mAddressTextView = (TextView) v.findViewById(R.id.addressTextView);
 
         }
     }
@@ -108,9 +110,9 @@ public class InboxAdapter extends RecyclerView.Adapter<InboxAdapter.ViewHolder> 
                 } else {
                     h.mCounterRelativeLayout.setVisibility(View.GONE);
                 }
+                h.mAddressTextView.setText(inboxItem.getAddress() + ":" + inboxItem.getPort());
             }
         }
-
         /*
         if (peer.hasReceivedData()) {
             if (peer.isAlive()) {
