@@ -18,7 +18,9 @@ import java.util.ArrayList;
 import nl.tudelft.cs4160.trustchain_android.Peer;
 import nl.tudelft.cs4160.trustchain_android.R;
 import nl.tudelft.cs4160.trustchain_android.SharedPreferences.UserNameStorage;
+import nl.tudelft.cs4160.trustchain_android.appToApp.PeerAppToApp;
 import nl.tudelft.cs4160.trustchain_android.inbox.InboxAdapter;
+import nl.tudelft.cs4160.trustchain_android.inbox.InboxItem;
 
 /**
  * Created by clint on 12-1-2018.
@@ -94,7 +96,9 @@ public class MutualBlockAdapter extends RecyclerView.Adapter<MutualBlockAdapter.
             @Override
             public void onClick(View view) {
                 String peerName = mutualBlocks.get(position).getPeerName();
-                Peer peer = new Peer(null); // TODO (get from another activity)
+                InboxItem inboxItem = trustChainActivity.getInboxItemOtherPeer();
+                Peer peer = new Peer(inboxItem.getPublicKey().getBytes(), inboxItem.getAddress()
+                        , inboxItem.getPort(), inboxItem.getUserName()); 
                 trustChainActivity.requestPermission(mutualBlocks.get(position).getBlock(), peer);
             }
         };

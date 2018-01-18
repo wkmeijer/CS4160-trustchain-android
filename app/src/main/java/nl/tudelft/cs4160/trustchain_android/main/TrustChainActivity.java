@@ -422,4 +422,10 @@ public class TrustChainActivity extends AppCompatActivity implements CompoundBut
                 return true;
         }
     }
+
+    /**
+     * Return the InboxItem of the other peer.
+     * @return inboxItemOtherPeer - the inbox item of the other peer in the trustchain activity.
+     */
+    public InboxItem getInboxItemOtherPeer(){return inboxItemOtherPeer;}
 }
