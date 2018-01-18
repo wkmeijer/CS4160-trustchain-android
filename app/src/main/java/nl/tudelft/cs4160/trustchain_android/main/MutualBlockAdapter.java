@@ -1,6 +1,7 @@
 package nl.tudelft.cs4160.trustchain_android.main;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
 import android.text.Layout;
 import android.view.LayoutInflater;
@@ -14,8 +15,10 @@ import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 
+import nl.tudelft.cs4160.trustchain_android.Peer;
 import nl.tudelft.cs4160.trustchain_android.R;
 import nl.tudelft.cs4160.trustchain_android.SharedPreferences.UserNameStorage;
+import nl.tudelft.cs4160.trustchain_android.inbox.InboxAdapter;
 
 /**
  * Created by clint on 12-1-2018.
@@ -25,6 +28,7 @@ public class MutualBlockAdapter extends RecyclerView.Adapter<MutualBlockAdapter.
 
     private ArrayList<MutualBlockItem> mutualBlocks;
     private Context context;
+    private TrustChainActivity trustChainActivity = (TrustChainActivity) context;
 
     /**
      * Constructor.
@@ -79,6 +83,22 @@ public class MutualBlockAdapter extends RecyclerView.Adapter<MutualBlockAdapter.
             TextView transTv = viewHolder.transactionTextView;
             transTv.setText(mutualBlockItem.getTransaction());
         }
+    }
+
+    /**
+     * Define the listener on the button for the unsigned blocks and invoke the method of signing blocks
+     * @param holder The viewholder for this adapter.
+     */
+    private void setOnClickListenerSignBlock(final MutualBlockAdapter.ViewHolder holder, final int position) {
+        View.OnClickListener mOnClickListener = new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String peerName = mutualBlocks.get(position).getPeerName();
+                Peer peer = new Peer(null); // TODO (get from another activity)
+                trustChainActivity.requestPermission(mutualBlocks.get(position).getBlock(), peer);
+            }
+        };
+        holder.signButton.setOnClickListener(mOnClickListener);
     }
 
     @Override
