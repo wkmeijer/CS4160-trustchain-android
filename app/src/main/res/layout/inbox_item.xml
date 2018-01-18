@@ -31,9 +31,16 @@
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/activity_horizontal_margin"
             android:textColor="#000000"
-            android:textSize="16sp"
             android:textStyle="bold"
             tools:text="User Name" />
+
+        <TextView
+            android:id="@+id/addressTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/activity_horizontal_margin"
+            android:textStyle="bold"
+            tools:text="192.168.1.1:4242" />
 
         <View
             android:layout_width="match_parent"
