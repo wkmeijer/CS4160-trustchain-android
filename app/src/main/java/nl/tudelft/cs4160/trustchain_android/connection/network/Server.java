@@ -17,7 +17,6 @@ import nl.tudelft.cs4160.trustchain_android.message.MessageProto;
  * Class is package private to prevent another activity from accessing it and breaking everything
  */
 class Server {
-    private static final String TAG = "Server";
     ServerSocket serverSocket;
 
     String messageLog = "";
@@ -53,7 +52,9 @@ class Server {
             try {
                 serverSocket = new ServerSocket(SocketServerPORT);
 
-                listener.updateLog("Server is waiting for messages...");
+                if (listener != null) {
+                    listener.updateLog("Server is waiting for messages...");
+                }
 
                 while (true) {
                     messageLog = "";
@@ -99,7 +100,10 @@ class Server {
                 e.printStackTrace();
                 responseLog += "Something wrong! " + e.toString() + "\n";
             } finally {
-                listener.updateLog("\n  Server: " + responseLog);
+
+                if (listener != null) {
+                    listener.updateLog("\n  Server: " + responseLog);
+                }
             }
         }
 

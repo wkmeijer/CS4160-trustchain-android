@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -23,6 +24,7 @@ import java.security.KeyPair;
 import java.util.List;
 
 import nl.tudelft.cs4160.trustchain_android.R;
+import nl.tudelft.cs4160.trustchain_android.Util.ByteArrayConverter;
 import nl.tudelft.cs4160.trustchain_android.Util.Key;
 import nl.tudelft.cs4160.trustchain_android.appToApp.PeerAppToApp;
 import nl.tudelft.cs4160.trustchain_android.database.TrustChainDBHelper;
@@ -30,9 +32,10 @@ import nl.tudelft.cs4160.trustchain_android.main.ChainExplorerInfoActivity;
 import nl.tudelft.cs4160.trustchain_android.message.MessageProto;
 
 import static android.view.Gravity.CENTER;
-import static nl.tudelft.cs4160.trustchain_android.Peer.bytesToHex;
 
-
+/**
+ * This activity will show a chain of a given TrustChain peer.
+ */
 public class ChainExplorerActivity extends AppCompatActivity {
     TrustChainDBHelper dbHelper;
     ChainExplorerAdapter adapter;
@@ -40,12 +43,23 @@ public class ChainExplorerActivity extends AppCompatActivity {
 
     static final String TAG = "ChainExplorerActivity";
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chain_explorer);
         blocksList = (ListView) findViewById(R.id.blocks_list);
+
+        // Create a progress bar to display while the list loads
+        ProgressBar progressBar = new ProgressBar(this);
+        progressBar.setLayoutParams(new LinearLayout.LayoutParams(GridLayout.LayoutParams.WRAP_CONTENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT, CENTER));
+        progressBar.setIndeterminate(true);
+        blocksList.setEmptyView(progressBar);
+
+        // Must add the progress bar to the root of the layout
+        ViewGroup root = (ViewGroup) findViewById(android.R.id.content);
+        root.addView(progressBar);
+
         init();
     }
 
@@ -68,7 +82,6 @@ public class ChainExplorerActivity extends AppCompatActivity {
         }
     }
 
-
     private void init() {
         dbHelper = new TrustChainDBHelper(this);
         KeyPair kp = Key.loadKeys(getApplicationContext());
@@ -77,12 +90,11 @@ public class ChainExplorerActivity extends AppCompatActivity {
             publicKey = getIntent().getByteArrayExtra("publicKey");
         } else {
             publicKey = kp.getPublic().getEncoded();
-
         }
         try {
             List<MessageProto.TrustChainBlock> blocks = dbHelper.getBlocks(publicKey);
             if(blocks.size() > 0) {
-                this.setTitle(bytesToHex(blocks.get(0).getPublicKey().toByteArray()));
+                this.setTitle(ByteArrayConverter.bytesToHexString(blocks.get(0).getPublicKey().toByteArray()));
                 adapter = new ChainExplorerAdapter(this, blocks, kp.getPublic().getEncoded());
                 blocksList.setAdapter(adapter);
             }else{

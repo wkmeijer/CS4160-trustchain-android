@@ -76,6 +76,7 @@ public class TrustChainDBHelper extends SQLiteOpenHelper {
      * returns -1 as an error indicator.
      */
     public long insertInDB(MessageProto.TrustChainBlock block) {
+        MessageProto.TrustChainBlock b = block;
         SQLiteDatabase db = getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put(TrustChainDBContract.BlockEntry.COLUMN_NAME_TX, block.getTransaction().toStringUtf8());
@@ -236,7 +237,7 @@ public class TrustChainDBHelper extends SQLiteOpenHelper {
      * Returns the latest block in the database associated with the given public key.
      *
      * @param pubkey - public key for which to search for blocks
-     * @return
+     * @return the latest block in the database associated with the given public key
      */
     public MessageProto.TrustChainBlock getLatestBlock(byte[] pubkey) {
         return getBlock(pubkey, getMaxSeqNum(pubkey));
@@ -320,8 +321,8 @@ public class TrustChainDBHelper extends SQLiteOpenHelper {
      *
      * @param pubKey - public key of the chain to from which blocks need to be fetched
      * @param seqNum - sequence number of block, the blocks inserted after this block should be returned
-     * @param limit  - the limit of the amount of blocks to return
-     * @return
+     * @param limit - the limit of the amount of blocks to return
+     * @return list of blocks
      */
     public List<MessageProto.TrustChainBlock> crawl(byte[] pubKey, int seqNum, int limit) throws Exception {
         if (limit > 100) {

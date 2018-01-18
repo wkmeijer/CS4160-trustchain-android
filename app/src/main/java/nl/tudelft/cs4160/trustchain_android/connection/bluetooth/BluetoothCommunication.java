@@ -1,6 +1,7 @@
 package nl.tudelft.cs4160.trustchain_android.connection.bluetooth;
 
 import android.bluetooth.BluetoothAdapter;
+import android.content.Context;
 
 import java.security.KeyPair;
 
@@ -20,8 +21,8 @@ public class BluetoothCommunication extends Communication {
 
     private AcceptThread server;
 
-    public BluetoothCommunication(TrustChainDBHelper dbHelper, KeyPair kp, CommunicationListener listener, BluetoothAdapter bluetoothAdapter) {
-        super(dbHelper, kp, listener);
+    public BluetoothCommunication(Context context, TrustChainDBHelper dbHelper, KeyPair kp, CommunicationListener listener, BluetoothAdapter bluetoothAdapter) {
+        super(context, dbHelper, kp, listener);
         this.bluetoothAdapter = bluetoothAdapter;
 
     }

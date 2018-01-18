@@ -30,8 +30,7 @@
             android:label="@string/title_activity_bluetooth"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name=".chainExplorer.ChainExplorerActivity" />
-        <activity
-            android:name=".main.ConnectionExplanationActivity" />
+        <activity android:name=".main.ConnectionExplanationActivity" />
         <activity
             android:name=".main.OverviewConnectionsActivity"
             android:configChanges="orientation|screenLayout|screenSize" />
@@ -46,6 +45,7 @@
             android:windowSoftInputMode="adjustResize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -55,6 +55,7 @@
         <activity
             android:name=".main.BootstrapActivity"
             android:windowSoftInputMode="adjustResize" />
+        <activity android:name=".inbox.InboxActivity"/>
     </application>
 
 </manifest>

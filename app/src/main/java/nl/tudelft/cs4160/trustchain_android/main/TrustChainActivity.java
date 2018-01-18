@@ -6,9 +6,10 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.RequiresApi;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SwitchCompat;
 import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
@@ -23,38 +24,62 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.net.NetworkInterface;
-import java.security.KeyPair;
+import java.nio.channels.DatagramChannel;
 import java.security.PublicKey;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import nl.tudelft.cs4160.trustchain_android.Network.Network;
+import nl.tudelft.cs4160.trustchain_android.Network.NetworkCommunicationListener;
 import nl.tudelft.cs4160.trustchain_android.Peer;
 import nl.tudelft.cs4160.trustchain_android.R;
 import nl.tudelft.cs4160.trustchain_android.SharedPreferences.PubKeyAndAddressPairStorage;
 import nl.tudelft.cs4160.trustchain_android.SharedPreferences.SharedPreferencesStorage;
+import nl.tudelft.cs4160.trustchain_android.Util.ByteArrayConverter;
+
 import nl.tudelft.cs4160.trustchain_android.Util.Key;
 import nl.tudelft.cs4160.trustchain_android.appToApp.PeerAppToApp;
+import nl.tudelft.cs4160.trustchain_android.appToApp.PeerHandler;
+import nl.tudelft.cs4160.trustchain_android.appToApp.connection.messages.BlockMessage;
+import nl.tudelft.cs4160.trustchain_android.appToApp.connection.messages.IntroductionRequest;
+import nl.tudelft.cs4160.trustchain_android.appToApp.connection.messages.IntroductionResponse;
+import nl.tudelft.cs4160.trustchain_android.appToApp.connection.messages.Message;
+import nl.tudelft.cs4160.trustchain_android.appToApp.connection.messages.MessageException;
+import nl.tudelft.cs4160.trustchain_android.appToApp.connection.messages.Puncture;
+import nl.tudelft.cs4160.trustchain_android.appToApp.connection.messages.PunctureRequest;
+import nl.tudelft.cs4160.trustchain_android.block.TrustChainBlock;
+import nl.tudelft.cs4160.trustchain_android.block.ValidationResult;
 import nl.tudelft.cs4160.trustchain_android.chainExplorer.ChainExplorerAdapter;
-import nl.tudelft.cs4160.trustchain_android.connection.Communication;
 import nl.tudelft.cs4160.trustchain_android.connection.CommunicationListener;
-import nl.tudelft.cs4160.trustchain_android.connection.network.NetworkCommunication;
+import nl.tudelft.cs4160.trustchain_android.connection.CommunicationSingleton;
 import nl.tudelft.cs4160.trustchain_android.chainExplorer.ChainExplorerActivity;
+
 import nl.tudelft.cs4160.trustchain_android.database.TrustChainDBHelper;
+import nl.tudelft.cs4160.trustchain_android.inbox.InboxItem;
 import nl.tudelft.cs4160.trustchain_android.message.MessageProto;
 
-public class TrustChainActivity extends AppCompatActivity implements CompoundButton.OnCheckedChangeListener, CommunicationListener {
+import static nl.tudelft.cs4160.trustchain_android.block.TrustChainBlock.createBlock;
 
+public class TrustChainActivity extends AppCompatActivity implements CompoundButton.OnCheckedChangeListener, CommunicationListener, NetworkCommunicationListener {
 
-    public static String TRANSACTION_DATA = "Hello world!";
+    public final static int DEFAULT_PORT = 1873;
     private final static String TAG = TrustChainActivity.class.toString();
     private Context context;
 
-    TrustChainDBHelper dbHelper;
-
     boolean developerMode = false;
+    private RecyclerView mRecyclerView;
+    private RecyclerView.Adapter mAdapter;
+    private RecyclerView.LayoutManager mLayoutManager;
+    private Network network;
+    private DatagramChannel channel;
+    private InboxItem inboxItemOtherPeer;
     TextView externalIPText;
     TextView localIPText;
     TextView statusText;
@@ -65,28 +90,19 @@ public class TrustChainActivity extends AppCompatActivity implements CompoundBut
     EditText messageEditText;
     SwitchCompat switchDeveloperMode;
     LinearLayout extraInformationPanel;
-
     TrustChainActivity thisActivity;
-    PeerAppToApp peerAppToApp;
     Peer peer;
-
-    private Communication communication;
-
-    /**
-     * Key pair of user
-     */
-    public static KeyPair kp;
 
     /**
      * Listener for the connection button.
-     * On click a block is created and send to a peerAppToApp.
-     * When we encounter an unknown peerAppToApp, send a crawl request to that peerAppToApp in order to get its
+     * On click a block is created and send to a inboxItemOtherPeer.
+     * When we encounter an unknown inboxItemOtherPeer, send a crawl request to that inboxItemOtherPeer in order to get its
      * public key.
-     * Also, when we want to send a block always send our last 5 blocks to the peerAppToApp so the block
+     * Also, when we want to send a block always send our last 5 blocks to the inboxItemOtherPeer so the block
      * request won't be rejected due to NO_INFO error.
      * <p>
      * This is code to simulate dispersy, note that this does not work properly with a busy network,
-     * because the time delay between sending information to the peerAppToApp and sending the actual
+     * because the time delay between sending information to the inboxItemOtherPeer and sending the actual
      * to-be-signed block could cause gaps.
      * <p>
      * Also note that whatever goes wrong we will never get a valid full block, so the integrity of
@@ -95,21 +111,31 @@ public class TrustChainActivity extends AppCompatActivity implements CompoundBut
 
     public void onClickSend(View view) throws UnsupportedEncodingException {
         Log.d("testLogs", "onClickSend");
-        if (isConnected()) {
-            TRANSACTION_DATA = messageEditText.getText().toString();
-            byte[] transactionData = TRANSACTION_DATA.getBytes("UTF-8");
-            communication.signBlock(transactionData, peer);
-        } else {
-            peer = new Peer(null, editTextDestinationIP.getText().toString(),
-                    Integer.parseInt(editTextDestinationPort.getText().toString()));
-            communication.connectToPeer(peer);
-        }
+        network = Network.getInstance(getApplicationContext());
+        network.setNetworkCommunicationListener(this);
+        PublicKey publicKey = Key.loadKeys(this).getPublic();
+
+        byte[] transactionData = messageEditText.getText().toString().getBytes("UTF-8");
+        final MessageProto.TrustChainBlock block = createBlock(transactionData, CommunicationSingleton.getDbHelper(), publicKey.getEncoded(), null, ByteArrayConverter.hexStringToByteArray(inboxItemOtherPeer.getPublicKey()));
+        TrustChainBlock.sign(block,Key.loadKeys(getApplicationContext()).getPrivate());
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        network.sendBlockMessage(inboxItemOtherPeer.getPeerAppToApp(), block);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }).start();
     }
+
 
     /**
      * Load all blocks which contain the peer's public key.
      * The peer's public key is either in the communication if Trustchain blocks have been exchanged,
      * or will else likely be in the PubkeyAndAddress storage.
+     *
      * @param view
      */
     public void onClickViewChain(View view) {
@@ -117,10 +143,12 @@ public class TrustChainActivity extends AppCompatActivity implements CompoundBut
 
         // Try to instantiate public key.
         if (peer != null && peer.getIpAddress() != null) {
-            publicKey = communication.getPublicKey(peer.getIpAddress());
+            publicKey = this.inboxItemOtherPeer.getPublicKey().getBytes();
         } else {
-            String pubkeyStr = PubKeyAndAddressPairStorage.getPubKeyByAddress(context, peerAppToApp.getAddress().getAddress().toString());
-            if(pubkeyStr != null) {
+            Log.d("App-To-App", "pubkey address map " + SharedPreferencesStorage.getAll(this).toString());
+
+            String pubkeyStr = PubKeyAndAddressPairStorage.getPubKeyByAddress(context, inboxItemOtherPeer.getAddress());
+            if (pubkeyStr != null) {
                 publicKey = ChainExplorerAdapter.hexStringToByteArray(pubkeyStr);
             }
         }
@@ -132,19 +160,6 @@ public class TrustChainActivity extends AppCompatActivity implements CompoundBut
         }
     }
 
-    private boolean isConnected() {
-        if (peer != null) {
-            if (communication.getPublicKey(peer.getIpAddress()) != null) {
-                return true;
-            } else {
-                Log.d("testLogs", "getPublicKey == null");
-            }
-        } else {
-
-            Log.d("testLogs", "peer == null");
-        }
-        return false;
-    }
 
     private void enableMessage() {
         runOnUiThread(new Runnable() {
@@ -160,22 +175,57 @@ public class TrustChainActivity extends AppCompatActivity implements CompoundBut
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         this.context = this;
+        inboxItemOtherPeer = (InboxItem) getIntent().getSerializableExtra("inboxItem");
         setContentView(R.layout.activity_main);
         initVariables();
         init();
-        setPeerDetails();
+        initializeMutualBlockRecycleView();
     }
 
-    private void setPeerDetails() {
-        peerAppToApp = (PeerAppToApp) getIntent().getSerializableExtra("PeerAppToApp");
-        if (peerAppToApp != null) {
-            String address = peerAppToApp.getExternalAddress().toString().substring(1);
-            int port = peerAppToApp.getPort();
-            String name = peerAppToApp.getPeerId();
-            editTextDestinationIP.setText(address);
-            editTextDestinationPort.setText(port + "");
-        }
+    /**
+     * Initialize the recycle view that will show the mutual blocks of the user and the other peer.
+     */
+    private void initializeMutualBlockRecycleView() {
+        ArrayList<MutualBlockItem> mutualBlockList = findMutualBlocks(CommunicationSingleton.getDbHelper());
+        mLayoutManager = new LinearLayoutManager(this);
+        mAdapter = new MutualBlockAdapter(this, mutualBlockList);
+        mRecyclerView.setLayoutManager(mLayoutManager);
+        mRecyclerView.setAdapter(mAdapter);
     }
+
+    /**
+     * Find blocks that both the user and the other peer have in common.
+     *
+     * @param dbHelper the database helper.
+     * @return a list of mutual blocks.
+     */
+    private ArrayList<MutualBlockItem> findMutualBlocks(TrustChainDBHelper dbHelper) {
+        ArrayList<MutualBlockItem> mutualBlocks = new ArrayList<>();
+        for (MessageProto.TrustChainBlock block : dbHelper.getAllBlocks()) {
+            if (ByteArrayConverter.bytesToHexString(block.getLinkPublicKey().toByteArray()).equals(inboxItemOtherPeer.getPublicKey())
+                    || ByteArrayConverter.byteStringToString(block.getPublicKey()).equals(inboxItemOtherPeer.getPublicKey()))
+            {
+                String blockStatus = "Status of Block: ";
+                int validationResultStatus = ValidationResult.NO_INFO;
+
+                try {
+                    validationResultStatus = TrustChainBlock.validate(block, dbHelper).getStatus();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+                if (validationResultStatus != ValidationResult.VALID) {
+                    blockStatus += "Not signed by both parties";
+                } else {
+                    blockStatus += "Signed by both parties";
+                }
+
+                mutualBlocks.add(new MutualBlockItem(inboxItemOtherPeer.getUserName(), block.getSequenceNumber(), block.getLinkSequenceNumber(), blockStatus, block.getTransaction().toStringUtf8()));
+            }
+        }
+        return mutualBlocks;
+    }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -184,6 +234,12 @@ public class TrustChainActivity extends AppCompatActivity implements CompoundBut
         return true;
     }
 
+    /**
+     * Initializes the menu on the upper right corner.
+     *
+     * @param item
+     * @return
+     */
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.chain_menu:
@@ -208,27 +264,22 @@ public class TrustChainActivity extends AppCompatActivity implements CompoundBut
         externalIPText = (TextView) findViewById(R.id.my_external_ip);
         statusText = (TextView) findViewById(R.id.status);
         statusText.setMovementMethod(new ScrollingMovementMethod());
+
         editTextDestinationIP = (EditText) findViewById(R.id.destination_IP);
         editTextDestinationPort = (EditText) findViewById(R.id.destination_port);
-        sendButton = (Button) findViewById(R.id.send_button);
         messageEditText = (EditText) findViewById(R.id.message_edit_text);
         extraInformationPanel = (LinearLayout) findViewById(R.id.extra_information_panel);
         developerModeText = (TextView) findViewById(R.id.developer_mode_text);
+        mRecyclerView = (RecyclerView) findViewById(R.id.mutualBlocksRecyclerView);
         switchDeveloperMode = (SwitchCompat) findViewById(R.id.switch_developer_mode);
         switchDeveloperMode.setOnCheckedChangeListener(this);
-
+        editTextDestinationIP = (EditText) findViewById(R.id.destination_IP);
+        editTextDestinationPort = (EditText) findViewById(R.id.destination_port);
     }
 
     private void init() {
-        dbHelper = new TrustChainDBHelper(thisActivity);
-        //load keys
-        KeyPair kp = Key.loadKeys(getApplicationContext());
-        communication = new NetworkCommunication(dbHelper, kp, this);
         updateIP();
         updateLocalIPField(getLocalIPAddress());
-        //start listening for messages
-        communication.start();
-
     }
 
     /**
@@ -250,12 +301,9 @@ public class TrustChainActivity extends AppCompatActivity implements CompoundBut
     /**
      * Finds the external IP address of this device by making an API call to https://www.ipify.org/.
      * The networking runs on a separate thread.
-     *
-     * @return a string representation of the device's external IP address
      */
     public void updateIP() {
         Thread thread = new Thread(new Runnable() {
-            @RequiresApi(api = Build.VERSION_CODES.KITKAT)
             @Override
             public void run() {
                 try (java.util.Scanner s = new java.util.Scanner(new java.net.URL("https://api.ipify.org").openStream(), "UTF-8").useDelimiter("\\A")) {
@@ -306,7 +354,8 @@ public class TrustChainActivity extends AppCompatActivity implements CompoundBut
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                ((TextView) findViewById(R.id.status)).append(msg);
+                TextView statusText = (TextView) findViewById(R.id.status);
+                statusText.append(msg);
             }
         });
     }
@@ -315,6 +364,7 @@ public class TrustChainActivity extends AppCompatActivity implements CompoundBut
     public void requestPermission(final MessageProto.TrustChainBlock block, final Peer peer) {
         //just to be sure run it on the ui thread
         //this is not necessary when this function is called from a AsyncTask
+        final TrustChainActivity trustChainActivity = this;
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -328,7 +378,7 @@ public class TrustChainActivity extends AppCompatActivity implements CompoundBut
                     builder.setMessage("Do you want to sign Block[ " + block.getTransaction().toString("UTF-8") + " ] from " + peer.getName() + "?")
                             .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int id) {
-                                    communication.acceptTransaction(block, peer);
+                                    //CommunicationSingleton.getCommunication().acceptTransaction(block, peer);
                                 }
                             })
                             .setNegativeButton("No", new DialogInterface.OnClickListener() {
@@ -347,7 +397,9 @@ public class TrustChainActivity extends AppCompatActivity implements CompoundBut
 
     @Override
     public void connectionSuccessful(byte[] publicKey) {
-        this.peer.setPublicKey(publicKey);
+        if (this.peer != null && publicKey != null) {
+            this.peer.setPublicKey(publicKey);
+        }
         enableMessage();
     }
 
@@ -363,4 +415,58 @@ public class TrustChainActivity extends AppCompatActivity implements CompoundBut
         }
     }
 
+    @Override
+    public void updateInternalSourceAddress(String address) {
+
+    }
+
+    @Override
+    public void updatePeerLists() {
+
+    }
+
+    @Override
+    public void updateWan(Message message) throws MessageException {
+
+    }
+
+    @Override
+    public void updateConnectionType(int connectionType, String typename, String subtypename) {
+
+    }
+
+    @Override
+    public void handleIntroductionRequest(PeerAppToApp peer, IntroductionRequest message) throws IOException {
+
+    }
+
+    @Override
+    public void handleIntroductionResponse(PeerAppToApp peer, IntroductionResponse message) {
+
+    }
+
+    @Override
+    public void handlePunctureRequest(PeerAppToApp peer, PunctureRequest message) throws IOException, MessageException {
+
+    }
+
+    @Override
+    public void handleBlockMessageRequest(PeerAppToApp peer, BlockMessage message) throws IOException, MessageException {
+
+    }
+
+    @Override
+    public void handlePuncture(PeerAppToApp peer, Puncture message) throws IOException {
+
+    }
+
+    @Override
+    public PeerAppToApp getOrMakePeer(String id, InetSocketAddress address, boolean incoming) {
+        return null;
+    }
+
+    @Override
+    public PeerHandler getPeerHandler() {
+        return null;
+    }
 }

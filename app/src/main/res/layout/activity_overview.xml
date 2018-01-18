@@ -137,7 +137,8 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_weight="1"
+        android:layout_height="0dp">
 
         <ListView
             android:id="@+id/incoming_peer_connection_list_view"
@@ -155,32 +156,19 @@
 
     </LinearLayout>
 
-    <!--
-    <TableLayout
-        android:id="@+id/lists"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_above="@id/exit_button"
-        android:layout_below="@id/overviewButtons"
-        android:paddingLeft="2dp"
-        android:paddingRight="2dp">
+        android:orientation="vertical"
+        android:layout_height="wrap_content">
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/colorPrimary"
+            android:onClick="onClickOpenInbox"
+            android:textColor="@android:color/white"
+            android:text="@string/inbox"
+            android:layout_margin="@dimen/activity_horizontal_margin"/>
 
-        <TableRow>
-
-            <ListView
-                android:id="@+id/incoming_peer_connection_list_view"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"/>
-
-            <ListView
-                android:id="@+id/outgoing_peer_connection_list_view"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"/>
-        </TableRow>
-
-    </TableLayout>-->
-
+    </LinearLayout>
 
 </LinearLayout>
