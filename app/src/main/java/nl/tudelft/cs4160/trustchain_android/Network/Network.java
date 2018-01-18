@@ -34,7 +34,6 @@ import nl.tudelft.cs4160.trustchain_android.appToApp.connection.messages.Message
 import nl.tudelft.cs4160.trustchain_android.appToApp.connection.messages.Puncture;
 import nl.tudelft.cs4160.trustchain_android.appToApp.connection.messages.PunctureRequest;
 import nl.tudelft.cs4160.trustchain_android.bencode.BencodeReadException;
-import nl.tudelft.cs4160.trustchain_android.database.TrustChainDBHelper;
 import nl.tudelft.cs4160.trustchain_android.inbox.InboxItem;
 import nl.tudelft.cs4160.trustchain_android.main.OverviewConnectionsActivity;
 import nl.tudelft.cs4160.trustchain_android.message.MessageProto;
@@ -55,7 +54,6 @@ public class Network {
     private String networkOperator;
     private static Network network;
     private String publicKey;
-    private TrustChainDBHelper dbHelper;
     private static NetworkCommunicationListener networkCommunicationListener;
 
     private Network() {
@@ -76,7 +74,6 @@ public class Network {
     private void initVariables(Context context) {
         TelephonyManager telephonyManager = ((TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE));
         networkOperator = telephonyManager.getNetworkOperatorName();
-        dbHelper = new TrustChainDBHelper(context);
         outBuffer = ByteBuffer.allocate(BUFFER_SIZE);
         hashId = UserNameStorage.getUserName(context);
         publicKey = ByteArrayConverter.bytesToHexString(Key.loadKeys(context).getPublic().getEncoded());
@@ -94,6 +91,9 @@ public class Network {
     }
 
     public SocketAddress receive(ByteBuffer inputBuffer) throws IOException {
+        if(!channel.isOpen()) {
+            openChannel();
+        }
         return channel.receive(inputBuffer);
     }
 

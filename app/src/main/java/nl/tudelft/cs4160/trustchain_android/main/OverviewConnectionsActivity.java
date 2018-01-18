@@ -69,8 +69,6 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
     private static final int BUFFER_SIZE = 65536;
     private PeerListAdapter incomingPeerAdapter;
     private PeerListAdapter outgoingPeerAdapter;
-    private Thread sendThread;
-    private Thread listenThread;
     private TrustChainDBHelper dbHelper;
     private Network network;
     private PeerHandler peerHandler;
@@ -248,6 +246,9 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
         }
     }
 
+    /**
+     * Asynctask to create the inetsocketaddress since network stuff can no longer happen on the main thread in android v3 (honeycomb).
+     */
     private static class CreateInetSocketAddressTask extends AsyncTask<String, Void, InetSocketAddress> {
         private WeakReference<OverviewConnectionsActivity> activityReference;
 
@@ -280,7 +281,7 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
      * Start the thread send thread responsible for sending a {@link IntroductionRequest} to a random inboxItem every 5 seconds.
      */
     private void startSendThread() {
-        sendThread = new Thread(new Runnable() {
+        Thread sendThread = new Thread(new Runnable() {
             @Override
             public void run() {
                 do {
@@ -289,7 +290,7 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
                             PeerAppToApp peer = peerHandler.getEligiblePeer(null);
                             if (peer != null) {
                                 network.sendIntroductionRequest(peer);
-                              //  sendBlockMessage(peer);
+                                //  sendBlockMessage(peer);
                             }
                         }
                     } catch (IOException e) {
@@ -317,7 +318,7 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
     private void startListenThread() {
         final Context context = this;
 
-        listenThread = new Thread(new Runnable() {
+        Thread listenThread = new Thread(new Runnable() {
             @Override
             public void run() {
                 try {
@@ -329,6 +330,7 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
                         network.dataReceived(context, inputBuffer, (InetSocketAddress) address);
                     }
                 } catch (IOException e) {
+                    e.printStackTrace();
                     Log.d("App-To-App Log", "Listen thread stopped");
                 }
             }
@@ -446,8 +448,6 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
 
     @Override
     protected void onDestroy() {
-        listenThread.interrupt();
-        sendThread.interrupt();
         network.closeChannel();
         super.onDestroy();
     }
