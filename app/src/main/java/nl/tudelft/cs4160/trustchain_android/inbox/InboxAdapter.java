@@ -31,13 +31,14 @@ public class InboxAdapter extends RecyclerView.Adapter<InboxAdapter.ViewHolder> 
         public TextView mUserNameTextView;
         public RelativeLayout mCounterRelativeLayout;
         public TextView mAddressTextView;
+        public TextView mStatusTextView;
 
         public ViewHolderItem(LinearLayout v) {
             super(v);
             mUserNameTextView = (TextView) v.findViewById(R.id.userNameTextView);
             mCounterRelativeLayout = (RelativeLayout) v.findViewById(R.id.counterRelativeLayout);
             mAddressTextView = (TextView) v.findViewById(R.id.addressTextView);
-
+            mStatusTextView = (TextView) v.findViewById(R.id.status_indicator);
         }
     }
 
@@ -111,6 +112,10 @@ public class InboxAdapter extends RecyclerView.Adapter<InboxAdapter.ViewHolder> 
                     h.mCounterRelativeLayout.setVisibility(View.GONE);
                 }
                 h.mAddressTextView.setText(inboxItem.getAddress() + ":" + inboxItem.getPort());
+
+                if (false) {
+                    h.mStatusTextView.setText("bla");
+                }
             }
         }
         /*
