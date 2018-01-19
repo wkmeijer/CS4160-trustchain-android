@@ -221,7 +221,6 @@ public class Network {
         try {
             Message message = Message.createFromByteBuffer(data);
             Log.d(TAG, "Received " + message);
-
             String id = message.getPeerId();
             String pubKey = message.getPubKey();
 
@@ -230,9 +229,7 @@ public class Network {
                 PubKeyAndAddressPairStorage.addPubkeyAndAddressPair(context, pubKey, ip);
                 InboxItem i = new InboxItem(id, new ArrayList<Integer>(), ip, pubKey, address.getPort());
                 InboxItemStorage.addInboxItem(context, i);
-
                 Log.d(TAG, "Stored following ip for pubkey: " + pubKey + " " + PubKeyAndAddressPairStorage.getAddressByPubkey(context, pubKey));
-
                 Log.d(TAG, "pubkey address map " + SharedPreferencesStorage.getAll(context).toString());
             }
 

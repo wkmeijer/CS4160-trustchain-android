@@ -40,6 +40,7 @@ import nl.tudelft.cs4160.trustchain_android.Peer;
 import nl.tudelft.cs4160.trustchain_android.R;
 import nl.tudelft.cs4160.trustchain_android.SharedPreferences.BootstrapIPStorage;
 import nl.tudelft.cs4160.trustchain_android.SharedPreferences.InboxItemStorage;
+import nl.tudelft.cs4160.trustchain_android.SharedPreferences.PubKeyAndAddressPairStorage;
 import nl.tudelft.cs4160.trustchain_android.SharedPreferences.UserNameStorage;
 import nl.tudelft.cs4160.trustchain_android.Util.ByteArrayConverter;
 import nl.tudelft.cs4160.trustchain_android.Util.Key;
@@ -58,6 +59,7 @@ import nl.tudelft.cs4160.trustchain_android.chainExplorer.ChainExplorerActivity;
 import nl.tudelft.cs4160.trustchain_android.connection.CommunicationSingleton;
 import nl.tudelft.cs4160.trustchain_android.database.TrustChainDBHelper;
 import nl.tudelft.cs4160.trustchain_android.inbox.InboxActivity;
+import nl.tudelft.cs4160.trustchain_android.inbox.InboxItem;
 import nl.tudelft.cs4160.trustchain_android.message.MessageProto;
 
 import static nl.tudelft.cs4160.trustchain_android.block.TrustChainBlock.GENESIS_SEQ;
@@ -289,7 +291,7 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
                             PeerAppToApp peer = peerHandler.getEligiblePeer(null);
                             if (peer != null) {
                                 network.sendIntroductionRequest(peer);
-                              //  sendBlockMessage(peer);
+                                //  sendBlockMessage(peer);
                             }
                         }
                     } catch (IOException e) {
@@ -307,7 +309,6 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
         sendThread.start();
         Log.d("App-To-App Log", "Send thread started");
     }
-
 
 
     /**
@@ -401,7 +402,8 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
      * @throws IOException
      */
     @Override
-    public void handlePuncture(PeerAppToApp peer, Puncture message) throws IOException {}
+    public void handlePuncture(PeerAppToApp peer, Puncture message) throws IOException {
+    }
 
     /**
      * Handle a puncture request. Sends a puncture to the puncture inboxItem included in the message.
@@ -421,8 +423,11 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
     @Override
     public void handleBlockMessageRequest(PeerAppToApp peer, BlockMessage message) throws IOException, MessageException {
         MessageProto.Message msg = message.getMessageProto();
-        if(msg.getCrawlRequest().getPublicKey().size() == 0){
+        if (msg.getCrawlRequest().getPublicKey().size() == 0) {
             MessageProto.TrustChainBlock block = msg.getHalfBlock();
+            //add peer to inbox if needed
+            InboxItem i = new InboxItem(peer.getPeerId(), new ArrayList<Integer>(), peer.getAddress().getHostString(), ByteArrayConverter.byteStringToString(block.getPublicKey()), peer.getPort());
+            InboxItemStorage.addInboxItem(this, i);
             InboxItemStorage.addHalfBlock(CommunicationSingleton.getContext(), ByteArrayConverter.byteStringToString(block.getPublicKey()), block.getLinkSequenceNumber());
             CommunicationSingleton.getDbHelper().insertInDB(block);
             Log.d("testTheStacks", block.toString());
@@ -470,11 +475,12 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
 
     @Override
     public PeerAppToApp getOrMakePeer(String id, InetSocketAddress address, boolean incoming) {
-        return peerHandler.getOrMakePeer(id, address,incoming);
+        return peerHandler.getOrMakePeer(id, address, incoming);
     }
 
     /**
      * Display connectionType
+     *
      * @param connectionType
      * @param typename
      * @param subtypename

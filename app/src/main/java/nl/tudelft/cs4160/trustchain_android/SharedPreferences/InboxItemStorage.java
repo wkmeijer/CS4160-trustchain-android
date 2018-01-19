@@ -11,7 +11,6 @@ import nl.tudelft.cs4160.trustchain_android.message.MessageProto;
 /**
  * Created by timbu on 18/12/2017.
  */
-
 public class InboxItemStorage {
 
     private final static String INBOX_ITEM_KEY = "INBOX_ITEM_KEY:";
@@ -23,7 +22,6 @@ public class InboxItemStorage {
         }
         return new ArrayList<InboxItem>();
     }
-
 
     public static void deleteAll(Context context) {
         SharedPreferencesStorage.writeSharedPreferences(context, INBOX_ITEM_KEY, null);
