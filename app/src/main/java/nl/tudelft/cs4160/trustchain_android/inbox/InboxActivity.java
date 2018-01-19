@@ -11,10 +11,12 @@ import java.util.ArrayList;
 import nl.tudelft.cs4160.trustchain_android.Peer;
 import nl.tudelft.cs4160.trustchain_android.R;
 import nl.tudelft.cs4160.trustchain_android.SharedPreferences.InboxItemStorage;
+import nl.tudelft.cs4160.trustchain_android.appToApp.PeerAppToApp;
 import nl.tudelft.cs4160.trustchain_android.connection.CommunicationListener;
 import nl.tudelft.cs4160.trustchain_android.message.MessageProto;
 
 public class InboxActivity extends AppCompatActivity implements CommunicationListener {
+    public static ArrayList<PeerAppToApp> peerList;
 
     private RecyclerView mRecyclerView;
     private RecyclerView.Adapter mAdapter;
@@ -48,6 +50,7 @@ public class InboxActivity extends AppCompatActivity implements CommunicationLis
                 inboxItems = new ArrayList<>();
                 inboxItems = InboxItemStorage.getInboxItems(currContext);
                 mAdapter = new InboxAdapter(inboxItems);
+                ((InboxAdapter) mAdapter).setPeerList(peerList);
                 mRecyclerView.setAdapter(mAdapter);
             }
         });
