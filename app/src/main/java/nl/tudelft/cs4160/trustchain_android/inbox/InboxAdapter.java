@@ -1,6 +1,7 @@
 package nl.tudelft.cs4160.trustchain_android.inbox;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.provider.Telephony;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -21,7 +22,7 @@ import java.util.ArrayList;
 
 public class InboxAdapter extends RecyclerView.Adapter<InboxAdapter.ViewHolder> {
     private ArrayList<InboxItem> mDataset;
-
+    private ArrayList<PeerAppToApp> peerList;
 
     // Provide a reference to the views for each data item
     // Complex data items may need more than one view per item, and
@@ -31,13 +32,14 @@ public class InboxAdapter extends RecyclerView.Adapter<InboxAdapter.ViewHolder> 
         public TextView mUserNameTextView;
         public RelativeLayout mCounterRelativeLayout;
         public TextView mAddressTextView;
+        public TextView mStatusTextView;
 
         public ViewHolderItem(LinearLayout v) {
             super(v);
             mUserNameTextView = (TextView) v.findViewById(R.id.userNameTextView);
             mCounterRelativeLayout = (RelativeLayout) v.findViewById(R.id.counterRelativeLayout);
             mAddressTextView = (TextView) v.findViewById(R.id.addressTextView);
-
+            mStatusTextView = (TextView) v.findViewById(R.id.status_indicator);
         }
     }
 
@@ -111,6 +113,14 @@ public class InboxAdapter extends RecyclerView.Adapter<InboxAdapter.ViewHolder> 
                     h.mCounterRelativeLayout.setVisibility(View.GONE);
                 }
                 h.mAddressTextView.setText(inboxItem.getAddress() + ":" + inboxItem.getPort());
+
+                for(PeerAppToApp curr : peerList) {
+                    if (curr.getPeerId().equals(inboxItem.getUserName())) {
+                        if (curr.isAlive()) {
+                            h.mStatusTextView.setTextColor(Color.GREEN);
+                        }
+                    }
+                }
             }
         }
         /*
@@ -155,6 +165,9 @@ public class InboxAdapter extends RecyclerView.Adapter<InboxAdapter.ViewHolder> 
         holder.mWrapperLinearLayout.setOnClickListener(mOnClickListener);
     }
 
+    public void setPeerList(ArrayList<PeerAppToApp> peerList) {
+        this.peerList = peerList;
+    }
 
     // Return the size of your dataset (invoked by the layout manager)
     @Override

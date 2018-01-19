@@ -131,6 +131,7 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
     }
 
     public void onClickOpenInbox(View view) {
+        InboxActivity.peerList = peerHandler.getPeerList();
         Intent inboxActivityIntent = new Intent(this, InboxActivity.class);
         startActivity(inboxActivityIntent);
     }
