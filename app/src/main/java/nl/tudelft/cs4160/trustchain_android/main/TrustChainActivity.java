@@ -13,12 +13,10 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SwitchCompat;
 import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
-import android.util.Xml;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
@@ -168,6 +166,7 @@ public class TrustChainActivity extends AppCompatActivity implements CompoundBut
     private void init() {
         updateIP();
         updateLocalIPField(getLocalIPAddress());
+        network = Network.getInstance(getApplicationContext());
     }
 
     /**
@@ -276,7 +275,7 @@ public class TrustChainActivity extends AppCompatActivity implements CompoundBut
 
     public void onClickSend(View view) throws UnsupportedEncodingException {
         Log.d("testLogs", "onClickSend");
-        network = Network.getInstance(getApplicationContext());
+
         PublicKey publicKey = Key.loadKeys(this).getPublic();
 
         byte[] transactionData = messageEditText.getText().toString().getBytes("UTF-8");
