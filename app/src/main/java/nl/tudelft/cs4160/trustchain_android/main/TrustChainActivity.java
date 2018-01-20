@@ -40,6 +40,7 @@ import java.util.List;
 import nl.tudelft.cs4160.trustchain_android.Network.Network;
 import nl.tudelft.cs4160.trustchain_android.Peer;
 import nl.tudelft.cs4160.trustchain_android.R;
+import nl.tudelft.cs4160.trustchain_android.SharedPreferences.InboxItemStorage;
 import nl.tudelft.cs4160.trustchain_android.SharedPreferences.PubKeyAndAddressPairStorage;
 import nl.tudelft.cs4160.trustchain_android.SharedPreferences.SharedPreferencesStorage;
 import nl.tudelft.cs4160.trustchain_android.Util.ByteArrayConverter;
@@ -85,7 +86,6 @@ public class TrustChainActivity extends AppCompatActivity implements CompoundBut
     Peer peer;
 
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -93,6 +93,7 @@ public class TrustChainActivity extends AppCompatActivity implements CompoundBut
         DBHelper = new TrustChainDBHelper(this);
         inboxItemOtherPeer = (InboxItem) getIntent().getSerializableExtra("inboxItem");
         peer = new Peer(inboxItemOtherPeer.getPublicKey().getBytes(),inboxItemOtherPeer.getAddress(),inboxItemOtherPeer.getPort());
+        InboxItemStorage.markHalfBlockAsRead(this,inboxItemOtherPeer);
         setContentView(R.layout.activity_main);
         initVariables();
         init();

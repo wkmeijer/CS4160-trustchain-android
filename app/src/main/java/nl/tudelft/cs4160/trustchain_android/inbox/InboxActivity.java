@@ -1,18 +1,25 @@
 package nl.tudelft.cs4160.trustchain_android.inbox;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 import nl.tudelft.cs4160.trustchain_android.R;
 import nl.tudelft.cs4160.trustchain_android.SharedPreferences.InboxItemStorage;
+import nl.tudelft.cs4160.trustchain_android.appToApp.PeerAppToApp;
 
 public class InboxActivity extends AppCompatActivity  {
 
+    public static ArrayList<PeerAppToApp> peerList;
     private RecyclerView mRecyclerView;
     private RecyclerView.Adapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
@@ -44,7 +51,9 @@ public class InboxActivity extends AppCompatActivity  {
             public void run() {
                 inboxItems = new ArrayList<>();
                 inboxItems = InboxItemStorage.getInboxItems(currContext);
+                Collections.reverse(inboxItems);
                 mAdapter = new InboxAdapter(inboxItems);
+                ((InboxAdapter) mAdapter).setPeerList(peerList);
                 mRecyclerView.setAdapter(mAdapter);
             }
         });
@@ -55,4 +64,5 @@ public class InboxActivity extends AppCompatActivity  {
         super.onStart();
         getInboxItems();
     }
+
 }

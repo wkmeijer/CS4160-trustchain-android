@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.preference.PreferenceManager;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
@@ -38,6 +39,7 @@ import nl.tudelft.cs4160.trustchain_android.Peer;
 import nl.tudelft.cs4160.trustchain_android.R;
 import nl.tudelft.cs4160.trustchain_android.SharedPreferences.BootstrapIPStorage;
 import nl.tudelft.cs4160.trustchain_android.SharedPreferences.InboxItemStorage;
+import nl.tudelft.cs4160.trustchain_android.SharedPreferences.PubKeyAndAddressPairStorage;
 import nl.tudelft.cs4160.trustchain_android.SharedPreferences.UserNameStorage;
 import nl.tudelft.cs4160.trustchain_android.Util.ByteArrayConverter;
 import nl.tudelft.cs4160.trustchain_android.Util.Key;
@@ -55,6 +57,7 @@ import nl.tudelft.cs4160.trustchain_android.block.TrustChainBlockHelper;
 import nl.tudelft.cs4160.trustchain_android.chainExplorer.ChainExplorerActivity;
 import nl.tudelft.cs4160.trustchain_android.database.TrustChainDBHelper;
 import nl.tudelft.cs4160.trustchain_android.inbox.InboxActivity;
+import nl.tudelft.cs4160.trustchain_android.inbox.InboxItem;
 import nl.tudelft.cs4160.trustchain_android.message.MessageProto;
 
 import static nl.tudelft.cs4160.trustchain_android.block.TrustChainBlockHelper.GENESIS_SEQ;
@@ -66,8 +69,6 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
     private static final int BUFFER_SIZE = 65536;
     private PeerListAdapter incomingPeerAdapter;
     private PeerListAdapter outgoingPeerAdapter;
-    private Thread sendThread;
-    private Thread listenThread;
     private TrustChainDBHelper dbHelper;
     private Network network;
     private PeerHandler peerHandler;
@@ -125,6 +126,7 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
     }
 
     public void onClickOpenInbox(View view) {
+        InboxActivity.peerList = peerHandler.getPeerList();
         Intent inboxActivityIntent = new Intent(this, InboxActivity.class);
         startActivity(inboxActivityIntent);
     }
@@ -196,9 +198,9 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
     private void initPeerLists() {
         ListView incomingPeerConnectionListView = (ListView) findViewById(R.id.incoming_peer_connection_list_view);
         ListView outgoingPeerConnectionListView = (ListView) findViewById(R.id.outgoing_peer_connection_list_view);
-        incomingPeerAdapter = new PeerListAdapter(getApplicationContext(), R.layout.peer_connection_list_item, peerHandler.getIncomingList(), PeerAppToApp.INCOMING);
+        incomingPeerAdapter = new PeerListAdapter(getApplicationContext(), R.layout.peer_connection_list_item, peerHandler.getIncomingList(), PeerAppToApp.INCOMING, (CoordinatorLayout) findViewById(R.id.myCoordinatorLayout));
         incomingPeerConnectionListView.setAdapter(incomingPeerAdapter);
-        outgoingPeerAdapter = new PeerListAdapter(getApplicationContext(), R.layout.peer_connection_list_item, peerHandler.getOutgoingList(), PeerAppToApp.OUTGOING);
+        outgoingPeerAdapter = new PeerListAdapter(getApplicationContext(), R.layout.peer_connection_list_item, peerHandler.getOutgoingList(), PeerAppToApp.OUTGOING, (CoordinatorLayout) findViewById(R.id.myCoordinatorLayout));
         outgoingPeerConnectionListView.setAdapter(outgoingPeerAdapter);
     }
 
@@ -244,6 +246,9 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
         }
     }
 
+    /**
+     * Asynctask to create the inetsocketaddress since network stuff can no longer happen on the main thread in android v3 (honeycomb).
+     */
     private static class CreateInetSocketAddressTask extends AsyncTask<String, Void, InetSocketAddress> {
         private WeakReference<OverviewConnectionsActivity> activityReference;
 
@@ -276,7 +281,7 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
      * Start the thread send thread responsible for sending a {@link IntroductionRequest} to a random inboxItem every 5 seconds.
      */
     private void startSendThread() {
-        sendThread = new Thread(new Runnable() {
+        Thread sendThread = new Thread(new Runnable() {
             @Override
             public void run() {
                 do {
@@ -312,7 +317,7 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
     private void startListenThread() {
         final Context context = this;
 
-        listenThread = new Thread(new Runnable() {
+        Thread listenThread = new Thread(new Runnable() {
             @Override
             public void run() {
                 try {
@@ -324,6 +329,7 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
                         network.dataReceived(context, inputBuffer, (InetSocketAddress) address);
                     }
                 } catch (IOException e) {
+                    e.printStackTrace();
                     Log.d("App-To-App Log", "Listen thread stopped");
                 }
             }
@@ -442,8 +448,6 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
 
     @Override
     protected void onDestroy() {
-        listenThread.interrupt();
-        sendThread.interrupt();
         network.closeChannel();
         super.onDestroy();
     }

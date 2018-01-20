@@ -34,7 +34,6 @@ import nl.tudelft.cs4160.trustchain_android.appToApp.connection.messages.Message
 import nl.tudelft.cs4160.trustchain_android.appToApp.connection.messages.Puncture;
 import nl.tudelft.cs4160.trustchain_android.appToApp.connection.messages.PunctureRequest;
 import nl.tudelft.cs4160.trustchain_android.bencode.BencodeReadException;
-import nl.tudelft.cs4160.trustchain_android.database.TrustChainDBHelper;
 import nl.tudelft.cs4160.trustchain_android.inbox.InboxItem;
 import nl.tudelft.cs4160.trustchain_android.main.OverviewConnectionsActivity;
 import nl.tudelft.cs4160.trustchain_android.message.MessageProto;
@@ -55,7 +54,6 @@ public class Network {
     private String networkOperator;
     private static Network network;
     private String publicKey;
-    private TrustChainDBHelper dbHelper;
     private static NetworkCommunicationListener networkCommunicationListener;
 
     private Network() {
@@ -76,7 +74,6 @@ public class Network {
     private void initVariables(Context context) {
         TelephonyManager telephonyManager = ((TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE));
         networkOperator = telephonyManager.getNetworkOperatorName();
-        dbHelper = new TrustChainDBHelper(context);
         outBuffer = ByteBuffer.allocate(BUFFER_SIZE);
         hashId = UserNameStorage.getUserName(context);
         publicKey = ByteArrayConverter.bytesToHexString(Key.loadKeys(context).getPublic().getEncoded());
@@ -94,6 +91,9 @@ public class Network {
     }
 
     public SocketAddress receive(ByteBuffer inputBuffer) throws IOException {
+        if(!channel.isOpen()) {
+            openChannel();
+        }
         return channel.receive(inputBuffer);
     }
 
@@ -218,22 +218,21 @@ public class Network {
      * @param address the incoming address.
      */
     public void dataReceived(Context context, ByteBuffer data, InetSocketAddress address) {
+        // If we don't have an internal address, try to find it again instead of handling the message.
+        if (internalSourceAddress == null) {
+            showLocalIpAddress();
+            return;
+        }
+
         try {
             Message message = Message.createFromByteBuffer(data);
             Log.d(TAG, "Received " + message);
-
             String id = message.getPeerId();
             String pubKey = message.getPubKey();
 
             if(pubKey != null) {
-                String ip = address.getAddress().toString().replace("/", "");
+                String ip = address.getAddress().toString().replace("/", "") + ":" + address.getPort();
                 PubKeyAndAddressPairStorage.addPubkeyAndAddressPair(context, pubKey, ip);
-                InboxItem i = new InboxItem(id, new ArrayList<Integer>(), ip, pubKey, address.getPort());
-                InboxItemStorage.addInboxItem(context, i);
-
-                Log.d(TAG, "Stored following ip for pubkey: " + pubKey + " " + PubKeyAndAddressPairStorage.getAddressByPubkey(context, pubKey));
-
-                Log.d(TAG, "pubkey address map " + SharedPreferencesStorage.getAll(context).toString());
             }
 
             if (networkCommunicationListener != null) {
@@ -291,9 +290,9 @@ public class Network {
             super.onPostExecute(inetAddress);
             if (inetAddress != null) {
                 internalSourceAddress = new InetSocketAddress(inetAddress, OverviewConnectionsActivity.DEFAULT_PORT);
-            }
-            if (networkCommunicationListener != null) {
-                networkCommunicationListener.updateInternalSourceAddress(internalSourceAddress.toString());
+                if (networkCommunicationListener != null) {
+                    networkCommunicationListener.updateInternalSourceAddress(internalSourceAddress.toString());
+                }
             }
         }
     }
