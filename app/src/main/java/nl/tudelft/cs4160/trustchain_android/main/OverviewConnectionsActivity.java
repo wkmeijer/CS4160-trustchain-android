@@ -427,7 +427,7 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
             MessageProto.TrustChainBlock block = msg.getHalfBlock();
             InboxItemStorage.addHalfBlock(this, ByteArrayConverter.byteStringToString(block.getPublicKey()), block.getLinkSequenceNumber());
             new TrustChainDBHelper(this).insertInDB(block);
-            Log.d("testTheStacks", block.toString());
+//            Log.d("testTheStacks", block.toString());
         }
     }
 
