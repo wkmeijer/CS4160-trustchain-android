@@ -115,7 +115,8 @@ public class InboxAdapter extends RecyclerView.Adapter<InboxAdapter.ViewHolder> 
 
                 h.mStatusTextView.setTextColor(h.mAddressTextView.getContext().getResources().getColor(R.color.colorStatusCantConnect));
                 for (PeerAppToApp curr : peerList) {
-                    if (curr != null && curr.getPeerId().equals(inboxItem.getUserName())) {
+                    String name = inboxItem.getUserName();
+                    if (curr != null && curr.getPeerId() != null && curr.getPeerId().equals(name)) {
                         if (curr.isAlive()) {
                             h.mStatusTextView.setTextColor(h.mAddressTextView.getContext().getResources().getColor(R.color.colorStatusConnected));
                         }
