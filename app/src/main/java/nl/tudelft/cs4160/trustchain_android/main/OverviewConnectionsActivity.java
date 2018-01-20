@@ -427,8 +427,10 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
         if(msg.getCrawlRequest().getPublicKey().size() == 0){
             MessageProto.TrustChainBlock block = msg.getHalfBlock();
             InboxItemStorage.addHalfBlock(CommunicationSingleton.getContext(), ByteArrayConverter.byteStringToString(block.getPublicKey()), block.getLinkSequenceNumber());
-            CommunicationSingleton.getDbHelper().insertInDB(block);
-            Log.d("testTheStacks", block.toString());
+            if(CommunicationSingleton.getDbHelper().getBlock(msg.getHalfBlock().getPublicKey().toByteArray(), msg.getHalfBlock().getSequenceNumber()) == null) {
+                CommunicationSingleton.getDbHelper().insertInDB(block);
+                Log.d("testTheStacks", block.toString());
+            }
         }
     }
 
@@ -453,6 +455,7 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
             List<MessageProto.TrustChainBlock> blockList = dbHelper.crawl(kp.getPublic().getEncoded(), sq);
             for (MessageProto.TrustChainBlock block : blockList) {
                 network.sendBlockMessage(peer, block);
+                Log.d("BoningTest", "Block send: " + block.toString());
             }
         }
     }

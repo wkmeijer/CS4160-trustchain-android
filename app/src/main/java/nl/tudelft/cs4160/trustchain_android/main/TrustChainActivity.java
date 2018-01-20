@@ -156,6 +156,7 @@ public class TrustChainActivity extends AppCompatActivity implements CompoundBut
             @Override
             public void run() {
                 try {
+                    Log.d("BoningTest", "Sent crawl request");
                     network.sendCrawlRequest(inboxItemOtherPeer.getPeerAppToApp(), crawlRequest);
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -182,7 +183,7 @@ public class TrustChainActivity extends AppCompatActivity implements CompoundBut
         byte[] publicKey = null;
 
         // Try to instantiate public key.
-        if (inboxItemOtherPeer.getAddress() != null) {
+        if (this.inboxItemOtherPeer.getPublicKey() != null) {
             publicKey = this.inboxItemOtherPeer.getPublicKey().getBytes();
         } else {
             Log.d("App-To-App", "pubkey address map " + SharedPreferencesStorage.getAll(this).toString());
@@ -493,11 +494,15 @@ public class TrustChainActivity extends AppCompatActivity implements CompoundBut
     @Override
     public void handleBlockMessageRequest(PeerAppToApp peer, BlockMessage message) throws IOException, MessageException {
         MessageProto.Message msg = message.getMessageProto();
+        Log.d("BoningTest", "Message received");
         if(msg.getCrawlRequest().getPublicKey().size() == 0){
             MessageProto.TrustChainBlock block = msg.getHalfBlock();
             InboxItemStorage.addHalfBlock(CommunicationSingleton.getContext(), ByteArrayConverter.byteStringToString(block.getPublicKey()), block.getLinkSequenceNumber());
-            CommunicationSingleton.getDbHelper().insertInDB(block);
-            Log.d("testTheStacks", block.toString());
+            if(CommunicationSingleton.getDbHelper().getBlock(msg.getHalfBlock().getPublicKey().toByteArray(), msg.getHalfBlock().getSequenceNumber()) == null) {
+                CommunicationSingleton.getDbHelper().insertInDB(block);
+                Log.d("testTheStacks", block.toString());
+            }
+            Log.d("BoningTest", "Block added: " + block.toString());
         }
     }
 

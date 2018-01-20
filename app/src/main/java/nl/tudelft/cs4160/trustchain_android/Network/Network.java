@@ -249,6 +249,7 @@ public class Network {
                 peer.received(data);
                 switch (message.getType()) {
                     case Message.INTRODUCTION_REQUEST:
+                        Log.d("BoningTest", "received introduction request");
                         networkCommunicationListener.handleIntroductionRequest(peer, (IntroductionRequest) message);
                         break;
                     case Message.INTRODUCTION_RESPONSE:
@@ -261,9 +262,13 @@ public class Network {
                         networkCommunicationListener.handlePunctureRequest(peer, (PunctureRequest) message);
                         break;
                     case Message.BLOCK_MESSAGE:
+                        Log.d("BoningTest", "received block message");
                         networkCommunicationListener.handleBlockMessageRequest(peer, (BlockMessage) message);
+                        break;
                     case Message.CRAWL_REQUEST:
+                        Log.d("BoningTest", "received crawl request");
                         networkCommunicationListener.handleCrawlRequest(peer, (CrawlRequest) message);
+                        break;
                 }
                 networkCommunicationListener.updatePeerLists();
             }
