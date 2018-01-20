@@ -218,6 +218,12 @@ public class Network {
      * @param address the incoming address.
      */
     public void dataReceived(Context context, ByteBuffer data, InetSocketAddress address) {
+        // If we don't have an internal address, try to find it again instead of handling the message.
+        if (internalSourceAddress == null) {
+            showLocalIpAddress();
+            return;
+        }
+
         try {
             Message message = Message.createFromByteBuffer(data);
             Log.d(TAG, "Received " + message);
