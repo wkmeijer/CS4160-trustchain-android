@@ -254,7 +254,8 @@ public class TrustChainActivity extends AppCompatActivity implements CompoundBut
                 }
             }
         }).start();
-
+        // update the mutualblocks in special
+        initializeMutualBlockRecycleView();
     }
 
     /**
