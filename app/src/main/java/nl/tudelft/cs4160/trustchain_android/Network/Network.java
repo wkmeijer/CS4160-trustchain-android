@@ -291,9 +291,9 @@ public class Network {
             super.onPostExecute(inetAddress);
             if (inetAddress != null) {
                 internalSourceAddress = new InetSocketAddress(inetAddress, OverviewConnectionsActivity.DEFAULT_PORT);
-            }
-            if (networkCommunicationListener != null) {
-                networkCommunicationListener.updateInternalSourceAddress(internalSourceAddress.toString());
+                if (networkCommunicationListener != null) {
+                    networkCommunicationListener.updateInternalSourceAddress(internalSourceAddress.toString());
+                }
             }
         }
     }
