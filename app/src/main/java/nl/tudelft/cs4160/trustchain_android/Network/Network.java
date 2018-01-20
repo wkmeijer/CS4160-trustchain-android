@@ -225,12 +225,8 @@ public class Network {
             String pubKey = message.getPubKey();
 
             if(pubKey != null) {
-                String ip = address.getAddress().toString().replace("/", "");
+                String ip = address.getAddress().toString().replace("/", "") + ":" + address.getPort();
                 PubKeyAndAddressPairStorage.addPubkeyAndAddressPair(context, pubKey, ip);
-                InboxItem i = new InboxItem(id, new ArrayList<Integer>(), ip, pubKey, address.getPort());
-                InboxItemStorage.addInboxItem(context, i);
-                Log.d(TAG, "Stored following ip for pubkey: " + pubKey + " " + PubKeyAndAddressPairStorage.getAddressByPubkey(context, pubKey));
-                Log.d(TAG, "pubkey address map " + SharedPreferencesStorage.getAll(context).toString());
             }
 
             if (networkCommunicationListener != null) {

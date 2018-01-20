@@ -4,6 +4,8 @@ import android.content.Context;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
 
 import nl.tudelft.cs4160.trustchain_android.inbox.InboxItem;
 import nl.tudelft.cs4160.trustchain_android.message.MessageProto;
@@ -27,9 +29,21 @@ public class InboxItemStorage {
         SharedPreferencesStorage.writeSharedPreferences(context, INBOX_ITEM_KEY, null);
     }
 
+    public static void delete(Context context, InboxItem inboxItem) {
+        InboxItem[] array = SharedPreferencesStorage.readSharedPreferences(context, INBOX_ITEM_KEY, InboxItem[].class);
+        if (array != null) {
+            List<InboxItem> result = new LinkedList<>();
+            for (InboxItem item : array) {
+                if (item.getPublicKey() == null || !item.getPublicKey().equals(inboxItem.getPublicKey())) {
+                    result.add(item);
+                }
+            }
+            SharedPreferencesStorage.writeSharedPreferences(context, INBOX_ITEM_KEY, result.toArray(array));
+        }
+    }
+
     public static void addInboxItem(Context context, InboxItem inboxItem) {
         InboxItem[] array = SharedPreferencesStorage.readSharedPreferences(context, INBOX_ITEM_KEY, InboxItem[].class);
-
         if (array == null) {
             InboxItem[] inboxItems = new InboxItem[1];
             inboxItems[0] = inboxItem;
@@ -38,7 +52,7 @@ public class InboxItemStorage {
             InboxItem[] inboxItems = new InboxItem[array.length + 1];
             for (int i = 0; i < array.length; i++) {
                 inboxItems[i] = array[i];
-                if (array[i].getPublicKey().equals(inboxItem.getPublicKey())) {
+                if (array[i].getPublicKey() != null && array[i].getPublicKey().equals(inboxItem.getPublicKey())) {
                     return;
                 }
             }
@@ -47,9 +61,24 @@ public class InboxItemStorage {
         }
     }
 
+    public static void markHalfBlockAsRead(Context context, InboxItem inboxItem) {
+        InboxItem[] array = SharedPreferencesStorage.readSharedPreferences(context, INBOX_ITEM_KEY, InboxItem[].class);
+        if (array == null) {
+            return;
+        } else {
+            for (int i = 0; i < array.length; i++) {
+                if (array[i].getPublicKey().equals(inboxItem.getPublicKey())) {
+                    InboxItem item = array[i];
+                    item.setHalfBlocks(new ArrayList<Integer>());
+                    array[i] = item;
+                    SharedPreferencesStorage.writeSharedPreferences(context, INBOX_ITEM_KEY, array);
+                    return;
+                }
+            }
+        }
+    }
     public static void addHalfBlock(Context context, String pubKey, int halfBlockSequenceNumbe) {
         InboxItem[] array = SharedPreferencesStorage.readSharedPreferences(context, INBOX_ITEM_KEY, InboxItem[].class);
-
         if (array == null) {
             return;
         } else {

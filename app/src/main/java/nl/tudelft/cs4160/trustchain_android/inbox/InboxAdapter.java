@@ -48,7 +48,6 @@ public class InboxAdapter extends RecyclerView.Adapter<InboxAdapter.ViewHolder> 
 
         public ViewHolderAddPeer(LinearLayout v) {
             super(v);
-
         }
     }
 
@@ -114,30 +113,16 @@ public class InboxAdapter extends RecyclerView.Adapter<InboxAdapter.ViewHolder> 
                 }
                 h.mAddressTextView.setText(inboxItem.getAddress() + ":" + inboxItem.getPort());
 
-                for(PeerAppToApp curr : peerList) {
-                    if (curr.getPeerId().equals(inboxItem.getUserName())) {
+                h.mStatusTextView.setTextColor(h.mAddressTextView.getContext().getResources().getColor(R.color.colorStatusCantConnect));
+                for (PeerAppToApp curr : peerList) {
+                    if (curr != null && curr.getPeerId().equals(inboxItem.getUserName())) {
                         if (curr.isAlive()) {
-                            h.mStatusTextView.setTextColor(Color.GREEN);
+                            h.mStatusTextView.setTextColor(h.mAddressTextView.getContext().getResources().getColor(R.color.colorStatusConnected));
                         }
                     }
                 }
             }
         }
-        /*
-        if (peer.hasReceivedData()) {
-            if (peer.isAlive()) {
-                holder.mStatusIndicator.setTextColor(context.getResources().getColor(R.color.colorStatusConnected));
-            } else {
-                holder.mStatusIndicator.setTextColor(context.getResources().getColor(R.color.colorStatusCantConnect));
-            }
-        } else {
-            if (peer.isAlive()) {
-                holder.mStatusIndicator.setTextColor(context.getResources().getColor(R.color.colorStatusConnecting));
-            } else {
-                holder.mStatusIndicator.setTextColor(context.getResources().getColor(R.color.colorStatusCantConnect));
-            }
-        }
-        */
     }
 
     private void setOnClickListenerNewUser(final ViewHolder holder) {

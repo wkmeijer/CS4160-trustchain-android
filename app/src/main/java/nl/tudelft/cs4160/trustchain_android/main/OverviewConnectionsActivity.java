@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.preference.PreferenceManager;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
@@ -203,9 +204,9 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
     private void initPeerLists() {
         ListView incomingPeerConnectionListView = (ListView) findViewById(R.id.incoming_peer_connection_list_view);
         ListView outgoingPeerConnectionListView = (ListView) findViewById(R.id.outgoing_peer_connection_list_view);
-        incomingPeerAdapter = new PeerListAdapter(getApplicationContext(), R.layout.peer_connection_list_item, peerHandler.getIncomingList(), PeerAppToApp.INCOMING);
+        incomingPeerAdapter = new PeerListAdapter(getApplicationContext(), R.layout.peer_connection_list_item, peerHandler.getIncomingList(), PeerAppToApp.INCOMING, (CoordinatorLayout) findViewById(R.id.myCoordinatorLayout));
         incomingPeerConnectionListView.setAdapter(incomingPeerAdapter);
-        outgoingPeerAdapter = new PeerListAdapter(getApplicationContext(), R.layout.peer_connection_list_item, peerHandler.getOutgoingList(), PeerAppToApp.OUTGOING);
+        outgoingPeerAdapter = new PeerListAdapter(getApplicationContext(), R.layout.peer_connection_list_item, peerHandler.getOutgoingList(), PeerAppToApp.OUTGOING, (CoordinatorLayout) findViewById(R.id.myCoordinatorLayout));
         outgoingPeerConnectionListView.setAdapter(outgoingPeerAdapter);
     }
 

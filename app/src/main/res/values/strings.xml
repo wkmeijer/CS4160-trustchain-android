@@ -42,6 +42,7 @@
 
     <!-- Menu -->
     <string name="menu_item_1">My Chain</string>
+    <string name="menu_item_2">Clear Entire Inbox</string>
     <string name="menu_info">Info</string>
     <string name="find_peer">Find peer</string>
 
