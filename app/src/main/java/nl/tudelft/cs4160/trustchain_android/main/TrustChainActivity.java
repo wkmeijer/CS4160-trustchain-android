@@ -40,6 +40,7 @@ import nl.tudelft.cs4160.trustchain_android.Network.Network;
 import nl.tudelft.cs4160.trustchain_android.Network.NetworkCommunicationListener;
 import nl.tudelft.cs4160.trustchain_android.Peer;
 import nl.tudelft.cs4160.trustchain_android.R;
+import nl.tudelft.cs4160.trustchain_android.SharedPreferences.InboxItemStorage;
 import nl.tudelft.cs4160.trustchain_android.SharedPreferences.PubKeyAndAddressPairStorage;
 import nl.tudelft.cs4160.trustchain_android.SharedPreferences.SharedPreferencesStorage;
 import nl.tudelft.cs4160.trustchain_android.Util.ByteArrayConverter;
@@ -114,7 +115,6 @@ public class TrustChainActivity extends AppCompatActivity implements CompoundBut
         network = Network.getInstance(getApplicationContext());
         network.setNetworkCommunicationListener(this);
         PublicKey publicKey = Key.loadKeys(this).getPublic();
-
         byte[] transactionData = messageEditText.getText().toString().getBytes("UTF-8");
         final MessageProto.TrustChainBlock block = createBlock(transactionData, CommunicationSingleton.getDbHelper(), publicKey.getEncoded(), null, ByteArrayConverter.hexStringToByteArray(inboxItemOtherPeer.getPublicKey()));
         TrustChainBlock.sign(block,Key.loadKeys(getApplicationContext()).getPrivate());
@@ -129,7 +129,6 @@ public class TrustChainActivity extends AppCompatActivity implements CompoundBut
                 }
             }).start();
     }
-
 
     /**
      * Load all blocks which contain the peer's public key.
@@ -152,14 +151,12 @@ public class TrustChainActivity extends AppCompatActivity implements CompoundBut
                 publicKey = ChainExplorerAdapter.hexStringToByteArray(pubkeyStr);
             }
         }
-
         if (publicKey != null) {
             Intent intent = new Intent(context, ChainExplorerActivity.class);
             intent.putExtra("publicKey", publicKey);
             startActivity(intent);
         }
     }
-
 
     private void enableMessage() {
         runOnUiThread(new Runnable() {
@@ -176,6 +173,7 @@ public class TrustChainActivity extends AppCompatActivity implements CompoundBut
         super.onCreate(savedInstanceState);
         this.context = this;
         inboxItemOtherPeer = (InboxItem) getIntent().getSerializableExtra("inboxItem");
+        InboxItemStorage.markHalfBlockAsRead(this,inboxItemOtherPeer);
         setContentView(R.layout.activity_main);
         initVariables();
         init();
