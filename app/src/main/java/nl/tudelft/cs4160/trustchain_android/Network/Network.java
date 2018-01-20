@@ -27,6 +27,7 @@ import nl.tudelft.cs4160.trustchain_android.Util.ByteArrayConverter;
 import nl.tudelft.cs4160.trustchain_android.Util.Key;
 import nl.tudelft.cs4160.trustchain_android.appToApp.PeerAppToApp;
 import nl.tudelft.cs4160.trustchain_android.appToApp.connection.messages.BlockMessage;
+import nl.tudelft.cs4160.trustchain_android.appToApp.connection.messages.CrawlRequest;
 import nl.tudelft.cs4160.trustchain_android.appToApp.connection.messages.IntroductionRequest;
 import nl.tudelft.cs4160.trustchain_android.appToApp.connection.messages.IntroductionResponse;
 import nl.tudelft.cs4160.trustchain_android.appToApp.connection.messages.Message;
@@ -142,6 +143,11 @@ public class Network {
         sendMessage(request, peer);
     }
 
+    public void sendCrawlRequest(PeerAppToApp peer, MessageProto.CrawlRequest request) throws IOException {
+        CrawlRequest req = new CrawlRequest(hashId, peer.getAddress(), publicKey, request);
+        sendMessage(req, peer);
+    }
+
     /**
      * Send a puncture request.
      *
@@ -193,7 +199,6 @@ public class Network {
      */
     private synchronized void sendMessage(Message message, PeerAppToApp peer) throws IOException {
         message.putPubKey(publicKey);
-
         Log.d(TAG, "Sending " + message);
         outBuffer.clear();
         message.writeToByteBuffer(outBuffer);
@@ -232,7 +237,6 @@ public class Network {
                 InboxItemStorage.addInboxItem(context, i);
 
                 Log.d(TAG, "Stored following ip for pubkey: " + pubKey + " " + PubKeyAndAddressPairStorage.getAddressByPubkey(context, pubKey));
-
                 Log.d(TAG, "pubkey address map " + SharedPreferencesStorage.getAll(context).toString());
             }
 
@@ -258,7 +262,8 @@ public class Network {
                         break;
                     case Message.BLOCK_MESSAGE:
                         networkCommunicationListener.handleBlockMessageRequest(peer, (BlockMessage) message);
-
+                    case Message.CRAWL_REQUEST:
+                        networkCommunicationListener.handleCrawlRequest(peer, (CrawlRequest) message);
                 }
                 networkCommunicationListener.updatePeerLists();
             }

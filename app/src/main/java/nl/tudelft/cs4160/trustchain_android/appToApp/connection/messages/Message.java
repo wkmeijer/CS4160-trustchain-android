@@ -29,6 +29,7 @@ public abstract class Message extends HashMap {
     public final static int PUNCTURE_REQUEST = 3;
     public final static int PUNCTURE = 4;
     public final static int BLOCK_MESSAGE = 5;
+    public final static int CRAWL_REQUEST = 6;
 
     final protected static String TYPE = "type";
     final protected static String DESTINATION = "destination";

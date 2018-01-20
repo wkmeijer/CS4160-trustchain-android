@@ -47,6 +47,7 @@ import nl.tudelft.cs4160.trustchain_android.appToApp.PeerAppToApp;
 import nl.tudelft.cs4160.trustchain_android.appToApp.PeerHandler;
 import nl.tudelft.cs4160.trustchain_android.appToApp.connection.PeerListener;
 import nl.tudelft.cs4160.trustchain_android.appToApp.connection.messages.BlockMessage;
+import nl.tudelft.cs4160.trustchain_android.appToApp.connection.messages.CrawlRequest;
 import nl.tudelft.cs4160.trustchain_android.appToApp.connection.messages.IntroductionRequest;
 import nl.tudelft.cs4160.trustchain_android.appToApp.connection.messages.IntroductionResponse;
 import nl.tudelft.cs4160.trustchain_android.appToApp.connection.messages.Message;
@@ -64,7 +65,7 @@ import static nl.tudelft.cs4160.trustchain_android.block.TrustChainBlock.GENESIS
 
 public class OverviewConnectionsActivity extends AppCompatActivity implements NetworkCommunicationListener, PeerListener {
 
-    public static String CONNECTABLE_ADDRESS = "130.161.211.254";
+    public static String CONNECTABLE_ADDRESS = "192.168.2.212";
     public final static int DEFAULT_PORT = 1873;
     private static final int BUFFER_SIZE = 65536;
     private PeerListAdapter incomingPeerAdapter;
@@ -428,6 +429,31 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
             InboxItemStorage.addHalfBlock(CommunicationSingleton.getContext(), ByteArrayConverter.byteStringToString(block.getPublicKey()), block.getLinkSequenceNumber());
             CommunicationSingleton.getDbHelper().insertInDB(block);
             Log.d("testTheStacks", block.toString());
+        }
+    }
+
+    @Override
+    public void handleCrawlRequest(PeerAppToApp peer, CrawlRequest request) throws IOException, MessageException {
+        MessageProto.CrawlRequest req = request.getCrawlRequest();
+        final KeyPair kp = Key.loadKeys(this);
+        if (req.getPublicKey().size() == 0) {
+            int sq = req.getRequestedSequenceNumber();
+
+            // a negative sequence number indicates that the requesting peer wants an offset of blocks
+            // starting with the last block
+            if (sq < 0) {
+                MessageProto.TrustChainBlock lastBlock = dbHelper.getLatestBlock(kp.getPublic().getEncoded());
+
+                if (lastBlock != null) {
+                    sq = Math.max(GENESIS_SEQ, lastBlock.getSequenceNumber() + sq + 1);
+                } else {
+                    sq = GENESIS_SEQ;
+                }
+            }
+            List<MessageProto.TrustChainBlock> blockList = dbHelper.crawl(kp.getPublic().getEncoded(), sq);
+            for (MessageProto.TrustChainBlock block : blockList) {
+                network.sendBlockMessage(peer, block);
+            }
         }
     }
 
