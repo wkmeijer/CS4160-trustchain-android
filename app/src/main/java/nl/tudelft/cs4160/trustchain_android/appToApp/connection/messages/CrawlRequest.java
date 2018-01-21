@@ -1,5 +1,7 @@
 package nl.tudelft.cs4160.trustchain_android.appToApp.connection.messages;
 
+import android.util.Log;
+
 import com.google.protobuf.InvalidProtocolBufferException;
 
 import java.net.InetSocketAddress;
@@ -26,9 +28,10 @@ public class CrawlRequest extends Message{
     public static Message fromMap(Map map) throws MessageException {
         String peerId = (String) map.get(PEER_ID);
         InetSocketAddress destination = Message.createMapAddress((Map) map.get(DESTINATION));
-        String requestAsString = (String) map.get(CRAWL_REQUEST);
+        String requestAsString = (String) map.get(CRAWLREQUEST);
         String pubKey = (String) map.get(PUB_KEY);
         MessageProto.CrawlRequest request = null;
+
         try {
             request = MessageProto.CrawlRequest.parseFrom(ByteArrayConverter.hexStringToByteArray(requestAsString));
         } catch (InvalidProtocolBufferException e) {
