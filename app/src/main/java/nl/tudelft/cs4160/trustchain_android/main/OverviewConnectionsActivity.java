@@ -75,6 +75,7 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
     private TrustChainDBHelper dbHelper;
     private Network network;
     private PeerHandler peerHandler;
+    private String wan = "";
 
     /**
      * Initialize views, start send and receive threads if necessary.
@@ -470,9 +471,9 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
     public void updateWan(Message message) throws MessageException {
         if (peerHandler.getWanVote().vote(message.getDestination())) {
             Log.d("App-To-App Log", "Address changed to " + peerHandler.getWanVote().getAddress());
-            updateInternalSourceAddress(peerHandler.getWanVote().getAddress().toString());
+            wan = peerHandler.getWanVote().getAddress().toString();
         }
-        setWanvote(peerHandler.getWanVote().getAddress().toString());
+        setWanvote(wan);
     }
 
     @Override
