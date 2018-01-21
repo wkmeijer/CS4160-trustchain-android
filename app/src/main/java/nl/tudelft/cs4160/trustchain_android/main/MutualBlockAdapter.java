@@ -64,7 +64,8 @@ public class MutualBlockAdapter extends RecyclerView.Adapter<MutualBlockAdapter.
         MutualBlockItem mutualBlockItem = mutualBlocks.get(position);
         if (mutualBlockItem != null) {
             Button signButton = viewHolder.signButton;
-            if (mutualBlockItem.getBlockStatus() == "Signed"){
+            String blockStatus = mutualBlockItem.getBlockStatus();
+            if (blockStatus.substring(blockStatus.lastIndexOf(':') + 1).equals(" Signed")){
                 TextView blockStatTv = viewHolder.blockStatTextView;
                 blockStatTv.setBackgroundColor(0xFF00FF00); // set background color green
                 blockStatTv.setText(mutualBlockItem.getBlockStatus());

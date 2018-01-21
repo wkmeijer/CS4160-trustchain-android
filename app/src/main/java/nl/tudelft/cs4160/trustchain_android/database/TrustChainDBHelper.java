@@ -90,6 +90,29 @@ public class TrustChainDBHelper extends SQLiteOpenHelper {
     }
 
     /**
+     * Alter the half block in the DB to an complete block
+     *
+     * @param block - The protoblock that needs to be added to the database
+     * @return A long depicting the primary key value of the newly inserted row of the database.
+     * returns -1 as an error indicator.
+     */
+    public long replaceInDB(MessageProto.TrustChainBlock block) {
+        MessageProto.TrustChainBlock b = block;
+        SQLiteDatabase db = getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(TrustChainDBContract.BlockEntry.COLUMN_NAME_TX, block.getTransaction().toStringUtf8());
+        values.put(TrustChainDBContract.BlockEntry.COLUMN_NAME_PUBLIC_KEY, Base64.encodeToString(block.getPublicKey().toByteArray(), Base64.DEFAULT));
+        values.put(TrustChainDBContract.BlockEntry.COLUMN_NAME_SEQUENCE_NUMBER, block.getSequenceNumber());
+        values.put(TrustChainDBContract.BlockEntry.COLUMN_NAME_LINK_PUBLIC_KEY, Base64.encodeToString(block.getLinkPublicKey().toByteArray(), Base64.DEFAULT));
+        values.put(TrustChainDBContract.BlockEntry.COLUMN_NAME_LINK_SEQUENCE_NUMBER, block.getLinkSequenceNumber());
+        values.put(TrustChainDBContract.BlockEntry.COLUMN_NAME_PREVIOUS_HASH, Base64.encodeToString(block.getPreviousHash().toByteArray(), Base64.DEFAULT));
+        values.put(TrustChainDBContract.BlockEntry.COLUMN_NAME_SIGNATURE, Base64.encodeToString(block.getSignature().toByteArray(), Base64.DEFAULT));
+        values.put(TrustChainDBContract.BlockEntry.COLUMN_NAME_BLOCK_HASH, Base64.encodeToString(TrustChainBlockHelper.hash(block), Base64.DEFAULT));
+
+        return db.replace(TrustChainDBContract.BlockEntry.TABLE_NAME, null, values);
+    }
+
+    /**
      * Retrieves the block associated with the given public key and sequence number from the database
      *
      * @param pubkey    - Public key of which the latest block should be found
