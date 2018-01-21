@@ -79,6 +79,8 @@ public abstract class Message extends HashMap {
                 return PunctureRequest.fromMap(dict);
             case BLOCK_MESSAGE:
                 return BlockMessage.fromMap(dict);
+            case CRAWL_REQUEST:
+                return CrawlRequest.fromMap(dict);
             default:
                 throw new MessageException("Unknown message");
         }
