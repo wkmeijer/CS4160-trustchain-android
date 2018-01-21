@@ -87,7 +87,7 @@ public class TrustChainDBHelper extends SQLiteOpenHelper {
         values.put(TrustChainDBContract.BlockEntry.COLUMN_NAME_SIGNATURE, Base64.encodeToString(block.getSignature().toByteArray(), Base64.DEFAULT));
         values.put(TrustChainDBContract.BlockEntry.COLUMN_NAME_BLOCK_HASH, Base64.encodeToString(TrustChainBlock.hash(block), Base64.DEFAULT));
 
-        return db.insert(TrustChainDBContract.BlockEntry.TABLE_NAME, null, values);
+        return db.insertOrThrow(TrustChainDBContract.BlockEntry.TABLE_NAME, null, values);
     }
 
     /**

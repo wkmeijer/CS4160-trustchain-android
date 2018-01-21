@@ -1,10 +1,8 @@
 package nl.tudelft.cs4160.trustchain_android.connection.network;
 
 import android.util.Log;
-
-import java.security.KeyPair;
-
 import nl.tudelft.cs4160.trustchain_android.Peer;
+import nl.tudelft.cs4160.trustchain_android.Util.DualKey;
 import nl.tudelft.cs4160.trustchain_android.connection.Communication;
 import nl.tudelft.cs4160.trustchain_android.connection.CommunicationListener;
 import nl.tudelft.cs4160.trustchain_android.database.TrustChainDBHelper;
@@ -22,7 +20,7 @@ public class NetworkCommunication extends Communication {
 
     private static Server server;
 
-    public NetworkCommunication(TrustChainDBHelper dbHelper, KeyPair kp, CommunicationListener listener) {
+    public NetworkCommunication(TrustChainDBHelper dbHelper, DualKey kp, CommunicationListener listener) {
         super(dbHelper, kp, listener);
     }
 

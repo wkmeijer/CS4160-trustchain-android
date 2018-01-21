@@ -1,134 +1,154 @@
 package nl.tudelft.cs4160.trustchain_android.Block;
 
 
-import android.content.Context;
-import android.util.Log;
-
-import com.google.protobuf.CodedOutputStream;
+import android.support.test.runner.AndroidJUnit4;
+import android.test.ActivityUnitTestCase;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.libsodium.jni.NaCl;
+import org.libsodium.jni.encoders.Hex;
 
-import java.security.KeyPair;
-import java.security.PrivateKey;
-import java.security.PublicKey;
+import java.util.ArrayList;
+import java.util.List;
 
-import nl.tudelft.cs4160.trustchain_android.Peer;
+import nl.tudelft.cs4160.trustchain_android.Util.DualKey;
 import nl.tudelft.cs4160.trustchain_android.Util.Key;
 import nl.tudelft.cs4160.trustchain_android.block.TrustChainBlock;
+import nl.tudelft.cs4160.trustchain_android.block.ValidationResult;
 import nl.tudelft.cs4160.trustchain_android.database.TrustChainDBHelper;
+import nl.tudelft.cs4160.trustchain_android.main.OverviewConnectionsActivity;
 import nl.tudelft.cs4160.trustchain_android.message.MessageProto;
 
 import static nl.tudelft.cs4160.trustchain_android.Peer.bytesToHex;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.validateMockitoUsage;
 import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.mock;
 
 /**
  * Created by Boning on 12/17/2017.
  */
-public class TrustChainBlockTest {
-    private KeyPair keyPair;
-    private KeyPair keyPair2;
+@RunWith(AndroidJUnit4.class)
+public class TrustChainBlockTest extends ActivityUnitTestCase<OverviewConnectionsActivity> {
+    public TrustChainBlockTest() {
+        super(OverviewConnectionsActivity.class);
+    }
+
+    private DualKey keyPair;
+    private DualKey keyPair2;
     private byte[] transaction = new byte[2];
-    private byte[] pubKey = new byte[2];
+    private byte[] pubKey;
     private byte[] linkKey = new byte[2];
     private MessageProto.TrustChainBlock genesisBlock;
     private TrustChainDBHelper dbHelper;
 
     @Before
     public void initialization() {
+        NaCl.sodium();
         keyPair = Key.createNewKeyPair();
         keyPair2 = Key.createNewKeyPair();
         dbHelper = mock(TrustChainDBHelper.class);
-        when(dbHelper.getMaxSeqNum(keyPair.getPublic().getEncoded())).thenReturn(0);
+        when(dbHelper.getMaxSeqNum(keyPair.getPublicKeyPair().toBytes())).thenReturn(2);
         transaction[0] = 12;
         transaction[1] = 42;
-        pubKey[0] = 2;
-        pubKey[1] = 4;
+        pubKey = keyPair.getPublicKeyPair().toBytes();
         linkKey[0] = 14;
         linkKey[1] = 72;
         genesisBlock = TrustChainBlock.createGenesisBlock(keyPair);
     }
 
     @Test
-    public void publicKeyGenesisBlockTest() {
+    public void testPublicKeyGenesisBlockTest() {
         MessageProto.TrustChainBlock block = TrustChainBlock.createGenesisBlock(keyPair);
-        assertEquals(bytesToHex(keyPair.getPublic().getEncoded()), bytesToHex(block.getPublicKey().toByteArray()));
+        assertEquals(bytesToHex(keyPair.getPublicKeyPair().toBytes()), bytesToHex(block.getPublicKey().toByteArray()));
     }
 
     @Test
-    public void getSequenceNumberGenesisBlockTest() {
+    public void testGetSequenceNumberGenesisBlockTest() {
         MessageProto.TrustChainBlock block = TrustChainBlock.createBlock(transaction, dbHelper, pubKey, genesisBlock, linkKey);
         assertEquals(0, block.getSequenceNumber());
     }
 
     @Test
-    public void publicKeyBlockTest() {
+    public void testPublicKeyBlockTest() {
         MessageProto.TrustChainBlock block = TrustChainBlock.createBlock(transaction, dbHelper, pubKey, genesisBlock, linkKey);
         assertEquals(bytesToHex(pubKey), bytesToHex(block.getPublicKey().toByteArray()));
     }
 
     @Test
-    public void linkPublicKeyBlockTest() {
+    public void testLinkPublicKeyBlockTest() {
         MessageProto.TrustChainBlock block = TrustChainBlock.createBlock(transaction, dbHelper, pubKey, genesisBlock, linkKey);
-        assertEquals(bytesToHex(keyPair.getPublic().getEncoded()), bytesToHex(block.getLinkPublicKey().toByteArray()));
+        assertEquals(bytesToHex(keyPair.getPublicKeyPair().toBytes()), bytesToHex(block.getLinkPublicKey().toByteArray()));
     }
 
     @Test
-    public void getSequenceNumberBlockTest() {
+    public void testGetSequenceNumberBlockTest() {
         MessageProto.TrustChainBlock block = TrustChainBlock.createBlock(transaction, dbHelper, pubKey, genesisBlock, linkKey);
         assertEquals(0, block.getSequenceNumber());
     }
 
     @Test
-    public void isInitializedGenesisBlockTest() {
+    public void testIsInitializedGenesisBlockTest() {
         MessageProto.TrustChainBlock block = TrustChainBlock.createGenesisBlock(keyPair);
         assertTrue(block.isInitialized());
     }
 
     @Test
-    public void getSameSerializedSizeBlockTest() {
+    public void testGetSameSerializedSizeBlockTest() {
         MessageProto.TrustChainBlock block = TrustChainBlock.createGenesisBlock(keyPair);
         assertEquals(block.getSerializedSize(), block.getSerializedSize());
     }
 
     @Test
-    public void getDiffSerializedSizeBlockTest() {
+    public void testGetDiffSerializedSizeBlockTest() {
         MessageProto.TrustChainBlock block = TrustChainBlock.createGenesisBlock(keyPair);
         assertEquals(block.getSerializedSize(), block.getSerializedSize());
     }
 
     @Test
-    public void getDiffHashBlockTest() {
+    public void testGetDiffHashBlockTest() {
         MessageProto.TrustChainBlock block = TrustChainBlock.createGenesisBlock(keyPair);
         MessageProto.TrustChainBlock block2 = TrustChainBlock.createGenesisBlock(keyPair2);
         assertNotEquals(block.hashCode(), block2.hashCode());
     }
 
     @Test
-    public void equalBlocks() {
+    public void testEqualBlocks() {
         MessageProto.TrustChainBlock block = TrustChainBlock.createGenesisBlock(keyPair);
         assertTrue(block.equals(block));
     }
 
     @Test
-    public void notEqualBlocks() {
+    public void testNotEqualBlocks() {
         MessageProto.TrustChainBlock block = TrustChainBlock.createGenesisBlock(keyPair);
         MessageProto.TrustChainBlock block2 = TrustChainBlock.createGenesisBlock(keyPair2);
         assertFalse(block.equals(block2));
     }
 
+    @Test
+    public void testVerify() {
+        DualKey pair = Key.createNewKeyPair();
+        byte[] message = {(byte) 0x01, (byte) 0x01, (byte) 0x01, (byte) 0x01, (byte) 0x01};
+        byte[] signature = Key.sign(pair.getSigningKey(), message);
+        assertTrue(Key.verify(pair.getVerifyKey(), message, signature));
+    }
+
+    @Test
+    public void testVerifyBlock() throws Throwable {
+        when(dbHelper.getLatestBlock(pubKey)).thenReturn(genesisBlock);
+        System.out.println("Signing with " + Hex.HEX.encode(pubKey));
+        MessageProto.TrustChainBlock block = TrustChainBlock.createBlock(transaction, dbHelper, pubKey, genesisBlock, linkKey);
+        System.out.println("From block: " + Hex.HEX.encode(block.getPublicKey().toByteArray()));
+        ValidationResult result = TrustChainBlock.validate(block, dbHelper);
+        List<String> errors = result.getErrors();
+        assertEquals("Errors not empty.",new ArrayList(), errors);
+    }
+
     @After
-    public void resetMocks(){
+    public void resetMocks() {
         validateMockitoUsage();
     }
 

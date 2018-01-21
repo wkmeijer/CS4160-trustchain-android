@@ -1,21 +1,20 @@
 package nl.tudelft.cs4160.trustchain_android.block;
 
 import android.database.sqlite.SQLiteDatabase;
-import android.util.Base64;
 
 import com.google.protobuf.ByteString;
 
+import org.libsodium.jni.Sodium;
+
 import java.io.UnsupportedEncodingException;
-import java.security.KeyPair;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.security.PrivateKey;
-import java.security.PublicKey;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import nl.tudelft.cs4160.trustchain_android.Util.DualKey;
 import nl.tudelft.cs4160.trustchain_android.Util.Key;
+import nl.tudelft.cs4160.trustchain_android.Util.PublicKeyPair;
+import nl.tudelft.cs4160.trustchain_android.Util.SigningKey;
 import nl.tudelft.cs4160.trustchain_android.database.TrustChainDBHelper;
 import nl.tudelft.cs4160.trustchain_android.message.MessageProto;
 
@@ -35,17 +34,17 @@ public class TrustChainBlock {
      * Creates a TrustChain genesis block using protocol buffers.
      * @return block - A MessageProto.TrustChainBlock
      */
-    public static MessageProto.TrustChainBlock createGenesisBlock(KeyPair kp) {
+    public static MessageProto.TrustChainBlock createGenesisBlock(DualKey kp) {
         MessageProto.TrustChainBlock block = MessageProto.TrustChainBlock.newBuilder()
                 .setTransaction(ByteString.EMPTY)
-                .setPublicKey(ByteString.copyFrom(kp.getPublic().getEncoded()))
+                .setPublicKey(ByteString.copyFrom(kp.getPublicKeyPair().toBytes()))
                 .setSequenceNumber(GENESIS_SEQ)
                 .setLinkPublicKey(EMPTY_PK)
                 .setLinkSequenceNumber(UNKNOWN_SEQ)
                 .setPreviousHash(GENESIS_HASH)
                 .setSignature(EMPTY_SIG)
                 .build();
-        block = sign(block, kp.getPrivate());
+        block = sign(block, kp.getSigningKey());
         return block;
     }
 
@@ -102,25 +101,21 @@ public class TrustChainBlock {
      * @return the sha256 hash of the byte array of the block
      */
     public static byte[] hash(MessageProto.TrustChainBlock block) {
-        MessageDigest md = null;
-        try {
-            md = MessageDigest.getInstance("SHA-256");
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        }
-        //remove the signature (if there is any)
         MessageProto.TrustChainBlock rawBlock = block.toBuilder().setSignature(EMPTY_SIG).build();
-        return md.digest(rawBlock.toByteArray());
+        byte[] blockBytes = rawBlock.toByteArray();
+        byte[] hashOut = new byte[Sodium.crypto_hash_sha256_bytes()];
+        Sodium.crypto_hash_sha256(hashOut, blockBytes, blockBytes.length);
+        return blockBytes;
     }
 
 
     /**
      * Signs this block with a given public key.
      */
-    public static MessageProto.TrustChainBlock sign(MessageProto.TrustChainBlock block, PrivateKey privateKey) {
+    public static MessageProto.TrustChainBlock sign(MessageProto.TrustChainBlock block, SigningKey signingKey) {
         //sign the hash
         byte[] hash = TrustChainBlock.hash(block);
-        byte[] signature = Key.sign(privateKey, hash);
+        byte[] signature = Key.sign(signingKey, hash);
 
         //create the block
         return block.toBuilder().setSignature(ByteString.copyFrom(signature)).build();
@@ -219,20 +214,14 @@ public class TrustChainBlock {
             errors.add("Link sequence number not empty and is prior to genesis");
         }
 
-        //TODO: resolve stupid conversions byte[] => Base64 => byte[]
-        String key = Base64.encodeToString(block.getPublicKey().toByteArray(), Base64.DEFAULT);
-        PublicKey publicKey = Key.loadPublicKey(key);
-        if(publicKey == null) {
+        PublicKeyPair publicKeyPair = Key.getPublicKeyPairFromBytes(block.getPublicKey().toByteArray());
+
+        // If public key is valid, check validity of signature
+        byte[] hash = hash(block);
+        byte[] signature = block.getSignature().toByteArray();
+        if (!Key.verify(publicKeyPair.getVerifyKey(), hash, signature)) {
             result.setInvalid();
-            errors.add("Public key is not valid");
-        } else {
-            // If public key is valid, check validity of signature
-            byte[] hash = hash(block);
-            byte[] signature = block.getSignature().toByteArray();
-            if (!Key.verify(publicKey, hash, signature)) {
-                result.setInvalid();
-                errors.add("Invalid signature.");
-            }
+            errors.add("Invalid signature.");
         }
 
         // If a block is linked with a block of the same owner it does not serve any purpose and is invalid.

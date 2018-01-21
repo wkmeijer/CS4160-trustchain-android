@@ -14,10 +14,9 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.security.KeyPair;
-
 import nl.tudelft.cs4160.trustchain_android.Peer;
 import nl.tudelft.cs4160.trustchain_android.R;
+import nl.tudelft.cs4160.trustchain_android.Util.DualKey;
 import nl.tudelft.cs4160.trustchain_android.Util.Key;
 import nl.tudelft.cs4160.trustchain_android.connection.Communication;
 import nl.tudelft.cs4160.trustchain_android.connection.CommunicationListener;
@@ -38,7 +37,7 @@ public class BluetoothActivity extends AppCompatActivity implements Communicatio
 
     private TrustChainDBHelper dbHelper;
     private Communication communication;
-    private KeyPair kp;
+    private DualKey kp;
 
     private TextView textViewLog;
 

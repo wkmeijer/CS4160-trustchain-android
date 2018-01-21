@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="nl.tudelft.cs4160.trustchain_android">
 
     <uses-permission android:name="android.permission.INTERNET" />
@@ -9,7 +10,11 @@
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
+    <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.CAMERA" />
+
     <application
+        tools:replace="android:allowBackup"
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
@@ -46,8 +51,13 @@
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
+                <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>
         </activity>
+
+        <activity android:name=".qr.ScanQRActivity" />
+        <activity android:name=".qr.ExportWalletQRActivity" />
+        <activity android:name=".funds.FundsActivity" />
         <activity
             android:name=".main.ChainExplorerInfoActivity"
             android:label="@string/title_activity_info_chain_explorer" />

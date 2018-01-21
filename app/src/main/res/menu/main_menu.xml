@@ -14,4 +14,19 @@
         android:id="@+id/find_peer"
         android:title="@string/find_peer"
         app:showAsAction="never" />
+
+    <item
+        android:id="@+id/funds"
+        android:title="@string/funds"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/import_tokens"
+        android:title="@string/import_tokens"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/export_tokens"
+        android:title="@string/export_tokens"
+        app:showAsAction="never" />
 </menu>

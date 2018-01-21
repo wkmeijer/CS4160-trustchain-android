@@ -1,6 +1,5 @@
 package nl.tudelft.cs4160.trustchain_android.chainExplorer;
 
-import android.app.ActivityManager;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
@@ -17,14 +16,12 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.ProgressBar;
-import android.widget.Toast;
 
-import java.security.KeyPair;
 import java.util.List;
 
 import nl.tudelft.cs4160.trustchain_android.R;
+import nl.tudelft.cs4160.trustchain_android.Util.DualKey;
 import nl.tudelft.cs4160.trustchain_android.Util.Key;
-import nl.tudelft.cs4160.trustchain_android.appToApp.PeerAppToApp;
 import nl.tudelft.cs4160.trustchain_android.database.TrustChainDBHelper;
 import nl.tudelft.cs4160.trustchain_android.main.ChainExplorerInfoActivity;
 import nl.tudelft.cs4160.trustchain_android.message.MessageProto;
@@ -83,19 +80,21 @@ public class ChainExplorerActivity extends AppCompatActivity {
 
     private void init() {
         dbHelper = new TrustChainDBHelper(this);
-        KeyPair kp = Key.loadKeys(getApplicationContext());
+        DualKey kp = Key.loadKeys(getApplicationContext());
         byte[] publicKey;
         if (getIntent().hasExtra("publicKey")) {
             publicKey = getIntent().getByteArrayExtra("publicKey");
         } else {
-            publicKey = kp.getPublic().getEncoded();
+            publicKey = kp.getPublicKeyPair().toBytes();
 
         }
         try {
+            adapter = new ChainExplorerAdapter(this, dbHelper.getAllBlocks(), kp.getPublicKeyPair().toBytes());
+            blocksList.setAdapter(adapter);
             List<MessageProto.TrustChainBlock> blocks = dbHelper.getBlocks(publicKey);
             if(blocks.size() > 0) {
                 this.setTitle(bytesToHex(blocks.get(0).getPublicKey().toByteArray()));
-                adapter = new ChainExplorerAdapter(this, blocks, kp.getPublic().getEncoded());
+                adapter = new ChainExplorerAdapter(this, blocks, kp.getPublicKeyPair().toBytes());
                 blocksList.setAdapter(adapter);
             }else{
                 // ToDo display empty chain

@@ -36,9 +36,13 @@ dependencies {
     compile files('libs/protobuf-java-3.4.1.jar')
     compile 'com.android.support:appcompat-v7:26.1.0'
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
-    compile 'com.madgag.spongycastle:core:1.58.0.0'
-    compile 'com.madgag.spongycastle:prov:1.58.0.0'
+    compile 'me.dm7.barcodescanner:zxing:1.9.8'
     compile 'com.android.support:design:26.1.0'
+    compile 'com.squareup.moshi:moshi:1.5.0'
+
+
+    compile 'com.github.joshjdevl.libsodiumjni:libsodium-jni-aar:1.0.7'
+
     testCompile 'junit:junit:4.12'
     testCompile 'org.mockito:mockito-core:2.7.22'
     androidTestCompile 'org.mockito:mockito-android:2.7.22'

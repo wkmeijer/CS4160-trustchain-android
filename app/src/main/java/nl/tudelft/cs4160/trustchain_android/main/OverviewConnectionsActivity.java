@@ -33,18 +33,17 @@ import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 import java.nio.channels.DatagramChannel;
-import java.security.KeyPair;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Random;
-import java.util.UUID;
 
 import nl.tudelft.cs4160.trustchain_android.R;
 import nl.tudelft.cs4160.trustchain_android.SharedPreferences.BootstrapIPStorage;
+import nl.tudelft.cs4160.trustchain_android.SharedPreferences.PubKeyAndAddressPairStorage;
 import nl.tudelft.cs4160.trustchain_android.SharedPreferences.SharedPreferencesStorage;
 import nl.tudelft.cs4160.trustchain_android.SharedPreferences.UserNameStorage;
-import nl.tudelft.cs4160.trustchain_android.SharedPreferences.PubKeyAndAddressPairStorage;
+import nl.tudelft.cs4160.trustchain_android.Util.DualKey;
 import nl.tudelft.cs4160.trustchain_android.Util.Key;
 import nl.tudelft.cs4160.trustchain_android.appToApp.PeerAppToApp;
 import nl.tudelft.cs4160.trustchain_android.appToApp.PeerList;
@@ -59,7 +58,10 @@ import nl.tudelft.cs4160.trustchain_android.bencode.BencodeReadException;
 import nl.tudelft.cs4160.trustchain_android.block.TrustChainBlock;
 import nl.tudelft.cs4160.trustchain_android.chainExplorer.ChainExplorerActivity;
 import nl.tudelft.cs4160.trustchain_android.database.TrustChainDBHelper;
+import nl.tudelft.cs4160.trustchain_android.funds.FundsActivity;
 import nl.tudelft.cs4160.trustchain_android.message.MessageProto;
+import nl.tudelft.cs4160.trustchain_android.qr.ScanQRActivity;
+import nl.tudelft.cs4160.trustchain_android.qr.ExportWalletQRActivity;
 
 import static nl.tudelft.cs4160.trustchain_android.Peer.bytesToHex;
 import static nl.tudelft.cs4160.trustchain_android.block.TrustChainBlock.GENESIS_SEQ;
@@ -138,6 +140,15 @@ public class OverviewConnectionsActivity extends AppCompatActivity {
                 Intent chainExplorerActivity = new Intent(this, ChainExplorerActivity.class);
                 startActivity(chainExplorerActivity);
                 return true;
+            case R.id.import_tokens:
+                startActivity(new Intent(OverviewConnectionsActivity.this, ScanQRActivity.class));
+                return true;
+            case R.id.export_tokens:
+                startActivity(new Intent(OverviewConnectionsActivity.this, ExportWalletQRActivity.class));
+                return true;
+            case R.id.funds:
+                startActivity(new Intent(this, FundsActivity.class));
+                return true;
             case R.id.connection_explanation_menu:
                 Intent ConnectionExplanationActivity = new Intent(this, ConnectionExplanationActivity.class);
                 startActivity(ConnectionExplanationActivity);
@@ -151,7 +162,7 @@ public class OverviewConnectionsActivity extends AppCompatActivity {
     }
 
     private void initKey(){
-        KeyPair kp = Key.loadKeys(getApplicationContext());
+        DualKey kp = Key.loadKeys(getApplicationContext());
         if (kp == null) {
             kp = Key.createAndSaveKeys(getApplicationContext());
         }
@@ -167,9 +178,9 @@ public class OverviewConnectionsActivity extends AppCompatActivity {
      *
      * @return state - false if the app has been initialized before, true if first time app started
      */
-    public boolean isStartedFirstTime(TrustChainDBHelper dbHelper, KeyPair kp) {
+    public boolean isStartedFirstTime(TrustChainDBHelper dbHelper, DualKey kp) {
         // check if a genesis block is present in database
-        MessageProto.TrustChainBlock genesisBlock = dbHelper.getBlock(kp.getPublic().getEncoded(), GENESIS_SEQ);
+        MessageProto.TrustChainBlock genesisBlock = dbHelper.getBlock(kp.getPublicKeyPair().toBytes(), GENESIS_SEQ);
         return (genesisBlock == null);
     }
 
@@ -316,7 +327,7 @@ public class OverviewConnectionsActivity extends AppCompatActivity {
      * @throws IOException
      */
     private void sendIntroductionRequest(PeerAppToApp peer) throws IOException {
-        String publicKey = bytesToHex(Key.loadPublicKey(getApplicationContext(), Key.DEFAULT_PUB_KEY_FILE).getEncoded());
+        String publicKey = bytesToHex(Key.loadKeys(getApplicationContext()).getPublicKeyPair().toBytes());
 
         IntroductionRequest request = new IntroductionRequest(hashId, peer.getAddress(), connectionType, networkOperator, publicKey);
         sendMessage(request, peer);
@@ -330,8 +341,7 @@ public class OverviewConnectionsActivity extends AppCompatActivity {
      * @throws IOException
      */
     private void sendPunctureRequest(PeerAppToApp peer, PeerAppToApp puncturePeer) throws IOException {
-        String publicKey = bytesToHex(Key.loadPublicKey(getApplicationContext(), Key.DEFAULT_PUB_KEY_FILE).getEncoded());
-
+        String publicKey = bytesToHex(Key.loadKeys(getApplicationContext()).getPublicKeyPair().toBytes());
         PunctureRequest request = new PunctureRequest(hashId, peer.getAddress(), internalSourceAddress, puncturePeer, publicKey);
         sendMessage(request, peer);
     }
@@ -343,7 +353,7 @@ public class OverviewConnectionsActivity extends AppCompatActivity {
      * @throws IOException
      */
     private void sendPuncture(PeerAppToApp peer) throws IOException {
-        String publicKey = bytesToHex(Key.loadPublicKey(getApplicationContext(), Key.DEFAULT_PUB_KEY_FILE).getEncoded());
+        String publicKey = bytesToHex(Key.loadKeys(getApplicationContext()).getPublicKeyPair().toBytes());
 
         Puncture puncture = new Puncture(hashId, peer.getAddress(), internalSourceAddress, publicKey);
         sendMessage(puncture, peer);
@@ -362,8 +372,7 @@ public class OverviewConnectionsActivity extends AppCompatActivity {
             if (p.hasReceivedData() && p.getPeerId() != null && p.isAlive())
                 pexPeers.add(p);
         }
-
-        String publicKey = bytesToHex(Key.loadPublicKey(getApplicationContext(), Key.DEFAULT_PUB_KEY_FILE).getEncoded());
+        String publicKey = bytesToHex(Key.loadKeys(getApplicationContext()).getPublicKeyPair().toBytes());
 
         // check if connection information is loaded
         if(internalSourceAddress != null) {
@@ -383,7 +392,7 @@ public class OverviewConnectionsActivity extends AppCompatActivity {
      * @throws IOException
      */
     private synchronized void sendMessage(Message message, PeerAppToApp peer) throws IOException {
-        String publicKey = bytesToHex(Key.loadPublicKey(getApplicationContext(), Key.DEFAULT_PUB_KEY_FILE).getEncoded());
+        String publicKey = bytesToHex(Key.loadKeys(getApplicationContext()).getPublicKeyPair().toBytes());
         message.putPubKey(publicKey);
 
         Log.d("App-To-App Log", "Sending " + message);
@@ -610,7 +619,7 @@ public class OverviewConnectionsActivity extends AppCompatActivity {
             @Override
             protected void onPostExecute(InetAddress inetAddress) {
                 super.onPostExecute(inetAddress);
-                if(inetAddress != null) {
+                if (inetAddress != null) {
                     internalSourceAddress = new InetSocketAddress(inetAddress, DEFAULT_PORT);
                     Log.d("App-To-App Log", "Local ip: " + inetAddress);
                     TextView localIp = (TextView) findViewById(R.id.local_ip_address_view);

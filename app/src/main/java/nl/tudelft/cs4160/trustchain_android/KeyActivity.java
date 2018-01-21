@@ -9,17 +9,12 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.security.KeyPair;
-import java.security.Security;
-
+import nl.tudelft.cs4160.trustchain_android.Util.DualKey;
 import nl.tudelft.cs4160.trustchain_android.Util.Key;
 
 public class KeyActivity extends AppCompatActivity {
 
     private final static String TAG = KeyActivity.class.getName();
-
-    static {
-        Security.insertProviderAt(new org.spongycastle.jce.provider.BouncyCastleProvider(), 1);}
 
     private Button buttonNewKey;
     private Button signData;
@@ -41,16 +36,16 @@ public class KeyActivity extends AppCompatActivity {
         signedData = findViewById(R.id.signed_data);
         verifySignature = findViewById(R.id.verify_sig);
 
-        KeyPair kp = Key.ensureKeysExist(getApplicationContext());
-        textPrivateKey.setText(Base64.encodeToString(kp.getPrivate().getEncoded(), Base64.DEFAULT));
+        DualKey kp = Key.ensureKeysExist(getApplicationContext());
+        textPrivateKey.setText(Base64.encodeToString(kp.getPrivateKey().toBytes(), Base64.DEFAULT));
 
         verifySignature.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                KeyPair kp = Key.loadKeys(getApplicationContext());
+                DualKey kp = Key.loadKeys(getApplicationContext());
                 byte[] sig = Base64.decode(signedData.getText().toString(), Base64.DEFAULT);
                 byte[] data = new byte[] {0x30, 0x30, 0x30, 0x30,0x30, 0x30, 0x30, 0x30};
-                if(Key.verify(kp.getPublic(), data, sig)) {
+                if(Key.verify(kp.getVerifyKey(), data, sig)) {
                     Toast.makeText(getApplicationContext(), R.string.valid_signature, Toast.LENGTH_SHORT).show();
                 } else {
                     Toast.makeText(getApplicationContext(), R.string.invalid_signature, Toast.LENGTH_SHORT).show();
@@ -61,8 +56,8 @@ public class KeyActivity extends AppCompatActivity {
         buttonNewKey.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                KeyPair kp = Key.createAndSaveKeys(getApplicationContext());
-                textPrivateKey.setText(Base64.encodeToString(kp.getPrivate().getEncoded(), Base64.DEFAULT));
+                DualKey kp = Key.createAndSaveKeys(getApplicationContext());
+                textPrivateKey.setText(Base64.encodeToString(kp.getPrivateKey().toBytes(), Base64.DEFAULT));
 
             }
         });
@@ -70,8 +65,8 @@ public class KeyActivity extends AppCompatActivity {
         signData.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                KeyPair kp = Key.loadKeys(getApplicationContext());
-                byte[] sig = Key.sign( kp.getPrivate(), new byte[] {0x30, 0x30, 0x30, 0x30,0x30, 0x30, 0x30, 0x30});
+                DualKey kp = Key.loadKeys(getApplicationContext());
+                byte[] sig = Key.sign( kp.getSigningKey(), new byte[] {0x30, 0x30, 0x30, 0x30,0x30, 0x30, 0x30, 0x30});
                 if(sig == null) {
                     Log.d(TAG,"No sig received");
                 }
