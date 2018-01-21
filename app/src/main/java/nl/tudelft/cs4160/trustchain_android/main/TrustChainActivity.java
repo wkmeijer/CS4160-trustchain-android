@@ -116,19 +116,20 @@ public class TrustChainActivity extends AppCompatActivity implements CompoundBut
      */
     private ArrayList<MutualBlockItem> findMutualBlocks() {
         ArrayList<MutualBlockItem> mutualBlocks = new ArrayList<>();
+        int validationResultStatus = ValidationResult.NO_INFO;
         for (MessageProto.TrustChainBlock block : DBHelper.getAllBlocks()) {
             if (ByteArrayConverter.bytesToHexString(block.getLinkPublicKey().toByteArray()).equals(inboxItemOtherPeer.getPublicKey())
                     || ByteArrayConverter.byteStringToString(block.getPublicKey()).equals(inboxItemOtherPeer.getPublicKey())) {
                 String blockStatus = "Status of Block: ";
-                int validationResultStatus = ValidationResult.NO_INFO;
 
                 try {
                     validationResultStatus = TrustChainBlockHelper.validate(block, DBHelper).getStatus();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-
+                Log.d("Validation: ", "validation status is: " + validationResultStatus);
                 if (validationResultStatus != ValidationResult.VALID) {
+                    // TODO actually if only the signature is not right yet
                     blockStatus += "Awaiting your signing";
                 } else {
                     blockStatus += "Signed";
@@ -242,7 +243,8 @@ public class TrustChainActivity extends AppCompatActivity implements CompoundBut
         final MessageProto.TrustChainBlock signedBlock = sign(block, keyPair.getPrivate());
 
         //todo again we could do validation?
-        DBHelper.insertInDB(block);
+//        DBHelper.insertInDB(block); // why would you add a signed or unsigned block originating from yourself
+        // to your own waiting for approval DB?
 
         new Thread(new Runnable() {
             @Override
