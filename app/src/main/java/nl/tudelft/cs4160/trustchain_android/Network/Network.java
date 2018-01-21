@@ -248,24 +248,24 @@ public class Network {
                 if (peer == null) return;
                 peer.received(data);
                 switch (message.getType()) {
-                    case Message.INTRODUCTION_REQUEST:
+                    case Message.INTRODUCTION_REQUEST_ID:
                         Log.d("BoningTest", "received introduction request");
                         networkCommunicationListener.handleIntroductionRequest(peer, (IntroductionRequest) message);
                         break;
-                    case Message.INTRODUCTION_RESPONSE:
+                    case Message.INTRODUCTION_RESPONSE_ID:
                         networkCommunicationListener.handleIntroductionResponse(peer, (IntroductionResponse) message);
                         break;
-                    case Message.PUNCTURE:
+                    case Message.PUNCTURE_ID:
                         networkCommunicationListener.handlePuncture(peer, (Puncture) message);
                         break;
-                    case Message.PUNCTURE_REQUEST:
+                    case Message.PUNCTURE_REQUEST_ID:
                         networkCommunicationListener.handlePunctureRequest(peer, (PunctureRequest) message);
                         break;
-                    case Message.BLOCK_MESSAGE:
+                    case Message.BLOCK_MESSAGE_ID:
                         Log.d("BoningTest", "received block message");
                         networkCommunicationListener.handleBlockMessageRequest(peer, (BlockMessage) message);
                         break;
-                    case Message.CRAWL_REQUEST:
+                    case Message.CRAWL_REQUEST_ID:
                         Log.d("BoningTest", "received crawl request");
                         networkCommunicationListener.handleCrawlRequest(peer, (CrawlRequest) message);
                         break;
