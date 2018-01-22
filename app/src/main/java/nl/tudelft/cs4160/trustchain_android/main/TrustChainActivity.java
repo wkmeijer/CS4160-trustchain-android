@@ -120,18 +120,18 @@ public class TrustChainActivity extends AppCompatActivity implements CompoundBut
         PublicKey publicKey = Key.loadKeys(this).getPublic();
         byte[] transactionData = messageEditText.getText().toString().getBytes("UTF-8");
         final MessageProto.TrustChainBlock block = createBlock(transactionData, CommunicationSingleton.getDbHelper(), publicKey.getEncoded(), null, ByteArrayConverter.hexStringToByteArray(inboxItemOtherPeer.getPublicKey()));
-        TrustChainBlock.sign(block,Key.loadKeys(getApplicationContext()).getPrivate());
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        network = Network.getInstance(getApplicationContext());
-                        network.sendBlockMessage(inboxItemOtherPeer.getPeerAppToApp(), block, true);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
+        TrustChainBlock.sign(block, Key.loadKeys(getApplicationContext()).getPrivate());
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    network = Network.getInstance(getApplicationContext());
+                    network.sendBlockMessage(inboxItemOtherPeer.getPeerAppToApp(), block, true);
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
-            }).start();
+            }
+        }).start();
     }
 
     public void requestChain() {
@@ -140,12 +140,12 @@ public class TrustChainActivity extends AppCompatActivity implements CompoundBut
         network.updateConnectionType((ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE));
 
         int sq = -5;
-            MessageProto.TrustChainBlock block = CommunicationSingleton.getDbHelper().getBlock(inboxItemOtherPeer.getPublicKey().getBytes(), CommunicationSingleton.getDbHelper().getMaxSeqNum(inboxItemOtherPeer.getPublicKey().getBytes()));
-            if (block != null) {
-                sq = block.getSequenceNumber();
-            } else {
-                sq = GENESIS_SEQ;
-            }
+        MessageProto.TrustChainBlock block = CommunicationSingleton.getDbHelper().getBlock(inboxItemOtherPeer.getPublicKey().getBytes(), CommunicationSingleton.getDbHelper().getMaxSeqNum(inboxItemOtherPeer.getPublicKey().getBytes()));
+        if (block != null) {
+            sq = block.getSequenceNumber();
+        } else {
+            sq = GENESIS_SEQ;
+        }
 
         final MessageProto.CrawlRequest crawlRequest =
                 MessageProto.CrawlRequest.newBuilder()
@@ -167,7 +167,7 @@ public class TrustChainActivity extends AppCompatActivity implements CompoundBut
     }
 
     public byte[] getMyPublicKey() {
-        if(kp == null) {
+        if (kp == null) {
             kp = Key.loadKeys(this);
         }
         return kp.getPublic().getEncoded();
@@ -181,27 +181,18 @@ public class TrustChainActivity extends AppCompatActivity implements CompoundBut
      * @param view
      */
     public void onClickViewChain(View view) {
-        byte[] publicKey = null;
+        String publicKey = null;
 
         // Try to instantiate public key.
         if (this.inboxItemOtherPeer.getPublicKey() != null) {
-            publicKey = this.inboxItemOtherPeer.getPublicKey().getBytes();
-        } else {
-            Log.d("App-To-App", "pubkey address map " + SharedPreferencesStorage.getAll(this).toString());
-
-            String pubkeyStr = PubKeyAndAddressPairStorage.getPubKeyByAddress(context, inboxItemOtherPeer.getAddress());
-            if (pubkeyStr != null) {
-                publicKey = ChainExplorerAdapter.hexStringToByteArray(pubkeyStr);
+            publicKey = this.inboxItemOtherPeer.getPublicKey();
+            if (publicKey != null) {
+                Intent intent = new Intent(context, ChainExplorerActivity.class);
+                intent.putExtra("publicKey", publicKey);
+                startActivity(intent);
             }
         }
-
-        if (publicKey != null) {
-            Intent intent = new Intent(context, ChainExplorerActivity.class);
-            intent.putExtra("publicKey", publicKey);
-            startActivity(intent);
-        }
     }
-
 
     private void enableMessage() {
         runOnUiThread(new Runnable() {
@@ -218,6 +209,7 @@ public class TrustChainActivity extends AppCompatActivity implements CompoundBut
         super.onCreate(savedInstanceState);
         this.context = this;
         inboxItemOtherPeer = (InboxItem) getIntent().getSerializableExtra("inboxItem");
+        InboxItemStorage.markHalfBlockAsRead(this, inboxItemOtherPeer);
         setContentView(R.layout.activity_main);
         initVariables();
         init();
@@ -247,8 +239,7 @@ public class TrustChainActivity extends AppCompatActivity implements CompoundBut
         ArrayList<MutualBlockItem> mutualBlocks = new ArrayList<>();
         for (MessageProto.TrustChainBlock block : dbHelper.getAllBlocks()) {
             if (ByteArrayConverter.bytesToHexString(block.getLinkPublicKey().toByteArray()).equals(inboxItemOtherPeer.getPublicKey())
-                    || ByteArrayConverter.byteStringToString(block.getPublicKey()).equals(inboxItemOtherPeer.getPublicKey()))
-            {
+                    || ByteArrayConverter.byteStringToString(block.getPublicKey()).equals(inboxItemOtherPeer.getPublicKey())) {
                 String blockStatus = "Status of Block: ";
                 int validationResultStatus = ValidationResult.NO_INFO;
 
@@ -462,14 +453,13 @@ public class TrustChainActivity extends AppCompatActivity implements CompoundBut
     public void handleCrawlRequestBlockMessageRequest(PeerAppToApp peer, BlockMessage message) throws IOException, MessageException {
         MessageProto.Message msg = message.getMessageProto();
         Log.d("BCrawlTest", "Block messages received");
-        if(msg.getCrawlRequest().getPublicKey().size() == 0){
-            MessageProto.TrustChainBlock block = msg.getHalfBlock();
-            InboxItemStorage.addHalfBlock(CommunicationSingleton.getContext(), ByteArrayConverter.byteStringToString(block.getPublicKey()), block.getLinkSequenceNumber());
-            if(CommunicationSingleton.getDbHelper().getBlock(msg.getHalfBlock().getPublicKey().toByteArray(), msg.getHalfBlock().getSequenceNumber()) == null) {
-                CommunicationSingleton.getDbHelper().insertInDB(block);
-                Log.d("BCrawlTest", block.toString());
-            }
-            Log.d("BoningTest", "Block added: " + block.toString());
+        MessageProto.TrustChainBlock block = msg.getHalfBlock();
+
+        String p1 = ByteArrayConverter.byteStringToString(msg.getHalfBlock().getPublicKey());
+        String p2 = ByteArrayConverter.byteStringToString(msg.getHalfBlock().getLinkPublicKey());
+        if (CommunicationSingleton.getDbHelper().getBlock(msg.getHalfBlock().getPublicKey().toByteArray(), msg.getHalfBlock().getSequenceNumber()) == null) {
+            CommunicationSingleton.getDbHelper().insertInDB(block);
+            Log.d("BCrawlTest", "INSERTED " + block.toString());
         }
     }
 

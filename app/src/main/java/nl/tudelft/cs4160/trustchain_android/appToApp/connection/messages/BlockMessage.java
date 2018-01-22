@@ -18,7 +18,11 @@ public class BlockMessage extends Message {
     public BlockMessage(String peerId, InetSocketAddress destination, String pubKey, MessageProto.Message message, boolean isNewBlock) {
         super(BLOCK_MESSAGE_ID, peerId, destination, pubKey);
         put(BLOCK_MESSAGE_KEY, ByteArrayConverter.bytesToHexString(message.toByteArray()));
-        put(NEW_BLOCK,isNewBlock);
+        if(isNewBlock){
+            put(NEW_BLOCK,Boolean.toString(isNewBlock));
+        }else{
+            put(NEW_BLOCK,Boolean.toString(isNewBlock));
+        }
     }
 
     public static Message fromMap(Map map) throws MessageException {
@@ -26,7 +30,7 @@ public class BlockMessage extends Message {
         InetSocketAddress destination = Message.createMapAddress((Map) map.get(DESTINATION));
         String pubKey = (String) map.get(PUB_KEY);
         String messageAsString = (String) map.get(BLOCK_MESSAGE_KEY);
-        Boolean isNewBlock = (Boolean) map.get(NEW_BLOCK);
+        Boolean isNewBlock = Boolean.getBoolean((String)map.get(NEW_BLOCK));
         MessageProto.Message message = null;
         try {
             message = MessageProto.Message.parseFrom(ByteArrayConverter.hexStringToByteArray(messageAsString));
@@ -52,7 +56,7 @@ public class BlockMessage extends Message {
         if(isNewBlock == null){
             return true;
         }else{
-            return (boolean) isNewBlock;
+            return Boolean.getBoolean((String)isNewBlock);
         }
     }
 

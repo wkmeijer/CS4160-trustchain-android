@@ -229,6 +229,12 @@ public class Network {
      * @param address the incoming address.
      */
     public void dataReceived(Context context, ByteBuffer data, InetSocketAddress address) {
+        // If we don't have an internal address, try to find it again instead of handling the message.
+        if (internalSourceAddress == null) {
+            showLocalIpAddress();
+            return;
+        }
+
         try {
             Message message = Message.createFromByteBuffer(data);
             Log.d(TAG, "Received " + message);
@@ -240,6 +246,9 @@ public class Network {
 
                 PeerAppToApp peer = networkCommunicationListener.getOrMakePeer(peerId, address, PeerAppToApp.INCOMING);
 
+                String pubKey = message.getPubKey();
+                String ip = address.getAddress().toString().replace("/", "") + ":" + address.getPort();
+                PubKeyAndAddressPairStorage.addPubkeyAndAddressPair(context, pubKey, ip);
                 if (peer == null) return;
                 peer.received(data);
                 switch (message.getType()) {
@@ -258,9 +267,8 @@ public class Network {
                     case Message.BLOCK_MESSAGE_ID:
                         BlockMessage blockMessage = (BlockMessage) message;
                         if (blockMessage.isNewBlock()) {
-                            networkCommunicationListener.handleBlockMessageRequest(peer, blockMessage);
-                            String pubKey = message.getPubKey();
                             addPeerToInbox(pubKey, address, context, peerId);
+                            networkCommunicationListener.handleBlockMessageRequest(peer, blockMessage);
                         }else{
                             if(crawlRequestListener != null) {
                                 crawlRequestListener.handleCrawlRequestBlockMessageRequest(peer, blockMessage);
@@ -282,7 +290,6 @@ public class Network {
         // On receive data always add this peer to your inbox
         if (pubKey != null) {
             String ip = address.getAddress().toString().replace("/", "");
-            PubKeyAndAddressPairStorage.addPubkeyAndAddressPair(context, pubKey, ip);
             InboxItem i = new InboxItem(peerId, new ArrayList<Integer>(), ip, pubKey, address.getPort());
             InboxItemStorage.addInboxItem(context, i);
         }
@@ -312,9 +319,9 @@ public class Network {
             super.onPostExecute(inetAddress);
             if (inetAddress != null) {
                 internalSourceAddress = new InetSocketAddress(inetAddress, OverviewConnectionsActivity.DEFAULT_PORT);
-            }
-            if (networkCommunicationListener != null) {
-                networkCommunicationListener.updateInternalSourceAddress(internalSourceAddress.toString());
+                if (networkCommunicationListener != null) {
+                    networkCommunicationListener.updateInternalSourceAddress(internalSourceAddress.toString());
+                }
             }
         }
     }
