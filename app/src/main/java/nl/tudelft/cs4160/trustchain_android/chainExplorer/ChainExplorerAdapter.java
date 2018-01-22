@@ -88,13 +88,13 @@ public class ChainExplorerAdapter extends BaseAdapter {
         String seqNumStr;
         String linkSeqNumStr;
         if (block.getSequenceNumber() == 0) {
-            seqNumStr = "unknown";
+            seqNumStr = "Genesis Block";
         } else {
             seqNumStr = "seq: " + String.valueOf(block.getSequenceNumber());
         }
 
         if (block.getLinkSequenceNumber() == 0) {
-            linkSeqNumStr = "unknown";
+            linkSeqNumStr = "";
         } else {
             linkSeqNumStr = "seq: " + String.valueOf(block.getLinkSequenceNumber());
         }
