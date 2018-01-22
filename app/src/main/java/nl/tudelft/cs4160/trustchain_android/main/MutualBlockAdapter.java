@@ -65,15 +65,20 @@ public class MutualBlockAdapter extends RecyclerView.Adapter<MutualBlockAdapter.
         if (mutualBlockItem != null) {
             Button signButton = viewHolder.signButton;
             String blockStatus = mutualBlockItem.getBlockStatus();
-            if (blockStatus.substring(blockStatus.lastIndexOf(':') + 1).equals(" Signed")){
-                TextView blockStatTv = viewHolder.blockStatTextView;
-                blockStatTv.setBackgroundColor(0xFF00FF00); // set background color green
-                blockStatTv.setText(mutualBlockItem.getBlockStatus());
-                signButton.setVisibility(View.GONE);
-            } else {
-                TextView blockStatTv = viewHolder.blockStatTextView;
+            TextView blockStatTv = viewHolder.blockStatTextView;
+            if (blockStatus.substring(blockStatus.lastIndexOf(':') + 1).equals(" Half block awaiting signing")){
                 blockStatTv.setText(mutualBlockItem.getBlockStatus());
                 setOnClickListenerSignBlock(viewHolder, position);
+            } else if (blockStatus.substring(blockStatus.lastIndexOf(':') + 1).equals(" Full block not yet connected in chain")){
+                blockStatTv.setText(mutualBlockItem.getBlockStatus());
+                signButton.setVisibility(View.GONE);
+            } else if (blockStatus.substring(blockStatus.lastIndexOf(':') + 1).equals(" Valid block")){
+                blockStatTv.setText(mutualBlockItem.getBlockStatus());
+                blockStatTv.setBackgroundColor(0xFF00FF00); // set background color green
+                signButton.setVisibility(View.GONE);
+            } else {
+                // Partial previous or invalid block IGNORE
+                // TODO should partial previous really be ignored?
             }
             TextView userNameTv = viewHolder.userNameTextView;
             userNameTv.setText(UserNameStorage.getUserName(context));
