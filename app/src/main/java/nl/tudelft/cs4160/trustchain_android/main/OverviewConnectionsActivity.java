@@ -454,7 +454,7 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
             }
             List<MessageProto.TrustChainBlock> blockList = dbHelper.crawl(kp.getPublic().getEncoded(), sq);
             for (MessageProto.TrustChainBlock block : blockList) {
-                network.sendBlockMessage(peer, block);
+                network.sendBlockMessage(peer, block, false);
                 Log.d("BoningTest", "Block send: " + block.toString());
             }
         }

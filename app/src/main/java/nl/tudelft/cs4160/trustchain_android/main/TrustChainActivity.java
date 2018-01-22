@@ -39,6 +39,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import nl.tudelft.cs4160.trustchain_android.Network.CrawlRequestListener;
 import nl.tudelft.cs4160.trustchain_android.Network.Network;
 import nl.tudelft.cs4160.trustchain_android.Network.NetworkCommunicationListener;
 import nl.tudelft.cs4160.trustchain_android.Peer;
@@ -73,7 +74,7 @@ import nl.tudelft.cs4160.trustchain_android.message.MessageProto;
 import static nl.tudelft.cs4160.trustchain_android.block.TrustChainBlock.GENESIS_SEQ;
 import static nl.tudelft.cs4160.trustchain_android.block.TrustChainBlock.createBlock;
 
-public class TrustChainActivity extends AppCompatActivity implements CompoundButton.OnCheckedChangeListener, CommunicationListener, NetworkCommunicationListener {
+public class TrustChainActivity extends AppCompatActivity implements CompoundButton.OnCheckedChangeListener, CommunicationListener, CrawlRequestListener {
 
     public final static int DEFAULT_PORT = 1873;
     private final static String TAG = TrustChainActivity.class.toString();
@@ -115,10 +116,7 @@ public class TrustChainActivity extends AppCompatActivity implements CompoundBut
 
     public void onClickSend(View view) throws UnsupportedEncodingException {
         Log.d("testLogs", "onClickSend");
-        network = Network.getInstance(getApplicationContext());
-        network.setNetworkCommunicationListener(this);
         PublicKey publicKey = Key.loadKeys(this).getPublic();
-
         byte[] transactionData = messageEditText.getText().toString().getBytes("UTF-8");
         final MessageProto.TrustChainBlock block = createBlock(transactionData, CommunicationSingleton.getDbHelper(), publicKey.getEncoded(), null, ByteArrayConverter.hexStringToByteArray(inboxItemOtherPeer.getPublicKey()));
         TrustChainBlock.sign(block,Key.loadKeys(getApplicationContext()).getPrivate());
@@ -126,7 +124,8 @@ public class TrustChainActivity extends AppCompatActivity implements CompoundBut
                 @Override
                 public void run() {
                     try {
-                        network.sendBlockMessage(inboxItemOtherPeer.getPeerAppToApp(), block);
+                        network = Network.getInstance(getApplicationContext());
+                        network.sendBlockMessage(inboxItemOtherPeer.getPeerAppToApp(), block, true);
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -136,7 +135,7 @@ public class TrustChainActivity extends AppCompatActivity implements CompoundBut
 
     public void requestChain() {
         network = Network.getInstance(getApplicationContext());
-        network.setNetworkCommunicationListener(this);
+        network.setCrawlRequestListener(this);
 
         int sq = -5;
             MessageProto.TrustChainBlock block = CommunicationSingleton.getDbHelper().getBlock(inboxItemOtherPeer.getPublicKey().getBytes(), CommunicationSingleton.getDbHelper().getMaxSeqNum(inboxItemOtherPeer.getPublicKey().getBytes()));
@@ -457,42 +456,7 @@ public class TrustChainActivity extends AppCompatActivity implements CompoundBut
     }
 
     @Override
-    public void updateInternalSourceAddress(String address) {
-
-    }
-
-    @Override
-    public void updatePeerLists() {
-
-    }
-
-    @Override
-    public void updateWan(Message message) throws MessageException {
-
-    }
-
-    @Override
-    public void updateConnectionType(int connectionType, String typename, String subtypename) {
-
-    }
-
-    @Override
-    public void handleIntroductionRequest(PeerAppToApp peer, IntroductionRequest message) throws IOException {
-
-    }
-
-    @Override
-    public void handleIntroductionResponse(PeerAppToApp peer, IntroductionResponse message) {
-
-    }
-
-    @Override
-    public void handlePunctureRequest(PeerAppToApp peer, PunctureRequest message) throws IOException, MessageException {
-
-    }
-
-    @Override
-    public void handleBlockMessageRequest(PeerAppToApp peer, BlockMessage message) throws IOException, MessageException {
+    public void handleCrawlRequestBlockMessageRequest(PeerAppToApp peer, BlockMessage message) throws IOException, MessageException {
         MessageProto.Message msg = message.getMessageProto();
         Log.d("BoningTest", "Message received");
         if(msg.getCrawlRequest().getPublicKey().size() == 0){
@@ -506,23 +470,4 @@ public class TrustChainActivity extends AppCompatActivity implements CompoundBut
         }
     }
 
-    @Override
-    public void handleCrawlRequest(PeerAppToApp peer, CrawlRequest request) throws IOException {
-
-    }
-
-    @Override
-    public void handlePuncture(PeerAppToApp peer, Puncture message) throws IOException {
-
-    }
-
-    @Override
-    public PeerAppToApp getOrMakePeer(String id, InetSocketAddress address, boolean incoming) {
-        return null;
-    }
-
-    @Override
-    public PeerHandler getPeerHandler() {
-        return null;
-    }
 }
