@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/myCoordinatorLayout"
     android:fitsSystemWindows="true"
     tools:context=".main.OverviewConnectionsActivity">
@@ -185,8 +186,11 @@
 
             <Button
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="@dimen/activity_horizontal_margin"
+                android:layout_height="50dp"
+                android:layout_marginEnd="@dimen/activity_horizontal_margin"
+                android:layout_marginStart="@dimen/activity_horizontal_margin"
+                android:layout_marginTop="@dimen/activity_horizontal_margin"
+                android:layout_marginBottom="45dp"
                 android:background="@color/colorPrimary"
                 android:onClick="onClickOpenInbox"
                 android:text="@string/inbox"

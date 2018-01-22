@@ -8,7 +8,7 @@ import java.net.InetSocketAddress;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 import nl.tudelft.cs4160.trustchain_android.appToApp.connection.PeerListener;
 import nl.tudelft.cs4160.trustchain_android.appToApp.connection.WanVote;
@@ -17,7 +17,7 @@ import nl.tudelft.cs4160.trustchain_android.appToApp.connection.WanVote;
  * Created by timbu on 02/12/2017.
  */
 public class PeerHandler {
-    private final Object peerListLock = new Object();
+    private final ReentrantLock peerListLock = new ReentrantLock();
     private ArrayList<PeerAppToApp> peerList;
     private List<PeerAppToApp> incomingList = new ArrayList<>();
     private List<PeerAppToApp> outgoingList = new ArrayList<>();
@@ -45,7 +45,8 @@ public class PeerHandler {
      * Remove duplicate peers from the peerlist.
      */
     public void removeDuplicates() {
-        synchronized (peerListLock) {
+        peerListLock.lock();
+        try {
             for (int i = 0; i < peerList.size(); i++) {
                 PeerAppToApp p1 = peerList.get(i);
                 for (int j = 0; j < peerList.size(); j++) {
@@ -55,39 +56,54 @@ public class PeerHandler {
                     }
                 }
             }
+        } finally {
+            peerListLock.unlock();
         }
     }
 
     public void removeDeadPeers() {
-        synchronized (peerListLock) {
+        peerListLock.lock();
+        try {
             for (PeerAppToApp peer : new ArrayList<>(peerList)) {
                 if (peer.canBeRemoved()) {
                     peerList.remove(peer);
                 }
             }
+        } finally {
+            peerListLock.unlock();
         }
     }
 
     public void add(PeerAppToApp p) {
-        synchronized (peerListLock) {
+        peerListLock.lock();
+        try {
             this.peerList.add(p);
+        } finally {
+            peerListLock.unlock();
         }
     }
 
     public void remove(PeerAppToApp p) {
-        synchronized (peerListLock) {
+        peerListLock.lock();
+        try {
             this.peerList.remove(p);
+        } finally {
+            peerListLock.unlock();
         }
     }
 
     public int size() {
-        synchronized (peerListLock) {
+        peerListLock.lock();
+        try {
             return peerList.size();
+        } finally {
+            peerListLock.unlock();
         }
     }
 
     public boolean peerExistsInList(PeerAppToApp peer) {
-        synchronized (peerListLock) {
+        peerListLock.lock();
+        try {
             if (peer.getPeerId() == null) return false;
             for (PeerAppToApp p : this.peerList) {
                 if (peer.getPeerId().equals(p.getPeerId())) {
@@ -95,6 +111,8 @@ public class PeerHandler {
                 }
             }
             return false;
+        } finally {
+            peerListLock.unlock();
         }
     }
 
@@ -108,7 +126,8 @@ public class PeerHandler {
      * @return the added inboxItem.
      */
     public synchronized PeerAppToApp addPeer(String peerId, InetSocketAddress address, boolean incoming) {
-        synchronized (peerListLock) {
+        peerListLock.lock();
+        try {
             if (hashId.equals(peerId)) {
                 Log.d("App-To-App Log", "Not adding self");
                 PeerAppToApp self = null;
@@ -135,16 +154,21 @@ public class PeerHandler {
             new Handler(Looper.getMainLooper()).post(new Runnable() {
                 @Override
                 public void run() {
-                    synchronized (peerListLock) {
+                    peerListLock.lock();
+                    try {
                         peerList.add(peer);
                         splitPeerList();
                         Log.d("App-To-App Log", "Added " + peer);
+                    } finally {
+                        peerListLock.unlock();
                     }
                     peerListener.updateIncomingPeers();
                     peerListener.updateOutgoingPeers();
                 }
             });
             return peer;
+        } finally {
+            peerListLock.unlock();
         }
     }
 
@@ -152,7 +176,8 @@ public class PeerHandler {
      * Split the inboxItem list between incoming and outgoing peers.
      */
     public void splitPeerList() {
-        synchronized (peerListLock) {
+        peerListLock.lock();
+        try {
             List<PeerAppToApp> newIncoming = new ArrayList<>();
             List<PeerAppToApp> newOutgoing = new ArrayList<>();
             for (PeerAppToApp peer : peerList) {
@@ -170,6 +195,8 @@ public class PeerHandler {
                 outgoingList.clear();
                 outgoingList.addAll(newOutgoing);
             }
+        } finally {
+            peerListLock.unlock();
         }
     }
 
@@ -181,7 +208,8 @@ public class PeerHandler {
      * @return the eligible inboxItem if any, else null.
      */
     public PeerAppToApp getEligiblePeer(PeerAppToApp excludePeer) {
-        synchronized (peerListLock) {
+        peerListLock.lock();
+        try {
             List<PeerAppToApp> eligiblePeers = new ArrayList<>();
             for (PeerAppToApp p : peerList) {
                 if (p.isAlive() && !p.equals(excludePeer)) {
@@ -194,6 +222,8 @@ public class PeerHandler {
             }
             Random random = new Random();
             return eligiblePeers.get(random.nextInt(eligiblePeers.size()));
+        } finally {
+            peerListLock.unlock();
         }
     }
 
@@ -206,7 +236,8 @@ public class PeerHandler {
      * @return the resolved or create inboxItem.
      */
     synchronized public PeerAppToApp getOrMakePeer(String id, InetSocketAddress address, boolean incoming) {
-        synchronized (peerListLock) {
+        peerListLock.lock();
+        try {
             if (id != null) {
                 for (PeerAppToApp peer : peerList) {
                     if (id.equals(peer.getPeerId())) {
@@ -226,6 +257,8 @@ public class PeerHandler {
                 }
             }
             return addPeer(id, address, incoming);
+        } finally {
+            peerListLock.unlock();
         }
     }
 
@@ -246,14 +279,20 @@ public class PeerHandler {
     }
 
     public ArrayList<PeerAppToApp> getPeerList() {
-        synchronized (peerListLock) {
+        peerListLock.lock();
+        try {
             return peerList;
+        } finally {
+            peerListLock.unlock();
         }
     }
 
     public void setPeerList(ArrayList<PeerAppToApp> peerList) {
-        synchronized (peerListLock) {
+        peerListLock.lock();
+        try {
             this.peerList = peerList;
+        } finally {
+            peerListLock.unlock();
         }
     }
 }

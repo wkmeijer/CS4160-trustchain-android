@@ -2,7 +2,7 @@
     <string name="app_name">TrustChain Android</string>
     <string name="my_external_ip">My external ip is:</string>
     <string name="connect_bootstrap_ip">The IP address of a peer:</string>
-    <string name="change_bootstrap">Change bootstrap</string>
+    <string name="change_bootstrap">Find peer</string>
     <string name="connect_bootstrap_ip_hint">145.94.155.32</string>
     <string name="my_local_ip">My local ip is:</string>
     <string name="connect_ip_hint">127.0.0.1</string>
