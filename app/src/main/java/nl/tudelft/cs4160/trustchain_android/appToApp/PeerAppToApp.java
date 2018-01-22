@@ -123,11 +123,11 @@ public class PeerAppToApp implements Serializable {
         return true;
     }
 
-    public boolean canBeRemoved() {
+    boolean canBeRemoved() {
         if (hasSentData) {
             return System.currentTimeMillis() - lastSendTime > REMOVE_TIMEOUT;
         }
-        return true;
+        return false;
     }
 
     @Override
