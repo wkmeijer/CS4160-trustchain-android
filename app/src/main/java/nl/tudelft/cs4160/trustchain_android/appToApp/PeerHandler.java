@@ -121,11 +121,13 @@ public class PeerHandler {
         new Handler(Looper.getMainLooper()).post(new Runnable() {
             @Override
             public void run() {
-                peerList.add(peer);
-                splitPeerList();
-                peerListener.updateIncomingPeers();
-                peerListener.updateOutgoingPeers();
-                Log.d("App-To-App Log", "Added " + peer);
+                synchronized (this) {
+                    peerList.add(peer);
+                    splitPeerList();
+                    peerListener.updateIncomingPeers();
+                    peerListener.updateOutgoingPeers();
+                    Log.d("App-To-App Log", "Added " + peer);
+                }
             }
         });
         return peer;
@@ -184,7 +186,7 @@ public class PeerHandler {
      * @param incoming boolean indicator whether the inboxItem is incoming.
      * @return the resolved or create inboxItem.
      */
-    public PeerAppToApp getOrMakePeer(String id, InetSocketAddress address, boolean incoming) {
+    synchronized public PeerAppToApp getOrMakePeer(String id, InetSocketAddress address, boolean incoming) {
         if (id != null) {
             for (PeerAppToApp peer : peerList) {
                 if (id.equals(peer.getPeerId())) {

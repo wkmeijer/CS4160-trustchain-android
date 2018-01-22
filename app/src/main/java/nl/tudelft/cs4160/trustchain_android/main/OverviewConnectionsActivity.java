@@ -460,10 +460,12 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
         new Handler(Looper.getMainLooper()).post(new Runnable() {
             @Override
             public void run() {
-                peerHandler.splitPeerList();
-                peerHandler.removeDeadPeers();
-                incomingPeerAdapter.notifyDataSetChanged();
-                outgoingPeerAdapter.notifyDataSetChanged();
+                synchronized (this) {
+                    peerHandler.splitPeerList();
+                    peerHandler.removeDeadPeers();
+                    incomingPeerAdapter.notifyDataSetChanged();
+                    outgoingPeerAdapter.notifyDataSetChanged();
+                }
             }
         });
     }
