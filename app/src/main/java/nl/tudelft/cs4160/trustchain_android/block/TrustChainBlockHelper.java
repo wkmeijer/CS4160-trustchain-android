@@ -144,8 +144,8 @@ public class TrustChainBlockHelper {
         // successors, predecessors as well as the block itself and its linked block.
         MessageProto.TrustChainBlock dbBlock = dbHelper.getBlock(block.getPublicKey().toByteArray(),block.getSequenceNumber());
         MessageProto.TrustChainBlock linkBlock = dbHelper.getLinkedBlock(dbBlock);
-        MessageProto.TrustChainBlock prevBlock = dbHelper.getBlockBefore(dbBlock.getPublicKey().toByteArray(),block.getSequenceNumber());
-        MessageProto.TrustChainBlock nextBlock = dbHelper.getBlockAfter(dbBlock.getPublicKey().toByteArray(),block.getSequenceNumber());
+        MessageProto.TrustChainBlock prevBlock = dbHelper.getBlockBefore(dbBlock.getPublicKey().toByteArray(),dbBlock.getSequenceNumber());
+        MessageProto.TrustChainBlock nextBlock = dbHelper.getBlockAfter(dbBlock.getPublicKey().toByteArray(),dbBlock.getSequenceNumber());
 
         // ** Step 2: Determine the maximum validation level **
         // Depending on the blocks we get from the database, we can decide to reduce the validation

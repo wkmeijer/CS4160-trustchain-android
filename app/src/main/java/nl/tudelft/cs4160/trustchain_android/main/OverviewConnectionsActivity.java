@@ -426,18 +426,15 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
         // make sure it is not a crawl request but a block request
         if (msg.getCrawlRequest().getPublicKey().size() == 0) {
             MessageProto.TrustChainBlock block = msg.getHalfBlock();
-            if(block.getSignature().size() == 1){
-                // no signature means half block
-                Log.d("Signature", "Signature block: " + block.getSignature().toString());
+            if(block.getLinkSequenceNumber() == 0){
+                // half block?
                 InboxItemStorage.addHalfBlock(this, ByteArrayConverter.byteStringToString(block.getPublicKey()), block.getLinkSequenceNumber());
                 new TrustChainDBHelper(this).replaceInDB(block);
                 // replace instead of add in order to always have the latest block appears as the next in line.
                 //                new TrustChainDBHelper(this).insertInDB(block);
             } else {
-                // yes signature means full block
-                Log.d("Signature", "Signature block: " + block.getSignature().toString());
-                Log.d("Signature", "Signature block: " + block.getSignature().size());
-                new TrustChainDBHelper(this).replaceInDB(block);
+                // full block?
+                new TrustChainDBHelper(this).insertInDB(block);
             }
 
 
