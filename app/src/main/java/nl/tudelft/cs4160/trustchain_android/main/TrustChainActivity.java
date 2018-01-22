@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.ConnectivityManager;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
@@ -29,6 +30,7 @@ import com.google.protobuf.ByteString;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.lang.ref.WeakReference;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.security.KeyPair;
@@ -176,11 +178,8 @@ public class TrustChainActivity extends AppCompatActivity implements CompoundBut
      * Initialize the recycle view that will show the mutual blocks of the user and the other peer.
      */
     private void initializeMutualBlockRecycleView() {
-        ArrayList<MutualBlockItem> mutualBlockList = findMutualBlocks();
-        mLayoutManager = new LinearLayoutManager(this);
-        mAdapter = new MutualBlockAdapter(this, mutualBlockList);
-        mRecyclerView.setLayoutManager(mLayoutManager);
-        mRecyclerView.setAdapter(mAdapter);
+        FindMutualBlocksTask findMutualBlocksTask = new FindMutualBlocksTask(this);
+        findMutualBlocksTask.execute();
     }
 
     /**
@@ -227,6 +226,68 @@ public class TrustChainActivity extends AppCompatActivity implements CompoundBut
         }
         return mutualBlocks;
     }
+
+    private static class FindMutualBlocksTask extends AsyncTask<Void, Void, ArrayList<MutualBlockItem>> {
+        private WeakReference<TrustChainActivity> activityReference;
+
+        FindMutualBlocksTask(TrustChainActivity context) {
+            activityReference = new WeakReference<>(context);
+        }
+
+        protected ArrayList<MutualBlockItem> doInBackground(Void... params) {
+            TrustChainActivity activity = activityReference.get();
+            if (activity == null) return null;
+
+            ArrayList<MutualBlockItem> mutualBlocks = new ArrayList<>();
+            int validationResultStatus = ValidationResult.NO_INFO;
+            KeyPair keyPair = Key.loadKeys(activity);
+            String myPublicKeyString = ByteArrayConverter.bytesToHexString(keyPair.getPublic().getEncoded());
+            String peerPublicKeyString = activity.inboxItemOtherPeer.getPublicKey();
+
+            for (MessageProto.TrustChainBlock block : activity.DBHelper.getBlocks(keyPair.getPublic().getEncoded(), true)) {
+                String linkedPublicKey = ByteArrayConverter.bytesToHexString(block.getLinkPublicKey().toByteArray());
+                String publicKey = ByteArrayConverter.byteStringToString(block.getPublicKey());
+                if (linkedPublicKey.equals(myPublicKeyString) && publicKey.equals(peerPublicKeyString)) {
+                    String blockStatus = "Status of Block: ";
+                    try {
+                        validationResultStatus = TrustChainBlockHelper.validate(block, activity.DBHelper).getStatus();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    Log.d("Validation: ", "validation status is: " + validationResultStatus);
+                    if (validationResultStatus == ValidationResult.VALID) {
+                        blockStatus += "Signed";
+                    } else if (validationResultStatus == ValidationResult.PARTIAL) {
+                        blockStatus += "Partial";
+                    } else if (validationResultStatus == ValidationResult.NO_INFO) {
+                        blockStatus += "No Info";
+                    } else if (validationResultStatus == ValidationResult.PARTIAL_NEXT) {
+                        blockStatus += "Partial next";
+                    } else if (validationResultStatus == ValidationResult.INVALID) {
+                        blockStatus += "Invalid";
+                    } else if (validationResultStatus == ValidationResult.PARTIAL_PREVIOUS) {
+                        blockStatus += "Partial previous";
+                    } else {
+                        blockStatus += "unknown status";
+                    }
+
+                    mutualBlocks.add(new MutualBlockItem(activity.inboxItemOtherPeer.getUserName(), block.getSequenceNumber(), block.getLinkSequenceNumber(), blockStatus, block.getTransaction().toStringUtf8(), block));
+                }
+            }
+            return mutualBlocks;
+        }
+
+        protected void onPostExecute(ArrayList<MutualBlockItem> mutualBlockList) {
+            TrustChainActivity activity = activityReference.get();
+            if (activity == null) return;
+
+            activity.mLayoutManager = new LinearLayoutManager(activity);
+            activity.mAdapter = new MutualBlockAdapter(activity, mutualBlockList);
+            activity.mRecyclerView.setLayoutManager(activity.mLayoutManager);
+            activity.mRecyclerView.setAdapter(activity.mAdapter);
+        }
+    }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

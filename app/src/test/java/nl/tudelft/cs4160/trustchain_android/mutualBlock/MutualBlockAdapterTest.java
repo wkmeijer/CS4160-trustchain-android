@@ -20,12 +20,12 @@ public class MutualBlockAdapterTest extends TestCase {
         assertEquals(0, mbA.getItemCount());
     }
 
-    @Test
-    public void testSimpleInitializationWithOneItemInList() {
-        ArrayList<MutualBlockItem> list = new ArrayList<>();
-        list.add(new MutualBlockItem("peer", 0, 0, "test", "test2"));
-        MutualBlockAdapter mbA = new MutualBlockAdapter(null, list);
-        assertEquals(1, mbA.getItemCount());
-    }
+//    @Test
+//    public void testSimpleInitializationWithOneItemInList() {
+//        ArrayList<MutualBlockItem> list = new ArrayList<>();
+//        list.add(new MutualBlockItem("peer", 0, 0, "test", "test2"));
+//        MutualBlockAdapter mbA = new MutualBlockAdapter(null, list);
+//        assertEquals(1, mbA.getItemCount());
+//    }
 
 }
