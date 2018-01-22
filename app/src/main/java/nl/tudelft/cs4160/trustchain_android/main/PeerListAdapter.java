@@ -79,7 +79,10 @@ public class PeerListAdapter extends ArrayAdapter<PeerAppToApp> {
                 holder.mStatusIndicator.setTextColor(context.getResources().getColor(R.color.colorStatusCantConnect));
             }
         }
-        holder.mDestinationAddress.setText(String.format("%s:%d", peer.getExternalAddress().toString().substring(1), peer.getPort()));
+
+        if(peer.getExternalAddress() != null) {
+            holder.mDestinationAddress.setText(String.format("%s:%d", peer.getExternalAddress().toString().substring(1), peer.getPort()));
+        }
 
         if (System.currentTimeMillis() - peer.getLastSendTime() < 200) {
             animate(holder.mSentIndicator);
@@ -131,12 +134,13 @@ public class PeerListAdapter extends ArrayAdapter<PeerAppToApp> {
         View.OnClickListener onClickListener = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                int pos = (int) v.getTag();
+               /* int pos = (int) v.getTag();
                 PeerAppToApp peer = getItem(pos);
                 Intent intent = new Intent(context, TrustChainActivity.class);
                 intent.putExtra("PeerAppToApp", peer);
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                context.startActivity(intent);
+                context.startActivity(intent);*/
+               // ToDo tmp disabled
             }
         };
         mTableLayoutConnection.setOnClickListener(onClickListener);

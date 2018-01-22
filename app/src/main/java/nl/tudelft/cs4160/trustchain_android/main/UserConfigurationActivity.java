@@ -11,23 +11,31 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.TextView;
+
+import java.security.KeyPair;
+
 import nl.tudelft.cs4160.trustchain_android.R;
 import nl.tudelft.cs4160.trustchain_android.SharedPreferences.UserNameStorage;
+import nl.tudelft.cs4160.trustchain_android.Util.Key;
+import nl.tudelft.cs4160.trustchain_android.connection.CommunicationSingleton;
 
 /**
- * Created by Boning on 12/3/2017.
+ * The user is able to set his/her own username in this class.
+ * It will be saved locally and used as identifier when looking for other peers.
  */
-
 public class UserConfigurationActivity extends AppCompatActivity {
     Context context;
 
+    /**
+     * Checks if there is already a username set in the past.
+     * If there is one, it should be stored in the preferences.
+     * Go directly to the next activity when there is one already.
+     * @param savedInstanceState
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         context = this;
-        // check if there is already a username set in the past
-        // this should be stored in the preferences
-        // if this is the case then we can directly go on to the next activity.
         if (UserNameStorage.getUserName(this) == null) {
             setContentView(R.layout.user_configuration);
             EditText userNameInput = (EditText) findViewById(R.id.username);
@@ -56,7 +64,7 @@ public class UserConfigurationActivity extends AppCompatActivity {
             Intent myIntent = new Intent(UserConfigurationActivity.this, OverviewConnectionsActivity.class);
             UserNameStorage.setUserName(context, userNameInput.getText().toString());
             myIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            UserConfigurationActivity.this.startActivity(myIntent);
+            this.startActivity(myIntent);
         } else {
             TextView userNot = (TextView) findViewById(R.id.user_notification);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {

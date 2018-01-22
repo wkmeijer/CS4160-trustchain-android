@@ -92,7 +92,7 @@ public class BluetoothActivity extends AppCompatActivity implements Communicatio
         kp = Key.loadKeys(getApplicationContext());
 
         //start listening for messages via bluetooth
-        communication = new BluetoothCommunication(dbHelper, kp, this, btAdapter);
+        communication = new BluetoothCommunication(this, dbHelper, kp, this, btAdapter);
         communication.start();
 
     }

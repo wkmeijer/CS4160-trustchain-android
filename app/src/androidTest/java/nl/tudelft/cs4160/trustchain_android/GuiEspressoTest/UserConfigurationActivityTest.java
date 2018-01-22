@@ -5,12 +5,14 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.support.test.rule.ActivityTestRule;
+import android.text.LoginFilter;
 
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 
 import nl.tudelft.cs4160.trustchain_android.R;
+import nl.tudelft.cs4160.trustchain_android.SharedPreferences.UserNameStorage;
 import nl.tudelft.cs4160.trustchain_android.main.UserConfigurationActivity;
 
 import static android.support.test.InstrumentationRegistry.getInstrumentation;
@@ -29,9 +31,7 @@ import static org.hamcrest.CoreMatchers.allOf;
  */
 
 public class UserConfigurationActivityTest {
-    private String HASH_ID = "hash-id"; // after merge:
     private String user = "New User";
-    private SharedPreferences.Editor preferencesEditor;
 
     @Rule
     public ActivityTestRule<UserConfigurationActivity> mActivityRule = new ActivityTestRule<>(
@@ -39,44 +39,38 @@ public class UserConfigurationActivityTest {
             true,
             false);
 
-    @Before
-    public void initSharedPref(){
-        Context context = getInstrumentation().getTargetContext();
-        preferencesEditor = PreferenceManager.getDefaultSharedPreferences(context).edit();
-    }
+    @Test
+    public void makeNewUsername(){
+        emptyUserNamePreferences();
+        mActivityRule.launchActivity(new Intent());
 
-//    @Test
-//    public void makeNewUsername(){
-//        emptySharedPrefs();
-//        mActivityRule.launchActivity(new Intent());
-//
-//        //enter the username
-//        onView(withId(R.id.username)).perform(replaceText(user));
-//        // press the login button
-//        onView(withId(R.id.confirm_button)).perform(click());
-//        // look whether the ID is correctly displayed in the OverviewConnections window.
-//        onView(allOf(withId(R.id.peer_id), withText(user))).check(matches(isDisplayed()));
-//    }
+        //enter the username
+        onView(withId(R.id.username)).perform(replaceText(user));
+        // press the login button
+        onView(withId(R.id.confirm_button)).perform(click());
+        // look whether the ID is correctly displayed in the OverviewConnections window.
+        onView(allOf(withId(R.id.peer_id), withText(user))).check(matches(isDisplayed()));
+    }
 
     @Test
     public void usernameAlreadyStored(){
-        fullSharedPrefs();
+        setUsernameInPref();
         mActivityRule.launchActivity(new Intent());
 
         // look whether the ID is correctly displayed in the OverviewConnections window.
         onView(allOf(withId(R.id.peer_id), withText(user))).check(matches(isDisplayed()));
     }
 
-    private void emptySharedPrefs(){
-        // Set SharedPreferences data
-        preferencesEditor.putString(HASH_ID, null);
-        preferencesEditor.commit();
+    private void emptyUserNamePreferences(){
+        // Check whether it is empty
+        // If not, put null in it
+        if(UserNameStorage.getUserName(getInstrumentation().getTargetContext()) != null) {
+            UserNameStorage.setUserName(getInstrumentation().getTargetContext(), null);
+        }
     }
 
-    private void fullSharedPrefs(){
+    private void setUsernameInPref(){
         // Set SharedPreferences data
-        preferencesEditor.putString(HASH_ID, user);
-        preferencesEditor.commit();
+        UserNameStorage.setUserName(getInstrumentation().getTargetContext(), user);
     }
-
 }

@@ -36,22 +36,17 @@ public class Key {
     public final static String DEFAULT_PUB_KEY_FILE = "pub.key";
     public final static String DEFAULT_PRIV_KEY_FILE = "priv.key";
 
-
+    /**
+     * If no key can be loaded, create a new keypair.
+     * @param context
+     * @return
+     */
     public static KeyPair ensureKeysExist(Context context) {
         KeyPair keyPair = loadKeys(context);
-
         if (keyPair == null) {
             return createAndSaveKeys(context);
         }
         return keyPair;
-    }
-
-    public static KeyPair createAndSaveKeys(Context context) {
-        KeyPair kp = Key.createNewKeyPair();
-        Key.saveKey(context, Key.DEFAULT_PUB_KEY_FILE, kp.getPublic());
-        Key.saveKey(context, Key.DEFAULT_PRIV_KEY_FILE, kp.getPrivate());
-
-        return kp;
     }
 
     /**
@@ -60,6 +55,18 @@ public class Key {
      */
     public static KeyPair createNewKeyPair() {
         return createNewKeyPair("curve25519", "ECDSA", PROVIDER, true);
+    }
+
+    /**
+     * Creates a new keypair and saves it directly under the default key files.
+     * @param context
+     * @return
+     */
+    public static KeyPair createAndSaveKeys(Context context) {
+        KeyPair kp = Key.createNewKeyPair();
+        Key.saveKey(context, Key.DEFAULT_PUB_KEY_FILE, kp.getPublic());
+        Key.saveKey(context, Key.DEFAULT_PRIV_KEY_FILE, kp.getPrivate());
+        return kp;
     }
 
     /**

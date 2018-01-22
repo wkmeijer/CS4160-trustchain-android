@@ -1,5 +1,6 @@
 package nl.tudelft.cs4160.trustchain_android.connection;
 
+import android.content.Context;
 import android.util.Log;
 
 import com.google.protobuf.ByteString;
@@ -12,14 +13,17 @@ import java.util.List;
 import java.util.Map;
 
 import nl.tudelft.cs4160.trustchain_android.Peer;
+import nl.tudelft.cs4160.trustchain_android.SharedPreferences.InboxItemStorage;
+import nl.tudelft.cs4160.trustchain_android.Util.ByteArrayConverter;
+import nl.tudelft.cs4160.trustchain_android.Util.Key;
 import nl.tudelft.cs4160.trustchain_android.block.TrustChainBlock;
 import nl.tudelft.cs4160.trustchain_android.block.ValidationResult;
 import nl.tudelft.cs4160.trustchain_android.connection.network.NetworkCommunication;
 import nl.tudelft.cs4160.trustchain_android.database.TrustChainDBHelper;
+import nl.tudelft.cs4160.trustchain_android.inbox.InboxItem;
 import nl.tudelft.cs4160.trustchain_android.main.TrustChainActivity;
 import nl.tudelft.cs4160.trustchain_android.message.MessageProto;
 
-import static nl.tudelft.cs4160.trustchain_android.Peer.bytesToHex;
 import static nl.tudelft.cs4160.trustchain_android.block.TrustChainBlock.GENESIS_SEQ;
 import static nl.tudelft.cs4160.trustchain_android.block.TrustChainBlock.UNKNOWN_SEQ;
 import static nl.tudelft.cs4160.trustchain_android.block.TrustChainBlock.createBlock;
@@ -48,13 +52,20 @@ public abstract class Communication {
 
     private CommunicationListener listener;
 
+    private Context context;
 
-    public Communication(TrustChainDBHelper dbHelper, KeyPair kp, CommunicationListener listener) {
+
+    public Communication(Context context, TrustChainDBHelper dbHelper, KeyPair kp, CommunicationListener listener) {
+        this.context = context;
         this.dbHelper = dbHelper;
         this.keyPair = kp;
         this.listener = listener;
         this.peers = new HashMap<>();
 
+    }
+
+    public void setCommunicationListener(CommunicationListener listener) {
+        this.listener = listener;
     }
 
     public CommunicationListener getListener() {
@@ -63,9 +74,10 @@ public abstract class Communication {
 
     /**
      * Send a crawl request to the peer.
-     * @param peer The peer.
+     *
+     * @param peer      The peer.
      * @param publicKey Public key of me.
-     * @param seqNum Requested sequence number.
+     * @param seqNum    Requested sequence number.
      */
     public void sendCrawlRequest(Peer peer, byte[] publicKey, int seqNum) {
         int sq = seqNum;
@@ -83,7 +95,7 @@ public abstract class Communication {
             sq = Math.max(GENESIS_SEQ, sq);
         }
 
-        Log.i(TAG, "Requesting crawl of node " + bytesToHex(publicKey) + ":" + sq);
+        Log.i(TAG, "Requesting crawl of node " + ByteArrayConverter.bytesToHexString(publicKey) + ":" + sq);
 
         MessageProto.CrawlRequest crawlRequest =
                 MessageProto.CrawlRequest.newBuilder()
@@ -94,7 +106,9 @@ public abstract class Communication {
         // send the crawl request
         MessageProto.Message message = newBuilder().setCrawlRequest(crawlRequest).build();
 
-        listener.updateLog("Sending crawl request to " + peer.getName() + "\n");
+        if(listener != null) {
+            listener.updateLog("Sending crawl request to " + peer.getName() + "\n");
+        }
         sendMessage(peer, message);
     }
 
@@ -107,7 +121,9 @@ public abstract class Communication {
     public void sendHalfBlock(Peer peer, MessageProto.TrustChainBlock block) {
         MessageProto.Message message = newBuilder().setHalfBlock(block).build();
 
-        listener.updateLog("Sending half block to  " + peer.getName() + "\n");
+        if(listener != null) {
+            listener.updateLog("Sending half block to  " + peer.getName() + "\n");
+        }
         sendMessage(peer, message);
     }
 
@@ -154,9 +170,9 @@ public abstract class Communication {
             Log.e(TAG, "signBlock: Block is not a request.");
             return;
         }
-        MessageProto.TrustChainBlock block = createBlock(null,dbHelper,
+        MessageProto.TrustChainBlock block = createBlock(null, dbHelper,
                 getMyPublicKey(),
-                linkedBlock,peer.getPublicKey());
+                linkedBlock, peer.getPublicKey());
 
         block = sign(block, keyPair.getPrivate());
 
@@ -168,7 +184,7 @@ public abstract class Communication {
             return;
         }
 
-        Log.i(TAG, "Signed block to " + bytesToHex(block.getLinkPublicKey().toByteArray()) +
+        Log.i(TAG, "Signed block to " + ByteArrayConverter.bytesToHexString(block.getLinkPublicKey().toByteArray()) +
                 ", validation result: " + validation.toString());
 
         // only send block if validated correctly
@@ -197,8 +213,8 @@ public abstract class Communication {
         Log.d("testLogs", "trans " + transaction.length);
 
         MessageProto.TrustChainBlock block =
-                createBlock(transaction,dbHelper,
-                        getMyPublicKey(),null,peer.getPublicKey());
+                createBlock(transaction, dbHelper,
+                        getMyPublicKey(), null, peer.getPublicKey());
         block = sign(block, keyPair.getPrivate());
 
         ValidationResult validation;
@@ -209,7 +225,7 @@ public abstract class Communication {
             return;
         }
 
-        Log.i(TAG, "Signed block to " + bytesToHex(block.getLinkPublicKey().toByteArray()) +
+        Log.i(TAG, "Signed block to " + ByteArrayConverter.bytesToHexString(block.getLinkPublicKey().toByteArray()) +
                 ", validation result: " + validation.toString());
 
         // only send block if validated correctly
@@ -222,7 +238,6 @@ public abstract class Communication {
             sendHalfBlock(peer, block);
         }
     }
-
 
 
     /**
@@ -245,7 +260,7 @@ public abstract class Communication {
         int sq = crawlRequest.getRequestedSequenceNumber();
 
         Log.i(TAG, "Received crawl request from peer with IP: " + peer.getIpAddress() + ":" + peer.getPort() +
-                " and public key: \n" + bytesToHex(peer.getPublicKey()) + "\n for sequence number " + sq);
+                " and public key: \n" + ByteArrayConverter.bytesToHexString(peer.getPublicKey()) + "\n for sequence number " + sq);
 
         // a negative sequence number indicates that the requesting peer wants an offset of blocks
         // starting with the last block
@@ -288,8 +303,9 @@ public abstract class Communication {
     /**
      * Process a received message. Checks if the message is a crawl request or a half block
      * and continues with the appropriate action,
+     *
      * @param message The message.
-     * @param peer From the peer.
+     * @param peer    From the peer.
      */
     public void receivedMessage(MessageProto.Message message, Peer peer) {
         Log.d("testlogs", "received message " + message.toString());
@@ -301,9 +317,13 @@ public abstract class Communication {
         if (block.getPublicKey().size() > 0 && crawlRequest.getPublicKey().size() == 0) {
             messageLog += "block received from: " + peer.getName() + "\n" + TrustChainBlock.transferDataToString(block) + "\n";
 
-            listener.updateLog("\nServer: " + messageLog);
+            if(listener != null) {
+                listener.updateLog("\nServer: " + messageLog);
+            }
             peer.setPublicKey(block.getPublicKey().toByteArray());
-            listener.connectionSuccessful(peer);
+            if(listener != null) {
+                listener.connectionSuccessful(peer);
+            }
 
             //make sure the correct port is set
             peer.setPort(NetworkCommunication.DEFAULT_PORT);
@@ -313,7 +333,10 @@ public abstract class Communication {
         // In case we received a crawlrequest
         if (block.getPublicKey().size() == 0 && crawlRequest.getPublicKey().size() > 0) {
             messageLog += "crawlrequest received from: " + peer.getName() + "\n";
-            listener.updateLog("\nServer: " + messageLog);
+
+            if(listener != null) {
+                listener.updateLog("\nServer: " + messageLog);
+            }
 
             peer.setPublicKey(crawlRequest.getPublicKey().toByteArray());
             this.receivedCrawlRequest(peer, crawlRequest);
@@ -330,7 +353,10 @@ public abstract class Communication {
      */
     public void synchronizedReceivedHalfBlock(Peer peer, MessageProto.TrustChainBlock block) {
         Log.i(TAG, "Received half block from peer with IP: " + peer.getIpAddress() + ":" + peer.getPort() +
-                " and public key: " + bytesToHex(peer.getPublicKey()));
+                " and public key: " + ByteArrayConverter.bytesToHexString(peer.getPublicKey()));
+
+        InboxItemStorage.addHalfBlock(CommunicationSingleton.getContext(), ByteArrayConverter.bytesToHexString(peer.getPublicKey()), block.getLinkSequenceNumber());
+        CommunicationSingleton.getDbHelper().insertInDB(block);
 
         addNewPublicKey(peer);
 
@@ -382,8 +408,11 @@ public abstract class Communication {
             // send a crawl request, requesting the last 5 blocks before the received halfblock (if available) of the peer
             sendCrawlRequest(peer, block.getPublicKey().toByteArray(), Math.max(GENESIS_SEQ, block.getSequenceNumber() - 5));
         } else {
-           // signBlock(peer, block);
-            listener.requestPermission(block, peer);
+            // signBlock(peer, block);
+
+            if(listener != null) {
+                listener.requestPermission(block, peer);
+            }
         }
     }
 
@@ -395,31 +424,41 @@ public abstract class Communication {
      */
     public void connectToPeer(Peer peer) {
         String identifier = peer.getIpAddress();
-        if(peer.getDevice() != null) {
+        if (peer.getDevice() != null) {
             identifier = peer.getDevice().getAddress();
         }
         Log.e(TAG, "Identifier: " + identifier);
         if (hasPublicKey(identifier)) {
-            listener.updateLog("Sending half block to known peer \n");
+
+            if(listener != null) {
+                listener.updateLog("Sending half block to known peer \n");
+            }
             peer.setPublicKey(getPublicKey(identifier));
-            listener.connectionSuccessful(peer);
+            if(listener != null) {
+                listener.connectionSuccessful(peer);
+            }
             sendLatestBlocksToPeer(peer);
-          //  try {
-           //     signBlock(TrustChainActivity.TRANSACTION_DATA.getBytes("UTF-8"), peer);
-          //  } catch (UnsupportedEncodingException e) {
-          //      e.printStackTrace();
-         //   }
+            //  try {
+            //     signBlock(TrustChainActivity.TRANSACTION_DATA.getBytes("UTF-8"), peer);
+            //  } catch (UnsupportedEncodingException e) {
+            //      e.printStackTrace();
+            //   }
         } else {
-            listener.updateLog("Unknown peer, sending crawl request \n");
-            sendCrawlRequest(peer, getMyPublicKey(),-5);
+            if(listener != null) {
+                listener.updateLog("Unknown peer, sending crawl request \n");
+            }
+            sendCrawlRequest(peer, getMyPublicKey(), -5);
         }
     }
 
     public void acceptTransaction(MessageProto.TrustChainBlock block, Peer peer) {
-             signBlock(peer, block);
+        signBlock(peer, block);
     }
 
     public byte[] getMyPublicKey() {
+        if(keyPair == null) {
+            keyPair = Key.loadKeys(this.context);
+        }
         return keyPair.getPublic().getEncoded();
     }
 
