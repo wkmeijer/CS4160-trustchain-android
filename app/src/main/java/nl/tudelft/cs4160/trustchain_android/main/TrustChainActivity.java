@@ -89,6 +89,7 @@ public class TrustChainActivity extends AppCompatActivity implements CompoundBut
     KeyPair kp;
     TrustChainDBHelper dbHelper;
 
+
     public void requestChain() {
         network = Network.getInstance(getApplicationContext());
         network.setCrawlRequestListener(this);
@@ -162,11 +163,11 @@ public class TrustChainActivity extends AppCompatActivity implements CompoundBut
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
         this.context = this;
         DBHelper = new TrustChainDBHelper(this);
         inboxItemOtherPeer = (InboxItem) getIntent().getSerializableExtra("inboxItem");
         InboxItemStorage.markHalfBlockAsRead(this, inboxItemOtherPeer);
-        setContentView(R.layout.activity_main);
         initVariables();
         init();
         initializeMutualBlockRecycleView();

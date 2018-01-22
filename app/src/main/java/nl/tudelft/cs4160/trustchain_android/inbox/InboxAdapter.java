@@ -5,6 +5,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -41,9 +42,11 @@ public class InboxAdapter extends RecyclerView.Adapter<InboxAdapter.ViewHolder> 
 
     public static class ViewHolderAddPeer extends ViewHolder {
         // each data item is just a string in this case
+        public Button mUserButton;
 
         public ViewHolderAddPeer(LinearLayout v) {
             super(v);
+            mUserButton = (Button) v.findViewById(R.id.userButton);
         }
     }
 
@@ -95,7 +98,7 @@ public class InboxAdapter extends RecyclerView.Adapter<InboxAdapter.ViewHolder> 
         // - get element from your dataset at this position
         // - replace the contents of the view with that element
         if (position == mDataset.size()) {
-            setOnClickListenerNewUser(holder);
+            setOnClickListenerNewUser((ViewHolderAddPeer)holder);
         } else {
             InboxItem inboxItem = mDataset.get(position);
             if (inboxItem != null) {
@@ -122,7 +125,7 @@ public class InboxAdapter extends RecyclerView.Adapter<InboxAdapter.ViewHolder> 
         }
     }
 
-    private void setOnClickListenerNewUser(final ViewHolder holder) {
+    private void setOnClickListenerNewUser(final ViewHolderAddPeer holder) {
         View.OnClickListener mOnClickListener = new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -131,7 +134,7 @@ public class InboxAdapter extends RecyclerView.Adapter<InboxAdapter.ViewHolder> 
                 i.finish();
             }
         };
-        holder.mWrapperLinearLayout.setOnClickListener(mOnClickListener);
+        holder.mUserButton.setOnClickListener(mOnClickListener);
     }
 
     private void setOnClickListenerInboxItem(final ViewHolder holder, final int position) {
