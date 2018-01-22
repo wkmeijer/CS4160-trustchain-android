@@ -57,6 +57,7 @@ import nl.tudelft.cs4160.trustchain_android.database.TrustChainDBHelper;
 import nl.tudelft.cs4160.trustchain_android.inbox.InboxItem;
 import nl.tudelft.cs4160.trustchain_android.message.MessageProto;
 
+import static nl.tudelft.cs4160.trustchain_android.Util.ByteArrayConverter.byteStringToString;
 import static nl.tudelft.cs4160.trustchain_android.block.TrustChainBlockHelper.GENESIS_SEQ;
 import static nl.tudelft.cs4160.trustchain_android.block.TrustChainBlockHelper.createBlock;
 import static nl.tudelft.cs4160.trustchain_android.block.TrustChainBlockHelper.sign;
@@ -190,11 +191,15 @@ public class TrustChainActivity extends AppCompatActivity implements CompoundBut
     private ArrayList<MutualBlockItem> findMutualBlocks() {
         ArrayList<MutualBlockItem> mutualBlocks = new ArrayList<>();
         int validationResultStatus = ValidationResult.NO_INFO;
-        for (MessageProto.TrustChainBlock block : DBHelper.getAllBlocks()) {
-            if (ByteArrayConverter.bytesToHexString(block.getLinkPublicKey().toByteArray()).equals(inboxItemOtherPeer.getPublicKey())
-                    || ByteArrayConverter.byteStringToString(block.getPublicKey()).equals(inboxItemOtherPeer.getPublicKey())) {
-                String blockStatus = "Status of Block: ";
+        KeyPair keyPair = Key.loadKeys(this);
+        String myPublicKeyString = ByteArrayConverter.bytesToHexString(keyPair.getPublic().getEncoded());
+        String peerPublicKeyString = inboxItemOtherPeer.getPublicKey();
 
+        for (MessageProto.TrustChainBlock block : DBHelper.getBlocks(keyPair.getPublic().getEncoded(), true)) {
+            String linkedPublicKey = ByteArrayConverter.bytesToHexString(block.getLinkPublicKey().toByteArray());
+            String publicKey = ByteArrayConverter.byteStringToString(block.getPublicKey());
+            if (linkedPublicKey.equals(myPublicKeyString) && publicKey.equals(peerPublicKeyString)) {
+                String blockStatus = "Status of Block: ";
                 try {
                     validationResultStatus = TrustChainBlockHelper.validate(block, DBHelper).getStatus();
                 } catch (Exception e) {

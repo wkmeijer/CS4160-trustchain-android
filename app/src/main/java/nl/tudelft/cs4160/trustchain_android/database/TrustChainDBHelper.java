@@ -322,11 +322,19 @@ public class TrustChainDBHelper extends SQLiteOpenHelper {
         return res;
     }
 
-    public List<MessageProto.TrustChainBlock> getBlocks(byte[] publicKey) {
+    /**
+     *  Filter blocks on publickeyc
+     * @param publicKey block with this key are returned
+     * @param inLinked if true and the public key is in the linkedKey also return block
+     * @return
+     */
+    public List<MessageProto.TrustChainBlock> getBlocks(byte[] publicKey,boolean inLinked) {
         List<MessageProto.TrustChainBlock> allBlocks = getAllBlocks();
         List<MessageProto.TrustChainBlock> res = new ArrayList<>();
         for (MessageProto.TrustChainBlock block : allBlocks) {
             if (Arrays.equals(publicKey, block.getPublicKey().toByteArray())) {
+                res.add(block);
+            }else if(inLinked && Arrays.equals(publicKey, block.getLinkPublicKey().toByteArray()) ){
                 res.add(block);
             }
         }
