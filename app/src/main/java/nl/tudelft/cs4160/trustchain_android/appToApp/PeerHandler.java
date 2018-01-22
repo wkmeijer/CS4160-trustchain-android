@@ -66,6 +66,14 @@ public class PeerHandler {
         }
     }
 
+    synchronized public void removeDeadPeers() {
+        for (PeerAppToApp peer : new ArrayList<>(peerList)) {
+            if (peer.canBeRemoved()) {
+                peerList.remove(peer);
+            }
+        }
+    }
+
     public void add(PeerAppToApp p) {
         this.peerList.add(p);
     }

@@ -448,6 +448,7 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
             @Override
             public void run() {
                 peerHandler.splitPeerList();
+                peerHandler.removeDeadPeers();
                 incomingPeerAdapter.notifyDataSetChanged();
                 outgoingPeerAdapter.notifyDataSetChanged();
             }
