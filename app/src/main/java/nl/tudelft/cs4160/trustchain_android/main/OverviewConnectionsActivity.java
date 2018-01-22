@@ -61,6 +61,8 @@ import nl.tudelft.cs4160.trustchain_android.inbox.InboxItem;
 import nl.tudelft.cs4160.trustchain_android.message.MessageProto;
 
 import static nl.tudelft.cs4160.trustchain_android.block.TrustChainBlockHelper.GENESIS_SEQ;
+import static nl.tudelft.cs4160.trustchain_android.block.TrustChainBlockHelper.createBlock;
+import static nl.tudelft.cs4160.trustchain_android.block.TrustChainBlockHelper.sign;
 
 public class OverviewConnectionsActivity extends AppCompatActivity implements NetworkCommunicationListener, PeerListener {
 
@@ -431,10 +433,16 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
                 InboxItemStorage.addHalfBlock(this, ByteArrayConverter.byteStringToString(block.getPublicKey()), block.getLinkSequenceNumber());
                 new TrustChainDBHelper(this).replaceInDB(block);
                 // replace instead of add in order to always have the latest block appears as the next in line.
-                //                new TrustChainDBHelper(this).insertInDB(block);
+                // new TrustChainDBHelper(this).insertInDB(block);
             } else {
-                // full block?
-                new TrustChainDBHelper(this).insertInDB(block);
+                // Automatically sign again in order to end up in the chain when a full block is send.
+                KeyPair keyPair = Key.loadKeys(this);
+                TrustChainDBHelper DBHelper = new TrustChainDBHelper(this);
+                MessageProto.TrustChainBlock newBlock = createBlock(block.getTransaction().toByteArray(), DBHelper,
+                        keyPair.getPublic().getEncoded(),
+                        block, block.getPublicKey().toByteArray());
+                final MessageProto.TrustChainBlock signedBlock = sign(newBlock, keyPair.getPrivate());
+                DBHelper.replaceInDB(signedBlock);
             }
 
 
