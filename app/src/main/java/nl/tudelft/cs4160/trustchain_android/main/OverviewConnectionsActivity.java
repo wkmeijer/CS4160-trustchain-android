@@ -21,6 +21,8 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.google.protobuf.ByteString;
+
 import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.net.InetAddress;
@@ -49,6 +51,7 @@ import nl.tudelft.cs4160.trustchain_android.appToApp.PeerAppToApp;
 import nl.tudelft.cs4160.trustchain_android.appToApp.PeerHandler;
 import nl.tudelft.cs4160.trustchain_android.appToApp.connection.PeerListener;
 import nl.tudelft.cs4160.trustchain_android.appToApp.connection.messages.BlockMessage;
+import nl.tudelft.cs4160.trustchain_android.appToApp.connection.messages.CrawlRequest;
 import nl.tudelft.cs4160.trustchain_android.appToApp.connection.messages.IntroductionRequest;
 import nl.tudelft.cs4160.trustchain_android.appToApp.connection.messages.IntroductionResponse;
 import nl.tudelft.cs4160.trustchain_android.appToApp.connection.messages.Message;
@@ -57,7 +60,6 @@ import nl.tudelft.cs4160.trustchain_android.appToApp.connection.messages.Punctur
 import nl.tudelft.cs4160.trustchain_android.appToApp.connection.messages.PunctureRequest;
 import nl.tudelft.cs4160.trustchain_android.block.TrustChainBlock;
 import nl.tudelft.cs4160.trustchain_android.chainExplorer.ChainExplorerActivity;
-import nl.tudelft.cs4160.trustchain_android.connection.CommunicationSingleton;
 import nl.tudelft.cs4160.trustchain_android.database.TrustChainDBHelper;
 import nl.tudelft.cs4160.trustchain_android.inbox.InboxActivity;
 import nl.tudelft.cs4160.trustchain_android.inbox.InboxItem;
@@ -67,7 +69,7 @@ import static nl.tudelft.cs4160.trustchain_android.block.TrustChainBlock.GENESIS
 
 public class OverviewConnectionsActivity extends AppCompatActivity implements NetworkCommunicationListener, PeerListener {
 
-    public static String CONNECTABLE_ADDRESS = "130.161.211.254";
+    public static String CONNECTABLE_ADDRESS = "145.94.185.40";
     public final static int DEFAULT_PORT = 1873;
     private static final int BUFFER_SIZE = 65536;
     private PeerListAdapter incomingPeerAdapter;
@@ -95,9 +97,7 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
         if (savedInstanceState != null) {
             updatePeerLists();
         }
-        CommunicationSingleton.initContextAndListener(getApplicationContext(), null);
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -428,15 +428,28 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
     @Override
     public void handleBlockMessageRequest(PeerAppToApp peer, BlockMessage message) throws IOException, MessageException {
         MessageProto.Message msg = message.getMessageProto();
-        if (msg.getCrawlRequest().getPublicKey().size() == 0) {
+        if(msg.getCrawlRequest().getPublicKey().size() == 0){
             MessageProto.TrustChainBlock block = msg.getHalfBlock();
             //add peer to inbox if needed
             InboxItem i = new InboxItem(peer.getPeerId(), new ArrayList<Integer>(), peer.getAddress().getHostString(), ByteArrayConverter.byteStringToString(block.getPublicKey()), peer.getPort());
             InboxItemStorage.addInboxItem(this, i);
-            InboxItemStorage.addHalfBlock(CommunicationSingleton.getContext(), ByteArrayConverter.byteStringToString(block.getPublicKey()), block.getLinkSequenceNumber());
-            CommunicationSingleton.getDbHelper().insertInDB(block);
-            Log.d("testTheStacks", block.toString());
+            InboxItemStorage.addHalfBlock(this, ByteArrayConverter.byteStringToString(block.getPublicKey()), block.getLinkSequenceNumber());
+            if(dbHelper.getBlock(msg.getHalfBlock().getPublicKey().toByteArray(), msg.getHalfBlock().getSequenceNumber()) == null) {
+                dbHelper.insertInDB(block);
+                Log.d("BCrawlTest", block.toString());
+            }
+            Log.d("BoningTest", "Block added: " + block.toString());
         }
+    }
+
+    @Override
+    public void handleCrawlRequest(PeerAppToApp peer, CrawlRequest request) throws IOException, MessageException {
+        //ToDo for future application sending the entire chain is a bit too much
+        for (MessageProto.TrustChainBlock block : dbHelper.getAllBlocks()) {
+            network.sendBlockMessage(peer, block, false);
+        }
+
+
     }
 
     /**
@@ -493,28 +506,6 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
     public void updateConnectionType(int connectionType, String typename, String subtypename) {
         String connectionTypeStr = typename + " " + subtypename;
         ((TextView) findViewById(R.id.connection_type)).setText(connectionTypeStr);
-    }
-
-    @Override
-    public void updateLog(final String msg) {
-        //just to be sure run it on the ui thread
-        //this is not necessary when this function is called from a AsyncTask
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                ((TextView) findViewById(R.id.status)).append(msg);
-            }
-        });
-    }
-
-    @Override
-    public void connectionSuccessful(byte[] publicKey) {
-
-    }
-
-    @Override
-    public void requestPermission(final MessageProto.TrustChainBlock block, final Peer peer) {
-
     }
 
     @Override

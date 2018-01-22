@@ -87,10 +87,11 @@ public class ChainExplorerActivity extends AppCompatActivity {
         KeyPair kp = Key.loadKeys(getApplicationContext());
         byte[] publicKey;
         if (getIntent().hasExtra("publicKey")) {
-            publicKey = getIntent().getByteArrayExtra("publicKey");
+            publicKey = ByteArrayConverter.hexStringToByteArray(getIntent().getStringExtra("publicKey"));
         } else {
             publicKey = kp.getPublic().getEncoded();
         }
+        String p1 = ByteArrayConverter.bytesToHexString(publicKey);
         try {
             List<MessageProto.TrustChainBlock> blocks = dbHelper.getBlocks(publicKey);
             if(blocks.size() > 0) {

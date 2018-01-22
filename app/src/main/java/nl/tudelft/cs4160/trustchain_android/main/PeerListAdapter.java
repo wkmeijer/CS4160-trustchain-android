@@ -169,5 +169,4 @@ public class PeerListAdapter extends ArrayAdapter<PeerAppToApp> {
         };
         mTableLayoutConnection.setOnClickListener(onClickListener);
     }
-
 }
