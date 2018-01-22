@@ -17,7 +17,7 @@ import nl.tudelft.cs4160.trustchain_android.appToApp.connection.WanVote;
  */
 
 public class PeerHandler {
-    private ArrayList<PeerAppToApp> peerList;
+    private volatile ArrayList<PeerAppToApp> peerList;
     private List<PeerAppToApp> incomingList = new ArrayList<>();
     private List<PeerAppToApp> outgoingList = new ArrayList<>();
     private PeerListener peerListener;
