@@ -431,7 +431,6 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
         // make sure it is not a crawl request but a block request
         if (msg.getCrawlRequest().getPublicKey().size() == 0) {
             MessageProto.TrustChainBlock block = msg.getHalfBlock();
-            InboxItemStorage.addHalfBlock(this, ByteArrayConverter.byteStringToString(block.getPublicKey()), block.getLinkSequenceNumber());
             dbHelper.replaceInDB(block);
         }
     }
