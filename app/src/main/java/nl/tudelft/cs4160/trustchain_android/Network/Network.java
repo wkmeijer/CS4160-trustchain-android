@@ -266,8 +266,8 @@ public class Network {
                         break;
                     case Message.BLOCK_MESSAGE_ID:
                         BlockMessage blockMessage = (BlockMessage) message;
+                        addPeerToInbox(pubKey, address, context, peerId);
                         if (blockMessage.isNewBlock()) {
-                            addPeerToInbox(pubKey, address, context, peerId);
                             networkCommunicationListener.handleBlockMessageRequest(peer, blockMessage);
                         }else{
                             if(crawlRequestListener != null) {
