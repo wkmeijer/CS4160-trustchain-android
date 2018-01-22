@@ -2,12 +2,10 @@ package nl.tudelft.cs4160.trustchain_android.main;
 
 import android.app.ActivityManager;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -30,42 +28,25 @@ import com.google.protobuf.ByteString;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.InetAddress;
-import java.net.InetSocketAddress;
 import java.net.NetworkInterface;
-import java.nio.channels.DatagramChannel;
 import java.security.KeyPair;
 import java.security.PublicKey;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
 import nl.tudelft.cs4160.trustchain_android.Network.CrawlRequestListener;
 import nl.tudelft.cs4160.trustchain_android.Network.Network;
-import nl.tudelft.cs4160.trustchain_android.Network.NetworkCommunicationListener;
-import nl.tudelft.cs4160.trustchain_android.Peer;
 import nl.tudelft.cs4160.trustchain_android.R;
 import nl.tudelft.cs4160.trustchain_android.SharedPreferences.InboxItemStorage;
-import nl.tudelft.cs4160.trustchain_android.SharedPreferences.PubKeyAndAddressPairStorage;
-import nl.tudelft.cs4160.trustchain_android.SharedPreferences.SharedPreferencesStorage;
 import nl.tudelft.cs4160.trustchain_android.Util.ByteArrayConverter;
 
 import nl.tudelft.cs4160.trustchain_android.Util.Key;
 import nl.tudelft.cs4160.trustchain_android.appToApp.PeerAppToApp;
-import nl.tudelft.cs4160.trustchain_android.appToApp.PeerHandler;
 import nl.tudelft.cs4160.trustchain_android.appToApp.connection.messages.BlockMessage;
-import nl.tudelft.cs4160.trustchain_android.appToApp.connection.messages.CrawlRequest;
-import nl.tudelft.cs4160.trustchain_android.appToApp.connection.messages.IntroductionRequest;
-import nl.tudelft.cs4160.trustchain_android.appToApp.connection.messages.IntroductionResponse;
-import nl.tudelft.cs4160.trustchain_android.appToApp.connection.messages.Message;
 import nl.tudelft.cs4160.trustchain_android.appToApp.connection.messages.MessageException;
-import nl.tudelft.cs4160.trustchain_android.appToApp.connection.messages.Puncture;
-import nl.tudelft.cs4160.trustchain_android.appToApp.connection.messages.PunctureRequest;
 import nl.tudelft.cs4160.trustchain_android.block.TrustChainBlock;
 import nl.tudelft.cs4160.trustchain_android.block.ValidationResult;
-import nl.tudelft.cs4160.trustchain_android.chainExplorer.ChainExplorerAdapter;
-import nl.tudelft.cs4160.trustchain_android.connection.CommunicationListener;
-import nl.tudelft.cs4160.trustchain_android.connection.CommunicationSingleton;
 import nl.tudelft.cs4160.trustchain_android.chainExplorer.ChainExplorerActivity;
 
 import nl.tudelft.cs4160.trustchain_android.database.TrustChainDBHelper;
@@ -75,7 +56,7 @@ import nl.tudelft.cs4160.trustchain_android.message.MessageProto;
 import static nl.tudelft.cs4160.trustchain_android.block.TrustChainBlock.GENESIS_SEQ;
 import static nl.tudelft.cs4160.trustchain_android.block.TrustChainBlock.createBlock;
 
-public class TrustChainActivity extends AppCompatActivity implements CompoundButton.OnCheckedChangeListener, CommunicationListener, CrawlRequestListener {
+public class TrustChainActivity extends AppCompatActivity implements CompoundButton.OnCheckedChangeListener, CrawlRequestListener {
 
     public final static int DEFAULT_PORT = 1873;
     private final static String TAG = TrustChainActivity.class.toString();
@@ -98,6 +79,7 @@ public class TrustChainActivity extends AppCompatActivity implements CompoundBut
     LinearLayout extraInformationPanel;
     TrustChainActivity thisActivity;
     KeyPair kp;
+    TrustChainDBHelper dbHelper;
 
     /**
      * Listener for the connection button.
@@ -119,7 +101,7 @@ public class TrustChainActivity extends AppCompatActivity implements CompoundBut
         Log.d("testLogs", "onClickSend");
         PublicKey publicKey = Key.loadKeys(this).getPublic();
         byte[] transactionData = messageEditText.getText().toString().getBytes("UTF-8");
-        final MessageProto.TrustChainBlock block = createBlock(transactionData, CommunicationSingleton.getDbHelper(), publicKey.getEncoded(), null, ByteArrayConverter.hexStringToByteArray(inboxItemOtherPeer.getPublicKey()));
+        final MessageProto.TrustChainBlock block = createBlock(transactionData, dbHelper, publicKey.getEncoded(), null, ByteArrayConverter.hexStringToByteArray(inboxItemOtherPeer.getPublicKey()));
         TrustChainBlock.sign(block, Key.loadKeys(getApplicationContext()).getPrivate());
         new Thread(new Runnable() {
             @Override
@@ -140,7 +122,7 @@ public class TrustChainActivity extends AppCompatActivity implements CompoundBut
         network.updateConnectionType((ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE));
 
         int sq = -5;
-        MessageProto.TrustChainBlock block = CommunicationSingleton.getDbHelper().getBlock(inboxItemOtherPeer.getPublicKey().getBytes(), CommunicationSingleton.getDbHelper().getMaxSeqNum(inboxItemOtherPeer.getPublicKey().getBytes()));
+        MessageProto.TrustChainBlock block = dbHelper.getBlock(inboxItemOtherPeer.getPublicKey().getBytes(), dbHelper.getMaxSeqNum(inboxItemOtherPeer.getPublicKey().getBytes()));
         if (block != null) {
             sq = block.getSequenceNumber();
         } else {
@@ -214,7 +196,6 @@ public class TrustChainActivity extends AppCompatActivity implements CompoundBut
         initVariables();
         init();
         initializeMutualBlockRecycleView();
-        CommunicationSingleton.initContextAndListener(getApplicationContext(), null);
         requestChain();
     }
 
@@ -222,7 +203,7 @@ public class TrustChainActivity extends AppCompatActivity implements CompoundBut
      * Initialize the recycle view that will show the mutual blocks of the user and the other peer.
      */
     private void initializeMutualBlockRecycleView() {
-        ArrayList<MutualBlockItem> mutualBlockList = findMutualBlocks(CommunicationSingleton.getDbHelper());
+        ArrayList<MutualBlockItem> mutualBlockList = findMutualBlocks(dbHelper);
         mLayoutManager = new LinearLayoutManager(this);
         mAdapter = new MutualBlockAdapter(this, mutualBlockList);
         mRecyclerView.setLayoutManager(mLayoutManager);
@@ -309,6 +290,8 @@ public class TrustChainActivity extends AppCompatActivity implements CompoundBut
         switchDeveloperMode.setOnCheckedChangeListener(this);
         editTextDestinationIP = (EditText) findViewById(R.id.destination_IP);
         editTextDestinationPort = (EditText) findViewById(R.id.destination_port);
+
+        dbHelper = new TrustChainDBHelper(this);
     }
 
     private void init() {
@@ -380,63 +363,6 @@ public class TrustChainActivity extends AppCompatActivity implements CompoundBut
         return null;
     }
 
-
-    @Override
-    public void updateLog(final String msg) {
-        //just to be sure run it on the ui thread
-        //this is not necessary when this function is called from a AsyncTask
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                TextView statusText = (TextView) findViewById(R.id.status);
-                statusText.append(msg);
-            }
-        });
-    }
-
-    @Override
-    public void requestPermission(final MessageProto.TrustChainBlock block, final Peer peer) {
-        //just to be sure run it on the ui thread
-        //this is not necessary when this function is called from a AsyncTask
-        final TrustChainActivity trustChainActivity = this;
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                AlertDialog.Builder builder;
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    builder = new AlertDialog.Builder(context, android.R.style.Theme_Material_Dialog_Alert);
-                } else {
-                    builder = new AlertDialog.Builder(context);
-                }
-                try {
-                    builder.setMessage("Do you want to sign Block[ " + block.getTransaction().toString("UTF-8") + " ] from " + peer.getName() + "?")
-                            .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int id) {
-                                    //CommunicationSingleton.getCommunication().acceptTransaction(block, peer);
-                                }
-                            })
-                            .setNegativeButton("No", new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int id) {
-                                    // do nothing?
-                                }
-                            });
-                    builder.create();
-                    builder.show();
-                } catch (UnsupportedEncodingException e) {
-                    e.printStackTrace();
-                }
-            }
-        });
-    }
-
-    @Override
-    public void connectionSuccessful(byte[] publicKey) {
-//        if (this.peer != null && publicKey != null) {
-//            this.peer.setPublicKey(publicKey);
-//        }
-        enableMessage();
-    }
-
     @Override
     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
         developerMode = isChecked;
@@ -452,14 +378,9 @@ public class TrustChainActivity extends AppCompatActivity implements CompoundBut
     @Override
     public void handleCrawlRequestBlockMessageRequest(PeerAppToApp peer, BlockMessage message) throws IOException, MessageException {
         MessageProto.Message msg = message.getMessageProto();
-        Log.d("BCrawlTest", "Block messages received");
         MessageProto.TrustChainBlock block = msg.getHalfBlock();
-
-        String p1 = ByteArrayConverter.byteStringToString(msg.getHalfBlock().getPublicKey());
-        String p2 = ByteArrayConverter.byteStringToString(msg.getHalfBlock().getLinkPublicKey());
-        if (CommunicationSingleton.getDbHelper().getBlock(msg.getHalfBlock().getPublicKey().toByteArray(), msg.getHalfBlock().getSequenceNumber()) == null) {
-            CommunicationSingleton.getDbHelper().insertInDB(block);
-            Log.d("BCrawlTest", "INSERTED " + block.toString());
+        if (dbHelper.getBlock(msg.getHalfBlock().getPublicKey().toByteArray(), msg.getHalfBlock().getSequenceNumber()) == null) {
+            dbHelper.insertInDB(block);
         }
     }
 

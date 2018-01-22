@@ -1,27 +1,16 @@
 package nl.tudelft.cs4160.trustchain_android.appToApp;
 
-import android.os.AsyncTask;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
 
-import java.lang.ref.WeakReference;
-import java.lang.reflect.Array;
-import java.net.Inet4Address;
-import java.net.InetAddress;
 import java.net.InetSocketAddress;
-import java.net.NetworkInterface;
-import java.net.SocketException;
 import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.List;
 import java.util.Random;
 
-import nl.tudelft.cs4160.trustchain_android.SharedPreferences.UserNameStorage;
 import nl.tudelft.cs4160.trustchain_android.appToApp.connection.PeerListener;
 import nl.tudelft.cs4160.trustchain_android.appToApp.connection.WanVote;
-import nl.tudelft.cs4160.trustchain_android.main.OverviewConnectionsActivity;
-import nl.tudelft.cs4160.trustchain_android.main.PeerListAdapter;
 
 /**
  * Created by timbu on 02/12/2017.

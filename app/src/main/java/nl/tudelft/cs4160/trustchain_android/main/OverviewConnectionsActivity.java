@@ -60,7 +60,6 @@ import nl.tudelft.cs4160.trustchain_android.appToApp.connection.messages.Punctur
 import nl.tudelft.cs4160.trustchain_android.appToApp.connection.messages.PunctureRequest;
 import nl.tudelft.cs4160.trustchain_android.block.TrustChainBlock;
 import nl.tudelft.cs4160.trustchain_android.chainExplorer.ChainExplorerActivity;
-import nl.tudelft.cs4160.trustchain_android.connection.CommunicationSingleton;
 import nl.tudelft.cs4160.trustchain_android.database.TrustChainDBHelper;
 import nl.tudelft.cs4160.trustchain_android.inbox.InboxActivity;
 import nl.tudelft.cs4160.trustchain_android.inbox.InboxItem;
@@ -97,7 +96,6 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
         if (savedInstanceState != null) {
             updatePeerLists();
         }
-        CommunicationSingleton.initContextAndListener(getApplicationContext(), null);
     }
 
     @Override
@@ -434,9 +432,9 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
             //add peer to inbox if needed
             InboxItem i = new InboxItem(peer.getPeerId(), new ArrayList<Integer>(), peer.getAddress().getHostString(), ByteArrayConverter.byteStringToString(block.getPublicKey()), peer.getPort());
             InboxItemStorage.addInboxItem(this, i);
-            InboxItemStorage.addHalfBlock(CommunicationSingleton.getContext(), ByteArrayConverter.byteStringToString(block.getPublicKey()), block.getLinkSequenceNumber());
-            if(CommunicationSingleton.getDbHelper().getBlock(msg.getHalfBlock().getPublicKey().toByteArray(), msg.getHalfBlock().getSequenceNumber()) == null) {
-                CommunicationSingleton.getDbHelper().insertInDB(block);
+            InboxItemStorage.addHalfBlock(this, ByteArrayConverter.byteStringToString(block.getPublicKey()), block.getLinkSequenceNumber());
+            if(dbHelper.getBlock(msg.getHalfBlock().getPublicKey().toByteArray(), msg.getHalfBlock().getSequenceNumber()) == null) {
+                dbHelper.insertInDB(block);
                 Log.d("BCrawlTest", block.toString());
             }
             Log.d("BoningTest", "Block added: " + block.toString());
@@ -445,29 +443,7 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
 
     @Override
     public void handleCrawlRequest(PeerAppToApp peer, CrawlRequest request) throws IOException, MessageException {
-        Log.d("BCrawlTest", "handling the crawl request");
-/*
-        MessageProto.CrawlRequest req = request.getCrawlRequest();
-        final KeyPair kp = Key.loadKeys(this);
-            int sq = req.getRequestedSequenceNumber();
-            Log.d("BCrawlTest", "In if statement");
-            // a negative sequence number indicates that the requesting peer wants an offset of blocks
-            // starting with the last block
-            if (sq < 0) {
-                MessageProto.TrustChainBlock lastBlock = dbHelper.getLatestBlock(kp.getPublic().getEncoded());
-
-                if (lastBlock != null) {
-                    sq = Math.max(GENESIS_SEQ, lastBlock.getSequenceNumber() + sq + 1);
-                } else {
-                    sq = GENESIS_SEQ;
-                }
-            }
-            Log.d("BCrawlTest", "sq number is: " + sq);
-
-            List<MessageProto.TrustChainBlock> blockList = dbHelper.crawl(kp.getPublic().getEncoded(), sq);
-            for (MessageProto.TrustChainBlock block : blockList) {
-                network.sendBlockMessage(peer, block, false);
-            }*/
+        //ToDo for future application sending the entire chain is a bit too much
         for (MessageProto.TrustChainBlock block : dbHelper.getAllBlocks()) {
             network.sendBlockMessage(peer, block, false);
         }
@@ -528,28 +504,6 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
     public void updateConnectionType(int connectionType, String typename, String subtypename) {
         String connectionTypeStr = typename + " " + subtypename;
         ((TextView) findViewById(R.id.connection_type)).setText(connectionTypeStr);
-    }
-
-    @Override
-    public void updateLog(final String msg) {
-        //just to be sure run it on the ui thread
-        //this is not necessary when this function is called from a AsyncTask
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                ((TextView) findViewById(R.id.status)).append(msg);
-            }
-        });
-    }
-
-    @Override
-    public void connectionSuccessful(byte[] publicKey) {
-
-    }
-
-    @Override
-    public void requestPermission(final MessageProto.TrustChainBlock block, final Peer peer) {
-
     }
 
     @Override
