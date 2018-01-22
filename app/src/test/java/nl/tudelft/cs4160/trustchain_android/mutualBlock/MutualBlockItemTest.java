@@ -4,9 +4,6 @@ import junit.framework.TestCase;
 
 
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Mockito;
-import org.mockito.junit.MockitoJUnitRunner;
 
 import nl.tudelft.cs4160.trustchain_android.main.MutualBlockItem;
 import nl.tudelft.cs4160.trustchain_android.message.MessageProto;
@@ -45,12 +42,12 @@ public class MutualBlockItemTest extends TestCase {
     }
 
 
-//    @Test
-//    public void testDifferntPeerName() {
-//        MutualBlockItem m1 = new MutualBlockItem(peerName, seqNum, linkSeqNum, blockStatus, transaction, block);
-//        MutualBlockItem m2 = new MutualBlockItem(testString, seqNum, linkSeqNum, blockStatus, transaction, block);
-//        assertNotEquals(m1, m2);
-//    }
+    @Test
+    public void testDifferntPeerName() {
+        MutualBlockItem m1 = new MutualBlockItem(peerName, seqNum, linkSeqNum, blockStatus, transaction, block);
+        MutualBlockItem m2 = new MutualBlockItem(testString, seqNum, linkSeqNum, blockStatus, transaction, block);
+        assertNotEquals(m1, m2);
+    }
 
     @Test
     public void testDifferentSeqNum() {
