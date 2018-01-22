@@ -42,6 +42,7 @@ public class ChainExplorerActivity extends AppCompatActivity {
     ListView blocksList;
 
     static final String TAG = "ChainExplorerActivity";
+    private static final String TITLE = "My chain overview";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -91,11 +92,10 @@ public class ChainExplorerActivity extends AppCompatActivity {
         } else {
             publicKey = kp.getPublic().getEncoded();
         }
-        String p1 = ByteArrayConverter.bytesToHexString(publicKey);
         try {
             List<MessageProto.TrustChainBlock> blocks = dbHelper.getBlocks(publicKey);
             if(blocks.size() > 0) {
-                this.setTitle(ByteArrayConverter.bytesToHexString(blocks.get(0).getPublicKey().toByteArray()));
+                this.setTitle(TITLE);
                 adapter = new ChainExplorerAdapter(this, blocks, kp.getPublic().getEncoded());
                 blocksList.setAdapter(adapter);
             }else{
