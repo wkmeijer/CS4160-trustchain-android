@@ -269,6 +269,9 @@ public class Network {
                         addPeerToInbox(pubKey, address, context, peerId);
                         if (blockMessage.isNewBlock()) {
                             networkCommunicationListener.handleBlockMessageRequest(peer, blockMessage);
+                            if(crawlRequestListener != null) {
+                                crawlRequestListener.blockAdded(blockMessage);
+                            }
                         }else{
                             if(crawlRequestListener != null) {
                                 crawlRequestListener.handleCrawlRequestBlockMessageRequest(peer, blockMessage);

@@ -66,9 +66,9 @@ public class MutualBlockAdapter extends RecyclerView.Adapter<MutualBlockAdapter.
             Button signButton = viewHolder.signButton;
             String blockStatus = mutualBlockItem.getBlockStatus();
             TextView blockStatTv = viewHolder.blockStatTextView;
+            setOnClickListenerSignBlock(viewHolder, position);
             if (blockStatus.substring(blockStatus.lastIndexOf(':') + 1).equals(" Half block awaiting signing")){
                 blockStatTv.setText(mutualBlockItem.getBlockStatus());
-                setOnClickListenerSignBlock(viewHolder, position);
             } else if (blockStatus.substring(blockStatus.lastIndexOf(':') + 1).equals(" Full block not yet connected in chain")){
                 blockStatTv.setText(mutualBlockItem.getBlockStatus());
                 signButton.setVisibility(View.GONE);

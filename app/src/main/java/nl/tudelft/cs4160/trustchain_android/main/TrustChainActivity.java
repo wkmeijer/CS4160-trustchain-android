@@ -59,7 +59,6 @@ import nl.tudelft.cs4160.trustchain_android.database.TrustChainDBHelper;
 import nl.tudelft.cs4160.trustchain_android.inbox.InboxItem;
 import nl.tudelft.cs4160.trustchain_android.message.MessageProto;
 
-import static nl.tudelft.cs4160.trustchain_android.Util.ByteArrayConverter.byteStringToString;
 import static nl.tudelft.cs4160.trustchain_android.block.TrustChainBlockHelper.GENESIS_SEQ;
 import static nl.tudelft.cs4160.trustchain_android.block.TrustChainBlockHelper.createBlock;
 import static nl.tudelft.cs4160.trustchain_android.block.TrustChainBlockHelper.sign;
@@ -184,7 +183,6 @@ public class TrustChainActivity extends AppCompatActivity implements CompoundBut
 
     /**
      * Asynctask to find blocks that both the user and the other peer have in common.
-     *
      */
     private static class FindMutualBlocksTask extends AsyncTask<Void, Void, ArrayList<MutualBlockItem>> {
         private WeakReference<TrustChainActivity> activityReference;
@@ -237,7 +235,8 @@ public class TrustChainActivity extends AppCompatActivity implements CompoundBut
         }
 
         /**
-         * Use the produced blocklist to update the UI. 
+         * Use the produced blocklist to update the UI.
+         *
          * @param mutualBlockList
          */
         protected void onPostExecute(ArrayList<MutualBlockItem> mutualBlockList) {
@@ -501,6 +500,21 @@ public class TrustChainActivity extends AppCompatActivity implements CompoundBut
         MessageProto.TrustChainBlock block = msg.getHalfBlock();
         if (dbHelper.getBlock(msg.getHalfBlock().getPublicKey().toByteArray(), msg.getHalfBlock().getSequenceNumber()) == null) {
             dbHelper.insertInDB(block);
+        }
+    }
+
+    public void blockAdded(BlockMessage block) {
+        KeyPair keyPair = Key.loadKeys(this);
+        String myPublicKeyString = ByteArrayConverter.bytesToHexString(keyPair.getPublic().getEncoded());
+        String peerPublicKeyString = this.inboxItemOtherPeer.getPublicKey();
+        try {
+            String publicKey = ByteArrayConverter.byteStringToString(block.getMessageProto().getHalfBlock().getPublicKey());
+            String linkedPublicKey = ByteArrayConverter.byteStringToString(block.getMessageProto().getHalfBlock().getLinkPublicKey());
+            if (linkedPublicKey.equals(myPublicKeyString) && publicKey.equals(peerPublicKeyString)) {
+                initializeMutualBlockRecycleView();
+            }
+        } catch (MessageException e) {
+            e.printStackTrace();
         }
     }
 
