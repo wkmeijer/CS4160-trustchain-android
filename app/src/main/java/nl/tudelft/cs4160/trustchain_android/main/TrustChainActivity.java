@@ -181,56 +181,7 @@ public class TrustChainActivity extends AppCompatActivity implements CompoundBut
         FindMutualBlocksTask findMutualBlocksTask = new FindMutualBlocksTask(this);
         findMutualBlocksTask.execute();
     }
-
-    /**
-     * Find blocks that both the user and the other peer have in common.
-     *
-     * @return a list of mutual blocks.
-     */
-    private ArrayList<MutualBlockItem> findMutualBlocks() {
-        ArrayList<MutualBlockItem> mutualBlocks = new ArrayList<>();
-        int validationResultStatus = ValidationResult.NO_INFO;
-        KeyPair keyPair = Key.loadKeys(this);
-        String myPublicKeyString = ByteArrayConverter.bytesToHexString(keyPair.getPublic().getEncoded());
-        String peerPublicKeyString = inboxItemOtherPeer.getPublicKey();
-
-        for (MessageProto.TrustChainBlock block : DBHelper.getBlocks(keyPair.getPublic().getEncoded(), true)) {
-            String linkedPublicKey = ByteArrayConverter.bytesToHexString(block.getLinkPublicKey().toByteArray());
-            String publicKey = ByteArrayConverter.byteStringToString(block.getPublicKey());
-            if (linkedPublicKey.equals(myPublicKeyString) && publicKey.equals(peerPublicKeyString)) {
-                String blockStatus = "Status of Block: ";
-                try {
-                    validationResultStatus = TrustChainBlockHelper.validate(block, DBHelper).getStatus();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                Log.d("Validation: ", "validation status is: " + validationResultStatus);
-                if (validationResultStatus == ValidationResult.VALID) {
-                    blockStatus += "Valid block";
-                } else if (validationResultStatus == ValidationResult.PARTIAL) {
-                    blockStatus += "Partial";
-                } else if (validationResultStatus == ValidationResult.NO_INFO) {
-                    blockStatus += "No Info";
-                } else if (validationResultStatus == ValidationResult.PARTIAL_NEXT) {
-                    if( block.getLinkSequenceNumber() == 0){
-                        blockStatus += "Half block awaiting signing";
-                    } else {
-                        blockStatus += "Full block not yet connected in chain";
-                    }
-                } else if (validationResultStatus == ValidationResult.INVALID) {
-                    blockStatus += "Invalid";
-                } else if (validationResultStatus == ValidationResult.PARTIAL_PREVIOUS) {
-                    blockStatus += "Partial previous";
-                } else {
-                    blockStatus += "unknown status";
-                }
-
-                mutualBlocks.add(new MutualBlockItem(inboxItemOtherPeer.getUserName(), block.getSequenceNumber(), block.getLinkSequenceNumber(), blockStatus, block.getTransaction().toStringUtf8(), block));
-            }
-        }
-        return mutualBlocks;
-    }
-
+    
     private static class FindMutualBlocksTask extends AsyncTask<Void, Void, ArrayList<MutualBlockItem>> {
         private WeakReference<TrustChainActivity> activityReference;
 
