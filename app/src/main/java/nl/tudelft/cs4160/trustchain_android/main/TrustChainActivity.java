@@ -181,7 +181,11 @@ public class TrustChainActivity extends AppCompatActivity implements CompoundBut
         FindMutualBlocksTask findMutualBlocksTask = new FindMutualBlocksTask(this);
         findMutualBlocksTask.execute();
     }
-    
+
+    /**
+     * Asynctask to find blocks that both the user and the other peer have in common.
+     *
+     */
     private static class FindMutualBlocksTask extends AsyncTask<Void, Void, ArrayList<MutualBlockItem>> {
         private WeakReference<TrustChainActivity> activityReference;
 
@@ -232,6 +236,10 @@ public class TrustChainActivity extends AppCompatActivity implements CompoundBut
             return mutualBlocks;
         }
 
+        /**
+         * Use the produced blocklist to update the UI. 
+         * @param mutualBlockList
+         */
         protected void onPostExecute(ArrayList<MutualBlockItem> mutualBlockList) {
             TrustChainActivity activity = activityReference.get();
             if (activity == null) return;
