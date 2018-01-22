@@ -41,7 +41,6 @@ import java.util.List;
 
 import nl.tudelft.cs4160.trustchain_android.Network.CrawlRequestListener;
 import nl.tudelft.cs4160.trustchain_android.Network.Network;
-import nl.tudelft.cs4160.trustchain_android.Peer;
 import nl.tudelft.cs4160.trustchain_android.R;
 import nl.tudelft.cs4160.trustchain_android.SharedPreferences.InboxItemStorage;
 import nl.tudelft.cs4160.trustchain_android.Util.ByteArrayConverter;

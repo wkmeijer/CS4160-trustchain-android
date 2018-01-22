@@ -11,20 +11,14 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import org.w3c.dom.Text;
-
 import java.security.KeyPair;
 import java.util.ArrayList;
 
-import nl.tudelft.cs4160.trustchain_android.Peer;
 import nl.tudelft.cs4160.trustchain_android.R;
 import nl.tudelft.cs4160.trustchain_android.SharedPreferences.UserNameStorage;
 import nl.tudelft.cs4160.trustchain_android.Util.ByteArrayConverter;
 import nl.tudelft.cs4160.trustchain_android.Util.Key;
-import nl.tudelft.cs4160.trustchain_android.appToApp.PeerAppToApp;
 import nl.tudelft.cs4160.trustchain_android.color.ChainColor;
-import nl.tudelft.cs4160.trustchain_android.inbox.InboxAdapter;
-import nl.tudelft.cs4160.trustchain_android.inbox.InboxItem;
 
 /**
  * Created by clint on 12-1-2018.
