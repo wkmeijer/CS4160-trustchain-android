@@ -243,8 +243,7 @@ public class TrustChainActivity extends AppCompatActivity implements CompoundBut
         final MessageProto.TrustChainBlock signedBlock = sign(block, keyPair.getPrivate());
 
         //todo again we could do validation?
-//        DBHelper.insertInDB(block); // why would you add a signed or unsigned block originating from yourself
-        // to your own waiting for approval DB?
+        DBHelper.insertInDB(block); // See read the docs
 
         new Thread(new Runnable() {
             @Override
@@ -283,9 +282,7 @@ public class TrustChainActivity extends AppCompatActivity implements CompoundBut
 
         byte[] transactionData = messageEditText.getText().toString().getBytes("UTF-8");
         final MessageProto.TrustChainBlock block = createBlock(transactionData, DBHelper, publicKey.getEncoded(), null, ByteArrayConverter.hexStringToByteArray(inboxItemOtherPeer.getPublicKey()));
-
-
-        TrustChainBlockHelper.sign(block, Key.loadKeys(getApplicationContext()).getPrivate());
+        final MessageProto.TrustChainBlock signedBlock = TrustChainBlockHelper.sign(block, Key.loadKeys(getApplicationContext()).getPrivate());
 
 
         //TODO we could validate more safe?
@@ -307,7 +304,7 @@ public class TrustChainActivity extends AppCompatActivity implements CompoundBut
             @Override
             public void run() {
                 try {
-                    network.sendBlockMessage(inboxItemOtherPeer.getPeerAppToApp(), block);
+                    network.sendBlockMessage(inboxItemOtherPeer.getPeerAppToApp(), signedBlock);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
