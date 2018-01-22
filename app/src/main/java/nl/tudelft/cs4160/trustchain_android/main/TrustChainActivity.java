@@ -4,6 +4,7 @@ import android.app.ActivityManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.ConnectivityManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
@@ -136,6 +137,7 @@ public class TrustChainActivity extends AppCompatActivity implements CompoundBut
     public void requestChain() {
         network = Network.getInstance(getApplicationContext());
         network.setCrawlRequestListener(this);
+        network.updateConnectionType((ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE));
 
         int sq = -5;
             MessageProto.TrustChainBlock block = CommunicationSingleton.getDbHelper().getBlock(inboxItemOtherPeer.getPublicKey().getBytes(), CommunicationSingleton.getDbHelper().getMaxSeqNum(inboxItemOtherPeer.getPublicKey().getBytes()));
@@ -155,7 +157,7 @@ public class TrustChainActivity extends AppCompatActivity implements CompoundBut
             @Override
             public void run() {
                 try {
-                    Log.d("BoningTest", "Sent crawl request");
+                    Log.d("BCrawlTest", "Sent crawl request");
                     network.sendCrawlRequest(inboxItemOtherPeer.getPeerAppToApp(), crawlRequest);
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -220,6 +222,7 @@ public class TrustChainActivity extends AppCompatActivity implements CompoundBut
         initVariables();
         init();
         initializeMutualBlockRecycleView();
+        CommunicationSingleton.initContextAndListener(getApplicationContext(), null);
         requestChain();
     }
 
@@ -458,13 +461,13 @@ public class TrustChainActivity extends AppCompatActivity implements CompoundBut
     @Override
     public void handleCrawlRequestBlockMessageRequest(PeerAppToApp peer, BlockMessage message) throws IOException, MessageException {
         MessageProto.Message msg = message.getMessageProto();
-        Log.d("BoningTest", "Message received");
+        Log.d("BCrawlTest", "Block messages received");
         if(msg.getCrawlRequest().getPublicKey().size() == 0){
             MessageProto.TrustChainBlock block = msg.getHalfBlock();
             InboxItemStorage.addHalfBlock(CommunicationSingleton.getContext(), ByteArrayConverter.byteStringToString(block.getPublicKey()), block.getLinkSequenceNumber());
             if(CommunicationSingleton.getDbHelper().getBlock(msg.getHalfBlock().getPublicKey().toByteArray(), msg.getHalfBlock().getSequenceNumber()) == null) {
                 CommunicationSingleton.getDbHelper().insertInDB(block);
-                Log.d("testTheStacks", block.toString());
+                Log.d("BCrawlTest", block.toString());
             }
             Log.d("BoningTest", "Block added: " + block.toString());
         }
