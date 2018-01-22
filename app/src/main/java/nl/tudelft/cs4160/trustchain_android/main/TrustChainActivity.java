@@ -4,6 +4,7 @@ import android.app.ActivityManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.ConnectivityManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
@@ -24,50 +25,52 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.protobuf.ByteString;
+
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
-import java.nio.channels.DatagramChannel;
 import java.security.KeyPair;
 import java.security.PublicKey;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import nl.tudelft.cs4160.trustchain_android.Network.CrawlRequestListener;
 import nl.tudelft.cs4160.trustchain_android.Network.Network;
 import nl.tudelft.cs4160.trustchain_android.Peer;
 import nl.tudelft.cs4160.trustchain_android.R;
 import nl.tudelft.cs4160.trustchain_android.SharedPreferences.InboxItemStorage;
-import nl.tudelft.cs4160.trustchain_android.SharedPreferences.PubKeyAndAddressPairStorage;
-import nl.tudelft.cs4160.trustchain_android.SharedPreferences.SharedPreferencesStorage;
 import nl.tudelft.cs4160.trustchain_android.Util.ByteArrayConverter;
 
 import nl.tudelft.cs4160.trustchain_android.Util.Key;
 import nl.tudelft.cs4160.trustchain_android.block.TrustChainBlockHelper;
 import nl.tudelft.cs4160.trustchain_android.block.ValidationResult;
 import nl.tudelft.cs4160.trustchain_android.chainExplorer.ChainExplorerAdapter;
+import nl.tudelft.cs4160.trustchain_android.appToApp.PeerAppToApp;
+import nl.tudelft.cs4160.trustchain_android.appToApp.connection.messages.BlockMessage;
+import nl.tudelft.cs4160.trustchain_android.appToApp.connection.messages.MessageException;
 import nl.tudelft.cs4160.trustchain_android.chainExplorer.ChainExplorerActivity;
 
 import nl.tudelft.cs4160.trustchain_android.database.TrustChainDBHelper;
 import nl.tudelft.cs4160.trustchain_android.inbox.InboxItem;
 import nl.tudelft.cs4160.trustchain_android.message.MessageProto;
 
+import static nl.tudelft.cs4160.trustchain_android.block.TrustChainBlockHelper.GENESIS_SEQ;
 import static nl.tudelft.cs4160.trustchain_android.block.TrustChainBlockHelper.createBlock;
 import static nl.tudelft.cs4160.trustchain_android.block.TrustChainBlockHelper.sign;
 
-public class TrustChainActivity extends AppCompatActivity implements CompoundButton.OnCheckedChangeListener {
+public class TrustChainActivity extends AppCompatActivity implements CompoundButton.OnCheckedChangeListener, CrawlRequestListener {
 
     public final static int DEFAULT_PORT = 1873;
     private final static String TAG = TrustChainActivity.class.toString();
     private Context context;
-
     boolean developerMode = false;
     private RecyclerView mRecyclerView;
     private RecyclerView.Adapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
     private Network network;
-    private DatagramChannel channel;
     private InboxItem inboxItemOtherPeer;
     private TrustChainDBHelper DBHelper;
     TextView externalIPText;
@@ -81,8 +84,78 @@ public class TrustChainActivity extends AppCompatActivity implements CompoundBut
     SwitchCompat switchDeveloperMode;
     LinearLayout extraInformationPanel;
     TrustChainActivity thisActivity;
-    Peer peer;
+    KeyPair kp;
+    TrustChainDBHelper dbHelper;
 
+    public void requestChain() {
+        network = Network.getInstance(getApplicationContext());
+        network.setCrawlRequestListener(this);
+        network.updateConnectionType((ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE));
+
+        int sq = -5;
+        MessageProto.TrustChainBlock block = dbHelper.getBlock(inboxItemOtherPeer.getPublicKey().getBytes(), dbHelper.getMaxSeqNum(inboxItemOtherPeer.getPublicKey().getBytes()));
+        if (block != null) {
+            sq = block.getSequenceNumber();
+        } else {
+            sq = GENESIS_SEQ;
+        }
+
+        final MessageProto.CrawlRequest crawlRequest =
+                MessageProto.CrawlRequest.newBuilder()
+                        .setPublicKey(ByteString.copyFrom(getMyPublicKey()))
+                        .setRequestedSequenceNumber(sq)
+                        .setLimit(100).build();
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Log.d("BCrawlTest", "Sent crawl request");
+                    network.sendCrawlRequest(inboxItemOtherPeer.getPeerAppToApp(), crawlRequest);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+    }
+
+    public byte[] getMyPublicKey() {
+        if (kp == null) {
+            kp = Key.loadKeys(this);
+        }
+        return kp.getPublic().getEncoded();
+    }
+
+    /**
+     * Load all blocks which contain the peer's public key.
+     * The peer's public key is either in the communication if Trustchain blocks have been exchanged,
+     * or will else likely be in the PubkeyAndAddress storage.
+     *
+     * @param view
+     */
+    public void onClickViewChain(View view) {
+        String publicKey = null;
+
+        // Try to instantiate public key.
+        if (this.inboxItemOtherPeer.getPublicKey() != null) {
+            publicKey = this.inboxItemOtherPeer.getPublicKey();
+            if (publicKey != null) {
+                Intent intent = new Intent(context, ChainExplorerActivity.class);
+                intent.putExtra("publicKey", publicKey);
+                startActivity(intent);
+            }
+        }
+    }
+
+    private void enableMessage() {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                messageEditText.setVisibility(View.VISIBLE);
+                sendButton.setText(getResources().getString(R.string.send));
+            }
+        });
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -90,12 +163,12 @@ public class TrustChainActivity extends AppCompatActivity implements CompoundBut
         this.context = this;
         DBHelper = new TrustChainDBHelper(this);
         inboxItemOtherPeer = (InboxItem) getIntent().getSerializableExtra("inboxItem");
-        peer = new Peer(inboxItemOtherPeer.getPublicKey().getBytes(),inboxItemOtherPeer.getAddress(),inboxItemOtherPeer.getPort());
-        InboxItemStorage.markHalfBlockAsRead(this,inboxItemOtherPeer);
+        InboxItemStorage.markHalfBlockAsRead(this, inboxItemOtherPeer);
         setContentView(R.layout.activity_main);
         initVariables();
         init();
         initializeMutualBlockRecycleView();
+        requestChain();
     }
 
     /**
@@ -128,17 +201,33 @@ public class TrustChainActivity extends AppCompatActivity implements CompoundBut
                     e.printStackTrace();
                 }
                 Log.d("Validation: ", "validation status is: " + validationResultStatus);
-                if (validationResultStatus != ValidationResult.VALID) {
-                    // TODO actually if only the signature is not right yet
-                    blockStatus += "Awaiting your signing";
-                } else {
+                if (validationResultStatus == ValidationResult.VALID) {
                     blockStatus += "Signed";
+                } else if (validationResultStatus == ValidationResult.PARTIAL) {
+                    blockStatus += "Partial";
+                } else if (validationResultStatus == ValidationResult.NO_INFO) {
+                    blockStatus += "No Info";
+                } else if (validationResultStatus == ValidationResult.PARTIAL_NEXT) {
+                    blockStatus += "Partial next";
+                } else if (validationResultStatus == ValidationResult.INVALID) {
+                    blockStatus += "Invalid";
+                } else if (validationResultStatus == ValidationResult.PARTIAL_PREVIOUS) {
+                    blockStatus += "Partial previous";
+                } else {
+                    blockStatus += "unknown status";
                 }
 
                 mutualBlocks.add(new MutualBlockItem(inboxItemOtherPeer.getUserName(), block.getSequenceNumber(), block.getLinkSequenceNumber(), blockStatus, block.getTransaction().toStringUtf8(), block));
             }
         }
         return mutualBlocks;
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.trustchain_menu, menu);
+        return true;
     }
 
     /**
@@ -162,6 +251,8 @@ public class TrustChainActivity extends AppCompatActivity implements CompoundBut
         switchDeveloperMode.setOnCheckedChangeListener(this);
         editTextDestinationIP = (EditText) findViewById(R.id.destination_IP);
         editTextDestinationPort = (EditText) findViewById(R.id.destination_port);
+
+        dbHelper = new TrustChainDBHelper(this);
     }
 
     private void init() {
@@ -238,7 +329,7 @@ public class TrustChainActivity extends AppCompatActivity implements CompoundBut
         KeyPair keyPair = Key.loadKeys(this);
         MessageProto.TrustChainBlock block = createBlock(null, DBHelper,
                 keyPair.getPublic().getEncoded(),
-                linkedBlock, peer.getPublicKey());
+                linkedBlock, ByteArrayConverter.hexStringToByteArray(inboxItemOtherPeer.getPublicKey()));
 
         final MessageProto.TrustChainBlock signedBlock = sign(block, keyPair.getPrivate());
 
@@ -249,7 +340,7 @@ public class TrustChainActivity extends AppCompatActivity implements CompoundBut
             @Override
             public void run() {
                 try {
-                    network.sendBlockMessage(inboxItemOtherPeer.getPeerAppToApp(), signedBlock);
+                    network.sendBlockMessage(inboxItemOtherPeer.getPeerAppToApp(), signedBlock, true);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -287,61 +378,16 @@ public class TrustChainActivity extends AppCompatActivity implements CompoundBut
         // insert the half block in your own chain
         new TrustChainDBHelper(this).insertInDB(signedBlock);
 
-        //TODO we could validate more safe?
-        /* ValidationResult validation = null;
-        try {
-            validation = validate(block, CommunicationSingleton.getDbHelper());
-            if (validation != null && validation.getStatus() != PARTIAL_NEXT && validation.getStatus() != VALID) {
-                Log.e(TAG, "Signed block did not validate. Result: " + validation.toString() + ". Errors: "
-                        + validation.getErrors().toString());
-            } else {
-                new TrustChainDBHelper(this).insertInDB(block);
-                //send the block start the thread here and call network.sendBlockMessage
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }*/
-
         new Thread(new Runnable() {
             @Override
             public void run() {
                 try {
-                    network.sendBlockMessage(inboxItemOtherPeer.getPeerAppToApp(), signedBlock);
+                    network.sendBlockMessage(inboxItemOtherPeer.getPeerAppToApp(), signedBlock, true);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
             }
         }).start();
-    }
-
-
-    /**
-     * Load all blocks which contain the peer's public key.
-     * The peer's public key is either in the communication if Trustchain blocks have been exchanged,
-     * or will else likely be in the PubkeyAndAddress storage.
-     *
-     * @param view
-     */
-    public void onClickViewChain(View view) {
-        byte[] publicKey = null;
-
-        // Try to instantiate public key.
-        if (peer != null && peer.getIpAddress() != null) {
-            publicKey = this.inboxItemOtherPeer.getPublicKey().getBytes();
-        } else {
-            Log.d("App-To-App", "pubkey address map " + SharedPreferencesStorage.getAll(this).toString());
-
-            String pubkeyStr = PubKeyAndAddressPairStorage.getPubKeyByAddress(context, inboxItemOtherPeer.getAddress());
-            if (pubkeyStr != null) {
-                publicKey = ChainExplorerAdapter.hexStringToByteArray(pubkeyStr);
-            }
-        }
-
-        if (publicKey != null) {
-            Intent intent = new Intent(context, ChainExplorerActivity.class);
-            intent.putExtra("publicKey", publicKey);
-            startActivity(intent);
-        }
     }
 
 
@@ -396,12 +442,6 @@ public class TrustChainActivity extends AppCompatActivity implements CompoundBut
         }
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.trustchain_menu, menu);
-        return true;
-    }
 
     /**
      * Initializes the menu on the upper right corner.
@@ -424,6 +464,14 @@ public class TrustChainActivity extends AppCompatActivity implements CompoundBut
                 }
             default:
                 return true;
+        }
+    }
+
+    public void handleCrawlRequestBlockMessageRequest(PeerAppToApp peer, BlockMessage message) throws IOException, MessageException {
+        MessageProto.Message msg = message.getMessageProto();
+        MessageProto.TrustChainBlock block = msg.getHalfBlock();
+        if (dbHelper.getBlock(msg.getHalfBlock().getPublicKey().toByteArray(), msg.getHalfBlock().getSequenceNumber()) == null) {
+            dbHelper.insertInDB(block);
         }
     }
 

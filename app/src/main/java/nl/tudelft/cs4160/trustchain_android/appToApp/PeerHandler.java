@@ -1,34 +1,23 @@
 package nl.tudelft.cs4160.trustchain_android.appToApp;
 
-import android.os.AsyncTask;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
 
-import java.lang.ref.WeakReference;
-import java.lang.reflect.Array;
-import java.net.Inet4Address;
-import java.net.InetAddress;
 import java.net.InetSocketAddress;
-import java.net.NetworkInterface;
-import java.net.SocketException;
 import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.List;
 import java.util.Random;
 
-import nl.tudelft.cs4160.trustchain_android.SharedPreferences.UserNameStorage;
 import nl.tudelft.cs4160.trustchain_android.appToApp.connection.PeerListener;
 import nl.tudelft.cs4160.trustchain_android.appToApp.connection.WanVote;
-import nl.tudelft.cs4160.trustchain_android.main.OverviewConnectionsActivity;
-import nl.tudelft.cs4160.trustchain_android.main.PeerListAdapter;
 
 /**
  * Created by timbu on 02/12/2017.
  */
 
 public class PeerHandler {
-    private ArrayList<PeerAppToApp> peerList;
+    private volatile ArrayList<PeerAppToApp> peerList;
     private List<PeerAppToApp> incomingList = new ArrayList<>();
     private List<PeerAppToApp> outgoingList = new ArrayList<>();
     private PeerListener peerListener;
@@ -62,6 +51,14 @@ public class PeerHandler {
                 if (j != i && p1.getPeerId() != null && p1.getPeerId().equals(p2.getPeerId())) {
                     peerList.remove(p2);
                 }
+            }
+        }
+    }
+
+    synchronized public void removeDeadPeers() {
+        for (PeerAppToApp peer : new ArrayList<>(peerList)) {
+            if (peer.canBeRemoved()) {
+                peerList.remove(peer);
             }
         }
     }
@@ -124,11 +121,13 @@ public class PeerHandler {
         new Handler(Looper.getMainLooper()).post(new Runnable() {
             @Override
             public void run() {
-                peerList.add(peer);
-                splitPeerList();
-                peerListener.updateIncomingPeers();
-                peerListener.updateOutgoingPeers();
-                Log.d("App-To-App Log", "Added " + peer);
+                synchronized (this) {
+                    peerList.add(peer);
+                    splitPeerList();
+                    peerListener.updateIncomingPeers();
+                    peerListener.updateOutgoingPeers();
+                    Log.d("App-To-App Log", "Added " + peer);
+                }
             }
         });
         return peer;
@@ -187,7 +186,7 @@ public class PeerHandler {
      * @param incoming boolean indicator whether the inboxItem is incoming.
      * @return the resolved or create inboxItem.
      */
-    public PeerAppToApp getOrMakePeer(String id, InetSocketAddress address, boolean incoming) {
+    synchronized public PeerAppToApp getOrMakePeer(String id, InetSocketAddress address, boolean incoming) {
         if (id != null) {
             for (PeerAppToApp peer : peerList) {
                 if (id.equals(peer.getPeerId())) {

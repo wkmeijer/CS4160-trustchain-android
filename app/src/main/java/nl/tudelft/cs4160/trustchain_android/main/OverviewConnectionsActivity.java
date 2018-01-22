@@ -21,6 +21,8 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.google.protobuf.ByteString;
+
 import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.net.InetAddress;
@@ -47,6 +49,7 @@ import nl.tudelft.cs4160.trustchain_android.appToApp.PeerAppToApp;
 import nl.tudelft.cs4160.trustchain_android.appToApp.PeerHandler;
 import nl.tudelft.cs4160.trustchain_android.appToApp.connection.PeerListener;
 import nl.tudelft.cs4160.trustchain_android.appToApp.connection.messages.BlockMessage;
+import nl.tudelft.cs4160.trustchain_android.appToApp.connection.messages.CrawlRequest;
 import nl.tudelft.cs4160.trustchain_android.appToApp.connection.messages.IntroductionRequest;
 import nl.tudelft.cs4160.trustchain_android.appToApp.connection.messages.IntroductionResponse;
 import nl.tudelft.cs4160.trustchain_android.appToApp.connection.messages.Message;
@@ -66,7 +69,7 @@ import static nl.tudelft.cs4160.trustchain_android.block.TrustChainBlockHelper.s
 
 public class OverviewConnectionsActivity extends AppCompatActivity implements NetworkCommunicationListener, PeerListener {
 
-    public static String CONNECTABLE_ADDRESS = "130.161.211.254";
+    public static String CONNECTABLE_ADDRESS = "145.94.185.40";
     public final static int DEFAULT_PORT = 1873;
     private static final int BUFFER_SIZE = 65536;
     private PeerListAdapter incomingPeerAdapter;
@@ -74,6 +77,7 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
     private TrustChainDBHelper dbHelper;
     private Network network;
     private PeerHandler peerHandler;
+    private String wan = "";
 
     /**
      * Initialize views, start send and receive threads if necessary.
@@ -94,7 +98,6 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
             updatePeerLists();
         }
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -431,23 +434,30 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
             if(block.getLinkSequenceNumber() == 0){
                 // half block?
                 InboxItemStorage.addHalfBlock(this, ByteArrayConverter.byteStringToString(block.getPublicKey()), block.getLinkSequenceNumber());
-                new TrustChainDBHelper(this).replaceInDB(block);
+                dbHelper.replaceInDB(block);
                 // replace instead of add in order to always have the latest block appears as the next in line.
                 // new TrustChainDBHelper(this).insertInDB(block);
             } else {
                 // Automatically sign again in order to end up in the chain when a full block is send.
                 KeyPair keyPair = Key.loadKeys(this);
-                TrustChainDBHelper DBHelper = new TrustChainDBHelper(this);
-                MessageProto.TrustChainBlock newBlock = createBlock(block.getTransaction().toByteArray(), DBHelper,
+                MessageProto.TrustChainBlock newBlock = createBlock(block.getTransaction().toByteArray(), dbHelper,
                         keyPair.getPublic().getEncoded(),
                         block, block.getPublicKey().toByteArray());
                 final MessageProto.TrustChainBlock signedBlock = sign(newBlock, keyPair.getPrivate());
-                DBHelper.replaceInDB(signedBlock);
+                dbHelper.replaceInDB(signedBlock);
             }
 
-
         }
-        //TODO whole block?
+    }
+
+    @Override
+    public void handleCrawlRequest(PeerAppToApp peer, CrawlRequest request) throws IOException, MessageException {
+        //ToDo for future application sending the entire chain is a bit too much
+        for (MessageProto.TrustChainBlock block : dbHelper.getAllBlocks()) {
+            network.sendBlockMessage(peer, block, false);
+        }
+
+
     }
 
     /**
@@ -458,9 +468,12 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
         new Handler(Looper.getMainLooper()).post(new Runnable() {
             @Override
             public void run() {
-                peerHandler.splitPeerList();
-                incomingPeerAdapter.notifyDataSetChanged();
-                outgoingPeerAdapter.notifyDataSetChanged();
+                synchronized (this) {
+                    peerHandler.splitPeerList();
+                    peerHandler.removeDeadPeers();
+                    incomingPeerAdapter.notifyDataSetChanged();
+                    outgoingPeerAdapter.notifyDataSetChanged();
+                }
             }
         });
     }
@@ -482,9 +495,9 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
     public void updateWan(Message message) throws MessageException {
         if (peerHandler.getWanVote().vote(message.getDestination())) {
             Log.d("App-To-App Log", "Address changed to " + peerHandler.getWanVote().getAddress());
-            updateInternalSourceAddress(peerHandler.getWanVote().getAddress().toString());
+            wan = peerHandler.getWanVote().getAddress().toString();
         }
-        setWanvote(peerHandler.getWanVote().getAddress().toString());
+        setWanvote(wan);
     }
 
     @Override
