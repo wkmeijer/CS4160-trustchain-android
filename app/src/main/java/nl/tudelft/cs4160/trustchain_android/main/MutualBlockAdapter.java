@@ -65,14 +65,20 @@ public class MutualBlockAdapter extends RecyclerView.Adapter<MutualBlockAdapter.
         if (mutualBlockItem != null) {
             Button signButton = viewHolder.signButton;
             String blockStatus = mutualBlockItem.getBlockStatus();
-            if (blockStatus.substring(blockStatus.lastIndexOf(':') + 1).equals(" Signed")){
-                viewHolder.blockStatTextView.setBackgroundColor(0xFF00FF00); // set background color green
-                viewHolder.blockStatTextView.setText(mutualBlockItem.getBlockStatus());
+            TextView blockStatTv = viewHolder.blockStatTextView;
+            if (blockStatus.substring(blockStatus.lastIndexOf(':') + 1).equals(" Half block awaiting signing")){
+                blockStatTv.setText(mutualBlockItem.getBlockStatus());
+                setOnClickListenerSignBlock(viewHolder, position);
+            } else if (blockStatus.substring(blockStatus.lastIndexOf(':') + 1).equals(" Full block not yet connected in chain")){
+                blockStatTv.setText(mutualBlockItem.getBlockStatus());
+                signButton.setVisibility(View.GONE);
+            } else if (blockStatus.substring(blockStatus.lastIndexOf(':') + 1).equals(" Valid block")){
+                blockStatTv.setText(mutualBlockItem.getBlockStatus());
+                blockStatTv.setBackgroundColor(0xFF00FF00); // set background color green
                 signButton.setVisibility(View.GONE);
             } else {
-                viewHolder.blockStatTextView.setText(mutualBlockItem.getBlockStatus());
-                setOnClickListenerSignBlock(viewHolder, position);
-                signButton.setVisibility(View.VISIBLE);
+                // Partial previous or invalid block IGNORE
+                // TODO should partial previous really be ignored?
             }
             viewHolder.userNameTextView.setText(UserNameStorage.getUserName(context));
             viewHolder.peerNameTextView.setText(mutualBlockItem.getPeerName());
