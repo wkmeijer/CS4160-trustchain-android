@@ -3,9 +3,8 @@ package nl.tudelft.cs4160.trustchain_android.SharedPreferences;
 import android.content.Context;
 
 /**
- * Created by Boning on 12/19/2017.
+ * This class will store the IP of the bootstrap locally.
  */
-
 public class BootstrapIPStorage {
 
     static String bootstrapIPStorage = "bootstrapIPStorage";

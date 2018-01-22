@@ -1,5 +1,7 @@
 package nl.tudelft.cs4160.trustchain_android.connection.network;
 
+
+import android.content.Context;
 import android.util.Log;
 
 import java.security.KeyPair;
@@ -22,8 +24,8 @@ public class NetworkCommunication extends Communication {
 
     private static Server server;
 
-    public NetworkCommunication(TrustChainDBHelper dbHelper, KeyPair kp, CommunicationListener listener) {
-        super(dbHelper, kp, listener);
+    public NetworkCommunication(Context context, TrustChainDBHelper dbHelper, KeyPair kp, CommunicationListener listener) {
+        super(context, dbHelper, kp, listener);
     }
 
     public void sendMessage(Peer peer, MessageProto.Message message) {

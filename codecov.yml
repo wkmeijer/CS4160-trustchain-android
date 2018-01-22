@@ -1,4 +1,4 @@
-  #########################################
+#########################################
 ## Configuration for codecov coverage####
 #########################################
 coverage:
@@ -10,7 +10,30 @@ coverage:
   - "app/src/main/java/nl/tudelft/cs4160/trustchain_android/connection/.*"
   - "app/src/main/java/nl/tudelft/cs4160/trustchain_android/chainExplorer/.*"
   - "app/src/main/java/nl/tudelft/cs4160/trustchain_android/bencode/.*"
+
   status:
     project:
       default:
+        enabled: yes
         threshold: 50%
+        if_no_uploads: success
+        if_not_found: success
+        if_ci_failed: error
+
+    patch:
+      default:
+        enabled: yes
+        target: 0%
+        branches: null
+        threshold: null
+        if_no_uploads: success
+        if_not_found: success
+        if_ci_failed: error
+
+    changes:
+      default:
+        enabled: yes
+        threshold: null
+        if_no_uploads: success
+        if_not_found: success
+        if_ci_failed: error

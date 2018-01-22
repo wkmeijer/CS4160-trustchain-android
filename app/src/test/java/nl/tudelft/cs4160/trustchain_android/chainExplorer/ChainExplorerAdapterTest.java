@@ -22,6 +22,7 @@ public class ChainExplorerAdapterTest {
         assertEquals(peerString, "me");
     }
 
+/*
     @Test
     public void add_peer_if_not_in_list() {
         adapter.peerList = singlePeer();
@@ -31,6 +32,7 @@ public class ChainExplorerAdapterTest {
         assertEquals(peerString, "peer0");
         assertTrue(adapter.peerList.containsKey(newPeer));
     }
+*/
 
     private static HashMap<ByteString, String> singlePeer() {
         HashMap<ByteString, String> peers = new HashMap<>();
@@ -39,6 +41,7 @@ public class ChainExplorerAdapterTest {
         return peers;
     }
 
+/*
     @Test
     public void string_for_known_sequence_number() {
         assertEquals("42", ChainExplorerAdapter.displayStringForSequenceNumber(42));
@@ -47,5 +50,5 @@ public class ChainExplorerAdapterTest {
     @Test
     public void string_for_unknown_sequence_number() {
         assertEquals("unknown", ChainExplorerAdapter.displayStringForSequenceNumber(0));
-    }
+    }*/
 }

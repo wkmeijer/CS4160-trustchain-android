@@ -17,6 +17,8 @@ import nl.tudelft.cs4160.trustchain_android.message.MessageProto;
 class Server {
     ServerSocket serverSocket;
 
+    String responseLog = "";
+
     private Communication communication;
     private CommunicationListener listener;
 
@@ -60,7 +62,9 @@ class Server {
             try {
                 serverSocket = new ServerSocket(SocketServerPORT);
 
-                listener.updateLog("Server is waiting for messages...");
+                if (listener != null) {
+                    listener.updateLog("Server is waiting for messages...");
+                }
 
                 while (running) {
                     Socket socket = serverSocket.accept();
@@ -83,6 +87,12 @@ class Server {
                 serverSocket = null;
             } catch (IOException e) {
                 e.printStackTrace();
+                responseLog += "Something wrong! " + e.toString() + "\n";
+            } finally {
+
+                if (listener != null) {
+                    listener.updateLog("\n  Server: " + responseLog);
+                }
             }
         }
     }
