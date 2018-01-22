@@ -20,10 +20,13 @@ import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import com.google.protobuf.ByteString;
+
 import java.security.KeyPair;
 import java.util.List;
 
 import nl.tudelft.cs4160.trustchain_android.R;
+import nl.tudelft.cs4160.trustchain_android.SharedPreferences.UserNameStorage;
 import nl.tudelft.cs4160.trustchain_android.Util.ByteArrayConverter;
 import nl.tudelft.cs4160.trustchain_android.Util.Key;
 import nl.tudelft.cs4160.trustchain_android.appToApp.PeerAppToApp;
@@ -95,7 +98,13 @@ public class ChainExplorerActivity extends AppCompatActivity {
         try {
             List<MessageProto.TrustChainBlock> blocks = dbHelper.getBlocks(publicKey);
             if(blocks.size() > 0) {
-                this.setTitle(TITLE);
+                String ownPubKey = ByteArrayConverter.byteStringToString(blocks.get(0).getPublicKey());
+                String firstPubKey = ByteArrayConverter.byteStringToString(ByteString.copyFrom(publicKey));
+                if (ownPubKey.equals(firstPubKey)){
+                    this.setTitle(TITLE);
+                } else {
+                    this.setTitle("Chain of " + UserNameStorage.getPeerByPublickey(this, ByteArrayConverter.byteStringToString(blocks.get(0).getPublicKey())));
+                }
                 adapter = new ChainExplorerAdapter(this, blocks, kp.getPublic().getEncoded());
                 blocksList.setAdapter(adapter);
             }else{
