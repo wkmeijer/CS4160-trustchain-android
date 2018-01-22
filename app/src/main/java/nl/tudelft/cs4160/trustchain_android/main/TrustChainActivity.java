@@ -213,13 +213,18 @@ public class TrustChainActivity extends AppCompatActivity implements CompoundBut
                     }
                     Log.d("Validation: ", "validation status is: " + validationResultStatus);
                     if (validationResultStatus == ValidationResult.VALID) {
-                        blockStatus += "Signed";
+                        blockStatus += "Valid block";
                     } else if (validationResultStatus == ValidationResult.PARTIAL) {
                         blockStatus += "Partial";
                     } else if (validationResultStatus == ValidationResult.NO_INFO) {
                         blockStatus += "No Info";
                     } else if (validationResultStatus == ValidationResult.PARTIAL_NEXT) {
-                        blockStatus += "Partial next";
+                        if( block.getLinkSequenceNumber() == 0){
+                            blockStatus += "Half block awaiting signing";
+                        } else {
+                            blockStatus += "Full block not yet connected in chain";
+                        }
+
                     } else if (validationResultStatus == ValidationResult.INVALID) {
                         blockStatus += "Invalid";
                     } else if (validationResultStatus == ValidationResult.PARTIAL_PREVIOUS) {
