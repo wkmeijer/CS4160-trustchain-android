@@ -13,12 +13,16 @@ import android.widget.TextView;
 
 import org.w3c.dom.Text;
 
+import java.security.KeyPair;
 import java.util.ArrayList;
 
 import nl.tudelft.cs4160.trustchain_android.Peer;
 import nl.tudelft.cs4160.trustchain_android.R;
 import nl.tudelft.cs4160.trustchain_android.SharedPreferences.UserNameStorage;
+import nl.tudelft.cs4160.trustchain_android.Util.ByteArrayConverter;
+import nl.tudelft.cs4160.trustchain_android.Util.Key;
 import nl.tudelft.cs4160.trustchain_android.appToApp.PeerAppToApp;
+import nl.tudelft.cs4160.trustchain_android.color.ChainColor;
 import nl.tudelft.cs4160.trustchain_android.inbox.InboxAdapter;
 import nl.tudelft.cs4160.trustchain_android.inbox.InboxItem;
 
@@ -33,6 +37,7 @@ public class MutualBlockAdapter extends RecyclerView.Adapter<MutualBlockAdapter.
 
     /**
      * Constructor.
+     *
      * @param mutualBlocks the list of blocks that both user have in common.
      */
     public MutualBlockAdapter(Context context, ArrayList<MutualBlockItem> mutualBlocks) {
@@ -42,7 +47,8 @@ public class MutualBlockAdapter extends RecyclerView.Adapter<MutualBlockAdapter.
 
     /**
      * Create a holder where item will be stored in the view.
-     * @param parent the parent item.
+     *
+     * @param parent   the parent item.
      * @param viewType the type of the view.
      * @return a viewholder containing an item.
      */
@@ -56,8 +62,9 @@ public class MutualBlockAdapter extends RecyclerView.Adapter<MutualBlockAdapter.
 
     /**
      * Populating data of an item in the holder.
+     *
      * @param viewHolder the view holder
-     * @param position the position of the item.
+     * @param position   the position of the item.
      */
     @Override
     public void onBindViewHolder(MutualBlockAdapter.ViewHolder viewHolder, int position) {
@@ -67,13 +74,12 @@ public class MutualBlockAdapter extends RecyclerView.Adapter<MutualBlockAdapter.
             String blockStatus = mutualBlockItem.getBlockStatus();
             TextView blockStatTv = viewHolder.blockStatTextView;
             setOnClickListenerSignBlock(viewHolder, position);
-            if (blockStatus.substring(blockStatus.lastIndexOf(':') + 1).equals(" Half block awaiting signing")){
+            if (blockStatus.substring(blockStatus.lastIndexOf(':') + 1).equals(" Half block awaiting signing")) {
                 blockStatTv.setText(mutualBlockItem.getBlockStatus());
-                setOnClickListenerSignBlock(viewHolder, position);
-            } else if (blockStatus.substring(blockStatus.lastIndexOf(':') + 1).equals(" Full block not yet connected in chain")){
+            } else if (blockStatus.substring(blockStatus.lastIndexOf(':') + 1).equals(" Full block not yet connected in chain")) {
                 blockStatTv.setText(mutualBlockItem.getBlockStatus());
                 signButton.setVisibility(View.GONE);
-            } else if (blockStatus.substring(blockStatus.lastIndexOf(':') + 1).equals(" Valid block")){
+            } else if (blockStatus.substring(blockStatus.lastIndexOf(':') + 1).equals(" Valid block")) {
                 blockStatTv.setText(mutualBlockItem.getBlockStatus());
                 blockStatTv.setBackgroundColor(0xFF00FF00); // set background color green
                 signButton.setVisibility(View.GONE);
@@ -99,18 +105,36 @@ public class MutualBlockAdapter extends RecyclerView.Adapter<MutualBlockAdapter.
 
             TextView transTv = viewHolder.transactionTextView;
             transTv.setText(mutualBlockItem.getTransaction());
+
+
+            KeyPair keyPair = Key.loadKeys(context);
+            String myPublicKeyString = ByteArrayConverter.bytesToHexString(keyPair.getPublic().getEncoded());
+            String linkedKey = ByteArrayConverter.byteStringToString(mutualBlockItem.getBlock().getLinkPublicKey());
+            String normalKey = ByteArrayConverter.byteStringToString(mutualBlockItem.getBlock().getPublicKey());
+
+            if (normalKey.equals(myPublicKeyString)) {
+                viewHolder.own_chain_indicator.setBackgroundColor(ChainColor.getMyColor(context));
+            } else {
+                viewHolder.own_chain_indicator.setBackgroundColor(ChainColor.getColor(context, normalKey));
+            }
+            if (linkedKey.equals(myPublicKeyString)){
+                viewHolder.link_chain_indicator_mutualBlock.setBackgroundColor(ChainColor.getMyColor(context));
+            }else{
+                viewHolder.link_chain_indicator_mutualBlock.setBackgroundColor(ChainColor.getColor(context, linkedKey));
+            }
         }
     }
 
     /**
      * Define the listener on the button for the unsigned blocks and invoke the method of signing blocks
+     *
      * @param holder The viewholder for this adapter.
      */
     private void setOnClickListenerSignBlock(final MutualBlockAdapter.ViewHolder holder, final int position) {
         View.OnClickListener mOnClickListener = new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                ((TrustChainActivity)context).requestPermission(mutualBlocks.get(position).getBlock());
+                ((TrustChainActivity) context).requestPermission(mutualBlocks.get(position).getBlock());
             }
         };
         holder.signButton.setOnClickListener(mOnClickListener);
@@ -133,13 +157,18 @@ public class MutualBlockAdapter extends RecyclerView.Adapter<MutualBlockAdapter.
         TextView linkSeqNumTextView;
         TextView transactionTextView;
         Button signButton;
+        LinearLayout link_chain_indicator_mutualBlock;
+        LinearLayout own_chain_indicator;
 
         /**
          * Constructor.
+         *
          * @param itemView the view of the item.
          */
         public ViewHolder(View itemView) {
             super(itemView);
+            own_chain_indicator = (LinearLayout) itemView.findViewById(R.id.own_chain_indicator);
+            link_chain_indicator_mutualBlock = (LinearLayout) itemView.findViewById(R.id.link_chain_indicator_mutualBlock);
             blockStatTextView = (TextView) itemView.findViewById(R.id.blockStatus);
             userNameTextView = (TextView) itemView.findViewById(R.id.userMutualBlock);
             peerNameTextView = (TextView) itemView.findViewById(R.id.peerMutualBlock);
