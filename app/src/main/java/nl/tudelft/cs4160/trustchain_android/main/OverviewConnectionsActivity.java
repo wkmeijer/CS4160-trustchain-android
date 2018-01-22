@@ -20,6 +20,8 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.google.protobuf.ByteString;
+
 import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.net.InetAddress;
@@ -64,8 +66,8 @@ import nl.tudelft.cs4160.trustchain_android.message.MessageProto;
 import static nl.tudelft.cs4160.trustchain_android.block.TrustChainBlock.GENESIS_SEQ;
 
 public class OverviewConnectionsActivity extends AppCompatActivity implements NetworkCommunicationListener, PeerListener {
-    
-    public static String CONNECTABLE_ADDRESS = "145.94.160.77";
+
+    public static String CONNECTABLE_ADDRESS = "145.94.181.197";
     public final static int DEFAULT_PORT = 1873;
     private static final int BUFFER_SIZE = 65536;
     private PeerListAdapter incomingPeerAdapter;
@@ -94,7 +96,6 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
         }
         CommunicationSingleton.initContextAndListener(getApplicationContext(), null);
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -424,23 +425,26 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
     @Override
     public void handleBlockMessageRequest(PeerAppToApp peer, BlockMessage message) throws IOException, MessageException {
         MessageProto.Message msg = message.getMessageProto();
+        Log.d("BCrawlTest", "Block messages received");
         if(msg.getCrawlRequest().getPublicKey().size() == 0){
             MessageProto.TrustChainBlock block = msg.getHalfBlock();
             InboxItemStorage.addHalfBlock(CommunicationSingleton.getContext(), ByteArrayConverter.byteStringToString(block.getPublicKey()), block.getLinkSequenceNumber());
             if(CommunicationSingleton.getDbHelper().getBlock(msg.getHalfBlock().getPublicKey().toByteArray(), msg.getHalfBlock().getSequenceNumber()) == null) {
                 CommunicationSingleton.getDbHelper().insertInDB(block);
-                Log.d("testTheStacks", block.toString());
+                Log.d("BCrawlTest", block.toString());
             }
+            Log.d("BoningTest", "Block added: " + block.toString());
         }
     }
 
     @Override
     public void handleCrawlRequest(PeerAppToApp peer, CrawlRequest request) throws IOException, MessageException {
+        Log.d("BCrawlTest", "handling the crawl request");
         MessageProto.CrawlRequest req = request.getCrawlRequest();
         final KeyPair kp = Key.loadKeys(this);
-        if (req.getPublicKey().size() == 0) {
-            int sq = req.getRequestedSequenceNumber();
 
+            int sq = req.getRequestedSequenceNumber();
+            Log.d("BCrawlTest", "In if statement");
             // a negative sequence number indicates that the requesting peer wants an offset of blocks
             // starting with the last block
             if (sq < 0) {
@@ -452,12 +456,14 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
                     sq = GENESIS_SEQ;
                 }
             }
+            Log.d("BCrawlTest", "sq number is: " + sq);
             List<MessageProto.TrustChainBlock> blockList = dbHelper.crawl(kp.getPublic().getEncoded(), sq);
             for (MessageProto.TrustChainBlock block : blockList) {
                 network.sendBlockMessage(peer, block);
-                Log.d("BoningTest", "Block send: " + block.toString());
+                Log.d("BCrawlTest", "Block send: " + block.toString());
+                Log.d("BCrawlTest", "Sent to peer " + peer.getPeerId());
             }
-        }
+
     }
 
     /**
