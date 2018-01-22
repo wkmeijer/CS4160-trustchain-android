@@ -80,14 +80,22 @@ public class MutualBlockAdapter extends RecyclerView.Adapter<MutualBlockAdapter.
                 // Partial previous or invalid block IGNORE
                 // TODO should partial previous really be ignored?
             }
-            TextView userNameTv = viewHolder.userNameTextView;
-            userNameTv.setText(UserNameStorage.getUserName(context));
-            TextView peerNameTv = viewHolder.peerNameTextView;
-            peerNameTv.setText(mutualBlockItem.getPeerName());
-            TextView seqNumTv = viewHolder.seqNumTextView;
-            seqNumTv.setText(Integer.toString(mutualBlockItem.getSeqNum()));
-            TextView linkSeqNumTv = viewHolder.linkSeqNumTextView;
-            linkSeqNumTv.setText(Integer.toString(mutualBlockItem.getLinkSeqNum()));
+            viewHolder.userNameTextView.setText(UserNameStorage.getUserName(context));
+            viewHolder.peerNameTextView.setText(mutualBlockItem.getPeerName());
+
+            if (mutualBlockItem.getSeqNum() == 0) {
+                viewHolder.seqNumTextView.setText("unknown");
+            } else {
+                viewHolder.seqNumTextView.setText("seq: " + String.valueOf(mutualBlockItem.getSeqNum()));
+            }
+
+            if (mutualBlockItem.getLinkSeqNum() == 0) {
+                viewHolder.linkSeqNumTextView.setText("unknown");
+            } else {
+                signButton.setVisibility(View.GONE);
+                viewHolder.linkSeqNumTextView.setText("seq: " + String.valueOf(mutualBlockItem.getLinkSeqNum()));
+            }
+
             TextView transTv = viewHolder.transactionTextView;
             transTv.setText(mutualBlockItem.getTransaction());
         }

@@ -438,13 +438,7 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
                 // replace instead of add in order to always have the latest block appears as the next in line.
                 // new TrustChainDBHelper(this).insertInDB(block);
             } else {
-                // Automatically sign again in order to end up in the chain when a full block is send.
-                KeyPair keyPair = Key.loadKeys(this);
-                MessageProto.TrustChainBlock newBlock = createBlock(block.getTransaction().toByteArray(), dbHelper,
-                        keyPair.getPublic().getEncoded(),
-                        block, block.getPublicKey().toByteArray());
-                final MessageProto.TrustChainBlock signedBlock = sign(newBlock, keyPair.getPrivate());
-                dbHelper.replaceInDB(signedBlock);
+                dbHelper.replaceInDB(block);
             }
 
         }

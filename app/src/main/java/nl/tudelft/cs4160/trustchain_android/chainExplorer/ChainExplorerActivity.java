@@ -93,7 +93,7 @@ public class ChainExplorerActivity extends AppCompatActivity {
         }
         String p1 = ByteArrayConverter.bytesToHexString(publicKey);
         try {
-            List<MessageProto.TrustChainBlock> blocks = dbHelper.getBlocks(publicKey);
+            List<MessageProto.TrustChainBlock> blocks = dbHelper.getBlocks(publicKey, true);
             if(blocks.size() > 0) {
                 this.setTitle(ByteArrayConverter.bytesToHexString(blocks.get(0).getPublicKey().toByteArray()));
                 adapter = new ChainExplorerAdapter(this, blocks, kp.getPublic().getEncoded());

@@ -30,7 +30,8 @@ public class BlockMessage extends Message {
         InetSocketAddress destination = Message.createMapAddress((Map) map.get(DESTINATION));
         String pubKey = (String) map.get(PUB_KEY);
         String messageAsString = (String) map.get(BLOCK_MESSAGE_KEY);
-        Boolean isNewBlock = Boolean.getBoolean((String)map.get(NEW_BLOCK));
+        String boolString = (String)map.get(NEW_BLOCK);
+        Boolean isNewBlock = Boolean.valueOf(boolString);
         MessageProto.Message message = null;
         try {
             message = MessageProto.Message.parseFrom(ByteArrayConverter.hexStringToByteArray(messageAsString));
@@ -56,7 +57,7 @@ public class BlockMessage extends Message {
         if(isNewBlock == null){
             return true;
         }else{
-            return Boolean.getBoolean((String)isNewBlock);
+            return Boolean.valueOf((String)isNewBlock);
         }
     }
 
