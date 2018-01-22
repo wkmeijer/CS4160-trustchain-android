@@ -95,12 +95,12 @@ public class TrustChainBlockHelperTest {
         assertEquals(block.getSerializedSize(), block.getSerializedSize());
     }
 
-    @Test
-    public void getDiffHashBlockTest() {
-        MessageProto.TrustChainBlock block = TrustChainBlockHelper.createGenesisBlock(keyPair);
-        MessageProto.TrustChainBlock block2 = TrustChainBlockHelper.createGenesisBlock(keyPair2);
-        assertNotEquals(block.hashCode(), block2.hashCode());
-    }
+//    @Test
+//    public void getDiffHashBlockTest() {
+//        MessageProto.TrustChainBlock block = TrustChainBlockHelper.createGenesisBlock(keyPair);
+//        MessageProto.TrustChainBlock block2 = TrustChainBlockHelper.createGenesisBlock(keyPair2);
+//        assertNotEquals(block.hashCode(), block2.hashCode());
+//    }
 
     @Test
     public void equalBlocks() {
