@@ -243,7 +243,7 @@ public class TrustChainActivity extends AppCompatActivity implements CompoundBut
         final MessageProto.TrustChainBlock signedBlock = sign(block, keyPair.getPrivate());
 
         //todo again we could do validation?
-        DBHelper.insertInDB(block); // See read the docs (should be signed though)
+        DBHelper.insertInDB(signedBlock); // See read the docs (should be signed though)
 
         new Thread(new Runnable() {
             @Override
