@@ -123,6 +123,10 @@ public class PeerAppToApp implements Serializable {
         return true;
     }
 
+    /**
+     * If a peer has sent data, but the last time it has sent is longer ago than the remove timeout, it can be removed.
+     * @return
+     */
     boolean canBeRemoved() {
         if (hasSentData) {
             return System.currentTimeMillis() - lastSendTime > REMOVE_TIMEOUT;
