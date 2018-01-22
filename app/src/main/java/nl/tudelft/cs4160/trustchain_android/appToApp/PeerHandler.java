@@ -132,14 +132,16 @@ public class PeerHandler {
             }
             final PeerAppToApp peer = new PeerAppToApp(peerId, address);
 
-        new Handler(Looper.getMainLooper()).post(new Runnable() {
-            @Override
-            public void run() {
-                    peerList.add(peer);
-                    splitPeerList();
+            new Handler(Looper.getMainLooper()).post(new Runnable() {
+                @Override
+                public void run() {
+                    synchronized (peerListLock) {
+                        peerList.add(peer);
+                        splitPeerList();
+                        Log.d("App-To-App Log", "Added " + peer);
+                    }
                     peerListener.updateIncomingPeers();
                     peerListener.updateOutgoingPeers();
-                    Log.d("App-To-App Log", "Added " + peer);
                 }
             });
             return peer;
