@@ -20,6 +20,7 @@ import nl.tudelft.cs4160.trustchain_android.R;
 import nl.tudelft.cs4160.trustchain_android.SharedPreferences.InboxItemStorage;
 import nl.tudelft.cs4160.trustchain_android.SharedPreferences.PubKeyAndAddressPairStorage;
 import nl.tudelft.cs4160.trustchain_android.SharedPreferences.SharedPreferencesStorage;
+import nl.tudelft.cs4160.trustchain_android.SharedPreferences.UserNameStorage;
 import nl.tudelft.cs4160.trustchain_android.Util.ByteArrayConverter;
 import nl.tudelft.cs4160.trustchain_android.appToApp.PeerAppToApp;
 import nl.tudelft.cs4160.trustchain_android.inbox.InboxItem;
@@ -151,6 +152,7 @@ public class PeerListAdapter extends ArrayAdapter<PeerAppToApp> {
                     String pubKey = PubKeyAndAddressPairStorage.getPubKeyByAddress(context, peer.getAddress().toString().replace("/", ""));
                     if(pubKey != null && !pubKey.equals("")) {
                         InboxItem i = new InboxItem(peer.getPeerId(), new ArrayList<Integer>(), peer.getAddress().getHostString(), pubKey, peer.getPort());
+                        UserNameStorage.setNewPeerByPublickey(context, peer.getPeerId(), pubKey);
                         InboxItemStorage.addInboxItem(context, i);
                         Snackbar mySnackbar = Snackbar.make(coordinatorLayout,
                                 peer.getPeerId() + " added to inbox", Snackbar.LENGTH_SHORT);
