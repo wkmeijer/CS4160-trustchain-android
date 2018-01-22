@@ -1,7 +1,5 @@
 package nl.tudelft.cs4160.trustchain_android.inbox;
-
 import android.content.Context;
-import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -13,18 +11,11 @@ import android.view.MenuItem;
 import java.util.ArrayList;
 import java.util.Collections;
 
-import nl.tudelft.cs4160.trustchain_android.Peer;
 import nl.tudelft.cs4160.trustchain_android.R;
 import nl.tudelft.cs4160.trustchain_android.SharedPreferences.InboxItemStorage;
-import nl.tudelft.cs4160.trustchain_android.SharedPreferences.SharedPreferencesStorage;
 import nl.tudelft.cs4160.trustchain_android.appToApp.PeerAppToApp;
-import nl.tudelft.cs4160.trustchain_android.chainExplorer.ChainExplorerActivity;
-import nl.tudelft.cs4160.trustchain_android.connection.CommunicationListener;
-import nl.tudelft.cs4160.trustchain_android.main.BootstrapActivity;
-import nl.tudelft.cs4160.trustchain_android.main.ConnectionExplanationActivity;
-import nl.tudelft.cs4160.trustchain_android.message.MessageProto;
 
-public class InboxActivity extends AppCompatActivity implements CommunicationListener {
+public class InboxActivity extends AppCompatActivity  {
     public static ArrayList<PeerAppToApp> peerList;
 
     private RecyclerView mRecyclerView;
@@ -71,22 +62,6 @@ public class InboxActivity extends AppCompatActivity implements CommunicationLis
         super.onStart();
         getInboxItems();
     }
-
-    @Override
-    public void updateLog(String msg) {
-        getInboxItems();
-    }
-
-    @Override
-    public void requestPermission(MessageProto.TrustChainBlock block, Peer peer) {
-
-    }
-
-    @Override
-    public void connectionSuccessful(byte[] publicKey) {
-
-    }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

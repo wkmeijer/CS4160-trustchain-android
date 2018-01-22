@@ -13,7 +13,7 @@ public class PunctureRequest extends Message {
     final private static String PUNCTURE_PEER = "puncture_peer";
 
     public PunctureRequest(String peerId, InetSocketAddress destination, InetSocketAddress source, PeerAppToApp puncturePeer, String pubKey) {
-        super(PUNCTURE_REQUEST, peerId, destination, pubKey);
+        super(PUNCTURE_REQUEST_ID, peerId, destination, pubKey);
         put(SOURCE, createAddressMap(source));
         put(PUNCTURE_PEER, createPeerMap(puncturePeer));
     }

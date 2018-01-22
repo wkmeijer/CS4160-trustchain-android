@@ -21,7 +21,7 @@ public class IntroductionResponse extends Message {
 
     public IntroductionResponse(String peerId, InetSocketAddress internalSource, InetSocketAddress destination, PeerAppToApp invitee,
                                 long connectionType, List<PeerAppToApp> pex, String networkOperator, String pubKey) {
-        super(INTRODUCTION_RESPONSE, peerId, destination, pubKey);
+        super(INTRODUCTION_RESPONSE_ID, peerId, destination, pubKey);
         this.pex = pex;
         put(CONNECTION_TYPE, connectionType);
         put(INTERNAL_SOURCE, createAddressMap(internalSource));
