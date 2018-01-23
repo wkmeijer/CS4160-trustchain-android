@@ -34,8 +34,6 @@ import java.nio.channels.DatagramChannel;
 import java.security.KeyPair;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 import nl.tudelft.cs4160.trustchain_android.Network.Network;
 import nl.tudelft.cs4160.trustchain_android.Network.NetworkCommunicationListener;
@@ -57,14 +55,16 @@ import nl.tudelft.cs4160.trustchain_android.appToApp.connection.messages.Message
 import nl.tudelft.cs4160.trustchain_android.appToApp.connection.messages.MessageException;
 import nl.tudelft.cs4160.trustchain_android.appToApp.connection.messages.Puncture;
 import nl.tudelft.cs4160.trustchain_android.appToApp.connection.messages.PunctureRequest;
-import nl.tudelft.cs4160.trustchain_android.block.TrustChainBlock;
+import nl.tudelft.cs4160.trustchain_android.block.TrustChainBlockHelper;
 import nl.tudelft.cs4160.trustchain_android.chainExplorer.ChainExplorerActivity;
 import nl.tudelft.cs4160.trustchain_android.database.TrustChainDBHelper;
 import nl.tudelft.cs4160.trustchain_android.inbox.InboxActivity;
 import nl.tudelft.cs4160.trustchain_android.inbox.InboxItem;
 import nl.tudelft.cs4160.trustchain_android.message.MessageProto;
 
-import static nl.tudelft.cs4160.trustchain_android.block.TrustChainBlock.GENESIS_SEQ;
+import static nl.tudelft.cs4160.trustchain_android.block.TrustChainBlockHelper.GENESIS_SEQ;
+import static nl.tudelft.cs4160.trustchain_android.block.TrustChainBlockHelper.createBlock;
+import static nl.tudelft.cs4160.trustchain_android.block.TrustChainBlockHelper.sign;
 
 public class OverviewConnectionsActivity extends AppCompatActivity implements NetworkCommunicationListener, PeerListener {
 
@@ -141,7 +141,7 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
             kp = Key.createAndSaveKeys(getApplicationContext());
         }
         if (isStartedFirstTime(dbHelper, kp)) {
-            MessageProto.TrustChainBlock block = TrustChainBlock.createGenesisBlock(kp);
+            MessageProto.TrustChainBlock block = TrustChainBlockHelper.createGenesisBlock(kp);
             dbHelper.insertInDB(block);
         }
     }
@@ -427,17 +427,10 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
     @Override
     public void handleBlockMessageRequest(PeerAppToApp peer, BlockMessage message) throws IOException, MessageException {
         MessageProto.Message msg = message.getMessageProto();
-        if(msg.getCrawlRequest().getPublicKey().size() == 0){
+        // make sure it is not a crawl request but a block request
+        if (msg.getCrawlRequest().getPublicKey().size() == 0) {
             MessageProto.TrustChainBlock block = msg.getHalfBlock();
-            //add peer to inbox if needed
-            InboxItem i = new InboxItem(peer.getPeerId(), new ArrayList<Integer>(), peer.getAddress().getHostString(), ByteArrayConverter.byteStringToString(block.getPublicKey()), peer.getPort());
-            InboxItemStorage.addInboxItem(this, i);
-            InboxItemStorage.addHalfBlock(this, ByteArrayConverter.byteStringToString(block.getPublicKey()), block.getLinkSequenceNumber());
-            if(dbHelper.getBlock(msg.getHalfBlock().getPublicKey().toByteArray(), msg.getHalfBlock().getSequenceNumber()) == null) {
-                dbHelper.insertInDB(block);
-                Log.d("BCrawlTest", block.toString());
-            }
-            Log.d("BoningTest", "Block added: " + block.toString());
+            dbHelper.replaceInDB(block);
         }
     }
 

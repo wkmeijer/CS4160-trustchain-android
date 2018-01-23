@@ -268,7 +268,11 @@ public class Network {
                         BlockMessage blockMessage = (BlockMessage) message;
                         addPeerToInbox(pubKey, address, context, peerId);
                         if (blockMessage.isNewBlock()) {
+                            addBlockToInbox(pubKey,blockMessage,context);
                             networkCommunicationListener.handleBlockMessageRequest(peer, blockMessage);
+                            if(crawlRequestListener != null) {
+                                crawlRequestListener.blockAdded(blockMessage);
+                            }
                         }else{
                             if(crawlRequestListener != null) {
                                 crawlRequestListener.handleCrawlRequestBlockMessageRequest(peer, blockMessage);
@@ -286,14 +290,23 @@ public class Network {
         }
     }
 
-    private static void addPeerToInbox(String pubKey, InetSocketAddress address, Context context, String peerId) {
-        // On receive data always add this peer to your inbox
+    private static void addPeerToInbox(String pubKey,InetSocketAddress address, Context context, String peerId) {
         if (pubKey != null) {
             String ip = address.getAddress().toString().replace("/", "");
             InboxItem i = new InboxItem(peerId, new ArrayList<Integer>(), ip, pubKey, address.getPort());
             InboxItemStorage.addInboxItem(context, i);
         }
     }
+    private static void addBlockToInbox(String pubKey,BlockMessage blockMessage, Context context) {
+        if (pubKey != null) {
+            try {
+                InboxItemStorage.addHalfBlock(context, blockMessage.getPubKey(), blockMessage.getMessageProto().getHalfBlock().getSequenceNumber());
+            } catch (MessageException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
 
     private static class ShowLocalIPTask extends AsyncTask<Void, Void, InetAddress> {
         @Override

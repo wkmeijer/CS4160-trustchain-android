@@ -1,8 +1,6 @@
 package nl.tudelft.cs4160.trustchain_android.inbox;
 
 import android.content.Intent;
-import android.graphics.Color;
-import android.provider.Telephony;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,8 +13,6 @@ import android.widget.TextView;
 
 import nl.tudelft.cs4160.trustchain_android.R;
 import nl.tudelft.cs4160.trustchain_android.appToApp.PeerAppToApp;
-import nl.tudelft.cs4160.trustchain_android.block.TrustChainBlock;
-import nl.tudelft.cs4160.trustchain_android.main.OverviewConnectionsActivity;
 import nl.tudelft.cs4160.trustchain_android.main.TrustChainActivity;
 
 import java.util.ArrayList;

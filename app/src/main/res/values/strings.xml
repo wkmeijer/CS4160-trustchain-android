@@ -14,6 +14,7 @@
     <string name="reset_database_button">Clear Database (closes app)</string>
     <string name="connection_info_text">Info</string>
 
+    <!-- Trustchain -->
     <string name="title_activity_key">Key management</string>
     <string name="bluetooth_connection">bluetooth_connection</string>
     <string name="public_key">Public key</string>
@@ -27,6 +28,7 @@
     <string name="invalid_signature">Invalid signature</string>
     <string name="chain_explorer">TrustChain Explorer</string>
     <string name="title_activity_bluetooth">BluetoothActivity</string>
+    <string name="sign_block">Sign this block</string>
 
     <string name="item_public_key">Public key:</string>
     <string name="item_link_public_key">Link public key:</string>

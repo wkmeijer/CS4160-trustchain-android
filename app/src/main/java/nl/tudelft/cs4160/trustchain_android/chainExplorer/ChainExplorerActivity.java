@@ -96,7 +96,7 @@ public class ChainExplorerActivity extends AppCompatActivity {
             publicKey = kp.getPublic().getEncoded();
         }
         try {
-            List<MessageProto.TrustChainBlock> blocks = dbHelper.getBlocks(publicKey);
+            List<MessageProto.TrustChainBlock> blocks = dbHelper.getBlocks(publicKey, true);
             if(blocks.size() > 0) {
                 String ownPubKey = ByteArrayConverter.byteStringToString(blocks.get(0).getPublicKey());
                 String firstPubKey = ByteArrayConverter.byteStringToString(ByteString.copyFrom(publicKey));

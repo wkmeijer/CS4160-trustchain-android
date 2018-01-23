@@ -17,7 +17,6 @@ import nl.tudelft.cs4160.trustchain_android.appToApp.PeerAppToApp;
 
 public class InboxActivity extends AppCompatActivity  {
     public static ArrayList<PeerAppToApp> peerList;
-
     private RecyclerView mRecyclerView;
     private RecyclerView.Adapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
@@ -62,7 +61,6 @@ public class InboxActivity extends AppCompatActivity  {
         super.onStart();
         getInboxItems();
     }
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
@@ -89,6 +87,5 @@ public class InboxActivity extends AppCompatActivity  {
                 return true;
         }
     }
-
 
 }
