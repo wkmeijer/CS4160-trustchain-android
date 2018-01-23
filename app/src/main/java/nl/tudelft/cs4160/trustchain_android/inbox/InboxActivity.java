@@ -1,22 +1,22 @@
 package nl.tudelft.cs4160.trustchain_android.inbox;
-
 import android.content.Context;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
-import nl.tudelft.cs4160.trustchain_android.Peer;
 import nl.tudelft.cs4160.trustchain_android.R;
 import nl.tudelft.cs4160.trustchain_android.SharedPreferences.InboxItemStorage;
-import nl.tudelft.cs4160.trustchain_android.connection.CommunicationListener;
-import nl.tudelft.cs4160.trustchain_android.connection.CommunicationSingleton;
-import nl.tudelft.cs4160.trustchain_android.message.MessageProto;
+import nl.tudelft.cs4160.trustchain_android.appToApp.PeerAppToApp;
 
-public class InboxActivity extends AppCompatActivity implements CommunicationListener {
-
+public class InboxActivity extends AppCompatActivity  {
+    public static ArrayList<PeerAppToApp> peerList;
     private RecyclerView mRecyclerView;
     private RecyclerView.Adapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
@@ -48,7 +48,9 @@ public class InboxActivity extends AppCompatActivity implements CommunicationLis
             public void run() {
                 inboxItems = new ArrayList<>();
                 inboxItems = InboxItemStorage.getInboxItems(currContext);
+                Collections.reverse(inboxItems);
                 mAdapter = new InboxAdapter(inboxItems);
+                ((InboxAdapter) mAdapter).setPeerList(peerList);
                 mRecyclerView.setAdapter(mAdapter);
             }
         });
@@ -59,19 +61,31 @@ public class InboxActivity extends AppCompatActivity implements CommunicationLis
         super.onStart();
         getInboxItems();
     }
-
     @Override
-    public void updateLog(String msg) {
-        getInboxItems();
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.inbox_menu, menu);
+        return true;
     }
 
-    @Override
-    public void requestPermission(MessageProto.TrustChainBlock block, Peer peer) {
-
+    /**
+     * Define what should be executed when one of the item in the menu is clicked.
+     *
+     * @param item the item in the menu.
+     * @return true if everything was executed.
+     */
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.clear_inbox:
+                InboxItemStorage.deleteAll(this);
+                inboxItems = new ArrayList<>();
+                mAdapter = new InboxAdapter(inboxItems);
+                ((InboxAdapter) mAdapter).setPeerList(peerList);
+                mRecyclerView.setAdapter(mAdapter);
+                return true;
+            default:
+                return true;
+        }
     }
 
-    @Override
-    public void connectionSuccessful(byte[] publicKey) {
-
-    }
 }

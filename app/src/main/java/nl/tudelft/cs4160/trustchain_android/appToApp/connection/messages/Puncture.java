@@ -10,7 +10,7 @@ public class Puncture extends Message {
     final private static String SOURCE = "source";
 
     public Puncture(String peerId, InetSocketAddress destination, InetSocketAddress source, String pubKey) {
-        super(PUNCTURE, peerId, destination, pubKey);
+        super(PUNCTURE_ID, peerId, destination, pubKey);
         put(SOURCE, createAddressMap(source));
     }
 

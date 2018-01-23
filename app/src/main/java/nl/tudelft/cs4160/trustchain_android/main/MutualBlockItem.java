@@ -1,5 +1,7 @@
 package nl.tudelft.cs4160.trustchain_android.main;
 
+import nl.tudelft.cs4160.trustchain_android.message.MessageProto;
+
 /**
  * Class that is used to define a MutualBlock in the recycler view.
  */
@@ -9,6 +11,7 @@ public class MutualBlockItem {
     private int linkSeqNum;
     private String blockStatus;
     private String transaction;
+    private MessageProto.TrustChainBlock block;
 
     /**
      * Constructor.
@@ -16,12 +19,13 @@ public class MutualBlockItem {
      * @param blockStatus the status of the block.
      * @param transaction the content(the message) of the block.
      */
-    public MutualBlockItem(String peerName, int seqNum, int linkSeqNum, String blockStatus, String transaction) {
+    public MutualBlockItem(String peerName, int seqNum, int linkSeqNum, String blockStatus, String transaction, MessageProto.TrustChainBlock block) {
         this.peerName = peerName;
         this.seqNum = seqNum;
         this.linkSeqNum = linkSeqNum;
         this.blockStatus = blockStatus;
         this.transaction = transaction;
+        this.block = block;
 
     }
 
@@ -99,4 +103,11 @@ public class MutualBlockItem {
     public int getLinkSeqNum() {
         return linkSeqNum;
     }
+
+    /**
+     * Get the complete block
+     * @return the block represented by this MutualBlock
+     */
+    public MessageProto.TrustChainBlock getBlock() {return block;}
+
 }
