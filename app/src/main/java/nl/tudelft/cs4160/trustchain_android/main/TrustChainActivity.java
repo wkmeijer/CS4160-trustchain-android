@@ -8,6 +8,7 @@ import android.net.ConnectivityManager;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -19,6 +20,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
@@ -407,7 +409,10 @@ public class TrustChainActivity extends AppCompatActivity implements CompoundBut
         byte[] transactionData = messageEditText.getText().toString().getBytes("UTF-8");
         final MessageProto.TrustChainBlock block = createBlock(transactionData, DBHelper, publicKey.getEncoded(), null, ByteArrayConverter.hexStringToByteArray(inboxItemOtherPeer.getPublicKey()));
         final MessageProto.TrustChainBlock signedBlock = TrustChainBlockHelper.sign(block, Key.loadKeys(getApplicationContext()).getPrivate());
-
+        messageEditText.setText("");
+        messageEditText.clearFocus();
+        InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
         // insert the half block in your own chain
         new TrustChainDBHelper(this).insertInDB(signedBlock);
 
@@ -416,6 +421,8 @@ public class TrustChainActivity extends AppCompatActivity implements CompoundBut
             public void run() {
                 try {
                     network.sendBlockMessage(inboxItemOtherPeer.getPeerAppToApp(), signedBlock, true);
+                    Snackbar mySnackbar = Snackbar.make(findViewById(R.id.myCoordinatorLayout),"Half block send!", Snackbar.LENGTH_SHORT);
+                    mySnackbar.show();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
