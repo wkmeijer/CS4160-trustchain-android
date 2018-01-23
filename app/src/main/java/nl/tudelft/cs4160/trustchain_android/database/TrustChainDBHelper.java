@@ -350,7 +350,11 @@ public class TrustChainDBHelper extends SQLiteOpenHelper {
      *
      * @param pubKey - public key of the chain to from which blocks need to be fetched
      * @param seqNum - sequence number of block, the blocks inserted after this block should be returned
+<<<<<<< HEAD
+     * @param limit  - the limit of the amount of blocks to return
+=======
      * @param limit - the limit of the amount of blocks to return
+>>>>>>> e50816a71671d6d332df84c03b5f714fa6dea1f8
      * @return list of blocks
      */
     public List<MessageProto.TrustChainBlock> crawl(byte[] pubKey, int seqNum, int limit) throws Exception {
@@ -359,11 +363,9 @@ public class TrustChainDBHelper extends SQLiteOpenHelper {
         }
         SQLiteDatabase dbReadable = getReadableDatabase();
 
-        String whereClause = TrustChainDBContract.BlockEntry.COLUMN_NAME_INSERT_TIME + " >= ?" +
-                " AND (" + TrustChainDBContract.BlockEntry.COLUMN_NAME_PUBLIC_KEY + " = ?" +
-                " OR " + TrustChainDBContract.BlockEntry.COLUMN_NAME_LINK_PUBLIC_KEY + " = ?)";
-        String[] whereArgs = new String[]{Long.toString(getMaxInsertTime(pubKey, seqNum)),
-                Base64.encodeToString(pubKey, Base64.DEFAULT),
+        String whereClause = TrustChainDBContract.BlockEntry.COLUMN_NAME_SEQUENCE_NUMBER + " >= ?" +
+                " AND " + TrustChainDBContract.BlockEntry.COLUMN_NAME_PUBLIC_KEY + " = ?";
+        String[] whereArgs = new String[]{Integer.toString(seqNum),
                 Base64.encodeToString(pubKey, Base64.DEFAULT)};
         String sortOrder =
                 TrustChainDBContract.BlockEntry.COLUMN_NAME_INSERT_TIME + " ASC";
@@ -395,43 +397,6 @@ public class TrustChainDBHelper extends SQLiteOpenHelper {
             e.printStackTrace();
         }
         return blockList;
-    }
-
-    /**
-     * Get the maximum insert time of a block in the database given a public key and a maximum
-     * sequence number.
-     *
-     * @param pubKey - the public key for which to find associated blocks
-     * @param seqNum - the maximum sequence number of the blocks
-     * @return long - a maximum insert time
-     */
-    public long getMaxInsertTime(byte[] pubKey, int seqNum) {
-        SQLiteDatabase dbReadable = getReadableDatabase();
-
-        long res = 0;
-        String[] projection = new String[]{"max(" +
-                TrustChainDBContract.BlockEntry.COLUMN_NAME_INSERT_TIME + ")"};
-        String whereClause = TrustChainDBContract.BlockEntry.COLUMN_NAME_PUBLIC_KEY + " = ?" +
-                " AND " + TrustChainDBContract.BlockEntry.COLUMN_NAME_SEQUENCE_NUMBER + " <= ?";
-        String[] whereArgs = new String[]{Base64.encodeToString(pubKey, Base64.DEFAULT),
-                Integer.toString(seqNum)};
-
-        Cursor cursor = dbReadable.query(
-                TrustChainDBContract.BlockEntry.TABLE_NAME,     // Table name for the query
-                projection,                                           // The columns to return
-                whereClause,                                    // Filter for which rows to return
-                whereArgs,                                      // Filter arguments
-                null,                                           // Declares how to group rows
-                null,                                           // Declares which row groups to include
-                null                                       // How the rows should be ordered
-        );
-        if (cursor.getCount() == 1) {
-            cursor.moveToFirst();
-            res = cursor.getInt(cursor.getColumnIndex(
-                    "max(" + TrustChainDBContract.BlockEntry.COLUMN_NAME_INSERT_TIME + ")"));
-        }
-        cursor.close();
-        return res;
     }
 
     /**

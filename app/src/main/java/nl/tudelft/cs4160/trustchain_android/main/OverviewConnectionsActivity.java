@@ -200,8 +200,8 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
      * Initialize the inboxItem lists.
      */
     private void initPeerLists() {
-        ListView incomingPeerConnectionListView = (ListView) findViewById(R.id.incoming_peer_connection_list_view);
-        ListView outgoingPeerConnectionListView = (ListView) findViewById(R.id.outgoing_peer_connection_list_view);
+        ListView incomingPeerConnectionListView = findViewById(R.id.incoming_peer_connection_list_view);
+        ListView outgoingPeerConnectionListView = findViewById(R.id.outgoing_peer_connection_list_view);
         incomingPeerAdapter = new PeerListAdapter(getApplicationContext(), R.layout.peer_connection_list_item, peerHandler.getIncomingList(), PeerAppToApp.INCOMING, (CoordinatorLayout) findViewById(R.id.myCoordinatorLayout));
         incomingPeerConnectionListView.setAdapter(incomingPeerAdapter);
         outgoingPeerAdapter = new PeerListAdapter(getApplicationContext(), R.layout.peer_connection_list_item, peerHandler.getOutgoingList(), PeerAppToApp.OUTGOING, (CoordinatorLayout) findViewById(R.id.myCoordinatorLayout));
@@ -312,7 +312,6 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
         sendThread.start();
         Log.d("App-To-App Log", "Send thread started");
     }
-
 
     /**
      * Start the listen thread. The thread opens a new {@link DatagramChannel} and calls {@link Network#dataReceived(Context, ByteBuffer,
@@ -501,6 +500,7 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
         String connectionTypeStr = typename + " " + subtypename;
         ((TextView) findViewById(R.id.connection_type)).setText(connectionTypeStr);
     }
+
 
     @Override
     public void updateInternalSourceAddress(final String address) {

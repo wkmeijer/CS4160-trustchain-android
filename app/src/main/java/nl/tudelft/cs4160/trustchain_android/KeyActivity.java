@@ -18,6 +18,8 @@ import nl.tudelft.cs4160.trustchain_android.Util.Key;
 
 public class KeyActivity extends AppCompatActivity {
 
+    private final static String TAG = KeyActivity.class.getName();
+
     static {
         Security.insertProviderAt(new org.spongycastle.jce.provider.BouncyCastleProvider(), 1);}
 
@@ -35,11 +37,11 @@ public class KeyActivity extends AppCompatActivity {
     }
 
     private void init() {
-        buttonNewKey = (Button) findViewById(R.id.new_key);
-        textPrivateKey = (TextView) findViewById(R.id.private_key);
-        signData = (Button) findViewById(R.id.sign_data);
-        signedData = (TextView) findViewById(R.id.signed_data);
-        verifySignature = (Button) findViewById(R.id.verify_sig);
+        buttonNewKey = findViewById(R.id.new_key);
+        textPrivateKey = findViewById(R.id.private_key);
+        signData = findViewById(R.id.sign_data);
+        signedData = findViewById(R.id.signed_data);
+        verifySignature = findViewById(R.id.verify_sig);
 
         KeyPair kp = Key.ensureKeysExist(getApplicationContext());
         textPrivateKey.setText(Base64.encodeToString(kp.getPrivate().getEncoded(), Base64.DEFAULT));
@@ -73,7 +75,7 @@ public class KeyActivity extends AppCompatActivity {
                 KeyPair kp = Key.loadKeys(getApplicationContext());
                 byte[] sig = Key.sign( kp.getPrivate(), new byte[] {0x30, 0x30, 0x30, 0x30,0x30, 0x30, 0x30, 0x30});
                 if(sig == null) {
-                    Log.d("TrustChain Log", "No sig received");
+                    Log.d(TAG,"No sig received");
                 }
                 signedData.setText(Base64.encodeToString(sig, Base64.DEFAULT));
 

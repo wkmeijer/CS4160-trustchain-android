@@ -36,6 +36,8 @@ import java.lang.ref.WeakReference;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.security.KeyPair;
+
+import java.nio.channels.DatagramChannel;
 import java.security.PublicKey;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -50,7 +52,6 @@ import nl.tudelft.cs4160.trustchain_android.Util.ByteArrayConverter;
 import nl.tudelft.cs4160.trustchain_android.Util.Key;
 import nl.tudelft.cs4160.trustchain_android.block.TrustChainBlockHelper;
 import nl.tudelft.cs4160.trustchain_android.block.ValidationResult;
-import nl.tudelft.cs4160.trustchain_android.chainExplorer.ChainExplorerAdapter;
 import nl.tudelft.cs4160.trustchain_android.appToApp.PeerAppToApp;
 import nl.tudelft.cs4160.trustchain_android.appToApp.connection.messages.BlockMessage;
 import nl.tudelft.cs4160.trustchain_android.appToApp.connection.messages.MessageException;
@@ -271,23 +272,22 @@ public class TrustChainActivity extends AppCompatActivity implements CompoundBut
      */
     private void initVariables() {
         thisActivity = this;
-        localIPText = (TextView) findViewById(R.id.my_local_ip);
-        externalIPText = (TextView) findViewById(R.id.my_external_ip);
-        statusText = (TextView) findViewById(R.id.status);
+        localIPText = findViewById(R.id.my_local_ip);
+        externalIPText = findViewById(R.id.my_external_ip);
+        statusText = findViewById(R.id.status);
         statusText.setMovementMethod(new ScrollingMovementMethod());
 
-        editTextDestinationIP = (EditText) findViewById(R.id.destination_IP);
-        editTextDestinationPort = (EditText) findViewById(R.id.destination_port);
-        messageEditText = (EditText) findViewById(R.id.message_edit_text);
-        extraInformationPanel = (LinearLayout) findViewById(R.id.extra_information_panel);
-        developerModeText = (TextView) findViewById(R.id.developer_mode_text);
-        mRecyclerView = (RecyclerView) findViewById(R.id.mutualBlocksRecyclerView);
-        switchDeveloperMode = (SwitchCompat) findViewById(R.id.switch_developer_mode);
+        editTextDestinationIP = findViewById(R.id.destination_IP);
+        editTextDestinationPort = findViewById(R.id.destination_port);
+        messageEditText = findViewById(R.id.message_edit_text);
+        extraInformationPanel = findViewById(R.id.extra_information_panel);
+        developerModeText = findViewById(R.id.developer_mode_text);
+        mRecyclerView = findViewById(R.id.mutualBlocksRecyclerView);
+        switchDeveloperMode = findViewById(R.id.switch_developer_mode);
         switchDeveloperMode.setOnCheckedChangeListener(this);
-        editTextDestinationIP = (EditText) findViewById(R.id.destination_IP);
-        editTextDestinationPort = (EditText) findViewById(R.id.destination_port);
 
         dbHelper = new TrustChainDBHelper(this);
+
     }
 
     private void init() {
@@ -340,7 +340,6 @@ public class TrustChainActivity extends AppCompatActivity implements CompoundBut
     /**
      * Finds the local IP address of this device, loops trough network interfaces in order to find it.
      * The address that is not a loopback address is the IP of the device.
-     *
      * @return a string representation of the device's IP address
      */
     public String getLocalIPAddress() {
@@ -349,12 +348,12 @@ public class TrustChainActivity extends AppCompatActivity implements CompoundBut
             for (NetworkInterface netInt : netInterfaces) {
                 List<InetAddress> addresses = Collections.list(netInt.getInetAddresses());
                 for (InetAddress addr : addresses) {
-                    if (addr.isSiteLocalAddress()) {
+                    if(addr.isSiteLocalAddress()) {
                         return addr.getHostAddress();
                     }
                 }
             }
-        } catch (Exception e) {
+        } catch(Exception e) {
             e.printStackTrace();
         }
         return null;
@@ -469,6 +468,7 @@ public class TrustChainActivity extends AppCompatActivity implements CompoundBut
             }
         });
     }
+
 
     @Override
     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {

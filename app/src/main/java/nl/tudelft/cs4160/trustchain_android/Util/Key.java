@@ -36,7 +36,6 @@ public class Key {
     public final static String DEFAULT_PUB_KEY_FILE = "pub.key";
     public final static String DEFAULT_PRIV_KEY_FILE = "priv.key";
 
-
     /**
      * If no key can be loaded, create a new keypair.
      * @param context
@@ -165,7 +164,6 @@ public class Key {
         if(key == null) {
             return null;
         }
-        Log.i(TAG, "PUBLIC FROM FILE: " + key);
         return loadPublicKey(key);
     }
 

@@ -25,12 +25,14 @@ public class ChainExplorerAdapterTest {
         assertTrue(adapter.peerList.containsKey(newPeer));
     }
 */
+
     private static HashMap<ByteString, String> singlePeer() {
         HashMap<ByteString, String> peers = new HashMap<>();
         peers.put(PEER_2_PEER, "me");
 
         return peers;
     }
+
 /*
     @Test
     public void string_for_known_sequence_number() {

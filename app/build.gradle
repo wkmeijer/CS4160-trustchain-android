@@ -2,14 +2,14 @@ apply plugin: 'com.android.application'
 apply plugin: 'jacoco-android'
 
 android {
-    compileSdkVersion 25
+    compileSdkVersion 26
     buildToolsVersion '26.0.2'
     defaultConfig {
         applicationId "nl.tudelft.cs4160.trustchain_android"
-        minSdkVersion 19
-        targetSdkVersion 25
-        versionCode 1
-        versionName "1.0"
+        minSdkVersion 21
+        targetSdkVersion 26
+        versionCode 2
+        versionName "0.11"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
     }
@@ -23,7 +23,6 @@ android {
             testCoverageEnabled false
         }
     }
-
     lintOptions {
         abortOnError false
     }
@@ -35,11 +34,11 @@ dependencies {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
     compile files('libs/protobuf-java-3.4.1.jar')
-    compile 'com.android.support:appcompat-v7:25.3.1'
+    compile 'com.android.support:appcompat-v7:26.1.0'
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
     compile 'com.madgag.spongycastle:core:1.58.0.0'
     compile 'com.madgag.spongycastle:prov:1.58.0.0'
-    compile 'com.android.support:design:25.3.1'
+    compile 'com.android.support:design:26.1.0'
     compile 'com.google.code.gson:gson:2.8.2'
     testCompile 'junit:junit:4.12'
     testCompile 'org.mockito:mockito-core:2.7.22'
