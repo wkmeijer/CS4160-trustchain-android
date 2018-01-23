@@ -27,6 +27,7 @@ import nl.tudelft.cs4160.trustchain_android.Util.ByteArrayConverter;
 import nl.tudelft.cs4160.trustchain_android.Util.Key;
 import nl.tudelft.cs4160.trustchain_android.appToApp.PeerAppToApp;
 import nl.tudelft.cs4160.trustchain_android.appToApp.connection.messages.BlockMessage;
+import nl.tudelft.cs4160.trustchain_android.appToApp.connection.messages.CrawlRequest;
 import nl.tudelft.cs4160.trustchain_android.appToApp.connection.messages.IntroductionRequest;
 import nl.tudelft.cs4160.trustchain_android.appToApp.connection.messages.IntroductionResponse;
 import nl.tudelft.cs4160.trustchain_android.appToApp.connection.messages.Message;
@@ -34,10 +35,10 @@ import nl.tudelft.cs4160.trustchain_android.appToApp.connection.messages.Message
 import nl.tudelft.cs4160.trustchain_android.appToApp.connection.messages.Puncture;
 import nl.tudelft.cs4160.trustchain_android.appToApp.connection.messages.PunctureRequest;
 import nl.tudelft.cs4160.trustchain_android.bencode.BencodeReadException;
-import nl.tudelft.cs4160.trustchain_android.database.TrustChainDBHelper;
 import nl.tudelft.cs4160.trustchain_android.inbox.InboxItem;
 import nl.tudelft.cs4160.trustchain_android.main.OverviewConnectionsActivity;
 import nl.tudelft.cs4160.trustchain_android.message.MessageProto;
+
 import static nl.tudelft.cs4160.trustchain_android.message.MessageProto.Message.newBuilder;
 
 /**
@@ -55,8 +56,8 @@ public class Network {
     private String networkOperator;
     private static Network network;
     private String publicKey;
-    private TrustChainDBHelper dbHelper;
     private static NetworkCommunicationListener networkCommunicationListener;
+    private static CrawlRequestListener crawlRequestListener;
 
     private Network() {
     }
@@ -73,10 +74,13 @@ public class Network {
         Network.networkCommunicationListener = networkCommunicationListener;
     }
 
+    public void setCrawlRequestListener(CrawlRequestListener crawlRequestListener) {
+        Network.crawlRequestListener = crawlRequestListener;
+    }
+
     private void initVariables(Context context) {
         TelephonyManager telephonyManager = ((TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE));
         networkOperator = telephonyManager.getNetworkOperatorName();
-        dbHelper = new TrustChainDBHelper(context);
         outBuffer = ByteBuffer.allocate(BUFFER_SIZE);
         hashId = UserNameStorage.getUserName(context);
         publicKey = ByteArrayConverter.bytesToHexString(Key.loadKeys(context).getPublic().getEncoded());
@@ -94,6 +98,9 @@ public class Network {
     }
 
     public SocketAddress receive(ByteBuffer inputBuffer) throws IOException {
+        if (!channel.isOpen()) {
+            openChannel();
+        }
         return channel.receive(inputBuffer);
     }
 
@@ -136,10 +143,15 @@ public class Network {
         sendMessage(request, peer);
     }
 
-    public void sendBlockMessage(PeerAppToApp peer, MessageProto.TrustChainBlock block) throws IOException {
+    public void sendBlockMessage(PeerAppToApp peer, MessageProto.TrustChainBlock block, boolean isNewBlock) throws IOException {
         MessageProto.Message message = newBuilder().setHalfBlock(block).build();
-        BlockMessage request = new BlockMessage(hashId, peer.getAddress(), publicKey, message);
+        BlockMessage request = new BlockMessage(hashId, peer.getAddress(), publicKey, message,isNewBlock);
         sendMessage(request, peer);
+    }
+
+    public void sendCrawlRequest(PeerAppToApp peer, MessageProto.CrawlRequest request) throws IOException {
+        CrawlRequest req = new CrawlRequest(hashId, peer.getAddress(), publicKey, request);
+        sendMessage(req, peer);
     }
 
     /**
@@ -193,7 +205,6 @@ public class Network {
      */
     private synchronized void sendMessage(Message message, PeerAppToApp peer) throws IOException {
         message.putPubKey(publicKey);
-
         Log.d(TAG, "Sending " + message);
         outBuffer.clear();
         message.writeToByteBuffer(outBuffer);
@@ -218,47 +229,59 @@ public class Network {
      * @param address the incoming address.
      */
     public void dataReceived(Context context, ByteBuffer data, InetSocketAddress address) {
+        // If we don't have an internal address, try to find it again instead of handling the message.
+        if (internalSourceAddress == null) {
+            showLocalIpAddress();
+            return;
+        }
+
         try {
             Message message = Message.createFromByteBuffer(data);
             Log.d(TAG, "Received " + message);
 
-            String id = message.getPeerId();
-            String pubKey = message.getPubKey();
-
-            if(pubKey != null) {
-                String ip = address.getAddress().toString().replace("/", "");
-                PubKeyAndAddressPairStorage.addPubkeyAndAddressPair(context, pubKey, ip);
-                InboxItem i = new InboxItem(id, new ArrayList<Integer>(), ip, pubKey, address.getPort());
-                InboxItemStorage.addInboxItem(context, i);
-
-                Log.d(TAG, "Stored following ip for pubkey: " + pubKey + " " + PubKeyAndAddressPairStorage.getAddressByPubkey(context, pubKey));
-
-                Log.d(TAG, "pubkey address map " + SharedPreferencesStorage.getAll(context).toString());
-            }
+            String peerId = message.getPeerId();
 
             if (networkCommunicationListener != null) {
                 networkCommunicationListener.updateWan(message);
 
-                PeerAppToApp peer = networkCommunicationListener.getOrMakePeer(id, address, PeerAppToApp.INCOMING);
+                PeerAppToApp peer = networkCommunicationListener.getOrMakePeer(peerId, address, PeerAppToApp.INCOMING);
 
+                String pubKey = message.getPubKey();
+                String ip = address.getAddress().toString().replace("/", "") + ":" + address.getPort();
+                PubKeyAndAddressPairStorage.addPubkeyAndAddressPair(context, pubKey, ip);
                 if (peer == null) return;
                 peer.received(data);
                 switch (message.getType()) {
-                    case Message.INTRODUCTION_REQUEST:
+                    case Message.INTRODUCTION_REQUEST_ID:
                         networkCommunicationListener.handleIntroductionRequest(peer, (IntroductionRequest) message);
                         break;
-                    case Message.INTRODUCTION_RESPONSE:
+                    case Message.INTRODUCTION_RESPONSE_ID:
                         networkCommunicationListener.handleIntroductionResponse(peer, (IntroductionResponse) message);
                         break;
-                    case Message.PUNCTURE:
+                    case Message.PUNCTURE_ID:
                         networkCommunicationListener.handlePuncture(peer, (Puncture) message);
                         break;
-                    case Message.PUNCTURE_REQUEST:
+                    case Message.PUNCTURE_REQUEST_ID:
                         networkCommunicationListener.handlePunctureRequest(peer, (PunctureRequest) message);
                         break;
-                    case Message.BLOCK_MESSAGE:
-                        networkCommunicationListener.handleBlockMessageRequest(peer, (BlockMessage) message);
-
+                    case Message.BLOCK_MESSAGE_ID:
+                        BlockMessage blockMessage = (BlockMessage) message;
+                        addPeerToInbox(pubKey, address, context, peerId);
+                        if (blockMessage.isNewBlock()) {
+                            addBlockToInbox(pubKey,blockMessage,context);
+                            networkCommunicationListener.handleBlockMessageRequest(peer, blockMessage);
+                            if(crawlRequestListener != null) {
+                                crawlRequestListener.blockAdded(blockMessage);
+                            }
+                        }else{
+                            if(crawlRequestListener != null) {
+                                crawlRequestListener.handleCrawlRequestBlockMessageRequest(peer, blockMessage);
+                            }
+                        }
+                        break;
+                    case Message.CRAWL_REQUEST_ID:
+                        networkCommunicationListener.handleCrawlRequest(peer, (CrawlRequest) message);
+                        break;
                 }
                 networkCommunicationListener.updatePeerLists();
             }
@@ -266,6 +289,24 @@ public class Network {
             e.printStackTrace();
         }
     }
+
+    private static void addPeerToInbox(String pubKey,InetSocketAddress address, Context context, String peerId) {
+        if (pubKey != null) {
+            String ip = address.getAddress().toString().replace("/", "");
+            InboxItem i = new InboxItem(peerId, new ArrayList<Integer>(), ip, pubKey, address.getPort());
+            InboxItemStorage.addInboxItem(context, i);
+        }
+    }
+    private static void addBlockToInbox(String pubKey,BlockMessage blockMessage, Context context) {
+        if (pubKey != null) {
+            try {
+                InboxItemStorage.addHalfBlock(context, blockMessage.getPubKey(), blockMessage.getMessageProto().getHalfBlock().getSequenceNumber());
+            } catch (MessageException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
 
     private static class ShowLocalIPTask extends AsyncTask<Void, Void, InetAddress> {
         @Override
@@ -291,9 +332,9 @@ public class Network {
             super.onPostExecute(inetAddress);
             if (inetAddress != null) {
                 internalSourceAddress = new InetSocketAddress(inetAddress, OverviewConnectionsActivity.DEFAULT_PORT);
-            }
-            if (networkCommunicationListener != null) {
-                networkCommunicationListener.updateInternalSourceAddress(internalSourceAddress.toString());
+                if (networkCommunicationListener != null) {
+                    networkCommunicationListener.updateInternalSourceAddress(internalSourceAddress.toString());
+                }
             }
         }
     }

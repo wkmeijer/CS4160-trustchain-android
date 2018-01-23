@@ -22,7 +22,7 @@ import nl.tudelft.cs4160.trustchain_android.message.MessageProto;
 
 import static nl.tudelft.cs4160.trustchain_android.Util.Util.ellipsize;
 
-public class TrustChainBlock {
+public class TrustChainBlockHelper {
     public static final ByteString GENESIS_HASH = ByteString.copyFrom(new byte[] {0x00});
     public static final int GENESIS_SEQ = 1;
     public static final int UNKNOWN_SEQ = 0;
@@ -31,7 +31,7 @@ public class TrustChainBlock {
 
     /**
      * Creates a TrustChain genesis block using protocol buffers.
-     * @return block - A MessageProto.TrustChainBlock
+     * @return block - A MessageProto.TrustChainBlockHelper
      */
     public static MessageProto.TrustChainBlock createGenesisBlock(KeyPair kp) {
         MessageProto.TrustChainBlock block = MessageProto.TrustChainBlock.newBuilder()
@@ -48,7 +48,7 @@ public class TrustChainBlock {
     }
 
     /**
-     * Creates a TrustChainBlock for the given input.
+     * Creates a TrustChainBlockHelper for the given input.
      * @param transaction - Details the message of the block, can be null if there is a linked block
      * @param dbHelper - database helper for the database in which the previous blocks of this peer can be found
      * @param mypubk - the public key of this peer
@@ -69,7 +69,7 @@ public class TrustChainBlock {
         } else {
             builder.setTransaction(ByteString.copyFrom(transaction))
                     .setLinkPublicKey(ByteString.copyFrom(linkpubk))
-                    .setLinkSequenceNumber(TrustChainBlock.UNKNOWN_SEQ);
+                    .setLinkSequenceNumber(TrustChainBlockHelper.UNKNOWN_SEQ);
         }
 
         // if a latest block was found set the correct fields, if not the block won't be validated
@@ -87,7 +87,7 @@ public class TrustChainBlock {
 
     /**
      * Checks if the given block is a genesis block
-     * @param block - TrustChainBlock that we want to check
+     * @param block - TrustChainBlockHelper that we want to check
      * @return boolean - true if the block is a genesis block, false otherwise
      */
     public static boolean isGenesisBlock(MessageProto.TrustChainBlock block) {
@@ -117,7 +117,7 @@ public class TrustChainBlock {
      */
     public static MessageProto.TrustChainBlock sign(MessageProto.TrustChainBlock block, PrivateKey privateKey) {
         //sign the hash
-        byte[] hash = TrustChainBlock.hash(block);
+        byte[] hash = TrustChainBlockHelper.hash(block);
         byte[] signature = Key.sign(privateKey, hash);
 
         //create the block
@@ -408,7 +408,7 @@ public class TrustChainBlock {
     }
 
     /**
-     * Helper method for toString method of TrustChainBlock. Creates a representation of a public key
+     * Helper method for toString method of TrustChainBlockHelper. Creates a representation of a public key
      * with a maximum length.
      * @param pubKey
      * @param maxLength

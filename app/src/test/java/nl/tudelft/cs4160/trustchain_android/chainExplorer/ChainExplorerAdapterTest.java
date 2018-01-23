@@ -14,14 +14,6 @@ public class ChainExplorerAdapterTest {
     private static final ByteString PEER_2_PEER = ByteString.copyFromUtf8("peer2peer");
     private ChainExplorerAdapter adapter = new ChainExplorerAdapter(null, null, new byte[0]);
 
-    @Test
-    public void find_peer_in_list() {
-        adapter.peerList = singlePeer();
-        String peerString = adapter.findInPeersOrAdd(PEER_2_PEER);
-
-        assertEquals(peerString, "me");
-    }
-
 /*
     @Test
     public void add_peer_if_not_in_list() {
