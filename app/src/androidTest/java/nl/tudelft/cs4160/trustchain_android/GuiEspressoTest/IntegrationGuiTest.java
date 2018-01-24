@@ -103,14 +103,14 @@ public class IntegrationGuiTest {
 //        onView(allOf(withId(R.id.signature), withText(ByteArrayConverter.bytesToHexString(getGenesisBlock().getSignature().toByteArray())))).check(matches(isDisplayed()));
 //    }
 
-    @Test
-    public void checkInformationActivity() {
-        // Open menu
-        openActionBarOverflowOrOptionsMenu(getInstrumentation().getTargetContext());
-        // Click on the menu item
-        onView(withText("Info")).perform(click());
-        onView(allOf(withId(R.id.connectionInfoHeaderText), withText(R.string.connectionInfoText))).check(matches(isDisplayed()));
-    }
+//    @Test
+//    public void checkInformationActivity() {
+//        // Open menu
+//        openActionBarOverflowOrOptionsMenu(getInstrumentation().getTargetContext());
+//        // Click on the menu item
+//        onView(withText("Info")).perform(click());
+//        onView(allOf(withId(R.id.connectionInfoHeaderText), withText(R.string.connectionInfoText))).check(matches(isDisplayed()));
+//    }
 
     @Test
     public void checkFindPeerActivity() {
