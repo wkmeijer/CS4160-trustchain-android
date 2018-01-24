@@ -34,7 +34,7 @@ public class IntroductionRequestTest {
 
     @Test
     public void testToString(){
-        assertEquals("IntroductionRequest{{public_key=jshjsjgwduhw, network_operator=WIFI, connection_type=1, destination={address=111.111.11.11, port=11}, type=1, peer_id=123}}",
+        assertEquals("IntroductionRequest{{peer_id=123, destination={address=111.111.11.11, port=11}, connection_type=1, type=1, network_operator=WIFI, public_key=jshjsjgwduhw}}",
                 req.toString());
     }
 

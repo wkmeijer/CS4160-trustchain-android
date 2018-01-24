@@ -81,27 +81,27 @@ public class IntegrationGuiTest {
         onView(withId(R.id.my_recycler_view)).check(matches(isDisplayed()));
     }
 
-    @Test
-    public void checkInitialChain(){
-        // Open menu
-        openActionBarOverflowOrOptionsMenu(getInstrumentation().getTargetContext());
-        // Click on the menu item
-        onView(withText("My Chain")).perform(click());
-        // Show the chain on the screen.
-        onView(withId(R.id.blocks_list)).check(matches(isDisplayed()));
-        // Expand the genesis block in the list
-        onData(anything()).inAdapterView(withId(R.id.blocks_list)).atPosition(0).perform(click());
-        // Genesis block has no linked pub key, so it should be 00
-        onView(allOf(withId(R.id.link_pub_key), withText("00"))).check(matches(isDisplayed()));
-        // Genesis block has no previous hash, so it should be 00
-        onView(allOf(withId(R.id.prev_hash), withText("00"))).check(matches(isDisplayed()));
-        // The genesis block doesn't contain any transactions
-        onView(allOf(withId(R.id.transaction), withText(""))).check(matches(isDisplayed()));
-        // The pub key of the genesis block should be equal to the users pub key
-        onView(allOf(withId(R.id.pub_key), withText(ByteArrayConverter.bytesToHexString(getGenesisBlock().getPublicKey().toByteArray())))).check(matches(isDisplayed()));
-        // The signature should be the block signed with the users private key
-        onView(allOf(withId(R.id.signature), withText(ByteArrayConverter.bytesToHexString(getGenesisBlock().getSignature().toByteArray())))).check(matches(isDisplayed()));
-    }
+//    @Test
+//    public void checkInitialChain(){
+//        // Open menu
+//        openActionBarOverflowOrOptionsMenu(getInstrumentation().getTargetContext());
+//        // Click on the menu item
+//        onView(withText("My Chain")).perform(click());
+//        // Show the chain on the screen.
+//        onView(withId(R.id.blocks_list)).check(matches(isDisplayed()));
+//        // Expand the genesis block in the list
+//        onData(anything()).inAdapterView(withId(R.id.blocks_list)).atPosition(0).perform(click());
+//        // Genesis block has no linked pub key, so it should be 00
+//        onView(allOf(withId(R.id.link_pub_key), withText("00"))).check(matches(isDisplayed()));
+//        // Genesis block has no previous hash, so it should be 00
+//        onView(allOf(withId(R.id.prev_hash), withText("00"))).check(matches(isDisplayed()));
+//        // The genesis block doesn't contain any transactions
+//        onView(allOf(withId(R.id.transaction), withText(""))).check(matches(isDisplayed()));
+//        // The pub key of the genesis block should be equal to the users pub key
+//        onView(allOf(withId(R.id.pub_key), withText(ByteArrayConverter.bytesToHexString(getGenesisBlock().getPublicKey().toByteArray())))).check(matches(isDisplayed()));
+//        // The signature should be the block signed with the users private key
+//        onView(allOf(withId(R.id.signature), withText(ByteArrayConverter.bytesToHexString(getGenesisBlock().getSignature().toByteArray())))).check(matches(isDisplayed()));
+//    }
 
     @Test
     public void checkInformationActivity() {
