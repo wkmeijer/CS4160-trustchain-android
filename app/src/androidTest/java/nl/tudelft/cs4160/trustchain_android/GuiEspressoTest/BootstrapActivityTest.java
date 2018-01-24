@@ -14,6 +14,7 @@ import static android.support.test.espresso.Espresso.openActionBarOverflowOrOpti
 import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.action.ViewActions.replaceText;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
+import static android.support.test.espresso.matcher.RootMatchers.isPlatformPopup;
 import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
@@ -31,12 +32,12 @@ public class BootstrapActivityTest {
     @Test
     public void gotoOverviewConnections(){
         // Change to invalid IP
-        onView(withId(R.id.bootstrap_IP)).perform(replaceText("dwdw534"));
-        onView(withId(R.id.change_bootstrap)).perform(click());
-        onView(withId(R.id.bootstrap_IP)).check(matches(isDisplayed()));
+        onView(withId(R.id.bootstrap_IP)).inRoot(isPlatformPopup()).perform(replaceText("dwdw534"));
+        onView(withId(R.id.change_bootstrap)).inRoot(isPlatformPopup()).perform(click());
+        onView(withId(R.id.bootstrap_IP)).inRoot(isPlatformPopup()).check(matches(isDisplayed()));
 
         // Change to valid IP
-        onView(withId(R.id.bootstrap_IP)).perform(replaceText("145.94.155.32"));
+        onView(withId(R.id.bootstrap_IP)).inRoot(isPlatformPopup()).perform(replaceText("145.94.155.32"));
         // after this button is pressed the activity is shut down (Because no OverviewConnection is active)
 //        onView(withId(R.id.change_bootstrap)).perform(click());
 //        onView(withId(R.id.incoming_peer_connection_list_view)).check(matches(isDisplayed()));
