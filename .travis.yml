@@ -41,7 +41,7 @@ before_script:
   - adb shell input keyevent 82 &
 
 script:
-  - ./gradlew jacocoTestReport
+  - ./gradlew connectedCheck jacocoTestReport
 
 after_success:
   - bash <(curl -s https://codecov.io/bash)
