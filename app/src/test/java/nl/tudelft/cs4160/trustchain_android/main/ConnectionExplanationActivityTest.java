@@ -5,8 +5,7 @@ import android.widget.TextView;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
-import org.robolectric.RobolectricGradleTestRunner;
-import org.robolectric.RuntimeEnvironment;
+import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 
 import nl.tudelft.cs4160.trustchain_android.BuildConfig;
@@ -22,7 +21,7 @@ import static org.robolectric.Shadows.shadowOf;
  * Created by clintoncao on 25-1-18.
  */
 
-@RunWith(RobolectricGradleTestRunner.class)
+@RunWith(RobolectricTestRunner.class)
 @Config(constants = BuildConfig.class, sdk = 25)
 public class ConnectionExplanationActivityTest {
 
