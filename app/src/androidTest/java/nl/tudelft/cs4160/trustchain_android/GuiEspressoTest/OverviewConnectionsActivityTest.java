@@ -29,15 +29,15 @@ public class OverviewConnectionsActivityTest {
     public ActivityTestRule<OverviewConnectionsActivity> mActivityRule = new ActivityTestRule<>(
             OverviewConnectionsActivity.class);
 
-    @Test
-    public void gotoBootstrapActivity(){
-        // Open the ActionBar
-        openActionBarOverflowOrOptionsMenu(getInstrumentation().getTargetContext());
-        // Why not able to find by: withId(R.id.find_peer)
-        onView(withText("Find peer"))   // withId(R.id.my_view) is a ViewMatcher
-                .perform(click());            // click() is a ViewAction
-        onView(withId(R.id.bootstrap_IP)).check(matches(isDisplayed()));
-    }
+//    @Test
+//    public void gotoBootstrapActivity(){
+//        // Open the ActionBar
+//        openActionBarOverflowOrOptionsMenu(getInstrumentation().getTargetContext());
+//        // Why not able to find by: withId(R.id.find_peer)
+//        onView(withText("Find peer"))   // withId(R.id.my_view) is a ViewMatcher
+//                .perform(click());            // click() is a ViewAction
+//        onView(withId(R.id.bootstrap_IP)).check(matches(isDisplayed()));
+//    }
 
     @Test
     public void gotoTrustchainActivityTest() {

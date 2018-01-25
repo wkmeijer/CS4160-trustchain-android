@@ -74,12 +74,12 @@ public class IntegrationGuiTest {
         //onView(allOf(withId(R.id.connection_type), withText("WIFI"))).check(matches(isDisplayed()));
     }
 
-    @Test
-    public void testInboxOverviewActivity() {
-        // press the open inbox item
-        onView(withId(R.id.open_inbox_item)).perform(click());
-        onView(withId(R.id.my_recycler_view)).check(matches(isDisplayed()));
-    }
+//    @Test
+//    public void testInboxOverviewActivity() {
+//        // press the open inbox item
+//        onView(withId(R.id.open_inbox_item)).perform(click());
+//        onView(withId(R.id.my_recycler_view)).check(matches(isDisplayed()));
+//    }
 
 //    @Test
 //    public void checkInitialChain(){
