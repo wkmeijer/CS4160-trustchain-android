@@ -10,6 +10,8 @@ import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 
+import java.util.List;
+
 import nl.tudelft.cs4160.trustchain_android.BuildConfig;
 import nl.tudelft.cs4160.trustchain_android.R;
 
@@ -33,11 +35,20 @@ public class ConnectionExplanationActivityTest {
     }
 
     @Test
-    public void test() {
+    public void testTextViewIsCreated() {
         TextView headerTv = (TextView) conExActivity.findViewById(R.id.connectionInfoHeaderText);
-        ListView infoLv = (ListView) conExActivity.findViewById(R.id.connectionColorExplanationList);
         assertNotNull(headerTv);
-        assertNotNull(infoLv);
-        assertEquals(5, infoLv.getCount());
     }
+
+    @Test
+    public void testListViewIsCreated() {
+        ListView infoLv = (ListView) conExActivity.findViewById(R.id.connectionColorExplanationList);
+        assertNotNull(infoLv);
+    }
+
+    @Test
+    public void testRightAmountOfItemsAreInList() {
+        ListView infoLv = (ListView) conExActivity.findViewById(R.id.connectionColorExplanationList);
+        assertEquals(5, infoLv.getCount());
+    }   
 }
