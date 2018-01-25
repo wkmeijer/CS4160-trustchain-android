@@ -28,10 +28,6 @@ cache:
     - $HOME/android-sdk-dl
     - $HOME/android-sdk
 
-    # Gradle dependencies
-    - $HOME/.gradle/caches/
-    - $HOME/.gradle/wrapper/
-
 script:
   - ./gradlew jacocoTestReport
 
