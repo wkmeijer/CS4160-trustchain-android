@@ -33,7 +33,7 @@ cache:
     - $HOME/android-sdk
 
 script:
-  - ./gradlew jacocoTestReport
+  - ./gradlew jacocoTestReport --info
 
 after_success:
   - bash <(curl -s https://codecov.io/bash)
