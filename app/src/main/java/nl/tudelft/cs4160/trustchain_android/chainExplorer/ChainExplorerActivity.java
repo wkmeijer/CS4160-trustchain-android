@@ -44,6 +44,8 @@ public class ChainExplorerActivity extends AppCompatActivity {
     static final String TAG = "ChainExplorerActivity";
     private static final String TITLE = "My chain overview";
 
+    public static final String BUNDLE_EXTRAS_PUBLIC_KEY = "publicKey";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -88,8 +90,8 @@ public class ChainExplorerActivity extends AppCompatActivity {
         dbHelper = new TrustChainDBHelper(this);
         DualKey kp = Key.loadKeys(getApplicationContext());
         byte[] publicKey;
-        if (getIntent().hasExtra("publicKey")) {
-            publicKey = getIntent().getByteArrayExtra("publicKey");
+        if (getIntent().hasExtra(BUNDLE_EXTRAS_PUBLIC_KEY )) {
+            publicKey = getIntent().getByteArrayExtra(BUNDLE_EXTRAS_PUBLIC_KEY );
         } else {
             publicKey = kp.getPublicKeyPair().toBytes();
         }
