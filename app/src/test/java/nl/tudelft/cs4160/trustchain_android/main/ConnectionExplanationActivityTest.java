@@ -21,7 +21,7 @@ public class ConnectionExplanationActivityTest {
 
     @Test
     public void testElementsAreDisplayed() {
-        ConnectionExplanationActivity activity = Robolectric.setupActivity(ConnectionExplanationActivity.class);
+        ConnectionExplanationActivity activity = Robolectric.buildActivity(ConnectionExplanationActivity.class).create().start().resume().get();
         TextView infoHeaderTv = (TextView) activity.findViewById(R.id.connectionInfoHeaderText);
         assertNotNull("TextView could not be found", infoHeaderTv);
     }
