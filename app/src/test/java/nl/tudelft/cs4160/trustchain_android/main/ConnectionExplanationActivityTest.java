@@ -19,7 +19,6 @@ import static junit.framework.Assert.assertTrue;
  */
 
 @RunWith(RobolectricTestRunner.class)
-@Config(constants = BuildConfig.class, sdk = 25)
 public class ConnectionExplanationActivityTest {
 
     @Test
