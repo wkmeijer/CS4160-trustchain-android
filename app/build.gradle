@@ -50,7 +50,7 @@ dependencies {
     compile 'com.google.code.gson:gson:2.8.2'
     testCompile 'junit:junit:4.12'
     testCompile 'org.mockito:mockito-core:2.7.22'
-    testCompile 'org.robolectric:robolectric:3.6.1'
+    testImplementation 'org.robolectric:robolectric:3.6.1'
     testCompile "org.robolectric:shadows-multidex:3.0"
     androidTestCompile 'org.mockito:mockito-android:2.7.22'
     androidTestCompile 'com.android.support.test.espresso:espresso-core:2.2.2'
