@@ -7,7 +7,9 @@ import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.RuntimeEnvironment;
+import org.robolectric.annotation.Config;
 
+import nl.tudelft.cs4160.trustchain_android.BuildConfig;
 import nl.tudelft.cs4160.trustchain_android.R;
 
 import static junit.framework.Assert.assertEquals;
@@ -21,6 +23,7 @@ import static org.robolectric.Shadows.shadowOf;
  */
 
 @RunWith(RobolectricTestRunner.class)
+@Config(constants = BuildConfig.class, sdk = 25)
 public class ConnectionExplanationActivityTest {
 
     @Test
