@@ -9,6 +9,8 @@ env:
   global:
     - ANDROID_EMU_API_LEVEL=25
 
+notifications:
+  email: false
 
 android:
   components:

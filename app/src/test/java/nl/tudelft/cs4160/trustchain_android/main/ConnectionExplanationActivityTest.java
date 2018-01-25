@@ -13,8 +13,7 @@ import nl.tudelft.cs4160.trustchain_android.R;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertTrue;
-import static org.robolectric.Shadows.shadowOf;
+
 
 
 /**
