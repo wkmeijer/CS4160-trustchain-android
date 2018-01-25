@@ -19,6 +19,7 @@ import android.widget.ProgressBar;
 
 import com.google.protobuf.ByteString;
 
+import java.util.Arrays;
 import java.util.List;
 
 import nl.tudelft.cs4160.trustchain_android.R;
@@ -88,10 +89,11 @@ public class ChainExplorerActivity extends AppCompatActivity {
         DualKey kp = Key.loadKeys(getApplicationContext());
         byte[] publicKey;
         if (getIntent().hasExtra("publicKey")) {
-            publicKey = ByteArrayConverter.hexStringToByteArray(getIntent().getStringExtra("publicKey"));
+            publicKey = getIntent().getByteArrayExtra("publicKey");
         } else {
             publicKey = kp.getPublicKeyPair().toBytes();
         }
+        Log.i(TAG, "Using " + Arrays.toString(publicKey) + " as public key");
         try {
             List<MessageProto.TrustChainBlock> blocks = dbHelper.getBlocks(publicKey, true);
             if(blocks.size() > 0) {
