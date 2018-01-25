@@ -26,7 +26,7 @@ import static junit.framework.Assert.assertNotNull;
 public class ConnectionExplanationActivityTest {
 
     private ConnectionExplanationActivity conExActivity;
-    
+
     @Before
     public void setUp() {
         conExActivity = Robolectric.setupActivity(ConnectionExplanationActivity.class);
