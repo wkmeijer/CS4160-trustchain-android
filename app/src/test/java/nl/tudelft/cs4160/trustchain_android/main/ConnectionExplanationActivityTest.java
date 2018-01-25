@@ -19,9 +19,8 @@ import static junit.framework.Assert.assertNotNull;
 public class ConnectionExplanationActivityTest {
 
     @Test
-    public void clickingButton_shouldChangeResultsViewText() throws Exception {
+    public void testElementsAreDisplayed() {
         ConnectionExplanationActivity activity = Robolectric.setupActivity(ConnectionExplanationActivity.class);
-
         TextView headerTv = (TextView) activity.findViewById(R.id.connectionInfoHeaderText);
         assertNotNull(headerTv);
     }
