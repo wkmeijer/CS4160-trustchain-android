@@ -1,4 +1,4 @@
-package nl.tudelft.cs4160.trustchain_android.main;
+package nl.tudelft.cs4160.trustchain_android.GUITest;
 
 import android.widget.ListView;
 import android.widget.TextView;
@@ -14,6 +14,7 @@ import java.util.List;
 
 import nl.tudelft.cs4160.trustchain_android.BuildConfig;
 import nl.tudelft.cs4160.trustchain_android.R;
+import nl.tudelft.cs4160.trustchain_android.main.ConnectionExplanationActivity;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
