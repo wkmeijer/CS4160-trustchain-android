@@ -1,12 +1,16 @@
 language: android
+
+jdk:
+    - oraclejdk8
+
 sudo: false
 dist: trusty
 env:
   global:
-    - ANDROID_ABI=arm64-v8a
     - ANDROID_EMU_API_LEVEL=25
-    - ADB_INSTALL_TIMEOUT=50 # minutes (2 minutes by default)
 
+notifications:
+  email: false
 
 android:
   components:
@@ -34,14 +38,8 @@ cache:
     - $HOME/.gradle/caches/
     - $HOME/.gradle/wrapper/
 
-before_script:
-  - echo no | android create avd --force -n test -t android-$ANDROID_EMU_API_LEVEL --abi google_apis/$ANDROID_ABI
-  - emulator -avd test -no-window &
-  - android-wait-for-emulator
-  - adb shell input keyevent 82 &
-
 script:
-  - ./gradlew connectedCheck jacocoTestReport
+  - ./gradlew jacocoTestReport
 
 after_success:
   - bash <(curl -s https://codecov.io/bash)
