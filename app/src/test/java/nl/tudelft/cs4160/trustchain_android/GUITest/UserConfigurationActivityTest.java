@@ -70,7 +70,7 @@ public class UserConfigurationActivityTest {
         setUsernameInPref();
 
         // look whether the ID is correctly displayed in the OverviewConnections window.
-        OverviewConnectionsActivity ovCoActivity = Robolectric.buildActivity(OverviewConnectionsActivity.class).create().get();
+        OverviewConnectionsActivity ovCoActivity = Robolectric.setupActivity(OverviewConnectionsActivity.class);
         TextView peerIdView = (TextView) ovCoActivity.findViewById(R.id.peer_id);
         assertEquals(user, peerIdView.getText());
     }
