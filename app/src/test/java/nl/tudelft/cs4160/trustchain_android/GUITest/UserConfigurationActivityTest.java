@@ -38,41 +38,37 @@ public class UserConfigurationActivityTest {
 
     private UserConfigurationActivity userConActivity;
 
-    @Before
-    public void setUp() {
-        userConActivity = Robolectric.setupActivity(UserConfigurationActivity.class);
-    }
-
     @Test
     public void makeNewUsername(){
+        // Empty any previously stored usernames
+        userConActivity = Robolectric.setupActivity(UserConfigurationActivity.class);
         emptyUserNamePreferences();
 
-        //enter the username
+        // Enter the username
         EditText userNameInput = (EditText) userConActivity.findViewById(R.id.username);
         userNameInput.setText(user);
 
-        // press the login button
+        // Press the login button
         Button confirmButton = (Button) userConActivity.findViewById(R.id.confirm_button);
         confirmButton.callOnClick();
 
+        // Check if the overview connection activity is called
         Intent expectedIntent = new Intent(userConActivity, OverviewConnectionsActivity.class);
         Intent actual = ShadowApplication.getInstance().getNextStartedActivity();
         assertEquals(expectedIntent.getComponent(), actual.getComponent());
-
-        // look whether the ID is correctly displayed in the OverviewConnections window.
-        OverviewConnectionsActivity ovCoActivity = Robolectric.buildActivity(OverviewConnectionsActivity.class, actual).create().get();
-        TextView peerIdView = (TextView) ovCoActivity.findViewById(R.id.peer_id);
-        assertEquals(user, peerIdView.getText());
     }
 
     @Test
     public void usernameAlreadyStored(){
+        // Set a stored username in advance
+        userConActivity = Robolectric.setupActivity(UserConfigurationActivity.class);
         setUsernameInPref();
+        userConActivity = Robolectric.setupActivity(UserConfigurationActivity.class);
 
-        // look whether the ID is correctly displayed in the OverviewConnections window.
-        OverviewConnectionsActivity ovCoActivity = Robolectric.setupActivity(OverviewConnectionsActivity.class);
-        TextView peerIdView = (TextView) ovCoActivity.findViewById(R.id.peer_id);
-        assertEquals(user, peerIdView.getText());
+        // The first activity should directly show the overview connections activity since there was already a username stored.
+        Intent expectedIntent = new Intent(userConActivity, OverviewConnectionsActivity.class);
+        Intent actual = ShadowApplication.getInstance().getNextStartedActivity();
+        assertEquals(expectedIntent.getComponent(), actual.getComponent());
     }
 
     private void emptyUserNamePreferences(){
