@@ -1,8 +1,11 @@
 package nl.tudelft.cs4160.trustchain_android.UtilTest;
 
+import com.google.protobuf.ByteString;
+
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 
 import nl.tudelft.cs4160.trustchain_android.Util.ByteArrayConverter;
@@ -23,22 +26,33 @@ public class ByteArrayConverterTest {
 
     String s1;
     String s2;
-    String s3;
+
+    String hexString1;
+    String hexString2;
+
+    ByteString byteString1;
+    ByteString byteString2;
 
     @Before
     public void initialization() {
-        ba1 = "Test string 1".getBytes();
-        ba2 = "Test string 2".getBytes();
-        ba3 = "Test string 1".getBytes();
+        s1 = "0002";
+        s2 = "0001";
 
-        s1 = "Test string 1";
-        s2 = "Test string 2";
-        s3 = "Test string 1";
+        byte[] byteArray = {0, 2};
+        ba1 = byteArray;
+        ba3 = byteArray;
+        byteString1 = ByteString.copyFrom(byteArray);
+        byte[] byteArray2 = {0, 1};
+        ba2 = byteArray2;
+        byteString2 = ByteString.copyFrom(byteArray2);
+
+        hexString1 = "0002";
+        hexString2 = "0001";
     }
 
     @Test
     public void testByteStringToStringSame() {
-        assertEquals(ByteArrayConverter.bytesToHexString(ba1),ByteArrayConverter.bytesToHexString(ba3));
+        assertEquals(ByteArrayConverter.bytesToHexString(ba1), ByteArrayConverter.bytesToHexString(ba3));
     }
 
     @Test
@@ -47,10 +61,19 @@ public class ByteArrayConverterTest {
     }
 
     @Test
+    public void testBytesToHexString() {
+        assertEquals("0002",ByteArrayConverter.bytesToHexString(ba1));
+    }
+
+    @Test
+    public void testByteStringToString() {
+        String output1 = ByteArrayConverter.byteStringToString(byteString1);
+        assertEquals(output1, "0002");
+    }
+
+    @Test
     public void testHexStringToByteArray() {
-        //byte[] output1 = ByteArrayConverter.hexStringToByteArray(s1);
-        //byte[] output2 = ByteArrayConverter.hexStringToByteArray(s2);
-        //assertFalse(Arrays.equals(output1, output2));
-        //assertTrue(Arrays.equals(ByteArrayConverter.hexStringToByteArray(s1), ByteArrayConverter.hexStringToByteArray(s3)));
+        byte[] output1 = ByteArrayConverter.hexStringToByteArray(hexString1);
+        assertTrue(Arrays.equals(output1, ba1));
     }
 }
