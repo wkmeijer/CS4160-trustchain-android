@@ -35,7 +35,6 @@ import static org.hamcrest.CoreMatchers.allOf;
 @Config(constants = BuildConfig.class, sdk = 25)
 public class UserConfigurationActivityTest {
     private String user = "New User";
-
     private UserConfigurationActivity userConActivity;
 
     @Test

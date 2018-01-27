@@ -1,59 +1,76 @@
-//package nl.tudelft.cs4160.trustchain_android.GUITest;
-//
-//import android.support.test.rule.ActivityTestRule;
-//
-//import org.junit.Before;
-//import org.junit.Rule;
-//import org.junit.Test;
-//
-//import static android.support.test.InstrumentationRegistry.getInstrumentation;
-//import static android.support.test.espresso.Espresso.onView;
-//import static android.support.test.espresso.Espresso.openActionBarOverflowOrOptionsMenu;
-//import static android.support.test.espresso.action.ViewActions.click;
-//import static android.support.test.espresso.assertion.ViewAssertions.matches;
-//import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
-//import static android.support.test.espresso.matcher.ViewMatchers.withId;
-//import static android.support.test.espresso.matcher.ViewMatchers.withText;
-//
-//import nl.tudelft.cs4160.trustchain_android.R;
-//import nl.tudelft.cs4160.trustchain_android.main.OverviewConnectionsActivity;
-//
-//
-///**
-// * Created by Laurens on 12/18/2017.
-// */
-//
-//public class OverviewConnectionsActivityTest {
-//
-//    @Rule
-//    public ActivityTestRule<OverviewConnectionsActivity> mActivityRule = new ActivityTestRule<>(
-//            OverviewConnectionsActivity.class);
-//
-////    @Test
-////    public void gotoBootstrapActivity(){
-////        // Open the ActionBar
-////        openActionBarOverflowOrOptionsMenu(getInstrumentation().getTargetContext());
-////        // Why not able to find by: withId(R.id.find_peer)
-////        onView(withText("Find peer"))   // withId(R.id.my_view) is a ViewMatcher
-////                .perform(click());            // click() is a ViewAction
-////        onView(withId(R.id.bootstrap_IP)).check(matches(isDisplayed()));
-////    }
-//
-//    @Test
-//    public void gotoTrustchainActivityTest() {
-//        // in this unit test it is not possible to go the trustchain activity
-//        // integration test needs to be made here.
-//        //TODO
-//    }
-//
-//    @Test
-//    public void gotoChainExplorerActivity() {
-//        // Open the ActionBar
-//        openActionBarOverflowOrOptionsMenu(getInstrumentation().getTargetContext());
-//        // Click on the menu item
-//        onView(withText("My Chain"))
-//                .perform(click());
-//        // Show the chain on the screen.
-//        onView(withId(R.id.blocks_list)).check(matches(isDisplayed()));
-//    }
-//}
+package nl.tudelft.cs4160.trustchain_android.GUITest;
+
+import android.view.MenuItem;
+import android.widget.Button;
+import android.widget.EditText;
+
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.robolectric.Robolectric;
+import org.robolectric.RobolectricTestRunner;
+import org.robolectric.Shadows;
+import org.robolectric.annotation.Config;
+import org.robolectric.fakes.RoboMenuItem;
+import org.robolectric.shadows.ShadowActivity;
+
+import nl.tudelft.cs4160.trustchain_android.BuildConfig;
+import nl.tudelft.cs4160.trustchain_android.R;
+import nl.tudelft.cs4160.trustchain_android.SharedPreferences.UserNameStorage;
+import nl.tudelft.cs4160.trustchain_android.main.OverviewConnectionsActivity;
+import nl.tudelft.cs4160.trustchain_android.main.UserConfigurationActivity;
+
+import static junit.framework.Assert.assertTrue;
+
+
+/**
+ * Created by Laurens on 12/18/2017.
+ */
+@RunWith(RobolectricTestRunner.class)
+@Config(constants = BuildConfig.class, sdk = 25)
+public class OverviewConnectionsActivityTest {
+
+    private UserConfigurationActivity userConActivity;
+    private OverviewConnectionsActivity overviewConnectionsActivity;
+
+    @Before
+    public void initializeUser() {
+        userConActivity = Robolectric.setupActivity(UserConfigurationActivity.class);
+        // Enter the username
+        EditText userNameInput = (EditText) userConActivity.findViewById(R.id.username);
+        userNameInput.setText("New User");
+
+        // Press the login button
+        Button confirmButton = (Button) userConActivity.findViewById(R.id.confirm_button);
+        confirmButton.callOnClick();
+
+        // TODO:
+        // fix this
+        //overviewConnectionsActivity = Robolectric.setupActivity(OverviewConnectionsActivity.class);
+    }
+
+    @Test
+    public void goToInfoActivity() {
+        MenuItem menuItem = new RoboMenuItem(R.id.connection_explanation_menu);
+        overviewConnectionsActivity.onOptionsItemSelected(menuItem);
+        ShadowActivity shadowActivity = Shadows.shadowOf(overviewConnectionsActivity);
+        assertTrue(shadowActivity.isFinishing());
+    }
+
+    @Test
+    public void gotoChainExplorerActivity() {
+        MenuItem menuItem = new RoboMenuItem(R.id.chain_menu);
+        overviewConnectionsActivity.onOptionsItemSelected(menuItem);
+        ShadowActivity shadowActivity = Shadows.shadowOf(overviewConnectionsActivity);
+        assertTrue(shadowActivity.isFinishing());
+    }
+
+    @Test
+    public void goToChangeBootstrapActivity() {
+        MenuItem menuItem = new RoboMenuItem(R.id.find_peer);
+        overviewConnectionsActivity.onOptionsItemSelected(menuItem);
+        ShadowActivity shadowActivity = Shadows.shadowOf(overviewConnectionsActivity);
+        assertTrue(shadowActivity.isFinishing());
+    }
+}
