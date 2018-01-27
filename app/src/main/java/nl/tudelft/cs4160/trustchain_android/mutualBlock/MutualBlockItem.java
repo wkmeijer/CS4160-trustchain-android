@@ -1,4 +1,4 @@
-package nl.tudelft.cs4160.trustchain_android.main;
+package nl.tudelft.cs4160.trustchain_android.mutualBlock;
 
 import nl.tudelft.cs4160.trustchain_android.message.MessageProto;
 

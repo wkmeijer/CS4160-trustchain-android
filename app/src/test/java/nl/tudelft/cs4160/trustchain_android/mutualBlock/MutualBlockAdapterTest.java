@@ -7,9 +7,6 @@ import org.junit.Test;
 
 import java.util.ArrayList;
 
-import nl.tudelft.cs4160.trustchain_android.main.MutualBlockAdapter;
-import nl.tudelft.cs4160.trustchain_android.main.MutualBlockItem;
-
 public class MutualBlockAdapterTest extends TestCase {
 
 
