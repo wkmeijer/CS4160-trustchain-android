@@ -1,3 +1,24 @@
+package nl.tudelft.cs4160.trustchain_android.GUITest;
+
+import android.content.Intent;
+import android.provider.Telephony;
+import android.widget.Button;
+
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.robolectric.Robolectric;
+import org.robolectric.RobolectricTestRunner;
+import org.robolectric.annotation.Config;
+import org.robolectric.shadows.ShadowApplication;
+
+import nl.tudelft.cs4160.trustchain_android.BuildConfig;
+import nl.tudelft.cs4160.trustchain_android.R;
+import nl.tudelft.cs4160.trustchain_android.inbox.InboxActivity;
+import nl.tudelft.cs4160.trustchain_android.main.OverviewConnectionsActivity;
+import nl.tudelft.cs4160.trustchain_android.main.UserConfigurationActivity;
+
+import static junit.framework.Assert.assertEquals;
+
 //package nl.tudelft.cs4160.trustchain_android.GUITest;
 //
 //import android.content.Intent;
@@ -38,7 +59,23 @@
 // * Created by Laurens on 12/18/2017.
 // */
 //
-//public class IntegrationGuiTest {
+@RunWith(RobolectricTestRunner.class)
+@Config(constants = BuildConfig.class, sdk = 25)
+public class IntegrationGuiTest {
+
+
+    @Test
+    public void testInboxOverviewActivity() {
+            InboxActivity inboxActivity = Robolectric.setupActivity(InboxActivity.class);
+            Button findNewUserButton = (Button) inboxActivity.findViewById(R.id.userButton);
+            findNewUserButton.callOnClick();
+
+            Intent expectedIntent = new Intent(inboxActivity, OverviewConnectionsActivity.class);
+            Intent actual = ShadowApplication.getInstance().getNextStartedActivity();
+            assertEquals(expectedIntent.getComponent(), actual.getComponent());
+
+    }
+
 //
 //    private String userName = "testUser";
 //
@@ -74,13 +111,7 @@
 //        //onView(allOf(withId(R.id.connection_type), withText("WIFI"))).check(matches(isDisplayed()));
 //    }
 //
-////    @Test
-////    public void testInboxOverviewActivity() {
-////        // press the open inbox item
-////        onView(withId(R.id.open_inbox_item)).perform(click());
-////        onView(withId(R.id.my_recycler_view)).check(matches(isDisplayed()));
-////    }
-//
+
 ////    @Test
 ////    public void checkInitialChain(){
 ////        // Open menu
@@ -127,4 +158,4 @@
 //        byte[] publicKey = kp.getPublic().getEncoded();
 //        return dbHelper.getBlocks(publicKey, true).get(0);
 //    }
-//}
+}
