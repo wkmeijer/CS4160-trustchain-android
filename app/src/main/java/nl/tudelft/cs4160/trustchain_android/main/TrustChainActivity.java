@@ -66,7 +66,6 @@ import static nl.tudelft.cs4160.trustchain_android.block.TrustChainBlockHelper.s
 
 public class TrustChainActivity extends AppCompatActivity implements CompoundButton.OnCheckedChangeListener, CrawlRequestListener {
 
-    public final static int DEFAULT_PORT = 1873;
     private final static String TAG = TrustChainActivity.class.toString();
     private Context context;
     boolean developerMode = false;
