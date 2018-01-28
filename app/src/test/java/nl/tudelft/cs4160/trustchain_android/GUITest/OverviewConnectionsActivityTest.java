@@ -1,8 +1,15 @@
 package nl.tudelft.cs4160.trustchain_android.GUITest;
 
+import android.content.Intent;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ListView;
+import android.widget.TableLayout;
+import android.widget.TextView;
+
+import junit.framework.Assert;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -14,14 +21,22 @@ import org.robolectric.Shadows;
 import org.robolectric.annotation.Config;
 import org.robolectric.fakes.RoboMenuItem;
 import org.robolectric.shadows.ShadowActivity;
+import org.robolectric.shadows.ShadowApplication;
+import org.robolectric.shadows.ShadowIntent;
+
+import java.util.List;
 
 import nl.tudelft.cs4160.trustchain_android.BuildConfig;
 import nl.tudelft.cs4160.trustchain_android.R;
 import nl.tudelft.cs4160.trustchain_android.SharedPreferences.UserNameStorage;
+import nl.tudelft.cs4160.trustchain_android.main.ConnectionExplanationActivity;
 import nl.tudelft.cs4160.trustchain_android.main.OverviewConnectionsActivity;
 import nl.tudelft.cs4160.trustchain_android.main.UserConfigurationActivity;
 
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertTrue;
+import static org.robolectric.Shadows.shadowOf;
 
 
 /**
@@ -51,26 +66,52 @@ public class OverviewConnectionsActivityTest {
     }
 
     @Test
-    public void goToInfoActivity() {
-        MenuItem menuItem = new RoboMenuItem(R.id.connection_explanation_menu);
-        overviewConnectionsActivity.onOptionsItemSelected(menuItem);
-        ShadowActivity shadowActivity = Shadows.shadowOf(overviewConnectionsActivity);
-        assertTrue(shadowActivity.isFinishing());
+    public void tableLayoutIsCreated() {
+        TableLayout tableLayoutForButtons = (TableLayout) overviewConnectionsActivity.findViewById(R.id.overviewButtons);
+        assertNotNull(tableLayoutForButtons);
     }
 
     @Test
-    public void gotoChainExplorerActivity() {
-        MenuItem menuItem = new RoboMenuItem(R.id.chain_menu);
-        overviewConnectionsActivity.onOptionsItemSelected(menuItem);
-        ShadowActivity shadowActivity = Shadows.shadowOf(overviewConnectionsActivity);
-        assertTrue(shadowActivity.isFinishing());
+    public void localIpTextViewIsCreated() {
+        TextView localIPTV = (TextView) overviewConnectionsActivity.findViewById(R.id.local_ip_address_view);
+        assertNotNull(localIPTV);
     }
 
     @Test
-    public void goToChangeBootstrapActivity() {
-        MenuItem menuItem = new RoboMenuItem(R.id.find_peer);
-        overviewConnectionsActivity.onOptionsItemSelected(menuItem);
-        ShadowActivity shadowActivity = Shadows.shadowOf(overviewConnectionsActivity);
-        assertTrue(shadowActivity.isFinishing());
+    public void wanVoteTextViewIsCreated() {
+        TextView wanVoteTV = (TextView) overviewConnectionsActivity.findViewById(R.id.wanvote);
+        assertNotNull(wanVoteTV);
+    }
+
+    @Test
+    public void peerIDTextViewIsCreated() {
+        TextView peerIDTV = (TextView) overviewConnectionsActivity.findViewById(R.id.peer_id);
+        assertNotNull(peerIDTV);
+    }
+
+    @Test
+    public void connectionTypeTextViewIsCreated() {
+        TextView connectionTypeTV = (TextView) overviewConnectionsActivity.findViewById(R.id.connection_type);
+        assertNotNull(connectionTypeTV);
+    }
+
+    @Test
+    public void exitButtonIsCreated() {
+        Button exitButton = (Button) overviewConnectionsActivity.findViewById(R.id.exit_button);
+        assertNotNull(exitButton);
+    }
+
+    @Test
+    public void listViewsCreated() {
+        ListView incomingPeerLV = (ListView) overviewConnectionsActivity.findViewById(R.id.incoming_peer_connection_list_view);
+        ListView outgoingPeerLV = (ListView) overviewConnectionsActivity.findViewById(R.id.outgoing_peer_connection_list_view);
+        assertNotNull(incomingPeerLV);
+        assertNotNull(outgoingPeerLV);
+    }
+
+    @Test
+    public void openInboxButtonIsCreated() {
+        Button openInboxButton = (Button) overviewConnectionsActivity.findViewById(R.id.open_inbox_item);
+        assertNotNull(openInboxButton);
     }
 }
