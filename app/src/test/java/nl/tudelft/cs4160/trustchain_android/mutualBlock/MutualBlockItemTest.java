@@ -146,4 +146,11 @@ public class MutualBlockItemTest extends TestCase {
         assertNotEquals(m1, m2);
     }
 
+    @Test
+    public void testEqualsWithAnotherTypeObjectShouldNotBeEqual() {
+        MutualBlockItem m1 = new MutualBlockItem(testString, 0, linkSeqNum, testString, testString, block);
+        Object obj = new Object();
+        assertNotEquals(m1, obj);
+    }
+
 }
