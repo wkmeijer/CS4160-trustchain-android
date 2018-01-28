@@ -1,8 +1,4 @@
 language: android
-
-jdk:
-    - oraclejdk8
-
 sudo: false
 dist: trusty
 env:
@@ -39,7 +35,7 @@ cache:
     - $HOME/.gradle/wrapper/
 
 script:
-  - ./gradlew jacocoTestReport
+  - ./gradlew jacocoTestReport --info
 
 after_success:
   - bash <(curl -s https://codecov.io/bash)

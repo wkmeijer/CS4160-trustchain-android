@@ -47,7 +47,7 @@ public class OverviewConnectionsActivityTest {
 
         // TODO:
         // fix this
-        //overviewConnectionsActivity = Robolectric.setupActivity(OverviewConnectionsActivity.class);
+        overviewConnectionsActivity = Robolectric.setupActivity(OverviewConnectionsActivity.class);
     }
 
     @Test
