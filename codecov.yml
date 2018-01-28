@@ -4,7 +4,6 @@
 coverage:
   ignore:
   - "app/src/main/java/nl/tudelft/cs4160/trustchain_android/database/.*"
-  - "app/src/main/java/nl/tudelft/cs4160/trustchain_android/KeyActivity.java"
   - "app/src/main/java/nl/tudelft/cs4160/trustchain_android/message/.*"
   - "app/src/main/java/nl/tudelft/cs4160/trustchain_android/connection/.*"
   - "app/src/main/java/nl/tudelft/cs4160/trustchain_android/main/.*"

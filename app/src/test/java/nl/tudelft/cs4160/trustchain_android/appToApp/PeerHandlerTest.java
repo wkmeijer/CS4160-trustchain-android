@@ -1,7 +1,5 @@
-package nl.tudelft.cs4160.trustchain_android.appToAppTest;
+package nl.tudelft.cs4160.trustchain_android.appToApp;
 
-
-import android.util.Log;
 
 import org.junit.After;
 import org.junit.Before;
@@ -9,9 +7,6 @@ import org.junit.Test;
 
 import java.net.InetSocketAddress;
 import java.util.ArrayList;
-
-import nl.tudelft.cs4160.trustchain_android.appToApp.PeerAppToApp;
-import nl.tudelft.cs4160.trustchain_android.appToApp.PeerHandler;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;

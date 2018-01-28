@@ -1,4 +1,4 @@
-package nl.tudelft.cs4160.trustchain_android.appToAppTest.connectionTest.messagesTest;
+package nl.tudelft.cs4160.trustchain_android.appToApp.connectionTest.messagesTest;
 
 import org.junit.Before;
 import org.junit.Test;
