@@ -34,6 +34,9 @@ public class KeyActivity extends AppCompatActivity {
         init();
     }
 
+    /**
+     * Initialize all variables;
+     */
     private void init() {
         buttonNewKey = (Button) findViewById(R.id.new_key);
         textPrivateKey = (TextView) findViewById(R.id.private_key);

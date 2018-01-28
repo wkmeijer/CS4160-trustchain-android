@@ -66,7 +66,6 @@ import static nl.tudelft.cs4160.trustchain_android.block.TrustChainBlockHelper.s
 
 public class TrustChainActivity extends AppCompatActivity implements CompoundButton.OnCheckedChangeListener, CrawlRequestListener {
 
-    public final static int DEFAULT_PORT = 1873;
     private final static String TAG = TrustChainActivity.class.toString();
     private Context context;
     boolean developerMode = false;
@@ -90,7 +89,11 @@ public class TrustChainActivity extends AppCompatActivity implements CompoundBut
     KeyPair kp;
     TrustChainDBHelper dbHelper;
 
-
+    /**
+     * Request the chain of the other peer.
+     * This is done by sending a crawl request to the peer.
+     * If this peer receives the crawl request the peer will send his/her chain of blocks back.
+     */
     public void requestChain() {
         network = Network.getInstance(getApplicationContext());
         network.setCrawlRequestListener(this);
@@ -123,6 +126,10 @@ public class TrustChainActivity extends AppCompatActivity implements CompoundBut
         }).start();
     }
 
+    /**
+     * Get the public key of the current app user.
+     * @return
+     */
     public byte[] getMyPublicKey() {
         if (kp == null) {
             kp = Key.loadKeys(this);
@@ -149,16 +156,6 @@ public class TrustChainActivity extends AppCompatActivity implements CompoundBut
                 startActivity(intent);
             }
         }
-    }
-
-    private void enableMessage() {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                messageEditText.setVisibility(View.VISIBLE);
-                sendButton.setText(getResources().getString(R.string.send));
-            }
-        });
     }
 
     @Override
@@ -290,6 +287,9 @@ public class TrustChainActivity extends AppCompatActivity implements CompoundBut
         dbHelper = new TrustChainDBHelper(this);
     }
 
+    /**
+     * Initialize the ip addresses and the network.
+     */
     private void init() {
         updateIP();
         updateLocalIPField(getLocalIPAddress());
@@ -360,6 +360,10 @@ public class TrustChainActivity extends AppCompatActivity implements CompoundBut
         return null;
     }
 
+    /**
+     * sign a received halfblock and directly send this block back to the peer.
+     * @param linkedBlock
+     */
     public void signAndSendHalfBlock(MessageProto.TrustChainBlock linkedBlock) {
         KeyPair keyPair = Key.loadKeys(this);
         MessageProto.TrustChainBlock block = createBlock(null, DBHelper,
@@ -432,8 +436,7 @@ public class TrustChainActivity extends AppCompatActivity implements CompoundBut
 
 
     /**
-     * This method signs the half blcok when agreed with the pop-up.
-     *
+     * This method signs the half block when agreed with the pop-up.
      * @param block
      */
     public void requestPermission(final MessageProto.TrustChainBlock block) {
@@ -470,6 +473,11 @@ public class TrustChainActivity extends AppCompatActivity implements CompoundBut
         });
     }
 
+    /**
+     * Toggle developer options to connect manually to an ip.
+     * @param buttonView
+     * @param isChecked
+     */
     @Override
     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
         developerMode = isChecked;
@@ -485,7 +493,6 @@ public class TrustChainActivity extends AppCompatActivity implements CompoundBut
 
     /**
      * Initializes the menu on the upper right corner.
-     *
      * @param item
      * @return
      */
@@ -507,6 +514,16 @@ public class TrustChainActivity extends AppCompatActivity implements CompoundBut
         }
     }
 
+    /**
+     * Handel a received crawl request respond.
+     * The responding peer will send his/her entire chain.
+     * All those blocks are added to the local db
+     * @param peer
+     * @param message
+     * @throws IOException
+     * @throws MessageException
+     */
+    @Override
     public void handleCrawlRequestBlockMessageRequest(PeerAppToApp peer, BlockMessage message) throws IOException, MessageException {
         MessageProto.Message msg = message.getMessageProto();
         MessageProto.TrustChainBlock block = msg.getHalfBlock();
@@ -515,6 +532,14 @@ public class TrustChainActivity extends AppCompatActivity implements CompoundBut
         }
     }
 
+    /**
+     * Block received and added to the inbox.
+     * if the received block should be displayed in the trustchain activity
+     * the recycle adapter is reloaded. This makes sure new blocks show up
+     * real-time.
+     * @param block the received block
+     */
+    @Override
     public void blockAdded(BlockMessage block) {
         KeyPair keyPair = Key.loadKeys(this);
         String myPublicKeyString = ByteArrayConverter.bytesToHexString(keyPair.getPublic().getEncoded());

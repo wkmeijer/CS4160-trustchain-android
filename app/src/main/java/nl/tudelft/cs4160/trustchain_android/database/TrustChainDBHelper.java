@@ -386,17 +386,6 @@ public class TrustChainDBHelper extends SQLiteOpenHelper {
         return res;
     }
 
-    // uses the default limit of 100
-    public List<MessageProto.TrustChainBlock> crawl(byte[] pubKey, int seqNum) {
-        List<MessageProto.TrustChainBlock> blockList = new ArrayList<>();
-        try {
-            blockList = crawl(pubKey, seqNum, 100);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return blockList;
-    }
-
     /**
      * Get the maximum insert time of a block in the database given a public key and a maximum
      * sequence number.
