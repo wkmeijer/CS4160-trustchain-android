@@ -13,13 +13,12 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
-import org.robolectric.annotation.Config;
+
 import org.robolectric.shadows.ShadowApplication;
 
-import nl.tudelft.cs4160.trustchain_android.BuildConfig;
+
 import nl.tudelft.cs4160.trustchain_android.R;
 import nl.tudelft.cs4160.trustchain_android.SharedPreferences.UserNameStorage;
-import nl.tudelft.cs4160.trustchain_android.main.ConnectionExplanationActivity;
 import nl.tudelft.cs4160.trustchain_android.main.OverviewConnectionsActivity;
 import nl.tudelft.cs4160.trustchain_android.main.UserConfigurationActivity;
 
@@ -32,7 +31,6 @@ import static org.hamcrest.CoreMatchers.allOf;
  */
 
 @RunWith(RobolectricTestRunner.class)
-@Config(constants = BuildConfig.class, sdk = 25)
 public class UserConfigurationActivityTest {
     private String user = "New User";
     private UserConfigurationActivity userConActivity;

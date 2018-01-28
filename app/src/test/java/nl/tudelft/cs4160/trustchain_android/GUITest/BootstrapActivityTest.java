@@ -11,11 +11,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
-import org.robolectric.annotation.Config;
 
 import java.util.List;
 
-import nl.tudelft.cs4160.trustchain_android.BuildConfig;
 import nl.tudelft.cs4160.trustchain_android.R;
 import nl.tudelft.cs4160.trustchain_android.main.BootstrapActivity;
 import nl.tudelft.cs4160.trustchain_android.main.ConnectionExplanationActivity;
@@ -29,7 +27,6 @@ import static junit.framework.Assert.assertNotNull;
  */
 
 @RunWith(RobolectricTestRunner.class)
-@Config(constants = BuildConfig.class, sdk = 25)
 public class BootstrapActivityTest {
 
     private BootstrapActivity bootstrapAct;

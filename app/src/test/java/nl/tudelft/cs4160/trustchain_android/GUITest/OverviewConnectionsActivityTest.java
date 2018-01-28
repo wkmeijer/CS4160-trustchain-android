@@ -18,15 +18,12 @@ import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.Shadows;
-import org.robolectric.annotation.Config;
 import org.robolectric.fakes.RoboMenuItem;
 import org.robolectric.shadows.ShadowActivity;
 import org.robolectric.shadows.ShadowApplication;
 import org.robolectric.shadows.ShadowIntent;
 
 import java.util.List;
-
-import nl.tudelft.cs4160.trustchain_android.BuildConfig;
 import nl.tudelft.cs4160.trustchain_android.R;
 import nl.tudelft.cs4160.trustchain_android.SharedPreferences.UserNameStorage;
 import nl.tudelft.cs4160.trustchain_android.main.ConnectionExplanationActivity;
@@ -43,7 +40,6 @@ import static org.robolectric.Shadows.shadowOf;
  * Created by Laurens on 12/18/2017.
  */
 @RunWith(RobolectricTestRunner.class)
-@Config(constants = BuildConfig.class, sdk = 25)
 public class OverviewConnectionsActivityTest {
 
     private UserConfigurationActivity userConActivity;
