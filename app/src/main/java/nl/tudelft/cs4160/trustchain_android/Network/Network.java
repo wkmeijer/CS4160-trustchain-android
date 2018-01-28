@@ -70,14 +70,6 @@ public class Network {
         return network;
     }
 
-    public InetSocketAddress getInternalSourceAddress() {
-        return internalSourceAddress;
-    }
-
-    public void setInternalSourceAddress(InetSocketAddress internalSourceAddress) {
-        Network.internalSourceAddress = internalSourceAddress;
-    }
-
     public void setNetworkCommunicationListener(NetworkCommunicationListener networkCommunicationListener) {
         Network.networkCommunicationListener = networkCommunicationListener;
     }
