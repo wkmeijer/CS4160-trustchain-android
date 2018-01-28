@@ -1,4 +1,4 @@
-package nl.tudelft.cs4160.trustchain_android.UtilTest;
+package nl.tudelft.cs4160.trustchain_android.Util;
 
 import com.google.protobuf.ByteString;
 

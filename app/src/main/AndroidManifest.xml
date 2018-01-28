@@ -21,14 +21,6 @@
             android:name=".main.TrustChainActivity"
             android:configChanges="orientation|screenLayout|screenSize"
             android:windowSoftInputMode="stateUnchanged" />
-        <activity
-            android:name=".KeyActivity"
-            android:label="@string/title_activity_key"
-            android:theme="@style/AppTheme.NoActionBar" />
-        <activity
-            android:name=".main.bluetooth.BluetoothActivity"
-            android:label="@string/title_activity_bluetooth"
-            android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name=".chainExplorer.ChainExplorerActivity" />
         <activity android:name=".main.ConnectionExplanationActivity" />
         <activity

@@ -1,4 +1,4 @@
-package nl.tudelft.cs4160.trustchain_android.UtilTest;
+package nl.tudelft.cs4160.trustchain_android.Util;
 
 import android.content.Context;
 import android.test.InstrumentationTestCase;
@@ -8,6 +8,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.security.KeyPair;
+import java.security.PublicKey;
 
 import nl.tudelft.cs4160.trustchain_android.Util.Key;
 
@@ -41,6 +42,5 @@ public class KeyTest  {
         byte[] signature = Key.sign(kp.getPrivate(), ba1);
         assertFalse(Key.verify(kp2.getPublic(), ba1, signature));
     }
-
 
 }
