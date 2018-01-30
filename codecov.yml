@@ -11,6 +11,9 @@ coverage:
   - "app/src/main/java/nl/tudelft/cs4160/trustchain_android/Network/.*"
   - "app/src/main/java/nl/tudelft/cs4160/trustchain_android/chainExplorer/.*"
   - "app/src/main/java/nl/tudelft/cs4160/trustchain_android/bencode/.*"
+  - "app/src/main/java/nl/tudelft/cs4160/trustchain_android/mutualBlock/MutualBlockAdapter.java"
+  - "app/src/main/java/nl/tudelft/cs4160/trustchain_android/inbox/InboxAdapter.java"
+  - "app/src/main/java/nl/tudelft/cs4160/trustchain_android/inbox/InboxActivity.java"
 
   status:
     project:
