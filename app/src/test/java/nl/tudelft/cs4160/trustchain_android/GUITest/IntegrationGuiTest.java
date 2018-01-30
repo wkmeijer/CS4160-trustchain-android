@@ -10,9 +10,17 @@ import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.shadows.ShadowApplication;
 
+import java.security.KeyPair;
+
+import nl.tudelft.cs4160.trustchain_android.Network.Network;
 import nl.tudelft.cs4160.trustchain_android.R;
+import nl.tudelft.cs4160.trustchain_android.Util.Key;
+import nl.tudelft.cs4160.trustchain_android.chainExplorer.ChainExplorerActivity;
+import nl.tudelft.cs4160.trustchain_android.chainExplorer.ChainExplorerAdapter;
+import nl.tudelft.cs4160.trustchain_android.database.TrustChainDBHelper;
 import nl.tudelft.cs4160.trustchain_android.inbox.InboxActivity;
 import nl.tudelft.cs4160.trustchain_android.main.OverviewConnectionsActivity;
+import nl.tudelft.cs4160.trustchain_android.main.TrustChainActivity;
 import nl.tudelft.cs4160.trustchain_android.main.UserConfigurationActivity;
 
 import static junit.framework.Assert.assertEquals;
@@ -28,16 +36,26 @@ public class IntegrationGuiTest {
 
     @Test
     public void testInboxOverviewActivity() {
-//            InboxActivity inboxActivity = Robolectric.setupActivity(InboxActivity.class);
-//            Button findNewUserButton = (Button) inboxActivity.findViewById(R.id.userButton);
-//            findNewUserButton.callOnClick();
-//
-//            Intent expectedIntent = new Intent(inboxActivity, OverviewConnectionsActivity.class);
-//            Intent actual = ShadowApplication.getInstance().getNextStartedActivity();
-//            Object ob = expectedIntent.getComponent();
-//            Object ob2 = actual.getComponent();
-//            assertEquals(expectedIntent.getComponent(), actual.getComponent());
+        InboxActivity inboxActivity = Robolectric.setupActivity(InboxActivity.class);
+        Button findNewUserButton = (Button) inboxActivity.findViewById(R.id.userButton);
+        findNewUserButton.callOnClick();
+
+        Intent actual = ShadowApplication.getInstance().getNextStartedActivity();
+        assertEquals(null, actual);
     }
+//
+//    @Test
+//    public void testViewChainActivity() {
+//        TrustChainActivity trustChainActivity = Robolectric.setupActivity(TrustChainActivity.class);
+//        Button viewChainButton = (Button) trustChainActivity.findViewById(R.id.view_chain_button);
+//
+//        viewChainButton.callOnClick();
+//
+//        Intent expected = new Intent(trustChainActivity, ChainExplorerActivity.class);
+//        Intent actual = ShadowApplication.getInstance().getNextStartedActivity();
+//        assertEquals(expected, actual);
+//
+//    }
 
 //
 //    private String userName = "testUser";
