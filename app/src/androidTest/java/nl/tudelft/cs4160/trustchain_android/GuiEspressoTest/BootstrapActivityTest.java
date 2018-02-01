@@ -38,19 +38,7 @@ public class BootstrapActivityTest {
         // Change to valid IP
         onView(withId(R.id.bootstrap_IP)).perform(replaceText("145.94.155.32"));
         // after this button is pressed the activity is shut down (Because no OverviewConnection is active)
-//        onView(withId(R.id.change_bootstrap)).perform(click());
-//        onView(withId(R.id.incoming_peer_connection_list_view)).check(matches(isDisplayed()));
-    }
-
-    @Test
-    public void gotoMyChain(){
-        // waiting for the PR
-//        // Open the ActionBar
-//        openActionBarOverflowOrOptionsMenu(getInstrumentation().getTargetContext());
-//        // Click on the menu item
-//        onView(withText("My Chain")).perform(click());
-//        // Show the chain on the screen.
-//        onView(withId(R.id.blocks_list)).check(matches(isDisplayed()));
+        onView(withId(R.id.change_bootstrap)).perform(click());
     }
 
 }

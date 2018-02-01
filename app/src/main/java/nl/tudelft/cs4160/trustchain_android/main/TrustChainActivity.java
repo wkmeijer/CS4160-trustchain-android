@@ -422,7 +422,7 @@ public class TrustChainActivity extends AppCompatActivity implements CompoundBut
             public void run() {
                 try {
                     network.sendBlockMessage(inboxItemOtherPeer.getPeerAppToApp(), signedBlock, true);
-                    Snackbar mySnackbar = Snackbar.make(findViewById(R.id.myCoordinatorLayout),"Half block send!", Snackbar.LENGTH_SHORT);
+                    Snackbar mySnackbar = Snackbar.make(findViewById(R.id.myCoordinatorLayout),"Half block sent!", Snackbar.LENGTH_SHORT);
                     mySnackbar.show();
                 } catch (IOException e) {
                     e.printStackTrace();
