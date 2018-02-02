@@ -15,7 +15,7 @@ TrustChain Android
    connection
    protocolbuffers
    database
+   inbox
    crypto
    installation-instructions
    contact
-
