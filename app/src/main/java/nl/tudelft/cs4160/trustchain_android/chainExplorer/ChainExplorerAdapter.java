@@ -143,26 +143,21 @@ public class ChainExplorerAdapter extends BaseAdapter {
         return convertView;
     }
 
+    /**
+     * On click chain explorer activity.
+     * @param view
+     */
     public void setOnClickListener(View view) {
         View.OnClickListener onClickListener = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 TextView tv = (TextView) v;
                 Intent intent = new Intent(context, ChainExplorerActivity.class);
-                intent.putExtra("publicKey", hexStringToByteArray(tv.getText().toString()));
+                intent.putExtra("publicKey", tv.getText().toString());
                 context.startActivity(intent);
             }
         };
         view.setOnClickListener(onClickListener);
     }
 
-    public static byte[] hexStringToByteArray(String s) {
-        int len = s.length();
-        byte[] data = new byte[len / 2];
-        for (int i = 0; i < len; i += 2) {
-            data[i / 2] = (byte) ((Character.digit(s.charAt(i), 16) << 4)
-                    + Character.digit(s.charAt(i + 1), 16));
-        }
-        return data;
-    }
 }

@@ -86,6 +86,9 @@ public class ChainExplorerActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Initialize the variables.
+     */
     private void init() {
         dbHelper = new TrustChainDBHelper(this);
         KeyPair kp = Key.loadKeys(getApplicationContext());

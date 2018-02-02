@@ -46,7 +46,6 @@ import static nl.tudelft.cs4160.trustchain_android.message.MessageProto.Message.
  */
 public class Network {
     private final String TAG = this.getClass().getName();
-
     private static final int BUFFER_SIZE = 65536;
     private DatagramChannel channel;
     private String hashId;
@@ -59,9 +58,18 @@ public class Network {
     private static NetworkCommunicationListener networkCommunicationListener;
     private static CrawlRequestListener crawlRequestListener;
 
+    /**
+     * Emtpy constructor
+     */
     private Network() {
     }
 
+    /**
+     * Get the network instance.
+     * If the network isn't initizlized create a network and set the variables.
+     * @param context
+     * @return
+     */
     public static Network getInstance(Context context) {
         if (network == null) {
             network = new Network();
@@ -70,14 +78,26 @@ public class Network {
         return network;
     }
 
+    /**
+     * Set the network communication listener.
+     * @param networkCommunicationListener
+     */
     public void setNetworkCommunicationListener(NetworkCommunicationListener networkCommunicationListener) {
         Network.networkCommunicationListener = networkCommunicationListener;
     }
 
+    /**
+     * Set the crawl request listener
+     * @param crawlRequestListener
+     */
     public void setCrawlRequestListener(CrawlRequestListener crawlRequestListener) {
         Network.crawlRequestListener = crawlRequestListener;
     }
 
+    /**
+     * Initialize the variables.
+     * @param context is for retrieving from storage.
+     */
     private void initVariables(Context context) {
         TelephonyManager telephonyManager = ((TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE));
         networkOperator = telephonyManager.getNetworkOperatorName();
@@ -88,6 +108,9 @@ public class Network {
         showLocalIpAddress();
     }
 
+    /**
+     * Oopen the network channel on the default port.
+     */
     private void openChannel() {
         try {
             channel = DatagramChannel.open();
@@ -97,6 +120,12 @@ public class Network {
         }
     }
 
+    /**
+     * On receive data via the channel.
+     * @param inputBuffer
+     * @return
+     * @throws IOException
+     */
     public SocketAddress receive(ByteBuffer inputBuffer) throws IOException {
         if (!channel.isOpen()) {
             openChannel();
@@ -104,6 +133,9 @@ public class Network {
         return channel.receive(inputBuffer);
     }
 
+    /**
+     * Close the channel
+     */
     public void closeChannel() {
         channel.socket().close();
         try {
@@ -143,12 +175,25 @@ public class Network {
         sendMessage(request, peer);
     }
 
+    /**
+     * Send a block message via the network to a peer
+     * @param peer the receiving peer
+     * @param block the data
+     * @param isNewBlock determine if this is a new block or a old block as respond to a crawlrequest.
+     * @throws IOException
+     */
     public void sendBlockMessage(PeerAppToApp peer, MessageProto.TrustChainBlock block, boolean isNewBlock) throws IOException {
         MessageProto.Message message = newBuilder().setHalfBlock(block).build();
         BlockMessage request = new BlockMessage(hashId, peer.getAddress(), publicKey, message,isNewBlock);
         sendMessage(request, peer);
     }
 
+    /**
+     * Send a crawl request message via the network to a peer
+     * @param peer the receiving peer
+     * @param request the data
+     * @throws IOException
+     */
     public void sendCrawlRequest(PeerAppToApp peer, MessageProto.CrawlRequest request) throws IOException {
         CrawlRequest req = new CrawlRequest(hashId, peer.getAddress(), publicKey, request);
         sendMessage(req, peer);
@@ -216,6 +261,9 @@ public class Network {
         }
     }
 
+    /**
+     * Show local ip address.
+     */
     private void showLocalIpAddress() {
         ShowLocalIPTask showLocalIPTask = new ShowLocalIPTask();
         showLocalIPTask.execute();
@@ -290,6 +338,14 @@ public class Network {
         }
     }
 
+    /**
+     * Add peer to inbox.
+     * This means storing the InboxItem object in the local preferences.
+     * @param pubKey
+     * @param address Socket address
+     * @param context needed for storage
+     * @param peerId
+     */
     private static void addPeerToInbox(String pubKey,InetSocketAddress address, Context context, String peerId) {
         if (pubKey != null) {
             String ip = address.getAddress().toString().replace("/", "");
@@ -297,6 +353,13 @@ public class Network {
             InboxItemStorage.addInboxItem(context, i);
         }
     }
+
+    /**
+     * Add a block reference to the InboxItem and store this again locally.
+     * @param pubKey
+     * @param blockMessage the block of which the reference should be stored.
+     * @param context needed for storage
+     */
     private static void addBlockToInbox(String pubKey,BlockMessage blockMessage, Context context) {
         if (pubKey != null) {
             try {
@@ -307,7 +370,9 @@ public class Network {
         }
     }
 
-
+    /**
+     * Show local ip visually to the user.
+     */
     private static class ShowLocalIPTask extends AsyncTask<Void, Void, InetAddress> {
         @Override
         protected InetAddress doInBackground(Void... params) {
