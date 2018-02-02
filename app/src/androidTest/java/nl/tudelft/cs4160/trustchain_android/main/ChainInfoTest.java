@@ -132,8 +132,6 @@ public class ChainInfoTest {
                                 0),
                         0),
                         isDisplayed()));
-        linearLayout.check(matches(isDisplayed()));
-
     }
 
     private static Matcher<View> childAtPosition(
