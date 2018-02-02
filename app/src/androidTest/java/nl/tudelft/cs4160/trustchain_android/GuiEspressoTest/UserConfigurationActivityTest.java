@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
+import android.support.test.espresso.Espresso;
 import android.support.test.rule.ActivityTestRule;
 import android.text.LoginFilter;
 
@@ -47,6 +48,8 @@ public class UserConfigurationActivityTest {
         //enter the username
         onView(withId(R.id.username)).perform(replaceText(user));
         // press the login button
+        Espresso.closeSoftKeyboard();
+        Thread.sleep(1000);
         onView(withId(R.id.confirm_button)).perform(click());
         // look whether the ID is correctly displayed in the OverviewConnections window.
         onView(allOf(withId(R.id.peer_id), withText(user))).check(matches(isDisplayed()));
