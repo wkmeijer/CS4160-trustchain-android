@@ -8,3 +8,13 @@ We have tried to make the code clear. However, this app was not build by Android
 Documentation
 =============
 The documentation for this project can be found at [ReadTheDocs](http://trustchain-android.readthedocs.org).
+
+
+Overview of the app
+====================
+![alt text](https://github.com/ClintonCao/CS4160-trustchain-android/master/raw/docs/source/images/overview_app.png)
+
+
+UML diagram for code that is responsible for the connection between peers
+==========================================================================
+![alt text](https://github.com/ClintonCao/CS4160-trustchain-android/master/raw/docs/source/images/uml_diagram_connection.png)
