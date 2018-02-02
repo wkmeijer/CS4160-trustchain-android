@@ -31,11 +31,12 @@ public class BootstrapActivityTest {
             BootstrapActivity.class);
 
     @Test
-    public void gotoOverviewConnections(){
+    public void gotoOverviewConnections() throws InterruptedException{
         mActivityRule.launchActivity(new Intent());
         // Change to invalid IP
         onView(withId(R.id.bootstrap_IP)).perform(replaceText("dwdw534"));
         closeSoftKeyboard();
+        Thread.sleep(2500);
         onView(withId(R.id.change_bootstrap)).perform(click());
         onView(withId(R.id.bootstrap_IP)).check(matches(isDisplayed()));
 
