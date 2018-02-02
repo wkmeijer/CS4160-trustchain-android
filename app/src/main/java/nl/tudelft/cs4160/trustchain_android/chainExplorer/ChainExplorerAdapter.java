@@ -153,7 +153,7 @@ public class ChainExplorerAdapter extends BaseAdapter {
             public void onClick(View v) {
                 TextView tv = (TextView) v;
                 Intent intent = new Intent(context, ChainExplorerActivity.class);
-                intent.putExtra("publicKey", ByteArrayConverter.hexStringToByteArray(tv.getText().toString()));
+                intent.putExtra("publicKey", tv.getText().toString());
                 context.startActivity(intent);
             }
         };
