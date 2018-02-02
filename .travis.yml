@@ -45,9 +45,10 @@ before_script:
   - chmod a+x imgurbash.sh
   - adb shell screencap -p | sed 's/\r$//' > bootscreen.png
   - ./imgurbash.sh bootscreen.png
+  - sleep 1
 
 script:
-  - ./gradlew connectedCheck jacocoTestReport --info
+  - ./gradlew connectedAndroidTest jacocoTestReport
 
 after_success:
   - bash <(curl -s https://codecov.io/bash)
