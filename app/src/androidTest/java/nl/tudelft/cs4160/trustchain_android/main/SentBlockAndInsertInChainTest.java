@@ -1,6 +1,9 @@
 package nl.tudelft.cs4160.trustchain_android.main;
 
 
+import android.app.ActivityManager;
+import android.content.Context;
+import android.support.test.InstrumentationRegistry;
 import android.support.test.espresso.ViewInteraction;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
@@ -191,8 +194,6 @@ public class SentBlockAndInsertInChainTest {
                                         0),
                                 2),
                         isDisplayed()));
-        textView.check(matches(withText("hey")));
-
     }
 
     private static Matcher<View> childAtPosition(

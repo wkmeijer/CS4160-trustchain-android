@@ -17,7 +17,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import nl.tudelft.cs4160.trustchain_android.R;
+import nl.tudelft.cs4160.trustchain_android.SharedPreferences.InboxItemStorage;
 import nl.tudelft.cs4160.trustchain_android.SharedPreferences.UserNameStorage;
+import nl.tudelft.cs4160.trustchain_android.inbox.InboxItem;
 
 import static android.support.test.InstrumentationRegistry.getInstrumentation;
 import static android.support.test.espresso.Espresso.onView;
@@ -37,6 +39,7 @@ import static org.hamcrest.Matchers.is;
 @RunWith(AndroidJUnit4.class)
 public class ClearInboxTest {
     private int gottaRunThisMethod = emptyUserNamePreferences();
+    private int getGottaRunThisMethodToo = clearInbox();
 
     private int emptyUserNamePreferences(){
         // Check whether it is empty
@@ -45,6 +48,11 @@ public class ClearInboxTest {
             UserNameStorage.setUserName(getInstrumentation().getTargetContext(), null);
         }
 
+        return 1;
+    }
+
+    private int clearInbox() {
+        InboxItemStorage.deleteAll(getInstrumentation().getTargetContext());
         return 1;
     }
 
