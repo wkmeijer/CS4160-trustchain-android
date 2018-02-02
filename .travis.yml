@@ -22,19 +22,19 @@ android:
     # System image that is gonna be used.
     - sys-img-$ANDROID_ABI-google_apis-$ANDROID_EMU_API_LEVEL
 
-#before_cache:
-#  - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
-#  - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
-#
-#cache:
-#  directories:
-#    # Android SDK
-#    - $HOME/android-sdk-dl
-#    - $HOME/android-sdk
-#
-#    # Gradle dependencies
-#    - $HOME/.gradle/caches/
-#    - $HOME/.gradle/wrapper/
+before_cache:
+  - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
+  - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
+
+cache:
+  directories:
+    # Android SDK
+    - $HOME/android-sdk-dl
+    - $HOME/android-sdk
+
+    # Gradle dependencies
+    - $HOME/.gradle/caches/
+    - $HOME/.gradle/wrapper/
 
 before_script:
   - echo no | android create avd --force -n test -t android-$ANDROID_EMU_API_LEVEL --abi google_apis/$ANDROID_ABI
@@ -45,9 +45,11 @@ before_script:
   - chmod a+x imgurbash.sh
   - adb shell screencap -p | sed 's/\r$//' > bootscreen.png
   - ./imgurbash.sh bootscreen.png
+  - adb shell screencap -p | sed 's/\r$//' > bootscreen.png
+  - ./imgurbash.sh bootscreen.png
 
 script:
-  - ./gradlew connectedAndroidTest jacocoTestReport
+  - ./gradlew connectedCheck jacocoTestReport
 
 after_success:
   - bash <(curl -s https://codecov.io/bash)

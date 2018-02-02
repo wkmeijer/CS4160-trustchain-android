@@ -40,10 +40,10 @@ public class UserConfigurationActivityTest {
             false);
 
     @Test
-    public void makeNewUsername(){
+    public void makeNewUsername() throws InterruptedException{
         emptyUserNamePreferences();
         mActivityRule.launchActivity(new Intent());
-
+        Thread.sleep(1000);
         //enter the username
         onView(withId(R.id.username)).perform(replaceText(user));
         // press the login button

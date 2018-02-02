@@ -34,20 +34,20 @@ public class IntegrationGuiTest {
 
     @Test
     public void logInAndConnectWithAnUser(){
-//        emptyUserNamePreferences();
-//        mActivityRule.launchActivity(new Intent());
-//
-//        //Set the name of the user.
-//        onView(withId(R.id.username)).perform(replaceText(user));
-//        closeSoftKeyboard();
-//        onView(withId(R.id.confirm_button)).perform(click());
-//
-//        //Open Inbox
-//        onView(withId(R.id.open_inbox_item)).perform(click());
-//        openActionBarOverflowOrOptionsMenu(getInstrumentation().getTargetContext());
-//        onView(withText("Clear Entire Inbox")).perform(click());
-//        //Go back to OverviewConnectionsActivity.
-//        onView(withId(R.id.userButton)).perform(click());
+        emptyUserNamePreferences();
+        mActivityRule.launchActivity(new Intent());
+
+        //Set the name of the user.
+        onView(withId(R.id.username)).perform(replaceText(user));
+        closeSoftKeyboard();
+        onView(withId(R.id.confirm_button)).perform(click());
+
+        //Open Inbox
+        onView(withId(R.id.open_inbox_item)).perform(click());
+        openActionBarOverflowOrOptionsMenu(getInstrumentation().getTargetContext());
+        onView(withText("Clear Entire Inbox")).perform(click());
+        //Go back to OverviewConnectionsActivity.
+        onView(withId(R.id.userButton)).perform(click());
 
     }
 

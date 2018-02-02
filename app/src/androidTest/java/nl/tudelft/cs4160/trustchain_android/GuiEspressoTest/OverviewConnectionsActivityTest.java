@@ -52,12 +52,11 @@ public class OverviewConnectionsActivityTest {
 
     @Test
     public void gotoConnectionExplanationActivity() {
-//        // Open the ActionBar
-//        openActionBarOverflowOrOptionsMenu(getInstrumentation().getTargetContext());
-//        // Click on the menu item
-//        onView(withText("Info"))
-//                .perform(click());
-//        // Show the chain on the screen.
-//        onView(withId(R.id.connectionColorExplanationList)).check(matches(isDisplayed()));
+        // Open the ActionBar
+        openActionBarOverflowOrOptionsMenu(getInstrumentation().getTargetContext());
+        // Click on the menu item
+        onView(withText("Info")).perform(click());
+        // Go to connection explanations.
+        onView(withId(R.id.connectionColorExplanationList)).check(matches(isDisplayed()));
     }
 }
