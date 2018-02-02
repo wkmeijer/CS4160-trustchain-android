@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -19,10 +20,14 @@ import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import com.google.protobuf.ByteString;
+
 import java.security.KeyPair;
 import java.util.List;
 
 import nl.tudelft.cs4160.trustchain_android.R;
+import nl.tudelft.cs4160.trustchain_android.SharedPreferences.UserNameStorage;
+import nl.tudelft.cs4160.trustchain_android.Util.ByteArrayConverter;
 import nl.tudelft.cs4160.trustchain_android.Util.Key;
 import nl.tudelft.cs4160.trustchain_android.appToApp.PeerAppToApp;
 import nl.tudelft.cs4160.trustchain_android.database.TrustChainDBHelper;
@@ -30,7 +35,6 @@ import nl.tudelft.cs4160.trustchain_android.main.ChainExplorerInfoActivity;
 import nl.tudelft.cs4160.trustchain_android.message.MessageProto;
 
 import static android.view.Gravity.CENTER;
-import static nl.tudelft.cs4160.trustchain_android.Peer.bytesToHex;
 
 /**
  * This activity will show a chain of a given TrustChain peer.
@@ -41,6 +45,7 @@ public class ChainExplorerActivity extends AppCompatActivity {
     ListView blocksList;
 
     static final String TAG = "ChainExplorerActivity";
+    private static final String TITLE = "My chain overview";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,19 +86,28 @@ public class ChainExplorerActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Initialize the variables.
+     */
     private void init() {
         dbHelper = new TrustChainDBHelper(this);
         KeyPair kp = Key.loadKeys(getApplicationContext());
         byte[] publicKey;
         if (getIntent().hasExtra("publicKey")) {
-            publicKey = getIntent().getByteArrayExtra("publicKey");
+            publicKey = ByteArrayConverter.hexStringToByteArray(getIntent().getStringExtra("publicKey"));
         } else {
             publicKey = kp.getPublic().getEncoded();
         }
         try {
-            List<MessageProto.TrustChainBlock> blocks = dbHelper.getBlocks(publicKey);
+            List<MessageProto.TrustChainBlock> blocks = dbHelper.getBlocks(publicKey, true);
             if(blocks.size() > 0) {
-                this.setTitle(bytesToHex(blocks.get(0).getPublicKey().toByteArray()));
+                String ownPubKey = ByteArrayConverter.byteStringToString(blocks.get(0).getPublicKey());
+                String firstPubKey = ByteArrayConverter.byteStringToString(ByteString.copyFrom(publicKey));
+                if (ownPubKey.equals(firstPubKey)){
+                    this.setTitle(TITLE);
+                } else {
+                    this.setTitle("Chain of " + UserNameStorage.getPeerByPublickey(this, ByteArrayConverter.byteStringToString(blocks.get(0).getPublicKey())));
+                }
                 adapter = new ChainExplorerAdapter(this, blocks, kp.getPublic().getEncoded());
                 blocksList.setAdapter(adapter);
             }else{

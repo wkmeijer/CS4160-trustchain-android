@@ -1,4 +1,4 @@
-package nl.tudelft.cs4160.trustchain_android;
+package nl.tudelft.cs4160.trustchain_android.databaseTest;
 
 import org.junit.Test;
 

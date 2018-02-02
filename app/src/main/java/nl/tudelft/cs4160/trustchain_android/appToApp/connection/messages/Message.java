@@ -7,27 +7,26 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
-import java.security.KeyPair;
 import java.util.HashMap;
 import java.util.Map;
 
-import nl.tudelft.cs4160.trustchain_android.Util.Key;
 import nl.tudelft.cs4160.trustchain_android.appToApp.PeerAppToApp;
 import nl.tudelft.cs4160.trustchain_android.appToApp.connection.ByteBufferOutputStream;
 import nl.tudelft.cs4160.trustchain_android.appToApp.connection.ByteBufferinputStream;
 import nl.tudelft.cs4160.trustchain_android.bencode.BencodeReadException;
 import nl.tudelft.cs4160.trustchain_android.bencode.BencodeReader;
 import nl.tudelft.cs4160.trustchain_android.bencode.BencodeWriter;
-import nl.tudelft.cs4160.trustchain_android.main.TrustChainActivity;
 
 /**
  * Created by jaap on 5/31/16.
  */
 public abstract class Message extends HashMap {
-    public final static int INTRODUCTION_REQUEST = 1;
-    public final static int INTRODUCTION_RESPONSE = 2;
-    public final static int PUNCTURE_REQUEST = 3;
-    public final static int PUNCTURE = 4;
+    public final static int INTRODUCTION_REQUEST_ID = 1;
+    public final static int INTRODUCTION_RESPONSE_ID = 2;
+    public final static int PUNCTURE_REQUEST_ID = 3;
+    public final static int PUNCTURE_ID = 4;
+    public final static int BLOCK_MESSAGE_ID = 5;
+    public final static int CRAWL_REQUEST_ID = 6;
 
     final protected static String TYPE = "type";
     final protected static String DESTINATION = "destination";
@@ -67,14 +66,18 @@ public abstract class Message extends HashMap {
         }
         int messageType = (int) (long) dict.get(TYPE);
         switch (messageType) {
-            case INTRODUCTION_REQUEST:
+            case INTRODUCTION_REQUEST_ID:
                 return IntroductionRequest.fromMap(dict);
-            case INTRODUCTION_RESPONSE:
+            case INTRODUCTION_RESPONSE_ID:
                 return IntroductionResponse.fromMap(dict);
-            case PUNCTURE:
+            case PUNCTURE_ID:
                 return Puncture.fromMap(dict);
-            case PUNCTURE_REQUEST:
+            case PUNCTURE_REQUEST_ID:
                 return PunctureRequest.fromMap(dict);
+            case BLOCK_MESSAGE_ID:
+                return BlockMessage.fromMap(dict);
+            case CRAWL_REQUEST_ID:
+                return CrawlRequest.fromMap(dict);
             default:
                 throw new MessageException("Unknown message");
         }

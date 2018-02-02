@@ -2,7 +2,7 @@
     <string name="app_name">TrustChain Android</string>
     <string name="my_external_ip">My external ip is:</string>
     <string name="connect_bootstrap_ip">The IP address of a peer:</string>
-    <string name="change_bootstrap">Change bootstrap</string>
+    <string name="change_bootstrap">Find peer</string>
     <string name="connect_bootstrap_ip_hint">145.94.155.32</string>
     <string name="my_local_ip">My local ip is:</string>
     <string name="connect_ip_hint">127.0.0.1</string>
@@ -14,6 +14,7 @@
     <string name="reset_database_button">Clear Database (closes app)</string>
     <string name="connection_info_text">Info</string>
 
+    <!-- Trustchain -->
     <string name="title_activity_key">Key management</string>
     <string name="bluetooth_connection">bluetooth_connection</string>
     <string name="public_key">Public key</string>
@@ -27,6 +28,7 @@
     <string name="invalid_signature">Invalid signature</string>
     <string name="chain_explorer">TrustChain Explorer</string>
     <string name="title_activity_bluetooth">BluetoothActivity</string>
+    <string name="sign_block">Sign this block</string>
 
     <string name="item_public_key">Public key:</string>
     <string name="item_link_public_key">Link public key:</string>
@@ -42,6 +44,7 @@
 
     <!-- Menu -->
     <string name="menu_item_1">My Chain</string>
+    <string name="menu_item_2">Clear Entire Inbox</string>
     <string name="menu_info">Info</string>
     <string name="find_peer">Find peer</string>
 
@@ -62,6 +65,8 @@
     <string name="ip">ip</string>
     <string name="incoming">Incoming</string>
     <string name="outgoing">outgoing</string>
+    <string name="left_connections">Active Peers</string>
+    <string name="right_connections">New Peers</string>
     <string name="connection">Connection</string>
     <string name="connectable_ratio">Connectable\nratio</string>
     <string name="connectable_peers">Connectable\nPeers</string>
@@ -79,5 +84,8 @@
     <!--- info chain explorer -->
     <string name="color_info">Color is based on the hash of the public key.</string>
 
+    <!--- inbox -->
+    <string name="new_user">+ Find new users</string>
+    <string name="inbox">Open Inbox</string>
 
 </resources>

@@ -9,6 +9,11 @@ public class BootstrapIPStorage {
 
     static String bootstrapIPStorage = "bootstrapIPStorage";
 
+    /**
+     *
+     * @param context
+     * @param ip
+     */
     public static void setIP(Context context, String ip) {
         if(ip == null) {
             return;

@@ -16,4 +16,12 @@ public class UserNameStorage {
     public static String getUserName(Context context) {
         return SharedPreferencesStorage.readSharedPreferences(context, userNameStorage);
     }
+
+    public static void setNewPeerByPublickey(Context context, String userName, String publicKey){
+        SharedPreferencesStorage.writeSharedPreferences(context, publicKey, userName);
+    }
+
+    public static String getPeerByPublickey(Context context, String publickey){
+        return SharedPreferencesStorage.readSharedPreferences(context, publickey);
+    }
 }

@@ -15,7 +15,8 @@ public class PeerAppToApp implements Serializable {
     public final static boolean INCOMING = true;
     public final static boolean OUTGOING = false;
 
-    final private static int TIMEOUT = 20000;
+    final private static int TIMEOUT = 15000;
+    final private static int REMOVE_TIMEOUT = 25000;
     private InetSocketAddress address;
     private String peerId;
     private boolean hasReceivedData = false;
@@ -77,7 +78,10 @@ public class PeerAppToApp implements Serializable {
     }
 
     public InetAddress getExternalAddress() {
-        return address.getAddress();
+        if (address != null) {
+            return address.getAddress();
+        }
+        return null;
     }
 
     public InetSocketAddress getAddress() {
@@ -114,10 +118,20 @@ public class PeerAppToApp implements Serializable {
      */
     public boolean isAlive() {
         if (hasSentData) {
-            if (System.currentTimeMillis() - lastSendTime < TIMEOUT) return true;
-            return hasReceivedData && lastReceiveTime > lastSendTime;
+            return System.currentTimeMillis() - lastSendTime < TIMEOUT;
         }
         return true;
+    }
+
+    /**
+     * If a peer has sent data, but the last time it has sent is longer ago than the remove timeout, it can be removed.
+     * @return
+     */
+    boolean canBeRemoved() {
+        if (hasSentData) {
+            return System.currentTimeMillis() - lastSendTime > REMOVE_TIMEOUT;
+        }
+        return false;
     }
 
     @Override
