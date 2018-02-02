@@ -5,7 +5,6 @@ import junit.framework.TestCase;
 
 import org.junit.Test;
 
-import nl.tudelft.cs4160.trustchain_android.main.MutualBlockItem;
 import nl.tudelft.cs4160.trustchain_android.message.MessageProto;
 
 import static org.junit.Assert.assertNotEquals;
@@ -145,6 +144,13 @@ public class MutualBlockItemTest extends TestCase {
         MutualBlockItem m1 = new MutualBlockItem(testString, 0, linkSeqNum, testString, testString, block);
         MutualBlockItem m2 = new MutualBlockItem(peerName, seqNum, linkSeqNum, blockStatus, transaction, block);
         assertNotEquals(m1, m2);
+    }
+
+    @Test
+    public void testEqualsWithAnotherTypeObjectShouldNotBeEqual() {
+        MutualBlockItem m1 = new MutualBlockItem(testString, 0, linkSeqNum, testString, testString, block);
+        Object obj = new Object();
+        assertNotEquals(m1, obj);
     }
 
 }

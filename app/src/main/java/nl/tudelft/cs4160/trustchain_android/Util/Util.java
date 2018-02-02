@@ -4,7 +4,9 @@ import android.content.Context;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -18,21 +20,26 @@ public class Util {
      * @return The content of the file
      */
     public static String readFile(Context context, String fileName) {
-        try {
-            StringBuilder text = new StringBuilder();
-            FileInputStream fis = context.openFileInput(fileName);
-            BufferedReader br = new BufferedReader(new InputStreamReader(new BufferedInputStream(fis)));
+        File file = context.getFileStreamPath(fileName);
+        if(file == null || !file.exists()) {
+            return null;
+        } else {
+            try {
+                StringBuilder text = new StringBuilder();
+                FileInputStream fis = context.openFileInput(fileName);
+                BufferedReader br = new BufferedReader(new InputStreamReader(new BufferedInputStream(fis)));
 
-            String line;
-            while ((line = br.readLine()) != null) {
-                text.append(line);
-                text.append('\n');
+                String line;
+                while ((line = br.readLine()) != null) {
+                    text.append(line);
+                    text.append('\n');
+                }
+                br.close();
+                return text.toString();
             }
-            br.close();
-            return text.toString();
-        }
-        catch (IOException e) {
-            e.printStackTrace();
+            catch (IOException e) {
+                e.printStackTrace();
+            }
         }
         return null;
     }

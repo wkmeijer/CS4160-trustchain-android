@@ -35,13 +35,4 @@ public class ByteArrayConverter {
         }
         return data;
     }
-
-    private void printByteArray(byte[] message) {
-        String printString = "";
-        for (byte b : message) {
-            printString = printString + b;
-        }
-        Log.d("testByteString", printString);
-    }
-
 }

@@ -125,11 +125,16 @@ public class InboxAdapter extends RecyclerView.Adapter<InboxAdapter.ViewHolder> 
         }
     }
 
+    /**
+     * Go to the overview connections activity.
+     * Because this is always the previous activity on the navigation stack
+     * we can do this with a finish().
+     * @param holder
+     */
     private void setOnClickListenerNewUser(final ViewHolderAddPeer holder) {
         View.OnClickListener mOnClickListener = new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //.FINISH() TODO does this work?
                 InboxActivity i = (InboxActivity) holder.mWrapperLinearLayout.getContext();
                 i.finish();
             }
@@ -137,6 +142,12 @@ public class InboxAdapter extends RecyclerView.Adapter<InboxAdapter.ViewHolder> 
         holder.mUserButton.setOnClickListener(mOnClickListener);
     }
 
+    /**
+     * On click inbox item go to trustchainactivity
+     * and pass the selected item on as extra.
+     * @param holder
+     * @param position
+     */
     private void setOnClickListenerInboxItem(final ViewHolder holder, final int position) {
         View.OnClickListener mOnClickListener = new View.OnClickListener() {
             @Override

@@ -141,6 +141,13 @@ public class PeerListAdapter extends ArrayAdapter<PeerAppToApp> {
         TableLayout mTableLayoutConnection;
     }
 
+    /**
+     * On click peer. If it's possible to add this peer
+     * to your inbox this happens, otherwise a snackbar message
+     * will explain why this isn't possible.
+     * @param mTableLayoutConnection
+     * @param position click position
+     */
     private void setOnClickListener(TableLayout mTableLayoutConnection, int position) {
         mTableLayoutConnection.setTag(position);
         View.OnClickListener onClickListener = new View.OnClickListener() {
