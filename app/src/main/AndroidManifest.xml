@@ -27,17 +27,12 @@
             android:name=".main.OverviewConnectionsActivity"
             android:configChanges="orientation|screenLayout|screenSize" />
         <activity
-            android:name=".main.DetailActivity"
-            android:label="@string/title_activity_detail"
-            android:theme="@style/AppTheme.NoActionBar" />
-        <activity
             android:name=".main.UserConfigurationActivity"
             android:label="@string/app_name"
             android:noHistory="true"
             android:windowSoftInputMode="adjustResize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
