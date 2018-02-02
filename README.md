@@ -12,9 +12,9 @@ The documentation for this project can be found at [ReadTheDocs](http://trustcha
 
 Overview of the app
 ====================
-![alt text](https://github.com/ClintonCao/CS4160-trustchain-android/master/raw/docs/source/images/overview_app.png)
+![alt text](https://github.com/ClintonCao/CS4160-trustchain-android/blob/master/docs/source/images/overview_app.png)
 
 
 UML diagram for code that is responsible for the connection between peers
 ==========================================================================
-![alt text](https://github.com/ClintonCao/CS4160-trustchain-android/master/raw/docs/source/images/uml_diagram_connection.png)
+![alt text](https://github.com/ClintonCao/CS4160-trustchain-android/blob/master/docs/source/images/uml_diagram_connection.png)
