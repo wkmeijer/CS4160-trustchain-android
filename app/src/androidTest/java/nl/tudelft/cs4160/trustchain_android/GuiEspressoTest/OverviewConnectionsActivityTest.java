@@ -31,12 +31,12 @@ public class OverviewConnectionsActivityTest {
 
     @Test
     public void gotoBootstrapActivity(){
-//        // Open the ActionBar
-//        openActionBarOverflowOrOptionsMenu(getInstrumentation().getTargetContext());
-//        // Why not able to find by: withId(R.id.find_peer)
-//        onView(withText("Find peer"))   // withId(R.id.my_view) is a ViewMatcher
-//                .perform(click());            // click() is a ViewAction
-//        onView(withId(R.id.bootstrap_IP)).check(matches(isDisplayed()));
+        // Open the ActionBar
+        openActionBarOverflowOrOptionsMenu(getInstrumentation().getTargetContext());
+        // Why not able to find by: withId(R.id.find_peer)
+        onView(withText("Find peer"))   // withId(R.id.my_view) is a ViewMatcher
+                .perform(click());            // click() is a ViewAction
+        onView(withId(R.id.bootstrap_IP)).check(matches(isDisplayed()));
     }
 
     @Test
@@ -52,12 +52,11 @@ public class OverviewConnectionsActivityTest {
 
     @Test
     public void gotoConnectionExplanationActivity() {
-//        // Open the ActionBar
-//        openActionBarOverflowOrOptionsMenu(getInstrumentation().getTargetContext());
-//        // Click on the menu item
-//        onView(withText("Info"))
-//                .perform(click());
-//        // Show the chain on the screen.
-//        onView(withId(R.id.connectionColorExplanationList)).check(matches(isDisplayed()));
+        // Open the ActionBar
+        openActionBarOverflowOrOptionsMenu(getInstrumentation().getTargetContext());
+        // Click on the menu item
+        onView(withText("Info")).perform(click());
+        // Go to connection explanations.
+        onView(withId(R.id.connectionColorExplanationList)).check(matches(isDisplayed()));
     }
 }
