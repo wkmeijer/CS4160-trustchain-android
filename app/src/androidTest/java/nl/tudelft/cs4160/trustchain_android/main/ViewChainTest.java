@@ -55,7 +55,7 @@ public class ViewChainTest {
     public ActivityTestRule<UserConfigurationActivity> mActivityTestRule = new ActivityTestRule<>(UserConfigurationActivity.class);
 
     @Test
-    public void viewChainTest() {
+    public void viewChainTest() throws  InterruptedException {
         ViewInteraction appCompatEditText = onView(
                 allOf(withId(R.id.username),
                         childAtPosition(
@@ -75,6 +75,8 @@ public class ViewChainTest {
                                 3),
                         isDisplayed()));
         appCompatButton.perform(click());
+
+        Thread.sleep(5000);
 
         openActionBarOverflowOrOptionsMenu(getInstrumentation().getTargetContext());
 

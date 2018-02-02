@@ -55,7 +55,7 @@ public class ChainInfoTest {
     public ActivityTestRule<UserConfigurationActivity> mActivityTestRule = new ActivityTestRule<>(UserConfigurationActivity.class);
 
     @Test
-    public void chainInfoTest() {
+    public void chainInfoTest() throws InterruptedException {
         ViewInteraction appCompatEditText = onView(
                 allOf(withId(R.id.username),
                         childAtPosition(
@@ -75,6 +75,8 @@ public class ChainInfoTest {
                                 3),
                         isDisplayed()));
         appCompatButton.perform(click());
+
+        Thread.sleep(5000);
 
         ViewInteraction tableLayout = onView(
                 allOf(withId(R.id.tableLayoutConnection),

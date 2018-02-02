@@ -54,7 +54,7 @@ public class SentBlockAndInsertInChainTest {
     public ActivityTestRule<UserConfigurationActivity> mActivityTestRule = new ActivityTestRule<>(UserConfigurationActivity.class);
 
     @Test
-    public void sentBlockAndInsertInChainTest() {
+    public void sentBlockAndInsertInChainTest() throws InterruptedException {
         ViewInteraction appCompatEditText = onView(
                 allOf(withId(R.id.username),
                         childAtPosition(
@@ -74,6 +74,8 @@ public class SentBlockAndInsertInChainTest {
                                 3),
                         isDisplayed()));
         appCompatButton.perform(click());
+
+        Thread.sleep(5000);
 
         ViewInteraction appCompatButton2 = onView(
                 allOf(withId(R.id.open_inbox_item), withText("Open Inbox"),
