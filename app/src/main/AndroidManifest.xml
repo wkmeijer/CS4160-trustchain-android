@@ -21,10 +21,6 @@
             android:name=".main.TrustChainActivity"
             android:configChanges="orientation|screenLayout|screenSize"
             android:windowSoftInputMode="stateUnchanged" />
-        <activity
-            android:name=".KeyActivity"
-            android:label="@string/title_activity_key"
-            android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name=".chainExplorer.ChainExplorerActivity" />
         <activity android:name=".main.ConnectionExplanationActivity" />
         <activity
@@ -37,7 +33,6 @@
             android:windowSoftInputMode="adjustResize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>

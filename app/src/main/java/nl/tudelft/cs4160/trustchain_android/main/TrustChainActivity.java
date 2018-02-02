@@ -50,7 +50,6 @@ import nl.tudelft.cs4160.trustchain_android.Util.ByteArrayConverter;
 import nl.tudelft.cs4160.trustchain_android.Util.Key;
 import nl.tudelft.cs4160.trustchain_android.block.TrustChainBlockHelper;
 import nl.tudelft.cs4160.trustchain_android.block.ValidationResult;
-import nl.tudelft.cs4160.trustchain_android.chainExplorer.ChainExplorerAdapter;
 import nl.tudelft.cs4160.trustchain_android.appToApp.PeerAppToApp;
 import nl.tudelft.cs4160.trustchain_android.appToApp.connection.messages.BlockMessage;
 import nl.tudelft.cs4160.trustchain_android.appToApp.connection.messages.MessageException;
@@ -59,6 +58,8 @@ import nl.tudelft.cs4160.trustchain_android.chainExplorer.ChainExplorerActivity;
 import nl.tudelft.cs4160.trustchain_android.database.TrustChainDBHelper;
 import nl.tudelft.cs4160.trustchain_android.inbox.InboxItem;
 import nl.tudelft.cs4160.trustchain_android.message.MessageProto;
+import nl.tudelft.cs4160.trustchain_android.mutualBlock.MutualBlockAdapter;
+import nl.tudelft.cs4160.trustchain_android.mutualBlock.MutualBlockItem;
 
 import static nl.tudelft.cs4160.trustchain_android.block.TrustChainBlockHelper.GENESIS_SEQ;
 import static nl.tudelft.cs4160.trustchain_android.block.TrustChainBlockHelper.createBlock;
@@ -425,7 +426,7 @@ public class TrustChainActivity extends AppCompatActivity implements CompoundBut
             public void run() {
                 try {
                     network.sendBlockMessage(inboxItemOtherPeer.getPeerAppToApp(), signedBlock, true);
-                    Snackbar mySnackbar = Snackbar.make(findViewById(R.id.myCoordinatorLayout),"Half block send!", Snackbar.LENGTH_SHORT);
+                    Snackbar mySnackbar = Snackbar.make(findViewById(R.id.myCoordinatorLayout),"Half block sent!", Snackbar.LENGTH_SHORT);
                     mySnackbar.show();
                 } catch (IOException e) {
                     e.printStackTrace();

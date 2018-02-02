@@ -185,6 +185,7 @@
             android:orientation="vertical">
 
             <Button
+                android:id="@+id/open_inbox_item"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
                 android:layout_marginEnd="@dimen/activity_horizontal_margin"

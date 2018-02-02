@@ -40,13 +40,6 @@ public class OverviewConnectionsActivityTest {
     }
 
     @Test
-    public void gotoTrustchainActivityTest() {
-        // in this unit test it is not possible to go the trustchain activity
-        // integration test needs to be made here.
-        //TODO
-    }
-
-    @Test
     public void gotoChainExplorerActivity() {
         // Open the ActionBar
         openActionBarOverflowOrOptionsMenu(getInstrumentation().getTargetContext());
@@ -55,5 +48,15 @@ public class OverviewConnectionsActivityTest {
                 .perform(click());
         // Show the chain on the screen.
         onView(withId(R.id.blocks_list)).check(matches(isDisplayed()));
+    }
+
+    @Test
+    public void gotoConnectionExplanationActivity() {
+        // Open the ActionBar
+        openActionBarOverflowOrOptionsMenu(getInstrumentation().getTargetContext());
+        // Click on the menu item
+        onView(withText("Info")).perform(click());
+        // Go to connection explanations.
+        onView(withId(R.id.connectionColorExplanationList)).check(matches(isDisplayed()));
     }
 }
