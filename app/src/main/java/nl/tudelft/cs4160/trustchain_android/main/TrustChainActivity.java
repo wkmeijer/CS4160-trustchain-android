@@ -149,7 +149,7 @@ public class TrustChainActivity extends AppCompatActivity implements CompoundBut
             publicKey = this.inboxItemOtherPeer.getPublicKey();
             if (publicKey != null) {
                 Intent intent = new Intent(context, ChainExplorerActivity.class);
-                intent.putExtra("publicKey", publicKey);
+                intent.putExtra(ChainExplorerActivity.BUNDLE_EXTRAS_PUBLIC_KEY , publicKey);
                 startActivity(intent);
             }
         }
