@@ -8,8 +8,6 @@ import java.nio.ByteBuffer;
 /**
  * The peer object that is used to find other connected peers in the network.
  * The peer is identified by its unique peer id, which is the chosen username, and keeps track of the last send and receive time.
- * <p/>
- * Created by jaap on 5/19/16.
  */
 public class PeerAppToApp implements Serializable {
     public final static boolean INCOMING = true;

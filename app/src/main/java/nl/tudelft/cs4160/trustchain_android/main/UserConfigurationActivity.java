@@ -33,7 +33,7 @@ public class UserConfigurationActivity extends AppCompatActivity {
         context = this;
         if (UserNameStorage.getUserName(this) == null) {
             setContentView(R.layout.user_configuration);
-            EditText userNameInput = (EditText) findViewById(R.id.username);
+            EditText userNameInput = findViewById(R.id.username);
             userNameInput.setOnFocusChangeListener(new View.OnFocusChangeListener() {
                 @Override
                 public void onFocusChange(View v, boolean hasFocus) {
@@ -54,14 +54,14 @@ public class UserConfigurationActivity extends AppCompatActivity {
      * if so then store the username and continue to the next activity.
      */
     public void OnClickConfirm(View view) {
-        EditText userNameInput = (EditText) findViewById(R.id.username);
+        EditText userNameInput = findViewById(R.id.username);
         if (!userNameInput.getText().toString().matches("")) {
             Intent myIntent = new Intent(UserConfigurationActivity.this, OverviewConnectionsActivity.class);
             UserNameStorage.setUserName(context, userNameInput.getText().toString());
             myIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
             this.startActivity(myIntent);
         } else {
-            TextView userNot = (TextView) findViewById(R.id.user_notification);
+            TextView userNot = findViewById(R.id.user_notification);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 userNot.setTextColor(getResources().getColor(R.color.colorStatusCantConnect, null));
             } else {

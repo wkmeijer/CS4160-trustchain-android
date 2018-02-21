@@ -4,18 +4,18 @@ import android.content.Context;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
 
 import nl.tudelft.cs4160.trustchain_android.inbox.InboxItem;
 
-/**
- * Created by timbu on 18/12/2017.
- */
 public class InboxItemStorage {
-
+    //Inbox item key to store the objects
     private final static String INBOX_ITEM_KEY = "INBOX_ITEM_KEY:";
 
+    /**
+     * Get all inbox items that are stored.
+     * @param context
+     * @return
+     */
     public static ArrayList<InboxItem> getInboxItems(Context context) {
         InboxItem[] array = SharedPreferencesStorage.readSharedPreferences(context, INBOX_ITEM_KEY, InboxItem[].class);
         if (array != null) {
@@ -24,23 +24,19 @@ public class InboxItemStorage {
         return new ArrayList<InboxItem>();
     }
 
+    /**
+     * Clear the entire storage of inbox items.
+     * @param context
+     */
     public static void deleteAll(Context context) {
         SharedPreferencesStorage.writeSharedPreferences(context, INBOX_ITEM_KEY, null);
     }
 
-    public static void delete(Context context, InboxItem inboxItem) {
-        InboxItem[] array = SharedPreferencesStorage.readSharedPreferences(context, INBOX_ITEM_KEY, InboxItem[].class);
-        if (array != null) {
-            List<InboxItem> result = new LinkedList<>();
-            for (InboxItem item : array) {
-                if (item.getPublicKey() == null || !item.getPublicKey().equals(inboxItem.getPublicKey())) {
-                    result.add(item);
-                }
-            }
-            SharedPreferencesStorage.writeSharedPreferences(context, INBOX_ITEM_KEY, result.toArray(array));
-        }
-    }
-
+    /**
+     * Add inbox item to the storage.
+     * @param context
+     * @param inboxItem
+     */
     public static void addInboxItem(Context context, InboxItem inboxItem) {
         InboxItem[] array = SharedPreferencesStorage.readSharedPreferences(context, INBOX_ITEM_KEY, InboxItem[].class);
         if (array == null) {
@@ -60,6 +56,11 @@ public class InboxItemStorage {
         }
     }
 
+    /**
+     * Mark blocks as read, so remove all block references for the given inbox item.
+     * @param context
+     * @param inboxItem
+     */
     public static void markHalfBlockAsRead(Context context, InboxItem inboxItem) {
         InboxItem[] array = SharedPreferencesStorage.readSharedPreferences(context, INBOX_ITEM_KEY, InboxItem[].class);
         if (array == null) {
@@ -76,7 +77,14 @@ public class InboxItemStorage {
             }
         }
     }
-    public static void addHalfBlock(Context context, String pubKey, int halfBlockSequenceNumbe) {
+
+    /**
+     * Add the link of a half block to the inbox item it concerns.
+     * @param context
+     * @param pubKey
+     * @param halfBlockSequenceNumber the sequence number of the block that is added.
+     */
+    public static void addHalfBlock(Context context, String pubKey, int halfBlockSequenceNumber) {
         InboxItem[] array = SharedPreferencesStorage.readSharedPreferences(context, INBOX_ITEM_KEY, InboxItem[].class);
         if (array == null) {
             return;
@@ -86,7 +94,7 @@ public class InboxItemStorage {
                 String p2 = array[i].getPublicKey();
                 if (array[i].getPublicKey().equals(pubKey)) {
                     InboxItem item = array[i];
-                    item.addHalfBlocks(halfBlockSequenceNumbe);
+                    item.addHalfBlocks(halfBlockSequenceNumber);
                     array[i] = item;
                     SharedPreferencesStorage.writeSharedPreferences(context, INBOX_ITEM_KEY, array);
                     return;

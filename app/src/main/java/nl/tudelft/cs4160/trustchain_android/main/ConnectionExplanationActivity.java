@@ -9,10 +9,6 @@ import java.util.ArrayList;
 
 import nl.tudelft.cs4160.trustchain_android.R;
 
-/**
- * Created by Boning on 12/12/2017.
- */
-
 public class ConnectionExplanationActivity extends AppCompatActivity {
 
     private ArrayList<String> symbolList;
@@ -32,9 +28,9 @@ public class ConnectionExplanationActivity extends AppCompatActivity {
      * Create the items that provides the explanation of the colors.
      */
     private void createConnectionExplanationList() {
-        TextView connectionInfoHeaderText = (TextView) findViewById(R.id.connectionInfoHeaderText);
+        TextView connectionInfoHeaderText = findViewById(R.id.connectionInfoHeaderText);
         connectionInfoHeaderText.setTextSize(18.f);
-        ListView connectionExplanationListView = (ListView) findViewById(R.id.connectionColorExplanationList);
+        ListView connectionExplanationListView = findViewById(R.id.connectionColorExplanationList);
         ConnectionExplanationListAdapter connectionExplanationListAdapter =
                 new ConnectionExplanationListAdapter
                         (

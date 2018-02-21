@@ -30,7 +30,7 @@ public class BootstrapActivity extends AppCompatActivity {
      * @param view
      */
     public void onClickConnect(View view) {
-        bootstrapView = (EditText) findViewById(R.id.bootstrap_IP);
+        bootstrapView = findViewById(R.id.bootstrap_IP);
         try{
             Object res = InetAddress.getByName(bootstrapView.getText().toString());
             if(!(res instanceof Inet4Address) && !(res instanceof Inet6Address)){
@@ -44,7 +44,6 @@ public class BootstrapActivity extends AppCompatActivity {
             finish();
         } catch (Exception e){
             Toast.makeText(this, "The bootstrap IP address is not a valid IP address: " + bootstrapView.getText().toString(), Toast.LENGTH_SHORT).show();
-//             e.printStackTrace();
         }
     }
 }

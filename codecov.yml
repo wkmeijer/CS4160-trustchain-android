@@ -3,18 +3,27 @@
 #########################################
 coverage:
   ignore:
-  - "app/src/main/java/nl/tudelft/cs4160/trustchain_android/main/.*"
   - "app/src/main/java/nl/tudelft/cs4160/trustchain_android/database/.*"
-  - "app/src/main/java/nl/tudelft/cs4160/trustchain_android/KeyActivity.java"
   - "app/src/main/java/nl/tudelft/cs4160/trustchain_android/message/.*"
   - "app/src/main/java/nl/tudelft/cs4160/trustchain_android/connection/.*"
+  - "app/src/main/java/nl/tudelft/cs4160/trustchain_android/main/.*"
+  - "app/src/main/java/nl/tudelft/cs4160/trustchain_android/color/.*"
+  - "app/src/main/java/nl/tudelft/cs4160/trustchain_android/Network/.*"
   - "app/src/main/java/nl/tudelft/cs4160/trustchain_android/chainExplorer/.*"
   - "app/src/main/java/nl/tudelft/cs4160/trustchain_android/bencode/.*"
+<<<<<<< HEAD
+=======
+  - "app/src/main/java/nl/tudelft/cs4160/trustchain_android/mutualBlock/MutualBlockAdapter.java"
+  - "app/src/main/java/nl/tudelft/cs4160/trustchain_android/inbox/InboxAdapter.java"
+  - "app/src/main/java/nl/tudelft/cs4160/trustchain_android/inbox/InboxActivity.java"
+>>>>>>> 29aa341a74003f041d63668cec12d1f42177436b
 
   status:
     project:
       default:
         enabled: yes
+<<<<<<< HEAD
+=======
         threshold: 50%
         if_no_uploads: success
         if_not_found: success
@@ -33,7 +42,29 @@ coverage:
     changes:
       default:
         enabled: yes
+>>>>>>> 29aa341a74003f041d63668cec12d1f42177436b
+        threshold: 50%
+        if_no_uploads: success
+        if_not_found: success
+        if_ci_failed: error
+<<<<<<< HEAD
+
+    patch:
+      default:
+        enabled: yes
+        target: 0%
+        branches: null
         threshold: null
         if_no_uploads: success
         if_not_found: success
         if_ci_failed: error
+
+    changes:
+      default:
+        enabled: yes
+        threshold: null
+        if_no_uploads: success
+        if_not_found: success
+        if_ci_failed: error
+=======
+>>>>>>> 29aa341a74003f041d63668cec12d1f42177436b

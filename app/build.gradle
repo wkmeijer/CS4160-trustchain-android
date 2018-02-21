@@ -8,8 +8,8 @@ android {
         applicationId "nl.tudelft.cs4160.trustchain_android"
         minSdkVersion 21
         targetSdkVersion 26
-        versionCode 5
-        versionName "0.251"
+        versionCode 6
+        versionName "0.26"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
     }
@@ -20,30 +20,48 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
         debug {
-            testCoverageEnabled false
+            testCoverageEnabled = true
+        }
+    }
+
+    testOptions {
+        unitTests {
+            includeAndroidResources = true
         }
     }
     lintOptions {
         abortOnError false
     }
+
+    packagingOptions {
+        exclude '**/MessageProto.java'
+    }
 }
 
+
 dependencies {
-    compile fileTree(include: ['*.jar'], dir: 'libs')
-    androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    androidTestImplementation('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
-    compile files('libs/protobuf-java-3.4.1.jar')
-    compile 'com.android.support:appcompat-v7:26.1.0'
-    compile 'com.android.support.constraint:constraint-layout:1.0.2'
-    compile 'me.dm7.barcodescanner:zxing:1.9.8'
-    compile 'com.android.support:design:26.1.0'
-    compile 'com.squareup.moshi:moshi:1.5.0'
-    compile 'com.github.joshjdevl.libsodiumjni:libsodium-jni-aar:1.0.7'
-    compile 'com.google.code.gson:gson:2.8.2'
-    testCompile 'junit:junit:4.12'
-    testCompile 'org.mockito:mockito-core:2.7.22'
-    androidTestCompile 'org.mockito:mockito-android:2.7.22'
-    androidTestCompile 'com.android.support.test.espresso:espresso-core:2.2.2'
-    androidTestCompile 'com.android.support.test.espresso:espresso-intents:2.2.2'
+    implementation files('libs/protobuf-java-3.4.1.jar')
+    implementation 'com.android.support:appcompat-v7:26.1.0'
+    implementation 'me.dm7.barcodescanner:zxing:1.9.8'
+    implementation 'com.android.support:design:26.1.0'
+    implementation 'com.squareup.moshi:moshi:1.5.0'
+    implementation 'com.github.joshjdevl.libsodiumjni:libsodium-jni-aar:1.0.7'
+    implementation 'com.android.support.constraint:constraint-layout:1.0.2'
+    implementation 'com.google.code.gson:gson:2.8.2'
+    implementation 'com.android.support:multidex:1.0.2'
+    testImplementation 'junit:junit:4.12'
+    testImplementation 'org.mockito:mockito-core:2.7.22'
+    androidTestImplementation 'org.mockito:mockito-android:2.7.22'
+    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
+    androidTestImplementation 'com.android.support.test.espresso:espresso-intents:3.0.1'
+    androidTestCompile 'com.android.support.test.espresso:espresso-contrib:2.2.2', {
+        exclude group: 'com.android.support', module: 'support-annotations'
+        exclude group: 'com.android.support', module: 'support-v4'
+        exclude group: 'com.android.support', module: 'design'
+        exclude group: 'com.android.support', module: 'recyclerview-v7'
+    }
 }

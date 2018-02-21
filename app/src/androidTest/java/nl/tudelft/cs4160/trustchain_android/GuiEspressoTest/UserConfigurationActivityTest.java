@@ -1,6 +1,7 @@
 package nl.tudelft.cs4160.trustchain_android.GuiEspressoTest;
 
 import android.content.Intent;
+import android.support.test.espresso.Espresso;
 import android.support.test.rule.ActivityTestRule;
 
 import org.junit.Rule;
@@ -20,6 +21,10 @@ import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.CoreMatchers.allOf;
 
+<<<<<<<HEAD
+        =======
+        >>>>>>>29aa341a74003f041d63668cec12d1f42177436b
+
 
 /**
  * Created by Laurens on 12/18/2017.
@@ -35,6 +40,7 @@ public class UserConfigurationActivityTest {
             false);
 
     @Test
+<<<<<<< HEAD
     public void makeNewUsername(){
         emptyUserNamePreferences();
         mActivityRule.launchActivity(new Intent());
@@ -47,6 +53,22 @@ public class UserConfigurationActivityTest {
         onView(allOf(withId(R.id.peer_id), withText(user))).check(matches(isDisplayed()));
     }
 
+=======
+    public void makeNewUsername() throws InterruptedException{
+        emptyUserNamePreferences();
+        mActivityRule.launchActivity(new Intent());
+        Thread.sleep(1000);
+        //enter the username
+        onView(withId(R.id.username)).perform(replaceText(user));
+        // press the login button
+        Espresso.closeSoftKeyboard();
+        Thread.sleep(1000);
+        onView(withId(R.id.confirm_button)).perform(click());
+        // look whether the ID is correctly displayed in the OverviewConnections window.
+        onView(allOf(withId(R.id.peer_id), withText(user))).check(matches(isDisplayed()));
+    }
+
+>>>>>>> 29aa341a74003f041d63668cec12d1f42177436b
     @Test
     public void usernameAlreadyStored(){
         setUsernameInPref();
