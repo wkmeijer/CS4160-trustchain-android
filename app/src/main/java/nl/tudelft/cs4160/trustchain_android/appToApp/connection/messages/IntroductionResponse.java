@@ -7,9 +7,7 @@ import java.util.Map;
 
 import nl.tudelft.cs4160.trustchain_android.appToApp.PeerAppToApp;
 
-/**
- * Created by jaap on 5/31/16.
- */
+
 public class IntroductionResponse extends Message {
     final private static String NETWORK_OPERATOR = "network_operator";
     final private static String CONNECTION_TYPE = "connection_type";

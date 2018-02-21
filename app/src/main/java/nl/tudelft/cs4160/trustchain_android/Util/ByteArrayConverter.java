@@ -1,12 +1,6 @@
 package nl.tudelft.cs4160.trustchain_android.Util;
 
-import android.util.Log;
-
 import com.google.protobuf.ByteString;
-
-/**
- * Created by timbu on 10/01/2018.
- */
 
 public class ByteArrayConverter {
 
@@ -35,13 +29,4 @@ public class ByteArrayConverter {
         }
         return data;
     }
-
-    private void printByteArray(byte[] message) {
-        String printString = "";
-        for (byte b : message) {
-            printString = printString + b;
-        }
-        Log.d("testByteString", printString);
-    }
-
 }

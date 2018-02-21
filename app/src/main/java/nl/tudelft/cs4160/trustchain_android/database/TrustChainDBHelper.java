@@ -350,11 +350,7 @@ public class TrustChainDBHelper extends SQLiteOpenHelper {
      *
      * @param pubKey - public key of the chain to from which blocks need to be fetched
      * @param seqNum - sequence number of block, the blocks inserted after this block should be returned
-<<<<<<< HEAD
-     * @param limit  - the limit of the amount of blocks to return
-=======
      * @param limit - the limit of the amount of blocks to return
->>>>>>> e50816a71671d6d332df84c03b5f714fa6dea1f8
      * @return list of blocks
      */
     public List<MessageProto.TrustChainBlock> crawl(byte[] pubKey, int seqNum, int limit) throws Exception {
@@ -386,17 +382,6 @@ public class TrustChainDBHelper extends SQLiteOpenHelper {
         cursor.close();
 
         return res;
-    }
-
-    // uses the default limit of 100
-    public List<MessageProto.TrustChainBlock> crawl(byte[] pubKey, int seqNum) {
-        List<MessageProto.TrustChainBlock> blockList = new ArrayList<>();
-        try {
-            blockList = crawl(pubKey, seqNum, 100);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return blockList;
     }
 
     /**

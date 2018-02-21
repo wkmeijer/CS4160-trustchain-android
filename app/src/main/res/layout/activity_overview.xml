@@ -14,7 +14,6 @@
         android:paddingBottom="0dp"
         android:paddingTop="8dp">
 
-
         <TableLayout
             android:id="@+id/overviewButtons"
             android:layout_width="match_parent"
@@ -23,7 +22,6 @@
             android:paddingRight="@dimen/activity_horizontal_margin">
 
             <TableRow>
-
                 <TextView
                     android:layout_weight="1"
                     android:text="@string/local_ip" />
@@ -32,11 +30,9 @@
                     android:id="@+id/local_ip_address_view"
                     android:layout_weight="1"
                     android:text="@string/ip" />
-
             </TableRow>
 
             <TableRow>
-
                 <TextView
                     android:layout_weight="1"
                     android:text="@string/wan_address" />
@@ -45,12 +41,9 @@
                     android:id="@+id/wanvote"
                     android:layout_weight="1"
                     android:text="@string/unknown" />
-
             </TableRow>
 
             <TableRow>
-
-
                 <TextView
                     android:layout_weight="1"
                     android:text="@string/peer_id" />
@@ -59,11 +52,9 @@
                     android:id="@+id/peer_id"
                     android:layout_weight="1"
                     android:text="" />
-
             </TableRow>
 
             <TableRow android:layout_marginBottom="10dp">
-
                 <TextView
                     android:layout_weight="1"
                     android:text="@string/connection" />
@@ -76,7 +67,6 @@
 
 
             <TableRow android:layout_marginBottom="10dp">
-
                 <TextView
                     android:layout_weight="1"
                     android:text="@string/left_connections"
@@ -89,63 +79,6 @@
                     android:textColor="@android:color/black"
                     android:textStyle="bold" />
             </TableRow>
-
-            <!--
-                    <TableRow>
-
-                        <TextView
-                            android:layout_weight="0.33"
-                            android:text="@string/active_peers"
-                            android:textAlignment="center" />
-
-                        <TextView
-                            android:layout_weight="0.33"
-                            android:text="@string/connectable_peers"
-                            android:textAlignment="center" />
-
-                        <TextView
-                            android:layout_weight="0.33"
-                            android:text="@string/connectable_ratio"
-                            android:textAlignment="center" />
-                    </TableRow>
-
-                    <TableRow android:layout_marginBottom="10dp">
-
-                        <TextView
-                            android:id="@+id/active_peers"
-                            android:layout_weight="0.33"
-                            android:text=""
-                            android:textAlignment="center"
-                            android:textStyle="bold" />
-
-                        <TextView
-                            android:id="@+id/connectable_peers"
-                            android:layout_weight="0.33"
-                            android:text=""
-                            android:textAlignment="center"
-                            android:textStyle="bold" />
-
-                        <TextView
-                            android:id="@+id/connectable_ratio"
-                            android:layout_weight="0.33"
-                            android:text=""
-                            android:textAlignment="center"
-                            android:textStyle="bold" />
-                    </TableRow>
-
-                    <TableRow>
-
-                        <TextView
-                            android:layout_weight="1"
-                            android:text="@string/incoming"
-                            android:textStyle="bold" />
-
-                        <TextView
-                            android:layout_weight="1"
-                            android:text="@string/outgoing"
-                            android:textStyle="bold" />
-
-                    </TableRow>-->
         </TableLayout>
 
         <Button
@@ -155,7 +88,6 @@
             android:layout_alignParentBottom="true"
             android:text="@string/exit_prompt"
             android:visibility="gone" />
-
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -168,14 +100,11 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="5" />
 
-
             <ListView
                 android:id="@+id/outgoing_peer_connection_list_view"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="5" />
-
-
         </LinearLayout>
 
         <LinearLayout
@@ -184,6 +113,7 @@
             android:orientation="vertical">
 
             <Button
+                android:id="@+id/open_inbox_item"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
                 android:layout_marginEnd="@dimen/activity_horizontal_margin"

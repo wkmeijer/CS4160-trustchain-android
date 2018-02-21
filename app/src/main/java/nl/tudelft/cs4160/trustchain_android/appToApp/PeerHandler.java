@@ -13,9 +13,6 @@ import java.util.concurrent.locks.ReentrantLock;
 import nl.tudelft.cs4160.trustchain_android.appToApp.connection.PeerListener;
 import nl.tudelft.cs4160.trustchain_android.appToApp.connection.WanVote;
 
-/**
- * Created by timbu on 02/12/2017.
- */
 public class PeerHandler {
     private final ReentrantLock peerListLock = new ReentrantLock();
     private ArrayList<PeerAppToApp> peerList;
@@ -25,19 +22,18 @@ public class PeerHandler {
     public String hashId;
     private WanVote wanVote;
 
-    public PeerHandler(ArrayList<PeerAppToApp> list, String hashId) {
-        this.peerList = list;
-        this.hashId = hashId;
-        this.wanVote = new WanVote();
-    }
-
+    /**
+     * Peer handler constructor.
+     *
+     * @param hashId
+     */
     public PeerHandler(String hashId) {
         this.peerList = new ArrayList<>();
         this.hashId = hashId;
         this.wanVote = new WanVote();
     }
 
-    public void setPeerListener(PeerListener peerListener){
+    public void setPeerListener(PeerListener peerListener) {
         this.peerListener = peerListener;
     }
 
@@ -61,6 +57,9 @@ public class PeerHandler {
         }
     }
 
+    /**
+     * Remove all inactive peers.
+     */
     public void removeDeadPeers() {
         peerListLock.lock();
         try {
@@ -74,6 +73,12 @@ public class PeerHandler {
         }
     }
 
+    /**
+     * Add peer to the list.
+     * Lock is to make sure this happens thread safe.
+     *
+     * @param p
+     */
     public void add(PeerAppToApp p) {
         peerListLock.lock();
         try {
@@ -83,6 +88,12 @@ public class PeerHandler {
         }
     }
 
+    /**
+     * Remove a peer from the list.
+     * Lock is to make sure this happens thread safe.
+     *
+     * @param p
+     */
     public void remove(PeerAppToApp p) {
         peerListLock.lock();
         try {
@@ -92,6 +103,12 @@ public class PeerHandler {
         }
     }
 
+    /**
+     * Get the amount of peers.
+     * Lock is to make sure this happens thread safe.
+     *
+     * @return
+     */
     public int size() {
         peerListLock.lock();
         try {
@@ -101,6 +118,13 @@ public class PeerHandler {
         }
     }
 
+    /**
+     * Check if a peer exists in the list.
+     * Lock is to make sure this happens thread safe.
+     *
+     * @param peer
+     * @return
+     */
     public boolean peerExistsInList(PeerAppToApp peer) {
         peerListLock.lock();
         try {
@@ -116,10 +140,9 @@ public class PeerHandler {
         }
     }
 
-
     /**
      * Add a inboxItem to the inboxItem list.
-     *
+     * Lock is to make sure this happens thread safe.
      * @param peerId   the inboxItem's id.
      * @param address  the inboxItem's address.
      * @param incoming whether the inboxItem is an incoming inboxItem.
@@ -172,8 +195,9 @@ public class PeerHandler {
         }
     }
 
-        /**
+    /**
      * Split the inboxItem list between incoming and outgoing peers.
+     * Lock is to make sure this happens thread safe.
      */
     public void splitPeerList() {
         peerListLock.lock();
@@ -203,7 +227,7 @@ public class PeerHandler {
 
     /**
      * Pick a random eligible inboxItem/invitee for sending an introduction request to.
-     *
+     * Lock is to make sure this happens thread safe.
      * @param excludePeer inboxItem to which the invitee is sent.
      * @return the eligible inboxItem if any, else null.
      */
@@ -278,6 +302,11 @@ public class PeerHandler {
         return outgoingList;
     }
 
+    /**
+     * Get the peer list
+     * Lock is to make sure this happens thread safe.
+     * @return
+     */
     public ArrayList<PeerAppToApp> getPeerList() {
         peerListLock.lock();
         try {
@@ -287,6 +316,11 @@ public class PeerHandler {
         }
     }
 
+    /**
+     * Set the peer list.
+     * Lock is to make sure this happens thread safe.
+     * @param peerList
+     */
     public void setPeerList(ArrayList<PeerAppToApp> peerList) {
         peerListLock.lock();
         try {

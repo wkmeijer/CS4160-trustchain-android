@@ -114,7 +114,6 @@ public class TrustChainBlockHelper {
         //sign the hash
         byte[] hash = TrustChainBlockHelper.hash(block);
         byte[] signature = Key.sign(signingKey, hash);
-
         //create the block
         return block.toBuilder().setSignature(ByteString.copyFrom(signature)).build();
     }
