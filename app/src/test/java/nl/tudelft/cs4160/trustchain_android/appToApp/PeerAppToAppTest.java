@@ -1,4 +1,8 @@
+<<<<<<< HEAD:app/src/test/java/nl/tudelft/cs4160/trustchain_android/appToAppTest/PeerAppToAppTest.java
 package nl.tudelft.cs4160.trustchain_android.appToAppTest;
+=======
+package nl.tudelft.cs4160.trustchain_android.appToApp;
+>>>>>>> 29aa341a74003f041d63668cec12d1f42177436b:app/src/test/java/nl/tudelft/cs4160/trustchain_android/appToApp/PeerAppToAppTest.java
 
 import junit.framework.TestCase;
 
@@ -9,7 +13,12 @@ import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.util.concurrent.TimeUnit;
 
+<<<<<<< HEAD:app/src/test/java/nl/tudelft/cs4160/trustchain_android/appToAppTest/PeerAppToAppTest.java
 import nl.tudelft.cs4160.trustchain_android.appToApp.PeerAppToApp;
+=======
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+>>>>>>> 29aa341a74003f041d63668cec12d1f42177436b:app/src/test/java/nl/tudelft/cs4160/trustchain_android/appToApp/PeerAppToAppTest.java
 
 public class PeerAppToAppTest extends TestCase {
     String id1;

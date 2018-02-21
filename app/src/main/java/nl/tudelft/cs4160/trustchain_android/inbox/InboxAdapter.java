@@ -15,7 +15,6 @@ import java.util.ArrayList;
 import nl.tudelft.cs4160.trustchain_android.R;
 import nl.tudelft.cs4160.trustchain_android.appToApp.PeerAppToApp;
 import nl.tudelft.cs4160.trustchain_android.main.TrustChainActivity;
-
 public class InboxAdapter extends RecyclerView.Adapter<InboxAdapter.ViewHolder> {
     private ArrayList<InboxItem> mDataset;
     private ArrayList<PeerAppToApp> peerList;
@@ -32,10 +31,10 @@ public class InboxAdapter extends RecyclerView.Adapter<InboxAdapter.ViewHolder> 
 
         public ViewHolderItem(LinearLayout v) {
             super(v);
-            mUserNameTextView = (TextView) v.findViewById(R.id.userNameTextView);
-            mCounterRelativeLayout = (RelativeLayout) v.findViewById(R.id.counterRelativeLayout);
-            mAddressTextView = (TextView) v.findViewById(R.id.addressTextView);
-            mStatusTextView = (TextView) v.findViewById(R.id.status_indicator);
+            mUserNameTextView = v.findViewById(R.id.userNameTextView);
+            mCounterRelativeLayout = v.findViewById(R.id.counterRelativeLayout);
+            mAddressTextView = v.findViewById(R.id.addressTextView);
+            mStatusTextView = v.findViewById(R.id.status_indicator);
         }
     }
 
@@ -45,7 +44,7 @@ public class InboxAdapter extends RecyclerView.Adapter<InboxAdapter.ViewHolder> 
 
         public ViewHolderAddPeer(LinearLayout v) {
             super(v);
-            mUserButton = (Button) v.findViewById(R.id.userButton);
+            mUserButton = v.findViewById(R.id.userButton);
         }
     }
 
@@ -55,7 +54,7 @@ public class InboxAdapter extends RecyclerView.Adapter<InboxAdapter.ViewHolder> 
 
         public ViewHolder(LinearLayout v) {
             super(v);
-            mWrapperLinearLayout = (LinearLayout) v.findViewById(R.id.wrapperLinearLayout);
+            mWrapperLinearLayout = v.findViewById(R.id.wrapperLinearLayout);
         }
     }
 
@@ -124,11 +123,16 @@ public class InboxAdapter extends RecyclerView.Adapter<InboxAdapter.ViewHolder> 
         }
     }
 
+    /**
+     * Go to the overview connections activity.
+     * Because this is always the previous activity on the navigation stack
+     * we can do this with a finish().
+     * @param holder
+     */
     private void setOnClickListenerNewUser(final ViewHolderAddPeer holder) {
         View.OnClickListener mOnClickListener = new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //.FINISH() TODO does this work?
                 InboxActivity i = (InboxActivity) holder.mWrapperLinearLayout.getContext();
                 i.finish();
             }
@@ -136,6 +140,12 @@ public class InboxAdapter extends RecyclerView.Adapter<InboxAdapter.ViewHolder> 
         holder.mUserButton.setOnClickListener(mOnClickListener);
     }
 
+    /**
+     * On click inbox item go to trustchainactivity
+     * and pass the selected item on as extra.
+     * @param holder
+     * @param position
+     */
     private void setOnClickListenerInboxItem(final ViewHolder holder, final int position) {
         View.OnClickListener mOnClickListener = new View.OnClickListener() {
             @Override

@@ -49,7 +49,6 @@ public class ChainExplorerActivity extends AppCompatActivity {
         setContentView(R.layout.activity_chain_explorer);
         blocksList = findViewById(R.id.blocks_list);
 
-
         // Create a progress bar to display while the list loads
         ProgressBar progressBar = new ProgressBar(this);
         progressBar.setLayoutParams(new LinearLayout.LayoutParams(GridLayout.LayoutParams.WRAP_CONTENT,
@@ -83,6 +82,9 @@ public class ChainExplorerActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Initialize the variables.
+     */
     private void init() {
         dbHelper = new TrustChainDBHelper(this);
         DualSecret kp = Key.loadKeys(getApplicationContext());

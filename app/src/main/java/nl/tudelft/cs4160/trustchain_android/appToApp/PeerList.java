@@ -2,10 +2,6 @@ package nl.tudelft.cs4160.trustchain_android.appToApp;
 
 import java.util.ArrayList;
 
-/**
- * Created by timbu on 02/12/2017.
- */
-
 public class PeerList {
     private ArrayList<PeerAppToApp> list;
 
