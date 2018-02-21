@@ -41,10 +41,13 @@ public class ChainExplorerActivity extends AppCompatActivity {
     ChainExplorerAdapter adapter;
     ListView blocksList;
 
+
     static final String TAG = "ChainExplorerActivity";
     private static final String TITLE = "My chain overview";
 
     public static final String BUNDLE_EXTRAS_PUBLIC_KEY = "publicKey";
+
+    private DualKey kp;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,8 +67,11 @@ public class ChainExplorerActivity extends AppCompatActivity {
         ViewGroup root = findViewById(android.R.id.content);
         root.addView(progressBar);
 
+
+        kp = Key.loadKeys(getApplicationContext());
         init();
     }
+
 
 
     @Override
@@ -86,15 +92,16 @@ public class ChainExplorerActivity extends AppCompatActivity {
         }
     }
 
+    private byte[] retrievePublicKey() {
+        if (getIntent().hasExtra(BUNDLE_EXTRAS_PUBLIC_KEY )) {
+            return getIntent().getByteArrayExtra(BUNDLE_EXTRAS_PUBLIC_KEY);
+        }
+        return kp.getPublicKeyPair().toBytes();
+    }
+
     private void init() {
         dbHelper = new TrustChainDBHelper(this);
-        DualKey kp = Key.loadKeys(getApplicationContext());
-        byte[] publicKey;
-        if (getIntent().hasExtra(BUNDLE_EXTRAS_PUBLIC_KEY )) {
-            publicKey = getIntent().getByteArrayExtra(BUNDLE_EXTRAS_PUBLIC_KEY );
-        } else {
-            publicKey = kp.getPublicKeyPair().toBytes();
-        }
+        byte[] publicKey = retrievePublicKey();
         Log.i(TAG, "Using " + Arrays.toString(publicKey) + " as public key");
         try {
             List<MessageProto.TrustChainBlock> blocks = dbHelper.getBlocks(publicKey, true);
@@ -104,11 +111,13 @@ public class ChainExplorerActivity extends AppCompatActivity {
                 if (ownPubKey.equals(firstPubKey)){
                     this.setTitle(TITLE);
                 } else {
-                    this.setTitle("Chain of " + UserNameStorage.getPeerByPublickey(this, ByteArrayConverter.byteStringToString(blocks.get(0).getPublicKey())));
+                    this.setTitle("Chain of " + UserNameStorage.getPeerByPublicKey(this,
+                            ByteArrayConverter.byteStringToString(blocks.get(0).getPublicKey())));
                 }
-                adapter = new ChainExplorerAdapter(this, blocks, kp.getPublicKeyPair().toBytes());
+                adapter = new ChainExplorerAdapter(this, blocks,
+                        kp.getPublicKeyPair().toBytes(), publicKey);
                 blocksList.setAdapter(adapter);
-            }else{
+            } else{
                 // ToDo display empty chain
             }
         } catch (Exception e) {

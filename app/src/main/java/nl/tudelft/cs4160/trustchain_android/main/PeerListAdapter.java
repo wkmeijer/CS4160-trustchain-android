@@ -148,7 +148,7 @@ public class PeerListAdapter extends ArrayAdapter<PeerAppToApp> {
                     String pubKey = PubKeyAndAddressPairStorage.getPubKeyByAddress(context, peer.getAddress().toString().replace("/", ""));
                     if(pubKey != null && !pubKey.equals("")) {
                         InboxItem i = new InboxItem(peer.getPeerId(), new ArrayList<Integer>(), peer.getAddress().getHostString(), pubKey, peer.getPort());
-                        UserNameStorage.setNewPeerByPublickey(context, peer.getPeerId(), pubKey);
+                        UserNameStorage.setNewPeerByPublicKey(context, peer.getPeerId(), pubKey);
                         InboxItemStorage.addInboxItem(context, i);
                         Snackbar mySnackbar = Snackbar.make(coordinatorLayout,
                                 peer.getPeerId() + " added to inbox", Snackbar.LENGTH_SHORT);

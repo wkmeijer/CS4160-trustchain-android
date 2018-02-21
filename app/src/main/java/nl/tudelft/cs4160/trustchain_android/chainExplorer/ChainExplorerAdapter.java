@@ -1,19 +1,24 @@
 package nl.tudelft.cs4160.trustchain_android.chainExplorer;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.protobuf.ByteString;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
 import nl.tudelft.cs4160.trustchain_android.R;
+import nl.tudelft.cs4160.trustchain_android.SharedPreferences.UserNameStorage;
 import nl.tudelft.cs4160.trustchain_android.Util.ByteArrayConverter;
 import nl.tudelft.cs4160.trustchain_android.block.TrustChainBlockHelper;
 import nl.tudelft.cs4160.trustchain_android.color.ChainColor;
@@ -22,16 +27,35 @@ import nl.tudelft.cs4160.trustchain_android.message.MessageProto;
 public class ChainExplorerAdapter extends BaseAdapter {
     static final String TAG = "ChainExplorerAdapter";
 
-    Context context;
-    List<MessageProto.TrustChainBlock> blocksList;
-    HashMap<ByteString, String> peerList = new HashMap<>();
+    private final static String PEER_NAME_UNKNOWN = "unkown";
 
-    public ChainExplorerAdapter(Context context, List<MessageProto.TrustChainBlock> blocksList, byte[] myPubKey) {
+    private Context context;
+    private List<MessageProto.TrustChainBlock> blocksList;
+    private HashMap<ByteString, String> peerList = new HashMap<>();
+
+    private byte[] chainPubKey;
+    private byte[] myPubKey;
+
+    public ChainExplorerAdapter(Context context, List<MessageProto.TrustChainBlock> blocksList, byte[] myPubKey,
+                                byte[] chainPubKey) {
         this.context = context;
         this.blocksList = blocksList;
+        this.chainPubKey = chainPubKey;
+        this.myPubKey = myPubKey;
         // put my public key in the peerList
+
         peerList.put(ByteString.copyFrom(myPubKey), "me");
-        peerList.put(TrustChainBlockHelper.EMPTY_PK, "unknown");
+        if(!Arrays.equals(myPubKey, chainPubKey))
+            peerList.put(ByteString.copyFrom(chainPubKey), retrievePeerName(chainPubKey));
+        peerList.put(TrustChainBlockHelper.EMPTY_PK, "Genesis");
+    }
+
+    private String retrievePeerName(byte[] key) {
+        String name = UserNameStorage.getPeerByPublicKey(context, key);
+        if(name == null) {
+            return PEER_NAME_UNKNOWN;
+        }
+        return name;
     }
 
     @Override
@@ -67,22 +91,8 @@ public class ChainExplorerAdapter extends BaseAdapter {
         // Check if we already know the peer, otherwise add it to the peerList
         ByteString pubKeyByteStr = block.getPublicKey();
         ByteString linkPubKeyByteStr = block.getLinkPublicKey();
-        String peerAlias;
-        String linkPeerAlias;
-
-        if (peerList.containsKey(pubKeyByteStr)) {
-            peerAlias = peerList.get(pubKeyByteStr);
-        } else {
-            peerAlias = "peer" + (peerList.size() - 1);
-            peerList.put(pubKeyByteStr, peerAlias);
-        }
-
-        if (peerList.containsKey(linkPubKeyByteStr)) {
-            linkPeerAlias = peerList.get(linkPubKeyByteStr);
-        } else {
-            linkPeerAlias = "peer" + (peerList.size() - 1);
-            peerList.put(linkPubKeyByteStr, linkPeerAlias);
-        }
+        String peerAlias = getPeerAlias(pubKeyByteStr);
+        String linkPeerAlias = getPeerAlias(linkPubKeyByteStr);
 
         // Check if the sequence numbers are 0, which would mean that they are unknown
         String seqNumStr;
@@ -127,6 +137,7 @@ public class ChainExplorerAdapter extends BaseAdapter {
         pubKey.setText(ByteArrayConverter.bytesToHexString(pubKeyByteStr.toByteArray()));
         linkPubKey.setText(ByteArrayConverter.bytesToHexString(linkPubKeyByteStr.toByteArray()));
         prevHash.setText(ByteArrayConverter.bytesToHexString(block.getPreviousHash().toByteArray()));
+
         signature.setText(ByteArrayConverter.bytesToHexString(block.getSignature().toByteArray()));
         expTransaction.setText(block.getTransaction().toStringUtf8());
 
@@ -143,14 +154,46 @@ public class ChainExplorerAdapter extends BaseAdapter {
         return convertView;
     }
 
+    private String getPeerAlias(ByteString key) {
+        if (peerList.containsKey(key)) {
+            return peerList.get(key);
+        }
+        String peerAlias = checkUserNameStorage(key.toByteArray());
+        peerList.put(key, peerAlias);
+        return peerAlias;
+    }
+
+    private String checkUserNameStorage(byte[] pubKey) {
+        String name = UserNameStorage.getPeerByPublicKey(context, pubKey);
+        if(name == null) {
+            return "peer " + (peerList.size()-1);
+        }
+        return name;
+    }
+
+    private void showToast(String text) {
+        Toast.makeText(context, text, Toast.LENGTH_SHORT).show();
+    }
+
     public void setOnClickListener(View view) {
         View.OnClickListener onClickListener = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 TextView tv = (TextView) v;
+                String pubKey = tv.getText().toString();
+                if(pubKey.equals("00")) {
+                    showToast("00 is not a valid public key");
+                    return;
+                } else if(ByteArrayConverter.bytesToHexString(chainPubKey).equals(pubKey)) {
+                    showToast("Already showing this public key");
+                    return;
+                }
+
                 Intent intent = new Intent(context, ChainExplorerActivity.class);
-                intent.putExtra("publicKey", ByteArrayConverter.hexStringToByteArray(tv.getText().toString()));
+                intent.putExtra(ChainExplorerActivity.BUNDLE_EXTRAS_PUBLIC_KEY,
+                        ByteArrayConverter.hexStringToByteArray(tv.getText().toString()));
                 context.startActivity(intent);
+                ((Activity)context).finish();
             }
         };
         view.setOnClickListener(onClickListener);
