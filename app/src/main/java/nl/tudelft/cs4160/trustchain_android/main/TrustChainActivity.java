@@ -437,7 +437,6 @@ public class TrustChainActivity extends AppCompatActivity implements CompoundBut
     public void requestPermission(final MessageProto.TrustChainBlock block) {
         //just to be sure run it on the ui thread
         //this is not necessary when this function is called from a AsyncTask
-        final TrustChainActivity trustChainActivity = this;
         runOnUiThread(new Runnable() {
             @Override
             public void run() {

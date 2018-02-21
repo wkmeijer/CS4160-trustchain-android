@@ -103,7 +103,7 @@ public class TrustChainBlockHelper {
         byte[] blockBytes = rawBlock.toByteArray();
         byte[] hashOut = new byte[Sodium.crypto_hash_sha256_bytes()];
         Sodium.crypto_hash_sha256(hashOut, blockBytes, blockBytes.length);
-        return blockBytes;
+        return hashOut;
     }
 
 
