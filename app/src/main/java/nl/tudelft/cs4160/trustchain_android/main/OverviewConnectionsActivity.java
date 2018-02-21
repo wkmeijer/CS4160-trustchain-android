@@ -37,8 +37,8 @@ import nl.tudelft.cs4160.trustchain_android.Network.NetworkCommunicationListener
 import nl.tudelft.cs4160.trustchain_android.R;
 import nl.tudelft.cs4160.trustchain_android.SharedPreferences.BootstrapIPStorage;
 import nl.tudelft.cs4160.trustchain_android.SharedPreferences.UserNameStorage;
-import nl.tudelft.cs4160.trustchain_android.Util.DualKey;
-import nl.tudelft.cs4160.trustchain_android.Util.Key;
+import nl.tudelft.cs4160.trustchain_android.crypto.DualSecret;
+import nl.tudelft.cs4160.trustchain_android.crypto.Key;
 import nl.tudelft.cs4160.trustchain_android.appToApp.PeerAppToApp;
 import nl.tudelft.cs4160.trustchain_android.appToApp.PeerHandler;
 import nl.tudelft.cs4160.trustchain_android.appToApp.connection.PeerListener;
@@ -140,7 +140,7 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
     }
 
     private void initKey() {
-        DualKey kp = Key.loadKeys(getApplicationContext());
+        DualSecret kp = Key.loadKeys(getApplicationContext());
         if (kp == null) {
             kp = Key.createAndSaveKeys(getApplicationContext());
         }
@@ -156,7 +156,7 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
      *
      * @return state - false if the app has been initialized before, true if first time app started
      */
-    public boolean isStartedFirstTime(TrustChainDBHelper dbHelper, DualKey kp) {
+    public boolean isStartedFirstTime(TrustChainDBHelper dbHelper, DualSecret kp) {
         // check if a genesis block is present in database
         MessageProto.TrustChainBlock genesisBlock = dbHelper.getBlock(kp.getPublicKeyPair().toBytes(), GENESIS_SEQ);
         return (genesisBlock == null);

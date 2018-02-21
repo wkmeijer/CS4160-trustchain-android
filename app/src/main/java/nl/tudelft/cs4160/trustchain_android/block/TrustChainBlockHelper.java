@@ -12,10 +12,10 @@ import java.util.Arrays;
 import java.util.List;
 
 import nl.tudelft.cs4160.trustchain_android.Util.ByteArrayConverter;
-import nl.tudelft.cs4160.trustchain_android.Util.DualKey;
-import nl.tudelft.cs4160.trustchain_android.Util.Key;
-import nl.tudelft.cs4160.trustchain_android.Util.PublicKeyPair;
-import nl.tudelft.cs4160.trustchain_android.Util.SigningKey;
+import nl.tudelft.cs4160.trustchain_android.crypto.DualSecret;
+import nl.tudelft.cs4160.trustchain_android.crypto.Key;
+import nl.tudelft.cs4160.trustchain_android.crypto.PublicKeyPair;
+import nl.tudelft.cs4160.trustchain_android.crypto.SigningKey;
 import nl.tudelft.cs4160.trustchain_android.database.TrustChainDBHelper;
 import nl.tudelft.cs4160.trustchain_android.message.MessageProto;
 
@@ -32,7 +32,7 @@ public class TrustChainBlockHelper {
      * Creates a TrustChain genesis block using protocol buffers.
      * @return block - A MessageProto.TrustChainBlockHelper
      */
-    public static MessageProto.TrustChainBlock createGenesisBlock(DualKey kp) {
+    public static MessageProto.TrustChainBlock createGenesisBlock(DualSecret kp) {
         MessageProto.TrustChainBlock block = MessageProto.TrustChainBlock.newBuilder()
                 .setTransaction(ByteString.EMPTY)
                 .setPublicKey(ByteString.copyFrom(kp.getPublicKeyPair().toBytes()))

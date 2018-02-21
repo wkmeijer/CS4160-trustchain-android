@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package nl.tudelft.cs4160.trustchain_android.Util;
+package nl.tudelft.cs4160.trustchain_android.crypto;
 
 
 import org.libsodium.jni.Sodium;

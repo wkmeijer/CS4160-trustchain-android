@@ -10,7 +10,7 @@ import org.libsodium.jni.Sodium;
 
 import java.util.Arrays;
 
-import nl.tudelft.cs4160.trustchain_android.Util.DualKey;
+import nl.tudelft.cs4160.trustchain_android.crypto.DualSecret;
 import nl.tudelft.cs4160.trustchain_android.block.TrustChainBlockHelper;
 import nl.tudelft.cs4160.trustchain_android.database.TrustChainDBHelper;
 import nl.tudelft.cs4160.trustchain_android.message.MessageProto;
@@ -23,7 +23,7 @@ public class TrustChainBlockFactory {
     Moshi moshi = new Moshi.Builder().build();
     JsonAdapter<QRTransaction> transactionAdapter = moshi.adapter(QRTransaction.class);
 
-    public MessageProto.TrustChainBlock createBlock(QRWallet wallet, TrustChainDBHelper helper, DualKey ownKeyPair) throws QRWalletImportException {
+    public MessageProto.TrustChainBlock createBlock(QRWallet wallet, TrustChainDBHelper helper, DualSecret ownKeyPair) throws QRWalletImportException {
         byte[] myPublicKey = ownKeyPair.getPublicKeyPair().toBytes();
 
         // Similar to tribler logic.
@@ -49,7 +49,7 @@ public class TrustChainBlockFactory {
 
 
         String transactionString = transactionAdapter.toJson(wallet.transaction);
-        DualKey walletKeyPair = getKeyPairFromWallet(wallet);
+        DualSecret walletKeyPair = getKeyPairFromWallet(wallet);
 
         MessageProto.TrustChainBlock identityHalfBlock = reconstructTemporaryIdentityHalfBlock(wallet);
 
@@ -63,7 +63,7 @@ public class TrustChainBlockFactory {
     public MessageProto.TrustChainBlock reconstructTemporaryIdentityHalfBlock(QRWallet wallet) throws InvalidDualKeyException {
         String transactionString = transactionAdapter.toJson(wallet.transaction);
 
-        DualKey walletKeyPair = getKeyPairFromWallet(wallet);
+        DualSecret walletKeyPair = getKeyPairFromWallet(wallet);
 
         MessageProto.TrustChainBlock block = MessageProto.TrustChainBlock.newBuilder().
                 setTransaction(ByteString.copyFromUtf8(transactionString))
@@ -77,12 +77,12 @@ public class TrustChainBlockFactory {
     }
 
 
-    private DualKey getKeyPairFromWallet(QRWallet wallet) throws InvalidDualKeyException {
+    private DualSecret getKeyPairFromWallet(QRWallet wallet) throws InvalidDualKeyException {
         byte[] keyBytes = Base64.decode(wallet.privateKeyBase64, Base64.DEFAULT);
         return readKeyPair(keyBytes);
     }
 
-    private DualKey readKeyPair(byte[] message) throws InvalidDualKeyException {
+    private DualSecret readKeyPair(byte[] message) throws InvalidDualKeyException {
         String check = "LibNaCLSK:";
         byte[] expectedCheckByteArray = check.getBytes();
         byte[] checkByteArray = Arrays.copyOfRange(message, 0, expectedCheckByteArray.length);
@@ -101,6 +101,6 @@ public class TrustChainBlockFactory {
 
         byte[] pk = Arrays.copyOfRange(message, expectedCheckByteArray.length, expectedCheckByteArray.length + pkLength); // first group is pk
         byte[] signSeed = Arrays.copyOfRange(message, expectedCheckByteArray.length + pkLength, expectedCheckByteArray.length + pkLength + seedLength); // second group is seed
-        return new DualKey(pk, signSeed);
+        return new DualSecret(pk, signSeed);
     }
 }

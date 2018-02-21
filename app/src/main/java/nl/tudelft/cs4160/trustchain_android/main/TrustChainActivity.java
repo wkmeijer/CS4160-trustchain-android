@@ -44,8 +44,8 @@ import nl.tudelft.cs4160.trustchain_android.Network.Network;
 import nl.tudelft.cs4160.trustchain_android.R;
 import nl.tudelft.cs4160.trustchain_android.SharedPreferences.InboxItemStorage;
 import nl.tudelft.cs4160.trustchain_android.Util.ByteArrayConverter;
-import nl.tudelft.cs4160.trustchain_android.Util.DualKey;
-import nl.tudelft.cs4160.trustchain_android.Util.Key;
+import nl.tudelft.cs4160.trustchain_android.crypto.DualSecret;
+import nl.tudelft.cs4160.trustchain_android.crypto.Key;
 import nl.tudelft.cs4160.trustchain_android.appToApp.PeerAppToApp;
 import nl.tudelft.cs4160.trustchain_android.appToApp.connection.messages.BlockMessage;
 import nl.tudelft.cs4160.trustchain_android.appToApp.connection.messages.MessageException;
@@ -83,7 +83,7 @@ public class TrustChainActivity extends AppCompatActivity implements CompoundBut
     SwitchCompat switchDeveloperMode;
     LinearLayout extraInformationPanel;
     TrustChainActivity thisActivity;
-    DualKey kp;
+    DualSecret kp;
     TrustChainDBHelper dbHelper;
 
 
@@ -195,7 +195,7 @@ public class TrustChainActivity extends AppCompatActivity implements CompoundBut
 
             ArrayList<MutualBlockItem> mutualBlocks = new ArrayList<>();
             int validationResultStatus = ValidationResult.NO_INFO;
-            DualKey keyPair = Key.loadKeys(activity);
+            DualSecret keyPair = Key.loadKeys(activity);
             String myPublicKeyString = ByteArrayConverter.bytesToHexString(keyPair.getPublicKeyPair().toBytes());
             String peerPublicKeyString = activity.inboxItemOtherPeer.getPublicKey();
 
@@ -355,7 +355,7 @@ public class TrustChainActivity extends AppCompatActivity implements CompoundBut
     }
 
     public void signAndSendHalfBlock(MessageProto.TrustChainBlock linkedBlock) {
-        DualKey keyPair = Key.loadKeys(this);
+        DualSecret keyPair = Key.loadKeys(this);
         MessageProto.TrustChainBlock block = createBlock(null, DBHelper,
                 keyPair.getPublicKeyPair().toBytes(),
                 linkedBlock, ByteArrayConverter.hexStringToByteArray(inboxItemOtherPeer.getPublicKey()));
@@ -511,7 +511,7 @@ public class TrustChainActivity extends AppCompatActivity implements CompoundBut
     }
 
     public void blockAdded(BlockMessage block) {
-        DualKey keyPair = Key.loadKeys(this);
+        DualSecret keyPair = Key.loadKeys(this);
         String myPublicKeyString = ByteArrayConverter.bytesToHexString(keyPair.getPublicKeyPair().toBytes());
         String peerPublicKeyString = this.inboxItemOtherPeer.getPublicKey();
         try {

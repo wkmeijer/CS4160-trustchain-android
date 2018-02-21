@@ -18,8 +18,8 @@ import java.util.Collections;
 import java.util.List;
 
 import nl.tudelft.cs4160.trustchain_android.R;
-import nl.tudelft.cs4160.trustchain_android.Util.Key;
-import nl.tudelft.cs4160.trustchain_android.Util.DualKey;
+import nl.tudelft.cs4160.trustchain_android.crypto.Key;
+import nl.tudelft.cs4160.trustchain_android.crypto.DualSecret;
 import nl.tudelft.cs4160.trustchain_android.database.TrustChainDBHelper;
 import nl.tudelft.cs4160.trustchain_android.message.MessageProto;
 import static nl.tudelft.cs4160.trustchain_android.Util.Util.readableSize;
@@ -34,7 +34,7 @@ public class FundsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_funds);
         TrustChainDBHelper helper = new TrustChainDBHelper(this);
 
-        DualKey ownKeyPair = Key.loadKeys(this);
+        DualSecret ownKeyPair = Key.loadKeys(this);
         byte[] myPublicKey = ownKeyPair.getPublicKeyPair().toBytes();
         transactionListView = findViewById(R.id.transaction_listview);
         FundsAdapter adapter = new FundsAdapter(this);

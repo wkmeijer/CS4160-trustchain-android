@@ -14,8 +14,8 @@ import java.util.ArrayList;
 import nl.tudelft.cs4160.trustchain_android.R;
 import nl.tudelft.cs4160.trustchain_android.SharedPreferences.UserNameStorage;
 import nl.tudelft.cs4160.trustchain_android.Util.ByteArrayConverter;
-import nl.tudelft.cs4160.trustchain_android.Util.DualKey;
-import nl.tudelft.cs4160.trustchain_android.Util.Key;
+import nl.tudelft.cs4160.trustchain_android.crypto.DualSecret;
+import nl.tudelft.cs4160.trustchain_android.crypto.Key;
 import nl.tudelft.cs4160.trustchain_android.color.ChainColor;
 
 /**
@@ -99,7 +99,7 @@ public class MutualBlockAdapter extends RecyclerView.Adapter<MutualBlockAdapter.
             transTv.setText(mutualBlockItem.getTransaction());
 
 
-            DualKey keyPair = Key.loadKeys(context);
+            DualSecret keyPair = Key.loadKeys(context);
             String myPublicKeyString = ByteArrayConverter.bytesToHexString(keyPair.getPublicKeyPair().toBytes());
             String linkedKey = ByteArrayConverter.byteStringToString(mutualBlockItem.getBlock().getLinkPublicKey());
             String normalKey = ByteArrayConverter.byteStringToString(mutualBlockItem.getBlock().getPublicKey());

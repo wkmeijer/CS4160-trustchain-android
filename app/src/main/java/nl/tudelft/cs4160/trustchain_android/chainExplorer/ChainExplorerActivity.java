@@ -24,8 +24,8 @@ import java.util.List;
 import nl.tudelft.cs4160.trustchain_android.R;
 import nl.tudelft.cs4160.trustchain_android.SharedPreferences.UserNameStorage;
 import nl.tudelft.cs4160.trustchain_android.Util.ByteArrayConverter;
-import nl.tudelft.cs4160.trustchain_android.Util.DualKey;
-import nl.tudelft.cs4160.trustchain_android.Util.Key;
+import nl.tudelft.cs4160.trustchain_android.crypto.DualSecret;
+import nl.tudelft.cs4160.trustchain_android.crypto.Key;
 import nl.tudelft.cs4160.trustchain_android.database.TrustChainDBHelper;
 import nl.tudelft.cs4160.trustchain_android.main.ChainExplorerInfoActivity;
 import nl.tudelft.cs4160.trustchain_android.message.MessageProto;
@@ -85,7 +85,7 @@ public class ChainExplorerActivity extends AppCompatActivity {
 
     private void init() {
         dbHelper = new TrustChainDBHelper(this);
-        DualKey kp = Key.loadKeys(getApplicationContext());
+        DualSecret kp = Key.loadKeys(getApplicationContext());
         byte[] publicKey;
         if (getIntent().hasExtra("publicKey")) {
             publicKey = ByteArrayConverter.hexStringToByteArray(getIntent().getStringExtra("publicKey"));

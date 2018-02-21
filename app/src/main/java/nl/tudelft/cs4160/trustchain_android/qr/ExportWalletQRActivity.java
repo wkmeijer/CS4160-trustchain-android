@@ -24,11 +24,10 @@ import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.Arrays;
 
 import nl.tudelft.cs4160.trustchain_android.R;
-import nl.tudelft.cs4160.trustchain_android.Util.DualKey;
-import nl.tudelft.cs4160.trustchain_android.Util.Key;
+import nl.tudelft.cs4160.trustchain_android.crypto.DualSecret;
+import nl.tudelft.cs4160.trustchain_android.crypto.Key;
 import nl.tudelft.cs4160.trustchain_android.block.TrustChainBlockHelper;
 import nl.tudelft.cs4160.trustchain_android.database.TrustChainDBHelper;
 import nl.tudelft.cs4160.trustchain_android.message.MessageProto;
@@ -64,8 +63,8 @@ public class ExportWalletQRActivity extends AppCompatActivity {
             TrustChainDBHelper dbHelper = new TrustChainDBHelper(this);
 
             // Step 1: Create a temporary new identity (we call this C)
-            DualKey keyPairOfC = Key.createNewKeyPair();
-            DualKey keyPairOfA = Key.loadKeys(this);
+            DualSecret keyPairOfC = Key.createNewKeyPair();
+            DualSecret keyPairOfA = Key.loadKeys(this);
 
             // Step 2: Transfer the funds from our current wallet (A) to (C).
             // - * Create Partially Signed Block from A
@@ -184,7 +183,7 @@ public class ExportWalletQRActivity extends AppCompatActivity {
         }
     }
 
-    public byte[] getBinaryExportKey(DualKey pk) throws IOException {
+    public byte[] getBinaryExportKey(DualSecret pk) throws IOException {
         ByteArrayOutputStream export = new ByteArrayOutputStream( );
         export.write("LibNaCLSK:".getBytes());
         export.write(pk.getPrivateKey().toBytes());

@@ -15,8 +15,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import nl.tudelft.cs4160.trustchain_android.Util.ByteArrayConverter;
-import nl.tudelft.cs4160.trustchain_android.Util.DualKey;
-import nl.tudelft.cs4160.trustchain_android.Util.Key;
+import nl.tudelft.cs4160.trustchain_android.crypto.DualSecret;
+import nl.tudelft.cs4160.trustchain_android.crypto.Key;
 import nl.tudelft.cs4160.trustchain_android.block.TrustChainBlockHelper;
 import nl.tudelft.cs4160.trustchain_android.block.ValidationResult;
 import nl.tudelft.cs4160.trustchain_android.database.TrustChainDBHelper;
@@ -37,8 +37,8 @@ public class TrustChainBlockTest extends ActivityUnitTestCase<OverviewConnection
         super(OverviewConnectionsActivity.class);
     }
 
-    private DualKey keyPair;
-    private DualKey keyPair2;
+    private DualSecret keyPair;
+    private DualSecret keyPair2;
     private byte[] transaction = new byte[2];
     private byte[] pubKey;
     private byte[] linkKey = new byte[2];
@@ -133,7 +133,7 @@ public class TrustChainBlockTest extends ActivityUnitTestCase<OverviewConnection
 
     @Test
     public void testVerify() {
-        DualKey pair = Key.createNewKeyPair();
+        DualSecret pair = Key.createNewKeyPair();
         byte[] message = {(byte) 0x01, (byte) 0x01, (byte) 0x01, (byte) 0x01, (byte) 0x01};
         byte[] signature = Key.sign(pair.getSigningKey(), message);
         assertTrue(Key.verify(pair.getVerifyKey(), message, signature));

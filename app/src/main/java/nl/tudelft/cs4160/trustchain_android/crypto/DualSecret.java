@@ -1,4 +1,4 @@
-package nl.tudelft.cs4160.trustchain_android.Util;
+package nl.tudelft.cs4160.trustchain_android.crypto;
 
 import org.libsodium.jni.Sodium;
 import org.libsodium.jni.crypto.Point;
@@ -8,29 +8,28 @@ import org.libsodium.jni.keys.PublicKey;
 import org.libsodium.jni.keys.VerifyKey;
 
 import static org.libsodium.jni.crypto.Util.checkLength;
-import static org.libsodium.jni.crypto.Util.zeros;
 
-public class DualKey {
+public class DualSecret {
     private byte[] privateKey;
     private byte[] publicKey;
 
-    private byte[] signPrivateKey;
-    private byte[] signPublicKey;
+    private byte[] signKey;
+    private byte[] verifyKey;
 
     private byte[] signSeed;
 
-    public DualKey() {
+    public DualSecret() {
         publicKey = new byte[Sodium.crypto_box_curve25519xsalsa20poly1305_publickeybytes()];
         privateKey = new byte[Sodium.crypto_box_curve25519xsalsa20poly1305_secretkeybytes()];
         Sodium.crypto_box_curve25519xsalsa20poly1305_keypair(publicKey, privateKey);
 
         signSeed = new Random().randomBytes(Sodium.crypto_sign_ed25519_seedbytes());
-        signPublicKey = new byte[Sodium.crypto_sign_ed25519_publickeybytes()];
-        signPrivateKey = new byte[Sodium.crypto_sign_ed25519_secretkeybytes()];
-        Sodium.crypto_sign_ed25519_seed_keypair(signPublicKey, signPrivateKey, signSeed);
+        verifyKey = new byte[Sodium.crypto_sign_ed25519_publickeybytes()];
+        signKey = new byte[Sodium.crypto_sign_ed25519_secretkeybytes()];
+        Sodium.crypto_sign_ed25519_seed_keypair(verifyKey, signKey, signSeed);
     }
 
-    public DualKey(byte[] secretKey, byte[] signSeed) {
+    public DualSecret(byte[] secretKey, byte[] signSeed) {
         checkLength(secretKey, Sodium.crypto_box_curve25519xsalsa20poly1305_secretkeybytes());
         this.privateKey = secretKey;
 
@@ -40,9 +39,9 @@ public class DualKey {
 
         this.signSeed = signSeed;
 
-        this.signPublicKey = new byte[Sodium.crypto_sign_ed25519_publickeybytes()];
-        this.signPrivateKey = new byte[Sodium.crypto_sign_ed25519_secretkeybytes()];
-        Sodium.crypto_sign_seed_keypair(signPublicKey, signPrivateKey, signSeed);
+        this.verifyKey = new byte[Sodium.crypto_sign_ed25519_publickeybytes()];
+        this.signKey = new byte[Sodium.crypto_sign_ed25519_secretkeybytes()];
+        Sodium.crypto_sign_seed_keypair(verifyKey, signKey, signSeed);
     }
 
     public PublicKeyPair getPublicKeyPair() {
@@ -58,7 +57,7 @@ public class DualKey {
     }
 
     public VerifyKey getVerifyKey() {
-        return new VerifyKey(signPublicKey);
+        return new VerifyKey(verifyKey);
     }
 
     public byte[] getSignSeed() {
@@ -66,6 +65,6 @@ public class DualKey {
     }
 
     public SigningKey getSigningKey() {
-        return new SigningKey(signPrivateKey);
+        return new SigningKey(signKey);
     }
 }

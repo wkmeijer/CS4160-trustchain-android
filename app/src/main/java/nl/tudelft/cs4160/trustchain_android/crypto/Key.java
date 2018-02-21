@@ -1,4 +1,4 @@
-package nl.tudelft.cs4160.trustchain_android.Util;
+package nl.tudelft.cs4160.trustchain_android.crypto;
 
 import android.content.Context;
 import android.util.Base64;
@@ -8,6 +8,8 @@ import org.libsodium.jni.NaCl;
 import org.libsodium.jni.Sodium;
 import org.libsodium.jni.keys.PrivateKey;
 import org.libsodium.jni.keys.VerifyKey;
+
+import nl.tudelft.cs4160.trustchain_android.Util.Util;
 
 /**
  * Manages key operations.
@@ -24,23 +26,23 @@ public class Key {
     public final static String DEFAULT_SIGN_KEY_FILE = "sign.key";
 
 
-    public static DualKey ensureKeysExist(Context context) {
+    public static DualSecret ensureKeysExist(Context context) {
         try {
-            DualKey dualKey = loadKeys(context);
-            return dualKey;
+            DualSecret dualSecret = loadKeys(context);
+            return dualSecret;
         } catch (Exception e) {
             Log.e(TAG, "Keys could not be found", e);
             return createAndSaveKeys(context);
         }
     }
 
-    public static DualKey createAndSaveKeys(Context context) {
-        DualKey kp = Key.createNewKeyPair();
+    public static DualSecret createAndSaveKeys(Context context) {
+        DualSecret kp = Key.createNewKeyPair();
         saveKeyPair(context, kp);
         return kp;
     }
 
-    public static void saveKeyPair(Context context, DualKey kp) {
+    public static void saveKeyPair(Context context, DualSecret kp) {
         Key.saveKey(context, Key.DEFAULT_PRIVATE_KEY_FILE, kp.getPrivateKey().toBytes());
         Key.saveKey(context, Key.DEFAULT_SIGN_KEY_FILE, kp.getSigningKey().toBytes());
     }
@@ -50,8 +52,8 @@ public class Key {
      *
      * @return KeyPair.
      */
-    public static DualKey createNewKeyPair() {
-        return new DualKey();
+    public static DualSecret createNewKeyPair() {
+        return new DualSecret();
     }
 
     /**
@@ -128,11 +130,11 @@ public class Key {
      * @param context The context (needed to read the files)
      * @return A KeyPair with the private and public key.
      */
-    public static DualKey loadKeys(Context context) {
+    public static DualSecret loadKeys(Context context) {
         try {
             PrivateKey privateKey = Key.loadPrivateKey(context, Key.DEFAULT_PRIVATE_KEY_FILE);
             SigningKey signingKey = Key.loadSigningKey(context, Key.DEFAULT_SIGN_KEY_FILE);
-            return new DualKey(privateKey.toBytes(), signingKey.toBytes());
+            return new DualSecret(privateKey.toBytes(), signingKey.toBytes());
         } catch (Throwable t) { return null; }
     }
 

@@ -9,8 +9,8 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import nl.tudelft.cs4160.trustchain_android.Util.DualKey;
-import nl.tudelft.cs4160.trustchain_android.Util.Key;
+import nl.tudelft.cs4160.trustchain_android.crypto.DualSecret;
+import nl.tudelft.cs4160.trustchain_android.crypto.Key;
 
 public class KeyActivity extends AppCompatActivity {
 
@@ -36,13 +36,13 @@ public class KeyActivity extends AppCompatActivity {
         signedData = findViewById(R.id.signed_data);
         verifySignature = findViewById(R.id.verify_sig);
 
-        DualKey kp = Key.ensureKeysExist(getApplicationContext());
+        DualSecret kp = Key.ensureKeysExist(getApplicationContext());
         textPrivateKey.setText(Base64.encodeToString(kp.getPrivateKey().toBytes(), Base64.DEFAULT));
 
         verifySignature.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                DualKey kp = Key.loadKeys(getApplicationContext());
+                DualSecret kp = Key.loadKeys(getApplicationContext());
                 byte[] sig = Base64.decode(signedData.getText().toString(), Base64.DEFAULT);
                 byte[] data = new byte[] {0x30, 0x30, 0x30, 0x30,0x30, 0x30, 0x30, 0x30};
                 if(Key.verify(kp.getVerifyKey(), data, sig)) {
@@ -56,7 +56,7 @@ public class KeyActivity extends AppCompatActivity {
         buttonNewKey.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                DualKey kp = Key.createAndSaveKeys(getApplicationContext());
+                DualSecret kp = Key.createAndSaveKeys(getApplicationContext());
                 textPrivateKey.setText(Base64.encodeToString(kp.getPrivateKey().toBytes(), Base64.DEFAULT));
 
             }
@@ -65,7 +65,7 @@ public class KeyActivity extends AppCompatActivity {
         signData.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                DualKey kp = Key.loadKeys(getApplicationContext());
+                DualSecret kp = Key.loadKeys(getApplicationContext());
                 byte[] sig = Key.sign( kp.getSigningKey(), new byte[] {0x30, 0x30, 0x30, 0x30,0x30, 0x30, 0x30, 0x30});
                 if(sig == null) {
                     Log.d(TAG,"No sig received");
