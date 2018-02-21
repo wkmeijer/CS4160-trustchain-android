@@ -45,21 +45,21 @@ public class FundsActivity extends AppCompatActivity {
         adapter.addAll(blocks);
         transactionListView.setAdapter(adapter);
 
-        int total_up = 0;
-        int total_down = 0; // make people feel bad for only downloading the app :P
+        long total_up = 0;
+        long total_down = 0;
 
         try {
 
-            MessageProto.TrustChainBlock firstBlock = helper.getLatestBlock(myPublicKey);
-            String transactionString = firstBlock.getTransaction().toStringUtf8();
+            MessageProto.TrustChainBlock latestBlock = helper.getLatestBlock(myPublicKey);
+            String transactionString = latestBlock.getTransaction().toStringUtf8();
             Log.i("FundsActivity", transactionString);
             JSONObject object = new JSONObject(transactionString); // TODO refactor to some kind of factory
-            total_up = object.getInt("total_up");
-            total_down = object.getInt("total_down");
+            total_up = object.getLong("total_up");
+            total_down = object.getLong("total_down");
         } catch (Exception e) {
 
         }
-        int max = Math.max(total_down,total_up);
+        long max = Math.max(total_down,total_up);
 
         float total_up_fraction = (float)total_up / max * 100;
         float total_down_fraction = (float) total_down /max * 100 ;

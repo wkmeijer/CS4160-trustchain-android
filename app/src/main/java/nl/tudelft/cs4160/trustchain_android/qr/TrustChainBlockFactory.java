@@ -26,21 +26,25 @@ public class TrustChainBlockFactory {
     public MessageProto.TrustChainBlock createBlock(QRWallet wallet, TrustChainDBHelper helper, DualKey ownKeyPair) throws QRWalletImportException {
         byte[] myPublicKey = ownKeyPair.getPublicKeyPair().toBytes();
 
+        // Similar to tribler logic.
+        // We are likely mis-interpreting their logic and/or their logic is wrong
+        // This is part of a POC for one way transfer identities,
+        // Dont take this as a reference point for TX.
+        // At the time of writing there is no TX api.
+
+        wallet.transaction.totalUp = wallet.transaction.up;
+        wallet.transaction.totalDown = wallet.transaction.down;
+
         QRTransaction tx;
         try {
             ByteString tx_data = helper.getLatestBlock(myPublicKey).getTransaction();
             String tx_string = tx_data.toStringUtf8();
             tx = transactionAdapter.fromJson( tx_string);
-            // Similar to tribler logic.
-            // We are likely mis-interpreting their logic and/or their logic is wrong
-            // This is part of a POC for one way transfer identities,
-            // Dont take this as a reference point for TX.
-            // At the time of writing there is no TX api.
+
             wallet.transaction.totalUp += tx.totalUp;
             wallet.transaction.totalDown += tx.totalDown;
         } catch (Exception e) {
-            wallet.transaction.totalUp = wallet.transaction.up;
-            wallet.transaction.totalDown = wallet.transaction.down;
+
         }
 
 
