@@ -25,9 +25,30 @@ QR code
 
 The QR code has to be able to transfer the throw-away identity, while having a total size small enough to make it readable. To that effect, only the essential information is included in it: 
 
-* Private key of the throw-away identity, which includes the private key special cyrpto format (explained in the :ref:`crypto-label` section).
-* Transaction object, with the total up and down quantities.
-* Block hash and sequence number belonging to the half block of the transaction between the sender identity and the throw away one.
+* Private key of the throw-away identity, which includes the private key special crypto format (explained in the :ref:`crypto-label` section).
+* Transaction object, with the up and down quantities.
+* Block hash and sequence number belonging to the half block of the transaction between the sender identity and the throw away one. 
 
-Once it has been read, the receiver uses this information to reconstruct the transaction and throw-away identity.
+This information is encoded in a JSON string before being put into the QR code. 
+
+Once the QR code has been read, the receiver uses this information to reconstruct the transaction and throw-away identity.
 The QR code used is the `version 13 <http://www.qrcode.com/en/about/version.html>`_, which has a capacity between 1440-3424 data bits depending on the ECC level.
+
+Example
+=======
+An example of the data in the QR code is the following:
+
+.. code-block:: json
+
+	{
+		"private_key": "TGliTmFDTFNLOvHyazzyYvb00cdAIb+xmDUzflFOsnzYTm3vbFcRV0FfuxWh827LrDLxYljG5+ga\n/m0SUkDYcDiHRnuf5BQ1HAI=\n", 
+		"transaction": {"down": 0, "up": 11114175918}, 
+		"block": {"block_hash": "7Jh0+S93fbtoqWwKQlYmsPMjC8eU7Bzo91NaKy/0d0w=\n", "sequence_number": 1}
+	}
+
+
+Which will result in the following QR code:
+
+.. figure:: ./images/example-qr.jpg 
+	:width: 300px
+

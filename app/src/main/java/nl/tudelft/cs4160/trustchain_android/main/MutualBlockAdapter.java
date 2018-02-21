@@ -14,13 +14,9 @@ import java.util.ArrayList;
 import nl.tudelft.cs4160.trustchain_android.R;
 import nl.tudelft.cs4160.trustchain_android.SharedPreferences.UserNameStorage;
 import nl.tudelft.cs4160.trustchain_android.Util.ByteArrayConverter;
-import nl.tudelft.cs4160.trustchain_android.Util.DualKey;
-import nl.tudelft.cs4160.trustchain_android.Util.Key;
 import nl.tudelft.cs4160.trustchain_android.color.ChainColor;
-
-/**
- * Created by clint on 12-1-2018.
- */
+import nl.tudelft.cs4160.trustchain_android.crypto.DualSecret;
+import nl.tudelft.cs4160.trustchain_android.crypto.Key;
 
 public class MutualBlockAdapter extends RecyclerView.Adapter<MutualBlockAdapter.ViewHolder> {
 
@@ -99,7 +95,7 @@ public class MutualBlockAdapter extends RecyclerView.Adapter<MutualBlockAdapter.
             transTv.setText(mutualBlockItem.getTransaction());
 
 
-            DualKey keyPair = Key.loadKeys(context);
+            DualSecret keyPair = Key.loadKeys(context);
             String myPublicKeyString = ByteArrayConverter.bytesToHexString(keyPair.getPublicKeyPair().toBytes());
             String linkedKey = ByteArrayConverter.byteStringToString(mutualBlockItem.getBlock().getLinkPublicKey());
             String normalKey = ByteArrayConverter.byteStringToString(mutualBlockItem.getBlock().getPublicKey());
@@ -159,15 +155,15 @@ public class MutualBlockAdapter extends RecyclerView.Adapter<MutualBlockAdapter.
          */
         public ViewHolder(View itemView) {
             super(itemView);
-            own_chain_indicator = (LinearLayout) itemView.findViewById(R.id.own_chain_indicator);
-            link_chain_indicator_mutualBlock = (LinearLayout) itemView.findViewById(R.id.link_chain_indicator_mutualBlock);
-            blockStatTextView = (TextView) itemView.findViewById(R.id.blockStatus);
-            userNameTextView = (TextView) itemView.findViewById(R.id.userMutualBlock);
-            peerNameTextView = (TextView) itemView.findViewById(R.id.peerMutualBlock);
-            seqNumTextView = (TextView) itemView.findViewById(R.id.sequenceNumberMutualBlock);
-            linkSeqNumTextView = (TextView) itemView.findViewById(R.id.linkSeqNumMutualBlock);
-            transactionTextView = (TextView) itemView.findViewById(R.id.transactionMutualBlock);
-            signButton = (Button) itemView.findViewById(R.id.sign_button);
+            own_chain_indicator = itemView.findViewById(R.id.own_chain_indicator);
+            link_chain_indicator_mutualBlock = itemView.findViewById(R.id.link_chain_indicator_mutualBlock);
+            blockStatTextView = itemView.findViewById(R.id.blockStatus);
+            userNameTextView = itemView.findViewById(R.id.userMutualBlock);
+            peerNameTextView = itemView.findViewById(R.id.peerMutualBlock);
+            seqNumTextView = itemView.findViewById(R.id.sequenceNumberMutualBlock);
+            linkSeqNumTextView = itemView.findViewById(R.id.linkSeqNumMutualBlock);
+            transactionTextView = itemView.findViewById(R.id.transactionMutualBlock);
+            signButton = itemView.findViewById(R.id.sign_button);
         }
     }
 

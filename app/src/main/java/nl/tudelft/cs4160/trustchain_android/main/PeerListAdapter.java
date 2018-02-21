@@ -21,9 +21,6 @@ import nl.tudelft.cs4160.trustchain_android.SharedPreferences.UserNameStorage;
 import nl.tudelft.cs4160.trustchain_android.appToApp.PeerAppToApp;
 import nl.tudelft.cs4160.trustchain_android.inbox.InboxItem;
 
-/**
- * Created by jaap on 5/4/16.
- */
 public class PeerListAdapter extends ArrayAdapter<PeerAppToApp> {
     private final Context context;
     private boolean incoming;
@@ -45,13 +42,13 @@ public class PeerListAdapter extends ArrayAdapter<PeerAppToApp> {
             convertView = inflater.inflate(R.layout.peer_connection_list_item, parent, false);
 
             holder = new ViewHolder();
-            holder.mStatusIndicator = (TextView) convertView.findViewById(R.id.status_indicator);
-            holder.mCarrier = (TextView) convertView.findViewById(R.id.carrier);
-            holder.mPeerId = (TextView) convertView.findViewById(R.id.peer_id);
-            holder.mDestinationAddress = (TextView) convertView.findViewById(R.id.destination_address);
-            holder.mReceivedIndicator = (TextView) convertView.findViewById(R.id.received_indicator);
-            holder.mSentIndicator = (TextView) convertView.findViewById(R.id.sent_indicator);
-            holder.mTableLayoutConnection = (TableLayout) convertView.findViewById(R.id.tableLayoutConnection);
+            holder.mStatusIndicator = convertView.findViewById(R.id.status_indicator);
+            holder.mCarrier = convertView.findViewById(R.id.carrier);
+            holder.mPeerId = convertView.findViewById(R.id.peer_id);
+            holder.mDestinationAddress = convertView.findViewById(R.id.destination_address);
+            holder.mReceivedIndicator = convertView.findViewById(R.id.received_indicator);
+            holder.mSentIndicator = convertView.findViewById(R.id.sent_indicator);
+            holder.mTableLayoutConnection = convertView.findViewById(R.id.tableLayoutConnection);
             convertView.setTag(holder);
         } else {
             holder = (ViewHolder) convertView.getTag();
@@ -137,6 +134,13 @@ public class PeerListAdapter extends ArrayAdapter<PeerAppToApp> {
         TableLayout mTableLayoutConnection;
     }
 
+    /**
+     * On click peer. If it's possible to add this peer
+     * to your inbox this happens, otherwise a snackbar message
+     * will explain why this isn't possible.
+     * @param mTableLayoutConnection
+     * @param position click position
+     */
     private void setOnClickListener(TableLayout mTableLayoutConnection, int position) {
         mTableLayoutConnection.setTag(position);
         View.OnClickListener onClickListener = new View.OnClickListener() {

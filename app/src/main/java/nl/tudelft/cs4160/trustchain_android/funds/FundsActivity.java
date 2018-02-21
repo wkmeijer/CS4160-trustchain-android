@@ -18,10 +18,11 @@ import java.util.Collections;
 import java.util.List;
 
 import nl.tudelft.cs4160.trustchain_android.R;
-import nl.tudelft.cs4160.trustchain_android.Util.Key;
-import nl.tudelft.cs4160.trustchain_android.Util.DualKey;
+import nl.tudelft.cs4160.trustchain_android.crypto.DualSecret;
+import nl.tudelft.cs4160.trustchain_android.crypto.Key;
 import nl.tudelft.cs4160.trustchain_android.database.TrustChainDBHelper;
 import nl.tudelft.cs4160.trustchain_android.message.MessageProto;
+
 import static nl.tudelft.cs4160.trustchain_android.Util.Util.readableSize;
 
 public class FundsActivity extends AppCompatActivity {
@@ -34,7 +35,7 @@ public class FundsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_funds);
         TrustChainDBHelper helper = new TrustChainDBHelper(this);
 
-        DualKey ownKeyPair = Key.loadKeys(this);
+        DualSecret ownKeyPair = Key.loadKeys(this);
         byte[] myPublicKey = ownKeyPair.getPublicKeyPair().toBytes();
         transactionListView = findViewById(R.id.transaction_listview);
         FundsAdapter adapter = new FundsAdapter(this);
@@ -45,21 +46,21 @@ public class FundsActivity extends AppCompatActivity {
         adapter.addAll(blocks);
         transactionListView.setAdapter(adapter);
 
-        int total_up = 0;
-        int total_down = 0; // make people feel bad for only downloading the app :P
+        long total_up = 0;
+        long total_down = 0;
 
         try {
 
-            MessageProto.TrustChainBlock firstBlock = helper.getLatestBlock(myPublicKey);
-            String transactionString = firstBlock.getTransaction().toStringUtf8();
+            MessageProto.TrustChainBlock latestBlock = helper.getLatestBlock(myPublicKey);
+            String transactionString = latestBlock.getTransaction().toStringUtf8();
             Log.i("FundsActivity", transactionString);
             JSONObject object = new JSONObject(transactionString); // TODO refactor to some kind of factory
-            total_up = object.getInt("total_up");
-            total_down = object.getInt("total_down");
+            total_up = object.getLong("total_up");
+            total_down = object.getLong("total_down");
         } catch (Exception e) {
 
         }
-        int max = Math.max(total_down,total_up);
+        long max = Math.max(total_down,total_up);
 
         float total_up_fraction = (float)total_up / max * 100;
         float total_down_fraction = (float) total_down /max * 100 ;

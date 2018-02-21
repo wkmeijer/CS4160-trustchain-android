@@ -25,8 +25,8 @@ import java.util.List;
 import nl.tudelft.cs4160.trustchain_android.R;
 import nl.tudelft.cs4160.trustchain_android.SharedPreferences.UserNameStorage;
 import nl.tudelft.cs4160.trustchain_android.Util.ByteArrayConverter;
-import nl.tudelft.cs4160.trustchain_android.Util.DualKey;
-import nl.tudelft.cs4160.trustchain_android.Util.Key;
+import nl.tudelft.cs4160.trustchain_android.crypto.DualSecret;
+import nl.tudelft.cs4160.trustchain_android.crypto.Key;
 import nl.tudelft.cs4160.trustchain_android.database.TrustChainDBHelper;
 import nl.tudelft.cs4160.trustchain_android.main.ChainExplorerInfoActivity;
 import nl.tudelft.cs4160.trustchain_android.message.MessageProto;
@@ -47,14 +47,13 @@ public class ChainExplorerActivity extends AppCompatActivity {
 
     public static final String BUNDLE_EXTRAS_PUBLIC_KEY = "publicKey";
 
-    private DualKey kp;
+    private DualSecret kp;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chain_explorer);
         blocksList = findViewById(R.id.blocks_list);
-
 
         // Create a progress bar to display while the list loads
         ProgressBar progressBar = new ProgressBar(this);
@@ -99,6 +98,9 @@ public class ChainExplorerActivity extends AppCompatActivity {
         return kp.getPublicKeyPair().toBytes();
     }
 
+    /**
+     * Initialize the variables.
+     */
     private void init() {
         dbHelper = new TrustChainDBHelper(this);
         byte[] publicKey = retrievePublicKey();

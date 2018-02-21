@@ -14,10 +14,6 @@ import nl.tudelft.cs4160.trustchain_android.appToApp.connection.messages.Message
 import nl.tudelft.cs4160.trustchain_android.appToApp.connection.messages.Puncture;
 import nl.tudelft.cs4160.trustchain_android.appToApp.connection.messages.PunctureRequest;
 
-/**
- * Created by michiel on 12-1-2018.
- */
-
 public interface NetworkCommunicationListener {
     void updateInternalSourceAddress(String address);
     void updatePeerLists();

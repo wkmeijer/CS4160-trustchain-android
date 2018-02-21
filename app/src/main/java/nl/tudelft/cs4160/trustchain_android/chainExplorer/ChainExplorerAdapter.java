@@ -110,11 +110,11 @@ public class ChainExplorerAdapter extends BaseAdapter {
         }
 
         // collapsed view
-        TextView peer = (TextView) convertView.findViewById(R.id.peer);
-        TextView seqNum = (TextView) convertView.findViewById(R.id.sequence_number);
-        TextView linkPeer = (TextView) convertView.findViewById(R.id.link_peer);
-        TextView linkSeqNum = (TextView) convertView.findViewById(R.id.link_sequence_number);
-        TextView transaction = (TextView) convertView.findViewById(R.id.transaction);
+        TextView peer = convertView.findViewById(R.id.peer);
+        TextView seqNum = convertView.findViewById(R.id.sequence_number);
+        TextView linkPeer = convertView.findViewById(R.id.link_peer);
+        TextView linkSeqNum = convertView.findViewById(R.id.link_sequence_number);
+        TextView transaction = convertView.findViewById(R.id.transaction);
         View ownChainIndicator = convertView.findViewById(R.id.own_chain_indicator);
         View linkChainIndicator = convertView.findViewById(R.id.link_chain_indicator);
 
@@ -126,13 +126,13 @@ public class ChainExplorerAdapter extends BaseAdapter {
         transaction.setText(block.getTransaction().toStringUtf8());
 
         // expanded view
-        TextView pubKey = (TextView) convertView.findViewById(R.id.pub_key);
+        TextView pubKey = convertView.findViewById(R.id.pub_key);
         setOnClickListener(pubKey);
-        TextView linkPubKey = (TextView) convertView.findViewById(R.id.link_pub_key);
+        TextView linkPubKey = convertView.findViewById(R.id.link_pub_key);
         setOnClickListener(linkPubKey);
-        TextView prevHash = (TextView) convertView.findViewById(R.id.prev_hash);
-        TextView signature = (TextView) convertView.findViewById(R.id.signature);
-        TextView expTransaction = (TextView) convertView.findViewById(R.id.expanded_transaction);
+        TextView prevHash = convertView.findViewById(R.id.prev_hash);
+        TextView signature = convertView.findViewById(R.id.signature);
+        TextView expTransaction = convertView.findViewById(R.id.expanded_transaction);
 
         pubKey.setText(ByteArrayConverter.bytesToHexString(pubKeyByteStr.toByteArray()));
         linkPubKey.setText(ByteArrayConverter.bytesToHexString(linkPubKeyByteStr.toByteArray()));
@@ -175,6 +175,10 @@ public class ChainExplorerAdapter extends BaseAdapter {
         Toast.makeText(context, text, Toast.LENGTH_SHORT).show();
     }
 
+    /**
+     * On click chain explorer activity.
+     * @param view
+     */
     public void setOnClickListener(View view) {
         View.OnClickListener onClickListener = new View.OnClickListener() {
             @Override
@@ -198,5 +202,4 @@ public class ChainExplorerAdapter extends BaseAdapter {
         };
         view.setOnClickListener(onClickListener);
     }
-
 }

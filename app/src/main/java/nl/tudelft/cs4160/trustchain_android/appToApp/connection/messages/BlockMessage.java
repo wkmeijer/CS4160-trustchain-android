@@ -8,10 +8,6 @@ import java.util.Map;
 import nl.tudelft.cs4160.trustchain_android.Util.ByteArrayConverter;
 import nl.tudelft.cs4160.trustchain_android.message.MessageProto;
 
-/**
- * Created by timbu on 10/01/2018.
- */
-
 public class BlockMessage extends Message {
     final private static String BLOCK_MESSAGE_KEY = "blockMessage";
     final private static String NEW_BLOCK = "newBlock";

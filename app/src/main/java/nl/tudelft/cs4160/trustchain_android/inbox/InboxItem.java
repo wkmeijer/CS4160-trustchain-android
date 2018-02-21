@@ -6,10 +6,6 @@ import java.util.ArrayList;
 
 import nl.tudelft.cs4160.trustchain_android.appToApp.PeerAppToApp;
 
-/**
- * Created by timbu on 08/01/2018.
- */
-
 public class InboxItem implements Serializable {
     private String userName;
     private ArrayList<Integer> halfBlockSequenceNumbers;
@@ -17,6 +13,14 @@ public class InboxItem implements Serializable {
     private String publicKey;
     private int port;
 
+    /**
+     * Inbox item constructor
+     * @param userName the username
+     * @param halfBlockSequenceNumbers the list of the sequence numbers of the unread blocks
+     * @param address ip address
+     * @param publicKey
+     * @param port
+     */
     public InboxItem(String userName, ArrayList<Integer> halfBlockSequenceNumbers, String address, String publicKey, int port) {
         this.userName = userName;
         this.halfBlockSequenceNumbers = halfBlockSequenceNumbers;
@@ -69,6 +73,10 @@ public class InboxItem implements Serializable {
         this.publicKey = publicKey;
     }
 
+    /**
+     * return the amount of unread blocks
+     * @return
+     */
     public int getAmountUnread() {
         if (halfBlockSequenceNumbers != null) {
             return halfBlockSequenceNumbers.size();
