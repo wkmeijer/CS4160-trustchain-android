@@ -58,6 +58,7 @@ import nl.tudelft.cs4160.trustchain_android.inbox.InboxActivity;
 import nl.tudelft.cs4160.trustchain_android.message.MessageProto;
 import nl.tudelft.cs4160.trustchain_android.qr.ExportWalletQRActivity;
 import nl.tudelft.cs4160.trustchain_android.qr.ScanQRActivity;
+import nl.tudelft.cs4160.trustchain_android.testConnection.TestActivity;
 
 import static nl.tudelft.cs4160.trustchain_android.block.TrustChainBlockHelper.GENESIS_SEQ;
 
@@ -139,9 +140,11 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
      * @param view
      */
     public void onClickOpenInbox(View view) {
-        InboxActivity.peerList = peerHandler.getPeerList();
-        Intent inboxActivityIntent = new Intent(this, InboxActivity.class);
-        startActivity(inboxActivityIntent);
+        Intent testConnection = new Intent(this, TestActivity.class);
+        startActivity(testConnection);
+//        InboxActivity.peerList = peerHandler.getPeerList();
+//        Intent inboxActivityIntent = new Intent(this, InboxActivity.class);
+//        startActivity(inboxActivityIntent);
     }
 
     /**
@@ -371,6 +374,7 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
             @Override
             public void run() {
                 TextView mWanVote = findViewById(R.id.wanvote);
+                Log.e("AAA", "updating wan to: " + ip);
                 mWanVote.setText(ip);
             }
         });
