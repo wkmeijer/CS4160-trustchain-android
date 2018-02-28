@@ -6,8 +6,21 @@ import android.os.AsyncTask;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 
+import com.offbynull.portmapper.PortMapperFactory;
+import com.offbynull.portmapper.gateway.Bus;
+import com.offbynull.portmapper.gateway.Gateway;
+import com.offbynull.portmapper.gateways.network.NetworkGateway;
+import com.offbynull.portmapper.gateways.process.ProcessGateway;
+import com.offbynull.portmapper.mapper.MappedPort;
+import com.offbynull.portmapper.mapper.PortMapper;
+import com.offbynull.portmapper.mapper.PortType;
+import com.offbynull.portmapper.mappers.pcp.PcpPortMapper;
+
+import org.libsodium.jni.Sodium;
+
 import java.io.IOException;
 import java.net.Inet4Address;
+import java.net.Inet6Address;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.NetworkInterface;
@@ -16,6 +29,7 @@ import java.net.SocketException;
 import java.nio.ByteBuffer;
 import java.nio.channels.DatagramChannel;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.List;
 
@@ -48,6 +62,7 @@ public class Network {
     private int connectionType;
     private ByteBuffer outBuffer;
     private static InetSocketAddress internalSourceAddress;
+    private InetSocketAddress externalSourceAddress;
     private String networkOperator;
     private static Network network;
     private String publicKey;
@@ -216,6 +231,146 @@ public class Network {
     public void sendPuncture(PeerAppToApp peer) throws IOException {
         Puncture puncture = new Puncture(hashId, peer.getAddress(), internalSourceAddress, publicKey);
         sendMessage(puncture, peer);
+        sendPcp();
+    }
+
+    /**
+     * Sends a specially crafted PCP message according to the RFC 6887 standard to the carrier grade
+     * NAT so it will allow incoming connections.
+     * @param peer
+     * @throws IOException
+     */
+    public void sendPcpNotWorkingAtm() throws IOException {
+        Gateway network = NetworkGateway.create();
+        Gateway process = ProcessGateway.create();
+        Bus networkBus = network.getBus();
+        Bus processBus = process.getBus();
+
+        try {
+            // Discover port forwarding devices and take the first one found
+            List<PcpPortMapper> pcpMappers = PcpPortMapper.identify(networkBus, processBus, externalSourceAddress.getAddress());
+            PortMapper mapper = pcpMappers.get(0);
+
+            // Map internal port 12345 to some external port (55555 preferred)
+            //
+            // IMPORTANT NOTE: Many devices prevent you from mapping ports that are <= 1024
+            // (both internal and external ports). Be mindful of this when choosing which
+            // ports you want to map.
+            MappedPort mappedPort = mapper.mapPort(PortType.UDP, OverviewConnectionsActivity.DEFAULT_PORT, externalSourceAddress.getPort(), 600);
+            Log.i(TAG, "Port mapping added: " + mappedPort);
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    public void sendPcp() throws IOException {
+
+        // create a pcp request header
+        byte[] pcpHeader = new byte[24];
+
+        // version = 2 (8 bits)
+        pcpHeader[0] = (byte) 0x02;
+
+        // R = 0 (request) (1 bit)
+        // Opcode = 1 (MAP)(7 bit)
+        pcpHeader[1] = (byte) 0x01;
+
+        // Reserved must be all zero (16 bit)
+        pcpHeader[2] = (byte) 0x00;
+        pcpHeader[3] = (byte) 0x00;
+
+        // Requested Lifetime 120 seconds (32 bit)
+        byte[] lifetime = ByteBuffer.allocate(4).putInt(120).array();
+        for(int i = 0; i<4; i++) {
+            pcpHeader[i+4] = lifetime[i];
+        }
+
+        // pcp client ip address, must be same source address as in ip header (128 bits)
+        // for ipv4 first 80 bits are zero, next 16 bits are 1 and last 32 bits are ipv4 address
+        if(internalSourceAddress.getAddress().getClass().equals(Inet4Address.class)) {
+            for(int i = 8; i<18; i++) {
+                pcpHeader[i] = (byte) 0x00;
+            }
+            pcpHeader[18] = (byte) 0xFF;
+            pcpHeader[19] = (byte) 0xFF;
+            byte[] intAddressBytes = internalSourceAddress.getAddress().getAddress();
+            for(int i = 0; i<4; i++) {
+                pcpHeader[i+20] = intAddressBytes[i];
+            }
+
+        } else {
+            // for ipv6 simply the bit representation
+            byte[] intAddressBytes = internalSourceAddress.getAddress().getAddress();
+            for(int i = 0; i<16; i++) {
+                pcpHeader[i+8] = intAddressBytes[i];
+            }
+        }
+
+        // create a map opcode request
+        byte[] mapRequest = new byte[36];
+
+        // mapping nonce (96 bit)
+        // TODO: create proper random nonce
+        for(int i = 0; i<12; i=i) {
+            byte[] rand = ByteBuffer.allocate(4).putInt(Sodium.randombytes_random()).array();
+            for(int j = 0; j<4; j++) {
+                mapRequest[i] = rand[j];
+                i++;
+            }
+        }
+
+        // protocol = 17 (UDP) (8 bit)
+        mapRequest[12] = (byte) 0x11;
+
+        // reserved all 0 (24 bit)
+        mapRequest[13] = (byte) 0x00;
+        mapRequest[14] = (byte) 0x00;
+        mapRequest[15] = (byte) 0x00;
+
+        // Internal Port (16 bit)
+        byte[] internalPort = ByteBuffer.allocate(2).putShort((short) OverviewConnectionsActivity.DEFAULT_PORT).array();
+        mapRequest[16] = internalPort[0];
+        mapRequest[17] = internalPort[1];
+
+        // Suggested External port (16 bit)
+//        mapRequest[18] = internalPort[0];
+//        mapRequest[19] = internalPort[1];
+
+        byte[] externalPort = ByteBuffer.allocate(2).putShort((short) externalSourceAddress.getPort()).array();
+        mapRequest[18] = externalPort[0];
+        mapRequest[19] = externalPort[1];
+
+        // Suggested external ip address (128 bits)
+        InetAddress externalAddress = externalSourceAddress.getAddress();
+        // for ipv4 first 80 bits are zero, next 16 bits are 1 and last 32 bits are ipv4 address
+        if(externalAddress.getClass().equals(Inet4Address.class)) {
+            for(int i = 20; i<30; i++) {
+                mapRequest[i] = (byte) 0x00;
+            }
+            mapRequest[30] = (byte) 0xFF;
+            mapRequest[31] = (byte) 0xFF;
+            byte[] extAddressBytes = externalAddress.getAddress();
+            for(int i = 0; i<4; i++) {
+                mapRequest[i+32] = extAddressBytes[i];
+            }
+
+        } else {
+            // for ipv6 simply the bit representation
+            byte[] extAddressBytes = externalAddress.getAddress();
+            for(int i = 0; i<16; i++) {
+                mapRequest[i+20] = extAddressBytes[i];
+            }
+        }
+
+        byte[] pcpRequest = new byte[pcpHeader.length + mapRequest.length];
+        System.arraycopy(pcpHeader,0,pcpRequest,0,pcpHeader.length);
+        System.arraycopy(mapRequest,0,pcpRequest,pcpHeader.length,mapRequest.length);
+
+        ByteBuffer byteBuffer = ByteBuffer.wrap(pcpRequest);
+
+        InetSocketAddress dest = new InetSocketAddress("130.161.211.254",1873);
+        channel.send(byteBuffer,externalSourceAddress);
+        Log.i(TAG, "Sent pcp packet");
     }
 
     /**
@@ -397,5 +552,9 @@ public class Network {
                 }
             }
         }
+    }
+
+    public void setExternalSourceAddress(InetSocketAddress externalSourceAddress) {
+        this.externalSourceAddress = externalSourceAddress;
     }
 }

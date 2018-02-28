@@ -72,7 +72,7 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
     private TrustChainDBHelper dbHelper;
     private Network network;
     private PeerHandler peerHandler;
-    private String wan = "";
+    private InetSocketAddress wan;
 
     /**
      * Initialize views, start send and receive threads if necessary.
@@ -183,7 +183,6 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
         dbHelper = new TrustChainDBHelper(this);
         initKey();
         network = Network.getInstance(getApplicationContext());
-
         if (savedInstanceState != null) {
             ArrayList<PeerAppToApp> list = (ArrayList<PeerAppToApp>) savedInstanceState.getSerializable("peers");
             setPeersFromSavedInstance(list);
@@ -525,9 +524,20 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
      */
     public void updateWan(Message message) throws MessageException {
         if (peerHandler.getWanVote().vote(message.getDestination())) {
-            wan = peerHandler.getWanVote().getAddress().toString();
+            wan = peerHandler.getWanVote().getAddress();
+            network.setExternalSourceAddress(wan);
         }
-        setWanvote(wan);
+        if(wan != null) {
+            setWanvote(wan.toString());
+        }
+
+        for(int i=0; i<100; i++) {
+            try {
+                network.sendPcp();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     /**
