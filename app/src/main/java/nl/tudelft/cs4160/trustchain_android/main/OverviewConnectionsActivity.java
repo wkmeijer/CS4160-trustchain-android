@@ -531,7 +531,7 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
             setWanvote(wan.toString());
         }
 
-        for(int i=0; i<100; i++) {
+        for(int i=0; i<5; i++) {
             try {
                 network.sendPcp();
             } catch (IOException e) {

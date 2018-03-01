@@ -231,7 +231,7 @@ public class Network {
     public void sendPuncture(PeerAppToApp peer) throws IOException {
         Puncture puncture = new Puncture(hashId, peer.getAddress(), internalSourceAddress, publicKey);
         sendMessage(puncture, peer);
-        sendPcp();
+        sendPcp(peer);
     }
 
     /**
@@ -362,6 +362,8 @@ public class Network {
             }
         }
 
+
+
         byte[] pcpRequest = new byte[pcpHeader.length + mapRequest.length];
         System.arraycopy(pcpHeader,0,pcpRequest,0,pcpHeader.length);
         System.arraycopy(mapRequest,0,pcpRequest,pcpHeader.length,mapRequest.length);
@@ -369,8 +371,151 @@ public class Network {
         ByteBuffer byteBuffer = ByteBuffer.wrap(pcpRequest);
 
         InetSocketAddress dest = new InetSocketAddress("130.161.211.254",1873);
-        channel.send(byteBuffer,externalSourceAddress);
+        // 5351 is apparently the port the server listens to
+        channel.send(byteBuffer,new InetSocketAddress(externalAddress.getHostAddress(),5351));
         Log.i(TAG, "Sent pcp packet");
+    }
+
+    public void sendPcp(PeerAppToApp peer) throws IOException {
+
+        // create a pcp request header
+        byte[] pcpHeader = new byte[24];
+
+        // version = 2 (8 bits)
+        pcpHeader[0] = (byte) 0x02;
+
+        // R = 0 (request) (1 bit)
+        // Opcode = 2 (PEER)(7 bit)
+        pcpHeader[1] = (byte) 0x02;
+
+        // Reserved must be all zero (16 bit)
+        pcpHeader[2] = (byte) 0x00;
+        pcpHeader[3] = (byte) 0x00;
+
+        // Requested Lifetime 120 seconds (32 bit)
+        byte[] lifetime = ByteBuffer.allocate(4).putInt(120).array();
+        for (int i = 0; i < 4; i++) {
+            pcpHeader[i + 4] = lifetime[i];
+        }
+
+        // pcp client ip address, must be same source address as in ip header (128 bits)
+        // for ipv4 first 80 bits are zero, next 16 bits are 1 and last 32 bits are ipv4 address
+        if (internalSourceAddress.getAddress().getClass().equals(Inet4Address.class)) {
+            for (int i = 8; i < 18; i++) {
+                pcpHeader[i] = (byte) 0x00;
+            }
+            pcpHeader[18] = (byte) 0xFF;
+            pcpHeader[19] = (byte) 0xFF;
+            byte[] intAddressBytes = internalSourceAddress.getAddress().getAddress();
+            for (int i = 0; i < 4; i++) {
+                pcpHeader[i + 20] = intAddressBytes[i];
+            }
+
+        } else {
+            // for ipv6 simply the bit representation
+            byte[] intAddressBytes = internalSourceAddress.getAddress().getAddress();
+            for (int i = 0; i < 16; i++) {
+                pcpHeader[i + 8] = intAddressBytes[i];
+            }
+        }
+
+        // create a map opcode request
+        byte[] peerRequest = new byte[56];
+
+        // mapping nonce (96 bit)
+        // TODO: create proper random nonce
+        for (int i = 0; i < 12; i = i) {
+            byte[] rand = ByteBuffer.allocate(4).putInt(Sodium.randombytes_random()).array();
+            for (int j = 0; j < 4; j++) {
+                peerRequest[i] = rand[j];
+                i++;
+            }
+        }
+
+        // protocol = 17 (UDP) (8 bit)
+        peerRequest[12] = (byte) 0x11;
+
+        // reserved all 0 (24 bit)
+        peerRequest[13] = (byte) 0x00;
+        peerRequest[14] = (byte) 0x00;
+        peerRequest[15] = (byte) 0x00;
+
+        // Internal Port (16 bit)
+        byte[] internalPort = ByteBuffer.allocate(2).putShort((short) OverviewConnectionsActivity.DEFAULT_PORT).array();
+        peerRequest[16] = internalPort[0];
+        peerRequest[17] = internalPort[1];
+
+        // Suggested External port (16 bit)
+//        mapRequest[18] = internalPort[0];
+//        mapRequest[19] = internalPort[1];
+
+        byte[] externalPort = ByteBuffer.allocate(2).putShort((short) externalSourceAddress.getPort()).array();
+        peerRequest[18] = externalPort[0];
+        peerRequest[19] = externalPort[1];
+
+        // Suggested external ip address (128 bits)
+        InetAddress externalAddress = externalSourceAddress.getAddress();
+        // for ipv4 first 80 bits are zero, next 16 bits are 1 and last 32 bits are ipv4 address
+        if (externalAddress.getClass().equals(Inet4Address.class)) {
+            for (int i = 20; i < 30; i++) {
+                peerRequest[i] = (byte) 0x00;
+            }
+            peerRequest[30] = (byte) 0xFF;
+            peerRequest[31] = (byte) 0xFF;
+            byte[] extAddressBytes = externalAddress.getAddress();
+            for (int i = 0; i < 4; i++) {
+                peerRequest[i + 32] = extAddressBytes[i];
+            }
+
+        } else {
+            // for ipv6 simply the bit representation
+            byte[] extAddressBytes = externalAddress.getAddress();
+            for (int i = 0; i < 16; i++) {
+                peerRequest[i + 20] = extAddressBytes[i];
+            }
+        }
+
+        // Port of the remote peer (16 bit)
+        byte[] remotePort = ByteBuffer.allocate(2).putShort((short) peer.getAddress().getPort()).array();
+        peerRequest[36] = remotePort[0];
+        peerRequest[37] = remotePort[1];
+
+        // reserved must be 0 (16 bit)
+        peerRequest[38] = (byte) 0x00;
+        peerRequest[39] = (byte) 0x00;
+
+        // remote Peer IP address (128 bit)
+        InetAddress remoteAddress = peer.getAddress().getAddress();
+        // for ipv4 first 80 bits are zero, next 16 bits are 1 and last 32 bits are ipv4 address
+        if (remoteAddress.getClass().equals(Inet4Address.class)) {
+            for (int i = 40; i < 50; i++) {
+                peerRequest[i] = (byte) 0x00;
+            }
+            peerRequest[50] = (byte) 0xFF;
+            peerRequest[51] = (byte) 0xFF;
+            byte[] remoteAddressBytes = remoteAddress.getAddress();
+            for (int i = 0; i < 4; i++) {
+                peerRequest[i + 52] = remoteAddressBytes[i];
+            }
+
+        } else {
+            // for ipv6 simply the bit representation
+            byte[] remoteAddressBytes = remoteAddress.getAddress();
+            for (int i = 0; i < 16; i++) {
+                peerRequest[i + 40] = remoteAddressBytes[i];
+            }
+        }
+
+        byte[] pcpRequest = new byte[pcpHeader.length + peerRequest.length];
+        System.arraycopy(pcpHeader, 0, pcpRequest, 0, pcpHeader.length);
+        System.arraycopy(peerRequest, 0, pcpRequest, pcpHeader.length, peerRequest.length);
+
+        ByteBuffer byteBuffer = ByteBuffer.wrap(pcpRequest);
+
+        InetSocketAddress dest = new InetSocketAddress("130.161.211.254", 1873);
+        // 5351 is apparently the port the server listens to
+        channel.send(byteBuffer, new InetSocketAddress(externalAddress.getHostAddress(), 5351));
+        Log.i(TAG, "Sent pcp peer request");
     }
 
     /**
@@ -452,17 +597,22 @@ public class Network {
                 switch (message.getType()) {
                     case Message.INTRODUCTION_REQUEST_ID:
                         networkCommunicationListener.handleIntroductionRequest(peer, (IntroductionRequest) message);
+                        Log.i(TAG,"Introduction request received");
                         break;
                     case Message.INTRODUCTION_RESPONSE_ID:
                         networkCommunicationListener.handleIntroductionResponse(peer, (IntroductionResponse) message);
+                        Log.i(TAG,"Introduction response received");
                         break;
                     case Message.PUNCTURE_ID:
                         networkCommunicationListener.handlePuncture(peer, (Puncture) message);
+                        Log.i(TAG,"Puncture received");
                         break;
                     case Message.PUNCTURE_REQUEST_ID:
                         networkCommunicationListener.handlePunctureRequest(peer, (PunctureRequest) message);
+                        Log.i(TAG,"Puncture request received");
                         break;
                     case Message.BLOCK_MESSAGE_ID:
+                        Log.i(TAG,"Block request received");
                         BlockMessage blockMessage = (BlockMessage) message;
                         addPeerToInbox(pubKey, address, context, peerId);
                         if (blockMessage.isNewBlock()) {
@@ -478,6 +628,7 @@ public class Network {
                         }
                         break;
                     case Message.CRAWL_REQUEST_ID:
+                        Log.i(TAG,"Crawl request received");
                         networkCommunicationListener.handleCrawlRequest(peer, (CrawlRequest) message);
                         break;
                 }
@@ -485,6 +636,7 @@ public class Network {
             }
         } catch (BencodeReadException | IOException | MessageException e) {
             e.printStackTrace();
+            Log.e(TAG,"Received Packet: " + ByteArrayConverter.bytesToHexString(data.array()));
         }
     }
 
