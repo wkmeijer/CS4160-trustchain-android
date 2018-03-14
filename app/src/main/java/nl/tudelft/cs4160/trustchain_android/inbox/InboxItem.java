@@ -1,5 +1,7 @@
 package nl.tudelft.cs4160.trustchain_android.inbox;
 
+import org.libsodium.jni.keys.PublicKey;
+
 import java.io.Serializable;
 import java.net.InetSocketAddress;
 import java.util.ArrayList;
@@ -10,7 +12,7 @@ public class InboxItem implements Serializable {
     private String userName;
     private ArrayList<Integer> halfBlockSequenceNumbers;
     private String address;
-    private String publicKey;
+    private PublicKey publicKey;
     private int port;
 
     /**
@@ -21,7 +23,7 @@ public class InboxItem implements Serializable {
      * @param publicKey
      * @param port
      */
-    public InboxItem(String userName, ArrayList<Integer> halfBlockSequenceNumbers, String address, String publicKey, int port) {
+    public InboxItem(String userName, ArrayList<Integer> halfBlockSequenceNumbers, String address, PublicKey publicKey, int port) {
         this.userName = userName;
         this.halfBlockSequenceNumbers = halfBlockSequenceNumbers;
         this.address = address;
@@ -65,11 +67,11 @@ public class InboxItem implements Serializable {
         this.address = address;
     }
 
-    public String getPublicKey() {
+    public PublicKey getPublicKey() {
         return publicKey;
     }
 
-    public void setPublicKey(String publicKey) {
+    public void setPublicKey(PublicKey publicKey) {
         this.publicKey = publicKey;
     }
 

@@ -49,6 +49,7 @@ import nl.tudelft.cs4160.trustchain_android.appToApp.connection.messages.Message
 import nl.tudelft.cs4160.trustchain_android.appToApp.connection.messages.Puncture;
 import nl.tudelft.cs4160.trustchain_android.appToApp.connection.messages.PunctureRequest;
 import nl.tudelft.cs4160.trustchain_android.block.TrustChainBlockHelper;
+import nl.tudelft.cs4160.trustchain_android.block.ValidationResult;
 import nl.tudelft.cs4160.trustchain_android.chainExplorer.ChainExplorerActivity;
 import nl.tudelft.cs4160.trustchain_android.crypto.DualSecret;
 import nl.tudelft.cs4160.trustchain_android.crypto.Key;
@@ -349,11 +350,15 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
 
     /**
      * Update wan address
-     * @param message
+     * @param message a message that was received, the destination is our wan address
      * @throws MessageException
      */
-    public void updateWan(Message message) throws MessageException {
-        if (peerHandler.getWanVote().vote(message.getDestination())) {
+    public void updateWan(MessageProto.Message message) throws MessageException, UnknownHostException {
+        InetAddress addr = InetAddress.getByAddress(message.getDestinationAddress().toByteArray());
+        int port = message.getDestinationPort();
+        InetSocketAddress socketAddress = new InetSocketAddress(addr, port);
+
+        if (peerHandler.getWanVote().vote(socketAddress)) {
             wan = peerHandler.getWanVote().getAddress().toString();
         }
         setWanvote(wan);
@@ -382,9 +387,9 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
      * @throws IOException
      */
     @Override
-    public void handleIntroductionRequest(PeerAppToApp peer, IntroductionRequest message) throws IOException {
-        peer.setNetworkOperator(message.getNetworkOperator());
-        peer.setConnectionType((int) message.getConnectionType());
+    public void handleIntroductionRequest(PeerAppToApp peer, MessageProto.IntroductionRequest request) throws IOException {
+        peer.setConnectionType((int) request.getConnectionType());
+        peer.setNetworkOperator(request.getNetworkOperator());
         if (getPeerHandler().size() > 1) {
             PeerAppToApp invitee = getPeerHandler().getEligiblePeer(peer);
             if (invitee != null) {
@@ -405,13 +410,15 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
      * @param message the message.
      */
     @Override
-    public void handleIntroductionResponse(PeerAppToApp peer, IntroductionResponse message) {
-        peer.setConnectionType((int) message.getConnectionType());
-        peer.setNetworkOperator(message.getNetworkOperator());
-        List<PeerAppToApp> pex = message.getPex();
-        for (PeerAppToApp pexPeer : pex) {
+    public void handleIntroductionResponse(PeerAppToApp peer, MessageProto.IntroductionResponse response) throws UnknownHostException {
+        peer.setConnectionType((int) response.getConnectionType());
+        peer.setNetworkOperator(response.getNetworkOperator());
+        List<MessageProto.Peer> pex = response.getPexList();
+        for (MessageProto.Peer pexPeer : pex) {
             if (getPeerHandler().hashId.equals(pexPeer.getPeerId())) continue;
-            getPeerHandler().getOrMakePeer(pexPeer.getPeerId(), pexPeer.getAddress(), PeerAppToApp.OUTGOING);
+            InetAddress addr = InetAddress.getByAddress(pexPeer.getAddress().toByteArray());
+            int port = pexPeer.getPort();
+            getPeerHandler().getOrMakePeer(pexPeer.getPeerId(), new InetSocketAddress(addr,port), PeerAppToApp.OUTGOING);
         }
     }
 
@@ -423,7 +430,7 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
      * @throws IOException
      */
     @Override
-    public void handlePuncture(PeerAppToApp peer, Puncture message) throws IOException {
+    public void handlePuncture(PeerAppToApp peer, MessageProto.Puncture puncture) throws IOException {
     }
 
     /**
@@ -435,27 +442,34 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
      * @throws MessageException
      */
     @Override
-    public void handlePunctureRequest(PeerAppToApp peer, PunctureRequest message) throws IOException, MessageException {
-        if (!getPeerHandler().peerExistsInList(message.getPuncturePeer())) {
-            network.sendPuncture(message.getPuncturePeer());
+    public void handlePunctureRequest(PeerAppToApp peer, MessageProto.PunctureRequest request) throws IOException, MessageException {
+        PeerAppToApp puncturePeer = null;
+        try {
+            puncturePeer = PeerAppToApp.deserialize(request.getPuncturePeer().toByteArray());
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+        if (!getPeerHandler().peerExistsInList(puncturePeer)) {
+            network.sendPuncture(puncturePeer);
         }
     }
 
     /**
-     * Handle the (half) block request.
-     * This block is placed in in the TrustChainDB.
+     * Handle the received (half) block.
+     * This block is placed in in the TrustChainDB, except if it is INVALID.
      * @param peer the sending peer
      * @param message the data send
      * @throws IOException
      * @throws MessageException
      */
     @Override
-    public void handleBlockMessageRequest(PeerAppToApp peer, BlockMessage message) throws IOException, MessageException {
-        MessageProto.Message msg = message.getMessageProto();
-        // make sure it is not a crawl request but a block request
-        if (msg.getCrawlRequest().getPublicKey().size() == 0) {
-            MessageProto.TrustChainBlock block = msg.getHalfBlock();
-            dbHelper.replaceInDB(block);
+    public void handleReceivedBlock(PeerAppToApp peer, MessageProto.TrustChainBlock block) {
+        try {
+            if (TrustChainBlockHelper.validate(block,dbHelper).getStatus() != ValidationResult.INVALID ) {
+                dbHelper.replaceInDB(block);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
@@ -467,7 +481,7 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
      * @throws MessageException
      */
     @Override
-    public void handleCrawlRequest(PeerAppToApp peer, CrawlRequest request) throws IOException, MessageException {
+    public void handleCrawlRequest(PeerAppToApp peer, MessageProto.CrawlRequest request) throws IOException, MessageException {
         //ToDo for future application sending the entire chain is a bit too much
         for (MessageProto.TrustChainBlock block : dbHelper.getAllBlocks()) {
             network.sendBlockMessage(peer, block, false);

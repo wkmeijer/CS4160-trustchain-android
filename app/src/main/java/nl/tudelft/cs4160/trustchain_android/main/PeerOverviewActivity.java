@@ -313,7 +313,7 @@ public class PeerOverviewActivity extends AppCompatActivity implements CrawlRequ
     /**
      * Handle a received crawl request.
      * The responding peer will send his/her entire chain.
-     * All those blocks are added to the local db
+     * All those blocks are added to the local db.
      * @param peer
      * @param message
      * @throws IOException
@@ -330,7 +330,7 @@ public class PeerOverviewActivity extends AppCompatActivity implements CrawlRequ
 
     /**
      * Block received and added to the inbox.
-     * if the received block should be displayed in the trustchain activity
+     * If the received block should be displayed in the trustchain activity
      * the recycle adapter is reloaded. This makes sure new blocks show up
      * real-time.
      * @param block the received block

@@ -19,30 +19,45 @@ public final class MessageProto {
       com.google.protobuf.MessageOrBuilder {
 
     /**
-     * <code>bytes peer_id = 1;</code>
+     * <code>string peer_id = 1;</code>
      */
-    com.google.protobuf.ByteString getPeerId();
+    java.lang.String getPeerId();
+    /**
+     * <code>string peer_id = 1;</code>
+     */
+    com.google.protobuf.ByteString
+        getPeerIdBytes();
 
     /**
-     * <code>bytes destination = 2;</code>
+     * <code>bytes destination_address = 2;</code>
      */
-    com.google.protobuf.ByteString getDestination();
+    com.google.protobuf.ByteString getDestinationAddress();
 
     /**
-     * <code>bytes public_key = 3;</code>
+     * <code>int32 destination_port = 3;</code>
+     */
+    int getDestinationPort();
+
+    /**
+     * <code>bytes public_key = 4;</code>
      */
     com.google.protobuf.ByteString getPublicKey();
 
     /**
-     * <code>.message.Payload payload = 4;</code>
+     * <code>int32 type = 5;</code>
+     */
+    int getType();
+
+    /**
+     * <code>.message.Payload payload = 6;</code>
      */
     boolean hasPayload();
     /**
-     * <code>.message.Payload payload = 4;</code>
+     * <code>.message.Payload payload = 6;</code>
      */
     nl.tudelft.cs4160.trustchain_android.message.MessageProto.Payload getPayload();
     /**
-     * <code>.message.Payload payload = 4;</code>
+     * <code>.message.Payload payload = 6;</code>
      */
     nl.tudelft.cs4160.trustchain_android.message.MessageProto.PayloadOrBuilder getPayloadOrBuilder();
   }
@@ -59,9 +74,11 @@ public final class MessageProto {
       super(builder);
     }
     private Message() {
-      peerId_ = com.google.protobuf.ByteString.EMPTY;
-      destination_ = com.google.protobuf.ByteString.EMPTY;
+      peerId_ = "";
+      destinationAddress_ = com.google.protobuf.ByteString.EMPTY;
+      destinationPort_ = 0;
       publicKey_ = com.google.protobuf.ByteString.EMPTY;
+      type_ = 0;
     }
 
     @java.lang.Override
@@ -96,21 +113,32 @@ public final class MessageProto {
               break;
             }
             case 10: {
+              java.lang.String s = input.readStringRequireUtf8();
 
-              peerId_ = input.readBytes();
+              peerId_ = s;
               break;
             }
             case 18: {
 
-              destination_ = input.readBytes();
+              destinationAddress_ = input.readBytes();
               break;
             }
-            case 26: {
+            case 24: {
+
+              destinationPort_ = input.readInt32();
+              break;
+            }
+            case 34: {
 
               publicKey_ = input.readBytes();
               break;
             }
-            case 34: {
+            case 40: {
+
+              type_ = input.readInt32();
+              break;
+            }
+            case 50: {
               nl.tudelft.cs4160.trustchain_android.message.MessageProto.Payload.Builder subBuilder = null;
               if (payload_ != null) {
                 subBuilder = payload_.toBuilder();
@@ -148,48 +176,91 @@ public final class MessageProto {
     }
 
     public static final int PEER_ID_FIELD_NUMBER = 1;
-    private com.google.protobuf.ByteString peerId_;
+    private volatile java.lang.Object peerId_;
     /**
-     * <code>bytes peer_id = 1;</code>
+     * <code>string peer_id = 1;</code>
      */
-    public com.google.protobuf.ByteString getPeerId() {
-      return peerId_;
+    public java.lang.String getPeerId() {
+      java.lang.Object ref = peerId_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        peerId_ = s;
+        return s;
+      }
+    }
+    /**
+     * <code>string peer_id = 1;</code>
+     */
+    public com.google.protobuf.ByteString
+        getPeerIdBytes() {
+      java.lang.Object ref = peerId_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        peerId_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
     }
 
-    public static final int DESTINATION_FIELD_NUMBER = 2;
-    private com.google.protobuf.ByteString destination_;
+    public static final int DESTINATION_ADDRESS_FIELD_NUMBER = 2;
+    private com.google.protobuf.ByteString destinationAddress_;
     /**
-     * <code>bytes destination = 2;</code>
+     * <code>bytes destination_address = 2;</code>
      */
-    public com.google.protobuf.ByteString getDestination() {
-      return destination_;
+    public com.google.protobuf.ByteString getDestinationAddress() {
+      return destinationAddress_;
     }
 
-    public static final int PUBLIC_KEY_FIELD_NUMBER = 3;
+    public static final int DESTINATION_PORT_FIELD_NUMBER = 3;
+    private int destinationPort_;
+    /**
+     * <code>int32 destination_port = 3;</code>
+     */
+    public int getDestinationPort() {
+      return destinationPort_;
+    }
+
+    public static final int PUBLIC_KEY_FIELD_NUMBER = 4;
     private com.google.protobuf.ByteString publicKey_;
     /**
-     * <code>bytes public_key = 3;</code>
+     * <code>bytes public_key = 4;</code>
      */
     public com.google.protobuf.ByteString getPublicKey() {
       return publicKey_;
     }
 
-    public static final int PAYLOAD_FIELD_NUMBER = 4;
+    public static final int TYPE_FIELD_NUMBER = 5;
+    private int type_;
+    /**
+     * <code>int32 type = 5;</code>
+     */
+    public int getType() {
+      return type_;
+    }
+
+    public static final int PAYLOAD_FIELD_NUMBER = 6;
     private nl.tudelft.cs4160.trustchain_android.message.MessageProto.Payload payload_;
     /**
-     * <code>.message.Payload payload = 4;</code>
+     * <code>.message.Payload payload = 6;</code>
      */
     public boolean hasPayload() {
       return payload_ != null;
     }
     /**
-     * <code>.message.Payload payload = 4;</code>
+     * <code>.message.Payload payload = 6;</code>
      */
     public nl.tudelft.cs4160.trustchain_android.message.MessageProto.Payload getPayload() {
       return payload_ == null ? nl.tudelft.cs4160.trustchain_android.message.MessageProto.Payload.getDefaultInstance() : payload_;
     }
     /**
-     * <code>.message.Payload payload = 4;</code>
+     * <code>.message.Payload payload = 6;</code>
      */
     public nl.tudelft.cs4160.trustchain_android.message.MessageProto.PayloadOrBuilder getPayloadOrBuilder() {
       return getPayload();
@@ -207,17 +278,23 @@ public final class MessageProto {
 
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
-      if (!peerId_.isEmpty()) {
-        output.writeBytes(1, peerId_);
+      if (!getPeerIdBytes().isEmpty()) {
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 1, peerId_);
       }
-      if (!destination_.isEmpty()) {
-        output.writeBytes(2, destination_);
+      if (!destinationAddress_.isEmpty()) {
+        output.writeBytes(2, destinationAddress_);
+      }
+      if (destinationPort_ != 0) {
+        output.writeInt32(3, destinationPort_);
       }
       if (!publicKey_.isEmpty()) {
-        output.writeBytes(3, publicKey_);
+        output.writeBytes(4, publicKey_);
+      }
+      if (type_ != 0) {
+        output.writeInt32(5, type_);
       }
       if (payload_ != null) {
-        output.writeMessage(4, getPayload());
+        output.writeMessage(6, getPayload());
       }
       unknownFields.writeTo(output);
     }
@@ -227,21 +304,28 @@ public final class MessageProto {
       if (size != -1) return size;
 
       size = 0;
-      if (!peerId_.isEmpty()) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeBytesSize(1, peerId_);
+      if (!getPeerIdBytes().isEmpty()) {
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, peerId_);
       }
-      if (!destination_.isEmpty()) {
+      if (!destinationAddress_.isEmpty()) {
         size += com.google.protobuf.CodedOutputStream
-          .computeBytesSize(2, destination_);
+          .computeBytesSize(2, destinationAddress_);
+      }
+      if (destinationPort_ != 0) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt32Size(3, destinationPort_);
       }
       if (!publicKey_.isEmpty()) {
         size += com.google.protobuf.CodedOutputStream
-          .computeBytesSize(3, publicKey_);
+          .computeBytesSize(4, publicKey_);
+      }
+      if (type_ != 0) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt32Size(5, type_);
       }
       if (payload_ != null) {
         size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(4, getPayload());
+          .computeMessageSize(6, getPayload());
       }
       size += unknownFields.getSerializedSize();
       memoizedSize = size;
@@ -261,10 +345,14 @@ public final class MessageProto {
       boolean result = true;
       result = result && getPeerId()
           .equals(other.getPeerId());
-      result = result && getDestination()
-          .equals(other.getDestination());
+      result = result && getDestinationAddress()
+          .equals(other.getDestinationAddress());
+      result = result && (getDestinationPort()
+          == other.getDestinationPort());
       result = result && getPublicKey()
           .equals(other.getPublicKey());
+      result = result && (getType()
+          == other.getType());
       result = result && (hasPayload() == other.hasPayload());
       if (hasPayload()) {
         result = result && getPayload()
@@ -283,10 +371,14 @@ public final class MessageProto {
       hash = (19 * hash) + getDescriptor().hashCode();
       hash = (37 * hash) + PEER_ID_FIELD_NUMBER;
       hash = (53 * hash) + getPeerId().hashCode();
-      hash = (37 * hash) + DESTINATION_FIELD_NUMBER;
-      hash = (53 * hash) + getDestination().hashCode();
+      hash = (37 * hash) + DESTINATION_ADDRESS_FIELD_NUMBER;
+      hash = (53 * hash) + getDestinationAddress().hashCode();
+      hash = (37 * hash) + DESTINATION_PORT_FIELD_NUMBER;
+      hash = (53 * hash) + getDestinationPort();
       hash = (37 * hash) + PUBLIC_KEY_FIELD_NUMBER;
       hash = (53 * hash) + getPublicKey().hashCode();
+      hash = (37 * hash) + TYPE_FIELD_NUMBER;
+      hash = (53 * hash) + getType();
       if (hasPayload()) {
         hash = (37 * hash) + PAYLOAD_FIELD_NUMBER;
         hash = (53 * hash) + getPayload().hashCode();
@@ -420,11 +512,15 @@ public final class MessageProto {
       }
       public Builder clear() {
         super.clear();
-        peerId_ = com.google.protobuf.ByteString.EMPTY;
+        peerId_ = "";
 
-        destination_ = com.google.protobuf.ByteString.EMPTY;
+        destinationAddress_ = com.google.protobuf.ByteString.EMPTY;
+
+        destinationPort_ = 0;
 
         publicKey_ = com.google.protobuf.ByteString.EMPTY;
+
+        type_ = 0;
 
         if (payloadBuilder_ == null) {
           payload_ = null;
@@ -455,8 +551,10 @@ public final class MessageProto {
       public nl.tudelft.cs4160.trustchain_android.message.MessageProto.Message buildPartial() {
         nl.tudelft.cs4160.trustchain_android.message.MessageProto.Message result = new nl.tudelft.cs4160.trustchain_android.message.MessageProto.Message(this);
         result.peerId_ = peerId_;
-        result.destination_ = destination_;
+        result.destinationAddress_ = destinationAddress_;
+        result.destinationPort_ = destinationPort_;
         result.publicKey_ = publicKey_;
+        result.type_ = type_;
         if (payloadBuilder_ == null) {
           result.payload_ = payload_;
         } else {
@@ -503,14 +601,21 @@ public final class MessageProto {
 
       public Builder mergeFrom(nl.tudelft.cs4160.trustchain_android.message.MessageProto.Message other) {
         if (other == nl.tudelft.cs4160.trustchain_android.message.MessageProto.Message.getDefaultInstance()) return this;
-        if (other.getPeerId() != com.google.protobuf.ByteString.EMPTY) {
-          setPeerId(other.getPeerId());
+        if (!other.getPeerId().isEmpty()) {
+          peerId_ = other.peerId_;
+          onChanged();
         }
-        if (other.getDestination() != com.google.protobuf.ByteString.EMPTY) {
-          setDestination(other.getDestination());
+        if (other.getDestinationAddress() != com.google.protobuf.ByteString.EMPTY) {
+          setDestinationAddress(other.getDestinationAddress());
+        }
+        if (other.getDestinationPort() != 0) {
+          setDestinationPort(other.getDestinationPort());
         }
         if (other.getPublicKey() != com.google.protobuf.ByteString.EMPTY) {
           setPublicKey(other.getPublicKey());
+        }
+        if (other.getType() != 0) {
+          setType(other.getType());
         }
         if (other.hasPayload()) {
           mergePayload(other.getPayload());
@@ -542,17 +647,43 @@ public final class MessageProto {
         return this;
       }
 
-      private com.google.protobuf.ByteString peerId_ = com.google.protobuf.ByteString.EMPTY;
+      private java.lang.Object peerId_ = "";
       /**
-       * <code>bytes peer_id = 1;</code>
+       * <code>string peer_id = 1;</code>
        */
-      public com.google.protobuf.ByteString getPeerId() {
-        return peerId_;
+      public java.lang.String getPeerId() {
+        java.lang.Object ref = peerId_;
+        if (!(ref instanceof java.lang.String)) {
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          peerId_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
       }
       /**
-       * <code>bytes peer_id = 1;</code>
+       * <code>string peer_id = 1;</code>
        */
-      public Builder setPeerId(com.google.protobuf.ByteString value) {
+      public com.google.protobuf.ByteString
+          getPeerIdBytes() {
+        java.lang.Object ref = peerId_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          peerId_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>string peer_id = 1;</code>
+       */
+      public Builder setPeerId(
+          java.lang.String value) {
         if (value == null) {
     throw new NullPointerException();
   }
@@ -562,7 +693,7 @@ public final class MessageProto {
         return this;
       }
       /**
-       * <code>bytes peer_id = 1;</code>
+       * <code>string peer_id = 1;</code>
        */
       public Builder clearPeerId() {
         
@@ -570,45 +701,85 @@ public final class MessageProto {
         onChanged();
         return this;
       }
-
-      private com.google.protobuf.ByteString destination_ = com.google.protobuf.ByteString.EMPTY;
       /**
-       * <code>bytes destination = 2;</code>
+       * <code>string peer_id = 1;</code>
        */
-      public com.google.protobuf.ByteString getDestination() {
-        return destination_;
+      public Builder setPeerIdBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  checkByteStringIsUtf8(value);
+        
+        peerId_ = value;
+        onChanged();
+        return this;
+      }
+
+      private com.google.protobuf.ByteString destinationAddress_ = com.google.protobuf.ByteString.EMPTY;
+      /**
+       * <code>bytes destination_address = 2;</code>
+       */
+      public com.google.protobuf.ByteString getDestinationAddress() {
+        return destinationAddress_;
       }
       /**
-       * <code>bytes destination = 2;</code>
+       * <code>bytes destination_address = 2;</code>
        */
-      public Builder setDestination(com.google.protobuf.ByteString value) {
+      public Builder setDestinationAddress(com.google.protobuf.ByteString value) {
         if (value == null) {
     throw new NullPointerException();
   }
   
-        destination_ = value;
+        destinationAddress_ = value;
         onChanged();
         return this;
       }
       /**
-       * <code>bytes destination = 2;</code>
+       * <code>bytes destination_address = 2;</code>
        */
-      public Builder clearDestination() {
+      public Builder clearDestinationAddress() {
         
-        destination_ = getDefaultInstance().getDestination();
+        destinationAddress_ = getDefaultInstance().getDestinationAddress();
+        onChanged();
+        return this;
+      }
+
+      private int destinationPort_ ;
+      /**
+       * <code>int32 destination_port = 3;</code>
+       */
+      public int getDestinationPort() {
+        return destinationPort_;
+      }
+      /**
+       * <code>int32 destination_port = 3;</code>
+       */
+      public Builder setDestinationPort(int value) {
+        
+        destinationPort_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>int32 destination_port = 3;</code>
+       */
+      public Builder clearDestinationPort() {
+        
+        destinationPort_ = 0;
         onChanged();
         return this;
       }
 
       private com.google.protobuf.ByteString publicKey_ = com.google.protobuf.ByteString.EMPTY;
       /**
-       * <code>bytes public_key = 3;</code>
+       * <code>bytes public_key = 4;</code>
        */
       public com.google.protobuf.ByteString getPublicKey() {
         return publicKey_;
       }
       /**
-       * <code>bytes public_key = 3;</code>
+       * <code>bytes public_key = 4;</code>
        */
       public Builder setPublicKey(com.google.protobuf.ByteString value) {
         if (value == null) {
@@ -620,7 +791,7 @@ public final class MessageProto {
         return this;
       }
       /**
-       * <code>bytes public_key = 3;</code>
+       * <code>bytes public_key = 4;</code>
        */
       public Builder clearPublicKey() {
         
@@ -629,17 +800,43 @@ public final class MessageProto {
         return this;
       }
 
+      private int type_ ;
+      /**
+       * <code>int32 type = 5;</code>
+       */
+      public int getType() {
+        return type_;
+      }
+      /**
+       * <code>int32 type = 5;</code>
+       */
+      public Builder setType(int value) {
+        
+        type_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>int32 type = 5;</code>
+       */
+      public Builder clearType() {
+        
+        type_ = 0;
+        onChanged();
+        return this;
+      }
+
       private nl.tudelft.cs4160.trustchain_android.message.MessageProto.Payload payload_ = null;
       private com.google.protobuf.SingleFieldBuilderV3<
           nl.tudelft.cs4160.trustchain_android.message.MessageProto.Payload, nl.tudelft.cs4160.trustchain_android.message.MessageProto.Payload.Builder, nl.tudelft.cs4160.trustchain_android.message.MessageProto.PayloadOrBuilder> payloadBuilder_;
       /**
-       * <code>.message.Payload payload = 4;</code>
+       * <code>.message.Payload payload = 6;</code>
        */
       public boolean hasPayload() {
         return payloadBuilder_ != null || payload_ != null;
       }
       /**
-       * <code>.message.Payload payload = 4;</code>
+       * <code>.message.Payload payload = 6;</code>
        */
       public nl.tudelft.cs4160.trustchain_android.message.MessageProto.Payload getPayload() {
         if (payloadBuilder_ == null) {
@@ -649,7 +846,7 @@ public final class MessageProto {
         }
       }
       /**
-       * <code>.message.Payload payload = 4;</code>
+       * <code>.message.Payload payload = 6;</code>
        */
       public Builder setPayload(nl.tudelft.cs4160.trustchain_android.message.MessageProto.Payload value) {
         if (payloadBuilder_ == null) {
@@ -665,7 +862,7 @@ public final class MessageProto {
         return this;
       }
       /**
-       * <code>.message.Payload payload = 4;</code>
+       * <code>.message.Payload payload = 6;</code>
        */
       public Builder setPayload(
           nl.tudelft.cs4160.trustchain_android.message.MessageProto.Payload.Builder builderForValue) {
@@ -679,7 +876,7 @@ public final class MessageProto {
         return this;
       }
       /**
-       * <code>.message.Payload payload = 4;</code>
+       * <code>.message.Payload payload = 6;</code>
        */
       public Builder mergePayload(nl.tudelft.cs4160.trustchain_android.message.MessageProto.Payload value) {
         if (payloadBuilder_ == null) {
@@ -697,7 +894,7 @@ public final class MessageProto {
         return this;
       }
       /**
-       * <code>.message.Payload payload = 4;</code>
+       * <code>.message.Payload payload = 6;</code>
        */
       public Builder clearPayload() {
         if (payloadBuilder_ == null) {
@@ -711,7 +908,7 @@ public final class MessageProto {
         return this;
       }
       /**
-       * <code>.message.Payload payload = 4;</code>
+       * <code>.message.Payload payload = 6;</code>
        */
       public nl.tudelft.cs4160.trustchain_android.message.MessageProto.Payload.Builder getPayloadBuilder() {
         
@@ -719,7 +916,7 @@ public final class MessageProto {
         return getPayloadFieldBuilder().getBuilder();
       }
       /**
-       * <code>.message.Payload payload = 4;</code>
+       * <code>.message.Payload payload = 6;</code>
        */
       public nl.tudelft.cs4160.trustchain_android.message.MessageProto.PayloadOrBuilder getPayloadOrBuilder() {
         if (payloadBuilder_ != null) {
@@ -730,7 +927,7 @@ public final class MessageProto {
         }
       }
       /**
-       * <code>.message.Payload payload = 4;</code>
+       * <code>.message.Payload payload = 6;</code>
        */
       private com.google.protobuf.SingleFieldBuilderV3<
           nl.tudelft.cs4160.trustchain_android.message.MessageProto.Payload, nl.tudelft.cs4160.trustchain_android.message.MessageProto.Payload.Builder, nl.tudelft.cs4160.trustchain_android.message.MessageProto.PayloadOrBuilder> 
@@ -799,82 +996,82 @@ public final class MessageProto {
       com.google.protobuf.MessageOrBuilder {
 
     /**
-     * <code>.message.TrustChainBlock halfBlock = 1;</code>
-     */
-    boolean hasHalfBlock();
-    /**
-     * <code>.message.TrustChainBlock halfBlock = 1;</code>
-     */
-    nl.tudelft.cs4160.trustchain_android.message.MessageProto.TrustChainBlock getHalfBlock();
-    /**
-     * <code>.message.TrustChainBlock halfBlock = 1;</code>
-     */
-    nl.tudelft.cs4160.trustchain_android.message.MessageProto.TrustChainBlockOrBuilder getHalfBlockOrBuilder();
-
-    /**
-     * <code>.message.CrawlRequest crawlRequest = 2;</code>
-     */
-    boolean hasCrawlRequest();
-    /**
-     * <code>.message.CrawlRequest crawlRequest = 2;</code>
-     */
-    nl.tudelft.cs4160.trustchain_android.message.MessageProto.CrawlRequest getCrawlRequest();
-    /**
-     * <code>.message.CrawlRequest crawlRequest = 2;</code>
-     */
-    nl.tudelft.cs4160.trustchain_android.message.MessageProto.CrawlRequestOrBuilder getCrawlRequestOrBuilder();
-
-    /**
-     * <code>.message.IntroductionRequest introductionRequest = 3;</code>
+     * <code>.message.IntroductionRequest introductionRequest = 1;</code>
      */
     boolean hasIntroductionRequest();
     /**
-     * <code>.message.IntroductionRequest introductionRequest = 3;</code>
+     * <code>.message.IntroductionRequest introductionRequest = 1;</code>
      */
     nl.tudelft.cs4160.trustchain_android.message.MessageProto.IntroductionRequest getIntroductionRequest();
     /**
-     * <code>.message.IntroductionRequest introductionRequest = 3;</code>
+     * <code>.message.IntroductionRequest introductionRequest = 1;</code>
      */
     nl.tudelft.cs4160.trustchain_android.message.MessageProto.IntroductionRequestOrBuilder getIntroductionRequestOrBuilder();
 
     /**
-     * <code>.message.IntroductionResponse introductionResponse = 4;</code>
+     * <code>.message.IntroductionResponse introductionResponse = 2;</code>
      */
     boolean hasIntroductionResponse();
     /**
-     * <code>.message.IntroductionResponse introductionResponse = 4;</code>
+     * <code>.message.IntroductionResponse introductionResponse = 2;</code>
      */
     nl.tudelft.cs4160.trustchain_android.message.MessageProto.IntroductionResponse getIntroductionResponse();
     /**
-     * <code>.message.IntroductionResponse introductionResponse = 4;</code>
+     * <code>.message.IntroductionResponse introductionResponse = 2;</code>
      */
     nl.tudelft.cs4160.trustchain_android.message.MessageProto.IntroductionResponseOrBuilder getIntroductionResponseOrBuilder();
 
     /**
-     * <code>.message.Puncture puncture = 5;</code>
+     * <code>.message.Puncture puncture = 3;</code>
      */
     boolean hasPuncture();
     /**
-     * <code>.message.Puncture puncture = 5;</code>
+     * <code>.message.Puncture puncture = 3;</code>
      */
     nl.tudelft.cs4160.trustchain_android.message.MessageProto.Puncture getPuncture();
     /**
-     * <code>.message.Puncture puncture = 5;</code>
+     * <code>.message.Puncture puncture = 3;</code>
      */
     nl.tudelft.cs4160.trustchain_android.message.MessageProto.PunctureOrBuilder getPunctureOrBuilder();
 
     /**
-     * <code>.message.PunctureRequest punctureRequest = 6;</code>
+     * <code>.message.PunctureRequest punctureRequest = 4;</code>
      */
     boolean hasPunctureRequest();
     /**
-     * <code>.message.PunctureRequest punctureRequest = 6;</code>
+     * <code>.message.PunctureRequest punctureRequest = 4;</code>
      */
     nl.tudelft.cs4160.trustchain_android.message.MessageProto.PunctureRequest getPunctureRequest();
     /**
-     * <code>.message.PunctureRequest punctureRequest = 6;</code>
+     * <code>.message.PunctureRequest punctureRequest = 4;</code>
      */
     nl.tudelft.cs4160.trustchain_android.message.MessageProto.PunctureRequestOrBuilder getPunctureRequestOrBuilder();
+
+    /**
+     * <code>.message.TrustChainBlock block = 5;</code>
+     */
+    boolean hasBlock();
+    /**
+     * <code>.message.TrustChainBlock block = 5;</code>
+     */
+    nl.tudelft.cs4160.trustchain_android.message.MessageProto.TrustChainBlock getBlock();
+    /**
+     * <code>.message.TrustChainBlock block = 5;</code>
+     */
+    nl.tudelft.cs4160.trustchain_android.message.MessageProto.TrustChainBlockOrBuilder getBlockOrBuilder();
+
+    /**
+     * <code>.message.CrawlRequest crawlRequest = 6;</code>
+     */
+    boolean hasCrawlRequest();
+    /**
+     * <code>.message.CrawlRequest crawlRequest = 6;</code>
+     */
+    nl.tudelft.cs4160.trustchain_android.message.MessageProto.CrawlRequest getCrawlRequest();
+    /**
+     * <code>.message.CrawlRequest crawlRequest = 6;</code>
+     */
+    nl.tudelft.cs4160.trustchain_android.message.MessageProto.CrawlRequestOrBuilder getCrawlRequestOrBuilder();
   }
   /**
    * Protobuf type {@code message.Payload}
@@ -923,32 +1120,6 @@ public final class MessageProto {
               break;
             }
             case 10: {
-              nl.tudelft.cs4160.trustchain_android.message.MessageProto.TrustChainBlock.Builder subBuilder = null;
-              if (halfBlock_ != null) {
-                subBuilder = halfBlock_.toBuilder();
-              }
-              halfBlock_ = input.readMessage(nl.tudelft.cs4160.trustchain_android.message.MessageProto.TrustChainBlock.parser(), extensionRegistry);
-              if (subBuilder != null) {
-                subBuilder.mergeFrom(halfBlock_);
-                halfBlock_ = subBuilder.buildPartial();
-              }
-
-              break;
-            }
-            case 18: {
-              nl.tudelft.cs4160.trustchain_android.message.MessageProto.CrawlRequest.Builder subBuilder = null;
-              if (crawlRequest_ != null) {
-                subBuilder = crawlRequest_.toBuilder();
-              }
-              crawlRequest_ = input.readMessage(nl.tudelft.cs4160.trustchain_android.message.MessageProto.CrawlRequest.parser(), extensionRegistry);
-              if (subBuilder != null) {
-                subBuilder.mergeFrom(crawlRequest_);
-                crawlRequest_ = subBuilder.buildPartial();
-              }
-
-              break;
-            }
-            case 26: {
               nl.tudelft.cs4160.trustchain_android.message.MessageProto.IntroductionRequest.Builder subBuilder = null;
               if (introductionRequest_ != null) {
                 subBuilder = introductionRequest_.toBuilder();
@@ -961,7 +1132,7 @@ public final class MessageProto {
 
               break;
             }
-            case 34: {
+            case 18: {
               nl.tudelft.cs4160.trustchain_android.message.MessageProto.IntroductionResponse.Builder subBuilder = null;
               if (introductionResponse_ != null) {
                 subBuilder = introductionResponse_.toBuilder();
@@ -974,7 +1145,7 @@ public final class MessageProto {
 
               break;
             }
-            case 42: {
+            case 26: {
               nl.tudelft.cs4160.trustchain_android.message.MessageProto.Puncture.Builder subBuilder = null;
               if (puncture_ != null) {
                 subBuilder = puncture_.toBuilder();
@@ -987,7 +1158,7 @@ public final class MessageProto {
 
               break;
             }
-            case 50: {
+            case 34: {
               nl.tudelft.cs4160.trustchain_android.message.MessageProto.PunctureRequest.Builder subBuilder = null;
               if (punctureRequest_ != null) {
                 subBuilder = punctureRequest_.toBuilder();
@@ -996,6 +1167,32 @@ public final class MessageProto {
               if (subBuilder != null) {
                 subBuilder.mergeFrom(punctureRequest_);
                 punctureRequest_ = subBuilder.buildPartial();
+              }
+
+              break;
+            }
+            case 42: {
+              nl.tudelft.cs4160.trustchain_android.message.MessageProto.TrustChainBlock.Builder subBuilder = null;
+              if (block_ != null) {
+                subBuilder = block_.toBuilder();
+              }
+              block_ = input.readMessage(nl.tudelft.cs4160.trustchain_android.message.MessageProto.TrustChainBlock.parser(), extensionRegistry);
+              if (subBuilder != null) {
+                subBuilder.mergeFrom(block_);
+                block_ = subBuilder.buildPartial();
+              }
+
+              break;
+            }
+            case 50: {
+              nl.tudelft.cs4160.trustchain_android.message.MessageProto.CrawlRequest.Builder subBuilder = null;
+              if (crawlRequest_ != null) {
+                subBuilder = crawlRequest_.toBuilder();
+              }
+              crawlRequest_ = input.readMessage(nl.tudelft.cs4160.trustchain_android.message.MessageProto.CrawlRequest.parser(), extensionRegistry);
+              if (subBuilder != null) {
+                subBuilder.mergeFrom(crawlRequest_);
+                crawlRequest_ = subBuilder.buildPartial();
               }
 
               break;
@@ -1024,130 +1221,130 @@ public final class MessageProto {
               nl.tudelft.cs4160.trustchain_android.message.MessageProto.Payload.class, nl.tudelft.cs4160.trustchain_android.message.MessageProto.Payload.Builder.class);
     }
 
-    public static final int HALFBLOCK_FIELD_NUMBER = 1;
-    private nl.tudelft.cs4160.trustchain_android.message.MessageProto.TrustChainBlock halfBlock_;
-    /**
-     * <code>.message.TrustChainBlock halfBlock = 1;</code>
-     */
-    public boolean hasHalfBlock() {
-      return halfBlock_ != null;
-    }
-    /**
-     * <code>.message.TrustChainBlock halfBlock = 1;</code>
-     */
-    public nl.tudelft.cs4160.trustchain_android.message.MessageProto.TrustChainBlock getHalfBlock() {
-      return halfBlock_ == null ? nl.tudelft.cs4160.trustchain_android.message.MessageProto.TrustChainBlock.getDefaultInstance() : halfBlock_;
-    }
-    /**
-     * <code>.message.TrustChainBlock halfBlock = 1;</code>
-     */
-    public nl.tudelft.cs4160.trustchain_android.message.MessageProto.TrustChainBlockOrBuilder getHalfBlockOrBuilder() {
-      return getHalfBlock();
-    }
-
-    public static final int CRAWLREQUEST_FIELD_NUMBER = 2;
-    private nl.tudelft.cs4160.trustchain_android.message.MessageProto.CrawlRequest crawlRequest_;
-    /**
-     * <code>.message.CrawlRequest crawlRequest = 2;</code>
-     */
-    public boolean hasCrawlRequest() {
-      return crawlRequest_ != null;
-    }
-    /**
-     * <code>.message.CrawlRequest crawlRequest = 2;</code>
-     */
-    public nl.tudelft.cs4160.trustchain_android.message.MessageProto.CrawlRequest getCrawlRequest() {
-      return crawlRequest_ == null ? nl.tudelft.cs4160.trustchain_android.message.MessageProto.CrawlRequest.getDefaultInstance() : crawlRequest_;
-    }
-    /**
-     * <code>.message.CrawlRequest crawlRequest = 2;</code>
-     */
-    public nl.tudelft.cs4160.trustchain_android.message.MessageProto.CrawlRequestOrBuilder getCrawlRequestOrBuilder() {
-      return getCrawlRequest();
-    }
-
-    public static final int INTRODUCTIONREQUEST_FIELD_NUMBER = 3;
+    public static final int INTRODUCTIONREQUEST_FIELD_NUMBER = 1;
     private nl.tudelft.cs4160.trustchain_android.message.MessageProto.IntroductionRequest introductionRequest_;
     /**
-     * <code>.message.IntroductionRequest introductionRequest = 3;</code>
+     * <code>.message.IntroductionRequest introductionRequest = 1;</code>
      */
     public boolean hasIntroductionRequest() {
       return introductionRequest_ != null;
     }
     /**
-     * <code>.message.IntroductionRequest introductionRequest = 3;</code>
+     * <code>.message.IntroductionRequest introductionRequest = 1;</code>
      */
     public nl.tudelft.cs4160.trustchain_android.message.MessageProto.IntroductionRequest getIntroductionRequest() {
       return introductionRequest_ == null ? nl.tudelft.cs4160.trustchain_android.message.MessageProto.IntroductionRequest.getDefaultInstance() : introductionRequest_;
     }
     /**
-     * <code>.message.IntroductionRequest introductionRequest = 3;</code>
+     * <code>.message.IntroductionRequest introductionRequest = 1;</code>
      */
     public nl.tudelft.cs4160.trustchain_android.message.MessageProto.IntroductionRequestOrBuilder getIntroductionRequestOrBuilder() {
       return getIntroductionRequest();
     }
 
-    public static final int INTRODUCTIONRESPONSE_FIELD_NUMBER = 4;
+    public static final int INTRODUCTIONRESPONSE_FIELD_NUMBER = 2;
     private nl.tudelft.cs4160.trustchain_android.message.MessageProto.IntroductionResponse introductionResponse_;
     /**
-     * <code>.message.IntroductionResponse introductionResponse = 4;</code>
+     * <code>.message.IntroductionResponse introductionResponse = 2;</code>
      */
     public boolean hasIntroductionResponse() {
       return introductionResponse_ != null;
     }
     /**
-     * <code>.message.IntroductionResponse introductionResponse = 4;</code>
+     * <code>.message.IntroductionResponse introductionResponse = 2;</code>
      */
     public nl.tudelft.cs4160.trustchain_android.message.MessageProto.IntroductionResponse getIntroductionResponse() {
       return introductionResponse_ == null ? nl.tudelft.cs4160.trustchain_android.message.MessageProto.IntroductionResponse.getDefaultInstance() : introductionResponse_;
     }
     /**
-     * <code>.message.IntroductionResponse introductionResponse = 4;</code>
+     * <code>.message.IntroductionResponse introductionResponse = 2;</code>
      */
     public nl.tudelft.cs4160.trustchain_android.message.MessageProto.IntroductionResponseOrBuilder getIntroductionResponseOrBuilder() {
       return getIntroductionResponse();
     }
 
-    public static final int PUNCTURE_FIELD_NUMBER = 5;
+    public static final int PUNCTURE_FIELD_NUMBER = 3;
     private nl.tudelft.cs4160.trustchain_android.message.MessageProto.Puncture puncture_;
     /**
-     * <code>.message.Puncture puncture = 5;</code>
+     * <code>.message.Puncture puncture = 3;</code>
      */
     public boolean hasPuncture() {
       return puncture_ != null;
     }
     /**
-     * <code>.message.Puncture puncture = 5;</code>
+     * <code>.message.Puncture puncture = 3;</code>
      */
     public nl.tudelft.cs4160.trustchain_android.message.MessageProto.Puncture getPuncture() {
       return puncture_ == null ? nl.tudelft.cs4160.trustchain_android.message.MessageProto.Puncture.getDefaultInstance() : puncture_;
     }
     /**
-     * <code>.message.Puncture puncture = 5;</code>
+     * <code>.message.Puncture puncture = 3;</code>
      */
     public nl.tudelft.cs4160.trustchain_android.message.MessageProto.PunctureOrBuilder getPunctureOrBuilder() {
       return getPuncture();
     }
 
-    public static final int PUNCTUREREQUEST_FIELD_NUMBER = 6;
+    public static final int PUNCTUREREQUEST_FIELD_NUMBER = 4;
     private nl.tudelft.cs4160.trustchain_android.message.MessageProto.PunctureRequest punctureRequest_;
     /**
-     * <code>.message.PunctureRequest punctureRequest = 6;</code>
+     * <code>.message.PunctureRequest punctureRequest = 4;</code>
      */
     public boolean hasPunctureRequest() {
       return punctureRequest_ != null;
     }
     /**
-     * <code>.message.PunctureRequest punctureRequest = 6;</code>
+     * <code>.message.PunctureRequest punctureRequest = 4;</code>
      */
     public nl.tudelft.cs4160.trustchain_android.message.MessageProto.PunctureRequest getPunctureRequest() {
       return punctureRequest_ == null ? nl.tudelft.cs4160.trustchain_android.message.MessageProto.PunctureRequest.getDefaultInstance() : punctureRequest_;
     }
     /**
-     * <code>.message.PunctureRequest punctureRequest = 6;</code>
+     * <code>.message.PunctureRequest punctureRequest = 4;</code>
      */
     public nl.tudelft.cs4160.trustchain_android.message.MessageProto.PunctureRequestOrBuilder getPunctureRequestOrBuilder() {
       return getPunctureRequest();
+    }
+
+    public static final int BLOCK_FIELD_NUMBER = 5;
+    private nl.tudelft.cs4160.trustchain_android.message.MessageProto.TrustChainBlock block_;
+    /**
+     * <code>.message.TrustChainBlock block = 5;</code>
+     */
+    public boolean hasBlock() {
+      return block_ != null;
+    }
+    /**
+     * <code>.message.TrustChainBlock block = 5;</code>
+     */
+    public nl.tudelft.cs4160.trustchain_android.message.MessageProto.TrustChainBlock getBlock() {
+      return block_ == null ? nl.tudelft.cs4160.trustchain_android.message.MessageProto.TrustChainBlock.getDefaultInstance() : block_;
+    }
+    /**
+     * <code>.message.TrustChainBlock block = 5;</code>
+     */
+    public nl.tudelft.cs4160.trustchain_android.message.MessageProto.TrustChainBlockOrBuilder getBlockOrBuilder() {
+      return getBlock();
+    }
+
+    public static final int CRAWLREQUEST_FIELD_NUMBER = 6;
+    private nl.tudelft.cs4160.trustchain_android.message.MessageProto.CrawlRequest crawlRequest_;
+    /**
+     * <code>.message.CrawlRequest crawlRequest = 6;</code>
+     */
+    public boolean hasCrawlRequest() {
+      return crawlRequest_ != null;
+    }
+    /**
+     * <code>.message.CrawlRequest crawlRequest = 6;</code>
+     */
+    public nl.tudelft.cs4160.trustchain_android.message.MessageProto.CrawlRequest getCrawlRequest() {
+      return crawlRequest_ == null ? nl.tudelft.cs4160.trustchain_android.message.MessageProto.CrawlRequest.getDefaultInstance() : crawlRequest_;
+    }
+    /**
+     * <code>.message.CrawlRequest crawlRequest = 6;</code>
+     */
+    public nl.tudelft.cs4160.trustchain_android.message.MessageProto.CrawlRequestOrBuilder getCrawlRequestOrBuilder() {
+      return getCrawlRequest();
     }
 
     private byte memoizedIsInitialized = -1;
@@ -1162,23 +1359,23 @@ public final class MessageProto {
 
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
-      if (halfBlock_ != null) {
-        output.writeMessage(1, getHalfBlock());
-      }
-      if (crawlRequest_ != null) {
-        output.writeMessage(2, getCrawlRequest());
-      }
       if (introductionRequest_ != null) {
-        output.writeMessage(3, getIntroductionRequest());
+        output.writeMessage(1, getIntroductionRequest());
       }
       if (introductionResponse_ != null) {
-        output.writeMessage(4, getIntroductionResponse());
+        output.writeMessage(2, getIntroductionResponse());
       }
       if (puncture_ != null) {
-        output.writeMessage(5, getPuncture());
+        output.writeMessage(3, getPuncture());
       }
       if (punctureRequest_ != null) {
-        output.writeMessage(6, getPunctureRequest());
+        output.writeMessage(4, getPunctureRequest());
+      }
+      if (block_ != null) {
+        output.writeMessage(5, getBlock());
+      }
+      if (crawlRequest_ != null) {
+        output.writeMessage(6, getCrawlRequest());
       }
       unknownFields.writeTo(output);
     }
@@ -1188,29 +1385,29 @@ public final class MessageProto {
       if (size != -1) return size;
 
       size = 0;
-      if (halfBlock_ != null) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(1, getHalfBlock());
-      }
-      if (crawlRequest_ != null) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(2, getCrawlRequest());
-      }
       if (introductionRequest_ != null) {
         size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(3, getIntroductionRequest());
+          .computeMessageSize(1, getIntroductionRequest());
       }
       if (introductionResponse_ != null) {
         size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(4, getIntroductionResponse());
+          .computeMessageSize(2, getIntroductionResponse());
       }
       if (puncture_ != null) {
         size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(5, getPuncture());
+          .computeMessageSize(3, getPuncture());
       }
       if (punctureRequest_ != null) {
         size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(6, getPunctureRequest());
+          .computeMessageSize(4, getPunctureRequest());
+      }
+      if (block_ != null) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(5, getBlock());
+      }
+      if (crawlRequest_ != null) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(6, getCrawlRequest());
       }
       size += unknownFields.getSerializedSize();
       memoizedSize = size;
@@ -1228,16 +1425,6 @@ public final class MessageProto {
       nl.tudelft.cs4160.trustchain_android.message.MessageProto.Payload other = (nl.tudelft.cs4160.trustchain_android.message.MessageProto.Payload) obj;
 
       boolean result = true;
-      result = result && (hasHalfBlock() == other.hasHalfBlock());
-      if (hasHalfBlock()) {
-        result = result && getHalfBlock()
-            .equals(other.getHalfBlock());
-      }
-      result = result && (hasCrawlRequest() == other.hasCrawlRequest());
-      if (hasCrawlRequest()) {
-        result = result && getCrawlRequest()
-            .equals(other.getCrawlRequest());
-      }
       result = result && (hasIntroductionRequest() == other.hasIntroductionRequest());
       if (hasIntroductionRequest()) {
         result = result && getIntroductionRequest()
@@ -1258,6 +1445,16 @@ public final class MessageProto {
         result = result && getPunctureRequest()
             .equals(other.getPunctureRequest());
       }
+      result = result && (hasBlock() == other.hasBlock());
+      if (hasBlock()) {
+        result = result && getBlock()
+            .equals(other.getBlock());
+      }
+      result = result && (hasCrawlRequest() == other.hasCrawlRequest());
+      if (hasCrawlRequest()) {
+        result = result && getCrawlRequest()
+            .equals(other.getCrawlRequest());
+      }
       result = result && unknownFields.equals(other.unknownFields);
       return result;
     }
@@ -1269,14 +1466,6 @@ public final class MessageProto {
       }
       int hash = 41;
       hash = (19 * hash) + getDescriptor().hashCode();
-      if (hasHalfBlock()) {
-        hash = (37 * hash) + HALFBLOCK_FIELD_NUMBER;
-        hash = (53 * hash) + getHalfBlock().hashCode();
-      }
-      if (hasCrawlRequest()) {
-        hash = (37 * hash) + CRAWLREQUEST_FIELD_NUMBER;
-        hash = (53 * hash) + getCrawlRequest().hashCode();
-      }
       if (hasIntroductionRequest()) {
         hash = (37 * hash) + INTRODUCTIONREQUEST_FIELD_NUMBER;
         hash = (53 * hash) + getIntroductionRequest().hashCode();
@@ -1292,6 +1481,14 @@ public final class MessageProto {
       if (hasPunctureRequest()) {
         hash = (37 * hash) + PUNCTUREREQUEST_FIELD_NUMBER;
         hash = (53 * hash) + getPunctureRequest().hashCode();
+      }
+      if (hasBlock()) {
+        hash = (37 * hash) + BLOCK_FIELD_NUMBER;
+        hash = (53 * hash) + getBlock().hashCode();
+      }
+      if (hasCrawlRequest()) {
+        hash = (37 * hash) + CRAWLREQUEST_FIELD_NUMBER;
+        hash = (53 * hash) + getCrawlRequest().hashCode();
       }
       hash = (29 * hash) + unknownFields.hashCode();
       memoizedHashCode = hash;
@@ -1422,18 +1619,6 @@ public final class MessageProto {
       }
       public Builder clear() {
         super.clear();
-        if (halfBlockBuilder_ == null) {
-          halfBlock_ = null;
-        } else {
-          halfBlock_ = null;
-          halfBlockBuilder_ = null;
-        }
-        if (crawlRequestBuilder_ == null) {
-          crawlRequest_ = null;
-        } else {
-          crawlRequest_ = null;
-          crawlRequestBuilder_ = null;
-        }
         if (introductionRequestBuilder_ == null) {
           introductionRequest_ = null;
         } else {
@@ -1458,6 +1643,18 @@ public final class MessageProto {
           punctureRequest_ = null;
           punctureRequestBuilder_ = null;
         }
+        if (blockBuilder_ == null) {
+          block_ = null;
+        } else {
+          block_ = null;
+          blockBuilder_ = null;
+        }
+        if (crawlRequestBuilder_ == null) {
+          crawlRequest_ = null;
+        } else {
+          crawlRequest_ = null;
+          crawlRequestBuilder_ = null;
+        }
         return this;
       }
 
@@ -1480,16 +1677,6 @@ public final class MessageProto {
 
       public nl.tudelft.cs4160.trustchain_android.message.MessageProto.Payload buildPartial() {
         nl.tudelft.cs4160.trustchain_android.message.MessageProto.Payload result = new nl.tudelft.cs4160.trustchain_android.message.MessageProto.Payload(this);
-        if (halfBlockBuilder_ == null) {
-          result.halfBlock_ = halfBlock_;
-        } else {
-          result.halfBlock_ = halfBlockBuilder_.build();
-        }
-        if (crawlRequestBuilder_ == null) {
-          result.crawlRequest_ = crawlRequest_;
-        } else {
-          result.crawlRequest_ = crawlRequestBuilder_.build();
-        }
         if (introductionRequestBuilder_ == null) {
           result.introductionRequest_ = introductionRequest_;
         } else {
@@ -1509,6 +1696,16 @@ public final class MessageProto {
           result.punctureRequest_ = punctureRequest_;
         } else {
           result.punctureRequest_ = punctureRequestBuilder_.build();
+        }
+        if (blockBuilder_ == null) {
+          result.block_ = block_;
+        } else {
+          result.block_ = blockBuilder_.build();
+        }
+        if (crawlRequestBuilder_ == null) {
+          result.crawlRequest_ = crawlRequest_;
+        } else {
+          result.crawlRequest_ = crawlRequestBuilder_.build();
         }
         onBuilt();
         return result;
@@ -1551,12 +1748,6 @@ public final class MessageProto {
 
       public Builder mergeFrom(nl.tudelft.cs4160.trustchain_android.message.MessageProto.Payload other) {
         if (other == nl.tudelft.cs4160.trustchain_android.message.MessageProto.Payload.getDefaultInstance()) return this;
-        if (other.hasHalfBlock()) {
-          mergeHalfBlock(other.getHalfBlock());
-        }
-        if (other.hasCrawlRequest()) {
-          mergeCrawlRequest(other.getCrawlRequest());
-        }
         if (other.hasIntroductionRequest()) {
           mergeIntroductionRequest(other.getIntroductionRequest());
         }
@@ -1568,6 +1759,12 @@ public final class MessageProto {
         }
         if (other.hasPunctureRequest()) {
           mergePunctureRequest(other.getPunctureRequest());
+        }
+        if (other.hasBlock()) {
+          mergeBlock(other.getBlock());
+        }
+        if (other.hasCrawlRequest()) {
+          mergeCrawlRequest(other.getCrawlRequest());
         }
         this.mergeUnknownFields(other.unknownFields);
         onChanged();
@@ -1596,251 +1793,17 @@ public final class MessageProto {
         return this;
       }
 
-      private nl.tudelft.cs4160.trustchain_android.message.MessageProto.TrustChainBlock halfBlock_ = null;
-      private com.google.protobuf.SingleFieldBuilderV3<
-          nl.tudelft.cs4160.trustchain_android.message.MessageProto.TrustChainBlock, nl.tudelft.cs4160.trustchain_android.message.MessageProto.TrustChainBlock.Builder, nl.tudelft.cs4160.trustchain_android.message.MessageProto.TrustChainBlockOrBuilder> halfBlockBuilder_;
-      /**
-       * <code>.message.TrustChainBlock halfBlock = 1;</code>
-       */
-      public boolean hasHalfBlock() {
-        return halfBlockBuilder_ != null || halfBlock_ != null;
-      }
-      /**
-       * <code>.message.TrustChainBlock halfBlock = 1;</code>
-       */
-      public nl.tudelft.cs4160.trustchain_android.message.MessageProto.TrustChainBlock getHalfBlock() {
-        if (halfBlockBuilder_ == null) {
-          return halfBlock_ == null ? nl.tudelft.cs4160.trustchain_android.message.MessageProto.TrustChainBlock.getDefaultInstance() : halfBlock_;
-        } else {
-          return halfBlockBuilder_.getMessage();
-        }
-      }
-      /**
-       * <code>.message.TrustChainBlock halfBlock = 1;</code>
-       */
-      public Builder setHalfBlock(nl.tudelft.cs4160.trustchain_android.message.MessageProto.TrustChainBlock value) {
-        if (halfBlockBuilder_ == null) {
-          if (value == null) {
-            throw new NullPointerException();
-          }
-          halfBlock_ = value;
-          onChanged();
-        } else {
-          halfBlockBuilder_.setMessage(value);
-        }
-
-        return this;
-      }
-      /**
-       * <code>.message.TrustChainBlock halfBlock = 1;</code>
-       */
-      public Builder setHalfBlock(
-          nl.tudelft.cs4160.trustchain_android.message.MessageProto.TrustChainBlock.Builder builderForValue) {
-        if (halfBlockBuilder_ == null) {
-          halfBlock_ = builderForValue.build();
-          onChanged();
-        } else {
-          halfBlockBuilder_.setMessage(builderForValue.build());
-        }
-
-        return this;
-      }
-      /**
-       * <code>.message.TrustChainBlock halfBlock = 1;</code>
-       */
-      public Builder mergeHalfBlock(nl.tudelft.cs4160.trustchain_android.message.MessageProto.TrustChainBlock value) {
-        if (halfBlockBuilder_ == null) {
-          if (halfBlock_ != null) {
-            halfBlock_ =
-              nl.tudelft.cs4160.trustchain_android.message.MessageProto.TrustChainBlock.newBuilder(halfBlock_).mergeFrom(value).buildPartial();
-          } else {
-            halfBlock_ = value;
-          }
-          onChanged();
-        } else {
-          halfBlockBuilder_.mergeFrom(value);
-        }
-
-        return this;
-      }
-      /**
-       * <code>.message.TrustChainBlock halfBlock = 1;</code>
-       */
-      public Builder clearHalfBlock() {
-        if (halfBlockBuilder_ == null) {
-          halfBlock_ = null;
-          onChanged();
-        } else {
-          halfBlock_ = null;
-          halfBlockBuilder_ = null;
-        }
-
-        return this;
-      }
-      /**
-       * <code>.message.TrustChainBlock halfBlock = 1;</code>
-       */
-      public nl.tudelft.cs4160.trustchain_android.message.MessageProto.TrustChainBlock.Builder getHalfBlockBuilder() {
-        
-        onChanged();
-        return getHalfBlockFieldBuilder().getBuilder();
-      }
-      /**
-       * <code>.message.TrustChainBlock halfBlock = 1;</code>
-       */
-      public nl.tudelft.cs4160.trustchain_android.message.MessageProto.TrustChainBlockOrBuilder getHalfBlockOrBuilder() {
-        if (halfBlockBuilder_ != null) {
-          return halfBlockBuilder_.getMessageOrBuilder();
-        } else {
-          return halfBlock_ == null ?
-              nl.tudelft.cs4160.trustchain_android.message.MessageProto.TrustChainBlock.getDefaultInstance() : halfBlock_;
-        }
-      }
-      /**
-       * <code>.message.TrustChainBlock halfBlock = 1;</code>
-       */
-      private com.google.protobuf.SingleFieldBuilderV3<
-          nl.tudelft.cs4160.trustchain_android.message.MessageProto.TrustChainBlock, nl.tudelft.cs4160.trustchain_android.message.MessageProto.TrustChainBlock.Builder, nl.tudelft.cs4160.trustchain_android.message.MessageProto.TrustChainBlockOrBuilder> 
-          getHalfBlockFieldBuilder() {
-        if (halfBlockBuilder_ == null) {
-          halfBlockBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
-              nl.tudelft.cs4160.trustchain_android.message.MessageProto.TrustChainBlock, nl.tudelft.cs4160.trustchain_android.message.MessageProto.TrustChainBlock.Builder, nl.tudelft.cs4160.trustchain_android.message.MessageProto.TrustChainBlockOrBuilder>(
-                  getHalfBlock(),
-                  getParentForChildren(),
-                  isClean());
-          halfBlock_ = null;
-        }
-        return halfBlockBuilder_;
-      }
-
-      private nl.tudelft.cs4160.trustchain_android.message.MessageProto.CrawlRequest crawlRequest_ = null;
-      private com.google.protobuf.SingleFieldBuilderV3<
-          nl.tudelft.cs4160.trustchain_android.message.MessageProto.CrawlRequest, nl.tudelft.cs4160.trustchain_android.message.MessageProto.CrawlRequest.Builder, nl.tudelft.cs4160.trustchain_android.message.MessageProto.CrawlRequestOrBuilder> crawlRequestBuilder_;
-      /**
-       * <code>.message.CrawlRequest crawlRequest = 2;</code>
-       */
-      public boolean hasCrawlRequest() {
-        return crawlRequestBuilder_ != null || crawlRequest_ != null;
-      }
-      /**
-       * <code>.message.CrawlRequest crawlRequest = 2;</code>
-       */
-      public nl.tudelft.cs4160.trustchain_android.message.MessageProto.CrawlRequest getCrawlRequest() {
-        if (crawlRequestBuilder_ == null) {
-          return crawlRequest_ == null ? nl.tudelft.cs4160.trustchain_android.message.MessageProto.CrawlRequest.getDefaultInstance() : crawlRequest_;
-        } else {
-          return crawlRequestBuilder_.getMessage();
-        }
-      }
-      /**
-       * <code>.message.CrawlRequest crawlRequest = 2;</code>
-       */
-      public Builder setCrawlRequest(nl.tudelft.cs4160.trustchain_android.message.MessageProto.CrawlRequest value) {
-        if (crawlRequestBuilder_ == null) {
-          if (value == null) {
-            throw new NullPointerException();
-          }
-          crawlRequest_ = value;
-          onChanged();
-        } else {
-          crawlRequestBuilder_.setMessage(value);
-        }
-
-        return this;
-      }
-      /**
-       * <code>.message.CrawlRequest crawlRequest = 2;</code>
-       */
-      public Builder setCrawlRequest(
-          nl.tudelft.cs4160.trustchain_android.message.MessageProto.CrawlRequest.Builder builderForValue) {
-        if (crawlRequestBuilder_ == null) {
-          crawlRequest_ = builderForValue.build();
-          onChanged();
-        } else {
-          crawlRequestBuilder_.setMessage(builderForValue.build());
-        }
-
-        return this;
-      }
-      /**
-       * <code>.message.CrawlRequest crawlRequest = 2;</code>
-       */
-      public Builder mergeCrawlRequest(nl.tudelft.cs4160.trustchain_android.message.MessageProto.CrawlRequest value) {
-        if (crawlRequestBuilder_ == null) {
-          if (crawlRequest_ != null) {
-            crawlRequest_ =
-              nl.tudelft.cs4160.trustchain_android.message.MessageProto.CrawlRequest.newBuilder(crawlRequest_).mergeFrom(value).buildPartial();
-          } else {
-            crawlRequest_ = value;
-          }
-          onChanged();
-        } else {
-          crawlRequestBuilder_.mergeFrom(value);
-        }
-
-        return this;
-      }
-      /**
-       * <code>.message.CrawlRequest crawlRequest = 2;</code>
-       */
-      public Builder clearCrawlRequest() {
-        if (crawlRequestBuilder_ == null) {
-          crawlRequest_ = null;
-          onChanged();
-        } else {
-          crawlRequest_ = null;
-          crawlRequestBuilder_ = null;
-        }
-
-        return this;
-      }
-      /**
-       * <code>.message.CrawlRequest crawlRequest = 2;</code>
-       */
-      public nl.tudelft.cs4160.trustchain_android.message.MessageProto.CrawlRequest.Builder getCrawlRequestBuilder() {
-        
-        onChanged();
-        return getCrawlRequestFieldBuilder().getBuilder();
-      }
-      /**
-       * <code>.message.CrawlRequest crawlRequest = 2;</code>
-       */
-      public nl.tudelft.cs4160.trustchain_android.message.MessageProto.CrawlRequestOrBuilder getCrawlRequestOrBuilder() {
-        if (crawlRequestBuilder_ != null) {
-          return crawlRequestBuilder_.getMessageOrBuilder();
-        } else {
-          return crawlRequest_ == null ?
-              nl.tudelft.cs4160.trustchain_android.message.MessageProto.CrawlRequest.getDefaultInstance() : crawlRequest_;
-        }
-      }
-      /**
-       * <code>.message.CrawlRequest crawlRequest = 2;</code>
-       */
-      private com.google.protobuf.SingleFieldBuilderV3<
-          nl.tudelft.cs4160.trustchain_android.message.MessageProto.CrawlRequest, nl.tudelft.cs4160.trustchain_android.message.MessageProto.CrawlRequest.Builder, nl.tudelft.cs4160.trustchain_android.message.MessageProto.CrawlRequestOrBuilder> 
-          getCrawlRequestFieldBuilder() {
-        if (crawlRequestBuilder_ == null) {
-          crawlRequestBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
-              nl.tudelft.cs4160.trustchain_android.message.MessageProto.CrawlRequest, nl.tudelft.cs4160.trustchain_android.message.MessageProto.CrawlRequest.Builder, nl.tudelft.cs4160.trustchain_android.message.MessageProto.CrawlRequestOrBuilder>(
-                  getCrawlRequest(),
-                  getParentForChildren(),
-                  isClean());
-          crawlRequest_ = null;
-        }
-        return crawlRequestBuilder_;
-      }
-
       private nl.tudelft.cs4160.trustchain_android.message.MessageProto.IntroductionRequest introductionRequest_ = null;
       private com.google.protobuf.SingleFieldBuilderV3<
           nl.tudelft.cs4160.trustchain_android.message.MessageProto.IntroductionRequest, nl.tudelft.cs4160.trustchain_android.message.MessageProto.IntroductionRequest.Builder, nl.tudelft.cs4160.trustchain_android.message.MessageProto.IntroductionRequestOrBuilder> introductionRequestBuilder_;
       /**
-       * <code>.message.IntroductionRequest introductionRequest = 3;</code>
+       * <code>.message.IntroductionRequest introductionRequest = 1;</code>
        */
       public boolean hasIntroductionRequest() {
         return introductionRequestBuilder_ != null || introductionRequest_ != null;
       }
       /**
-       * <code>.message.IntroductionRequest introductionRequest = 3;</code>
+       * <code>.message.IntroductionRequest introductionRequest = 1;</code>
        */
       public nl.tudelft.cs4160.trustchain_android.message.MessageProto.IntroductionRequest getIntroductionRequest() {
         if (introductionRequestBuilder_ == null) {
@@ -1850,7 +1813,7 @@ public final class MessageProto {
         }
       }
       /**
-       * <code>.message.IntroductionRequest introductionRequest = 3;</code>
+       * <code>.message.IntroductionRequest introductionRequest = 1;</code>
        */
       public Builder setIntroductionRequest(nl.tudelft.cs4160.trustchain_android.message.MessageProto.IntroductionRequest value) {
         if (introductionRequestBuilder_ == null) {
@@ -1866,7 +1829,7 @@ public final class MessageProto {
         return this;
       }
       /**
-       * <code>.message.IntroductionRequest introductionRequest = 3;</code>
+       * <code>.message.IntroductionRequest introductionRequest = 1;</code>
        */
       public Builder setIntroductionRequest(
           nl.tudelft.cs4160.trustchain_android.message.MessageProto.IntroductionRequest.Builder builderForValue) {
@@ -1880,7 +1843,7 @@ public final class MessageProto {
         return this;
       }
       /**
-       * <code>.message.IntroductionRequest introductionRequest = 3;</code>
+       * <code>.message.IntroductionRequest introductionRequest = 1;</code>
        */
       public Builder mergeIntroductionRequest(nl.tudelft.cs4160.trustchain_android.message.MessageProto.IntroductionRequest value) {
         if (introductionRequestBuilder_ == null) {
@@ -1898,7 +1861,7 @@ public final class MessageProto {
         return this;
       }
       /**
-       * <code>.message.IntroductionRequest introductionRequest = 3;</code>
+       * <code>.message.IntroductionRequest introductionRequest = 1;</code>
        */
       public Builder clearIntroductionRequest() {
         if (introductionRequestBuilder_ == null) {
@@ -1912,7 +1875,7 @@ public final class MessageProto {
         return this;
       }
       /**
-       * <code>.message.IntroductionRequest introductionRequest = 3;</code>
+       * <code>.message.IntroductionRequest introductionRequest = 1;</code>
        */
       public nl.tudelft.cs4160.trustchain_android.message.MessageProto.IntroductionRequest.Builder getIntroductionRequestBuilder() {
         
@@ -1920,7 +1883,7 @@ public final class MessageProto {
         return getIntroductionRequestFieldBuilder().getBuilder();
       }
       /**
-       * <code>.message.IntroductionRequest introductionRequest = 3;</code>
+       * <code>.message.IntroductionRequest introductionRequest = 1;</code>
        */
       public nl.tudelft.cs4160.trustchain_android.message.MessageProto.IntroductionRequestOrBuilder getIntroductionRequestOrBuilder() {
         if (introductionRequestBuilder_ != null) {
@@ -1931,7 +1894,7 @@ public final class MessageProto {
         }
       }
       /**
-       * <code>.message.IntroductionRequest introductionRequest = 3;</code>
+       * <code>.message.IntroductionRequest introductionRequest = 1;</code>
        */
       private com.google.protobuf.SingleFieldBuilderV3<
           nl.tudelft.cs4160.trustchain_android.message.MessageProto.IntroductionRequest, nl.tudelft.cs4160.trustchain_android.message.MessageProto.IntroductionRequest.Builder, nl.tudelft.cs4160.trustchain_android.message.MessageProto.IntroductionRequestOrBuilder> 
@@ -1951,13 +1914,13 @@ public final class MessageProto {
       private com.google.protobuf.SingleFieldBuilderV3<
           nl.tudelft.cs4160.trustchain_android.message.MessageProto.IntroductionResponse, nl.tudelft.cs4160.trustchain_android.message.MessageProto.IntroductionResponse.Builder, nl.tudelft.cs4160.trustchain_android.message.MessageProto.IntroductionResponseOrBuilder> introductionResponseBuilder_;
       /**
-       * <code>.message.IntroductionResponse introductionResponse = 4;</code>
+       * <code>.message.IntroductionResponse introductionResponse = 2;</code>
        */
       public boolean hasIntroductionResponse() {
         return introductionResponseBuilder_ != null || introductionResponse_ != null;
       }
       /**
-       * <code>.message.IntroductionResponse introductionResponse = 4;</code>
+       * <code>.message.IntroductionResponse introductionResponse = 2;</code>
        */
       public nl.tudelft.cs4160.trustchain_android.message.MessageProto.IntroductionResponse getIntroductionResponse() {
         if (introductionResponseBuilder_ == null) {
@@ -1967,7 +1930,7 @@ public final class MessageProto {
         }
       }
       /**
-       * <code>.message.IntroductionResponse introductionResponse = 4;</code>
+       * <code>.message.IntroductionResponse introductionResponse = 2;</code>
        */
       public Builder setIntroductionResponse(nl.tudelft.cs4160.trustchain_android.message.MessageProto.IntroductionResponse value) {
         if (introductionResponseBuilder_ == null) {
@@ -1983,7 +1946,7 @@ public final class MessageProto {
         return this;
       }
       /**
-       * <code>.message.IntroductionResponse introductionResponse = 4;</code>
+       * <code>.message.IntroductionResponse introductionResponse = 2;</code>
        */
       public Builder setIntroductionResponse(
           nl.tudelft.cs4160.trustchain_android.message.MessageProto.IntroductionResponse.Builder builderForValue) {
@@ -1997,7 +1960,7 @@ public final class MessageProto {
         return this;
       }
       /**
-       * <code>.message.IntroductionResponse introductionResponse = 4;</code>
+       * <code>.message.IntroductionResponse introductionResponse = 2;</code>
        */
       public Builder mergeIntroductionResponse(nl.tudelft.cs4160.trustchain_android.message.MessageProto.IntroductionResponse value) {
         if (introductionResponseBuilder_ == null) {
@@ -2015,7 +1978,7 @@ public final class MessageProto {
         return this;
       }
       /**
-       * <code>.message.IntroductionResponse introductionResponse = 4;</code>
+       * <code>.message.IntroductionResponse introductionResponse = 2;</code>
        */
       public Builder clearIntroductionResponse() {
         if (introductionResponseBuilder_ == null) {
@@ -2029,7 +1992,7 @@ public final class MessageProto {
         return this;
       }
       /**
-       * <code>.message.IntroductionResponse introductionResponse = 4;</code>
+       * <code>.message.IntroductionResponse introductionResponse = 2;</code>
        */
       public nl.tudelft.cs4160.trustchain_android.message.MessageProto.IntroductionResponse.Builder getIntroductionResponseBuilder() {
         
@@ -2037,7 +2000,7 @@ public final class MessageProto {
         return getIntroductionResponseFieldBuilder().getBuilder();
       }
       /**
-       * <code>.message.IntroductionResponse introductionResponse = 4;</code>
+       * <code>.message.IntroductionResponse introductionResponse = 2;</code>
        */
       public nl.tudelft.cs4160.trustchain_android.message.MessageProto.IntroductionResponseOrBuilder getIntroductionResponseOrBuilder() {
         if (introductionResponseBuilder_ != null) {
@@ -2048,7 +2011,7 @@ public final class MessageProto {
         }
       }
       /**
-       * <code>.message.IntroductionResponse introductionResponse = 4;</code>
+       * <code>.message.IntroductionResponse introductionResponse = 2;</code>
        */
       private com.google.protobuf.SingleFieldBuilderV3<
           nl.tudelft.cs4160.trustchain_android.message.MessageProto.IntroductionResponse, nl.tudelft.cs4160.trustchain_android.message.MessageProto.IntroductionResponse.Builder, nl.tudelft.cs4160.trustchain_android.message.MessageProto.IntroductionResponseOrBuilder> 
@@ -2068,13 +2031,13 @@ public final class MessageProto {
       private com.google.protobuf.SingleFieldBuilderV3<
           nl.tudelft.cs4160.trustchain_android.message.MessageProto.Puncture, nl.tudelft.cs4160.trustchain_android.message.MessageProto.Puncture.Builder, nl.tudelft.cs4160.trustchain_android.message.MessageProto.PunctureOrBuilder> punctureBuilder_;
       /**
-       * <code>.message.Puncture puncture = 5;</code>
+       * <code>.message.Puncture puncture = 3;</code>
        */
       public boolean hasPuncture() {
         return punctureBuilder_ != null || puncture_ != null;
       }
       /**
-       * <code>.message.Puncture puncture = 5;</code>
+       * <code>.message.Puncture puncture = 3;</code>
        */
       public nl.tudelft.cs4160.trustchain_android.message.MessageProto.Puncture getPuncture() {
         if (punctureBuilder_ == null) {
@@ -2084,7 +2047,7 @@ public final class MessageProto {
         }
       }
       /**
-       * <code>.message.Puncture puncture = 5;</code>
+       * <code>.message.Puncture puncture = 3;</code>
        */
       public Builder setPuncture(nl.tudelft.cs4160.trustchain_android.message.MessageProto.Puncture value) {
         if (punctureBuilder_ == null) {
@@ -2100,7 +2063,7 @@ public final class MessageProto {
         return this;
       }
       /**
-       * <code>.message.Puncture puncture = 5;</code>
+       * <code>.message.Puncture puncture = 3;</code>
        */
       public Builder setPuncture(
           nl.tudelft.cs4160.trustchain_android.message.MessageProto.Puncture.Builder builderForValue) {
@@ -2114,7 +2077,7 @@ public final class MessageProto {
         return this;
       }
       /**
-       * <code>.message.Puncture puncture = 5;</code>
+       * <code>.message.Puncture puncture = 3;</code>
        */
       public Builder mergePuncture(nl.tudelft.cs4160.trustchain_android.message.MessageProto.Puncture value) {
         if (punctureBuilder_ == null) {
@@ -2132,7 +2095,7 @@ public final class MessageProto {
         return this;
       }
       /**
-       * <code>.message.Puncture puncture = 5;</code>
+       * <code>.message.Puncture puncture = 3;</code>
        */
       public Builder clearPuncture() {
         if (punctureBuilder_ == null) {
@@ -2146,7 +2109,7 @@ public final class MessageProto {
         return this;
       }
       /**
-       * <code>.message.Puncture puncture = 5;</code>
+       * <code>.message.Puncture puncture = 3;</code>
        */
       public nl.tudelft.cs4160.trustchain_android.message.MessageProto.Puncture.Builder getPunctureBuilder() {
         
@@ -2154,7 +2117,7 @@ public final class MessageProto {
         return getPunctureFieldBuilder().getBuilder();
       }
       /**
-       * <code>.message.Puncture puncture = 5;</code>
+       * <code>.message.Puncture puncture = 3;</code>
        */
       public nl.tudelft.cs4160.trustchain_android.message.MessageProto.PunctureOrBuilder getPunctureOrBuilder() {
         if (punctureBuilder_ != null) {
@@ -2165,7 +2128,7 @@ public final class MessageProto {
         }
       }
       /**
-       * <code>.message.Puncture puncture = 5;</code>
+       * <code>.message.Puncture puncture = 3;</code>
        */
       private com.google.protobuf.SingleFieldBuilderV3<
           nl.tudelft.cs4160.trustchain_android.message.MessageProto.Puncture, nl.tudelft.cs4160.trustchain_android.message.MessageProto.Puncture.Builder, nl.tudelft.cs4160.trustchain_android.message.MessageProto.PunctureOrBuilder> 
@@ -2185,13 +2148,13 @@ public final class MessageProto {
       private com.google.protobuf.SingleFieldBuilderV3<
           nl.tudelft.cs4160.trustchain_android.message.MessageProto.PunctureRequest, nl.tudelft.cs4160.trustchain_android.message.MessageProto.PunctureRequest.Builder, nl.tudelft.cs4160.trustchain_android.message.MessageProto.PunctureRequestOrBuilder> punctureRequestBuilder_;
       /**
-       * <code>.message.PunctureRequest punctureRequest = 6;</code>
+       * <code>.message.PunctureRequest punctureRequest = 4;</code>
        */
       public boolean hasPunctureRequest() {
         return punctureRequestBuilder_ != null || punctureRequest_ != null;
       }
       /**
-       * <code>.message.PunctureRequest punctureRequest = 6;</code>
+       * <code>.message.PunctureRequest punctureRequest = 4;</code>
        */
       public nl.tudelft.cs4160.trustchain_android.message.MessageProto.PunctureRequest getPunctureRequest() {
         if (punctureRequestBuilder_ == null) {
@@ -2201,7 +2164,7 @@ public final class MessageProto {
         }
       }
       /**
-       * <code>.message.PunctureRequest punctureRequest = 6;</code>
+       * <code>.message.PunctureRequest punctureRequest = 4;</code>
        */
       public Builder setPunctureRequest(nl.tudelft.cs4160.trustchain_android.message.MessageProto.PunctureRequest value) {
         if (punctureRequestBuilder_ == null) {
@@ -2217,7 +2180,7 @@ public final class MessageProto {
         return this;
       }
       /**
-       * <code>.message.PunctureRequest punctureRequest = 6;</code>
+       * <code>.message.PunctureRequest punctureRequest = 4;</code>
        */
       public Builder setPunctureRequest(
           nl.tudelft.cs4160.trustchain_android.message.MessageProto.PunctureRequest.Builder builderForValue) {
@@ -2231,7 +2194,7 @@ public final class MessageProto {
         return this;
       }
       /**
-       * <code>.message.PunctureRequest punctureRequest = 6;</code>
+       * <code>.message.PunctureRequest punctureRequest = 4;</code>
        */
       public Builder mergePunctureRequest(nl.tudelft.cs4160.trustchain_android.message.MessageProto.PunctureRequest value) {
         if (punctureRequestBuilder_ == null) {
@@ -2249,7 +2212,7 @@ public final class MessageProto {
         return this;
       }
       /**
-       * <code>.message.PunctureRequest punctureRequest = 6;</code>
+       * <code>.message.PunctureRequest punctureRequest = 4;</code>
        */
       public Builder clearPunctureRequest() {
         if (punctureRequestBuilder_ == null) {
@@ -2263,7 +2226,7 @@ public final class MessageProto {
         return this;
       }
       /**
-       * <code>.message.PunctureRequest punctureRequest = 6;</code>
+       * <code>.message.PunctureRequest punctureRequest = 4;</code>
        */
       public nl.tudelft.cs4160.trustchain_android.message.MessageProto.PunctureRequest.Builder getPunctureRequestBuilder() {
         
@@ -2271,7 +2234,7 @@ public final class MessageProto {
         return getPunctureRequestFieldBuilder().getBuilder();
       }
       /**
-       * <code>.message.PunctureRequest punctureRequest = 6;</code>
+       * <code>.message.PunctureRequest punctureRequest = 4;</code>
        */
       public nl.tudelft.cs4160.trustchain_android.message.MessageProto.PunctureRequestOrBuilder getPunctureRequestOrBuilder() {
         if (punctureRequestBuilder_ != null) {
@@ -2282,7 +2245,7 @@ public final class MessageProto {
         }
       }
       /**
-       * <code>.message.PunctureRequest punctureRequest = 6;</code>
+       * <code>.message.PunctureRequest punctureRequest = 4;</code>
        */
       private com.google.protobuf.SingleFieldBuilderV3<
           nl.tudelft.cs4160.trustchain_android.message.MessageProto.PunctureRequest, nl.tudelft.cs4160.trustchain_android.message.MessageProto.PunctureRequest.Builder, nl.tudelft.cs4160.trustchain_android.message.MessageProto.PunctureRequestOrBuilder> 
@@ -2296,6 +2259,240 @@ public final class MessageProto {
           punctureRequest_ = null;
         }
         return punctureRequestBuilder_;
+      }
+
+      private nl.tudelft.cs4160.trustchain_android.message.MessageProto.TrustChainBlock block_ = null;
+      private com.google.protobuf.SingleFieldBuilderV3<
+          nl.tudelft.cs4160.trustchain_android.message.MessageProto.TrustChainBlock, nl.tudelft.cs4160.trustchain_android.message.MessageProto.TrustChainBlock.Builder, nl.tudelft.cs4160.trustchain_android.message.MessageProto.TrustChainBlockOrBuilder> blockBuilder_;
+      /**
+       * <code>.message.TrustChainBlock block = 5;</code>
+       */
+      public boolean hasBlock() {
+        return blockBuilder_ != null || block_ != null;
+      }
+      /**
+       * <code>.message.TrustChainBlock block = 5;</code>
+       */
+      public nl.tudelft.cs4160.trustchain_android.message.MessageProto.TrustChainBlock getBlock() {
+        if (blockBuilder_ == null) {
+          return block_ == null ? nl.tudelft.cs4160.trustchain_android.message.MessageProto.TrustChainBlock.getDefaultInstance() : block_;
+        } else {
+          return blockBuilder_.getMessage();
+        }
+      }
+      /**
+       * <code>.message.TrustChainBlock block = 5;</code>
+       */
+      public Builder setBlock(nl.tudelft.cs4160.trustchain_android.message.MessageProto.TrustChainBlock value) {
+        if (blockBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          block_ = value;
+          onChanged();
+        } else {
+          blockBuilder_.setMessage(value);
+        }
+
+        return this;
+      }
+      /**
+       * <code>.message.TrustChainBlock block = 5;</code>
+       */
+      public Builder setBlock(
+          nl.tudelft.cs4160.trustchain_android.message.MessageProto.TrustChainBlock.Builder builderForValue) {
+        if (blockBuilder_ == null) {
+          block_ = builderForValue.build();
+          onChanged();
+        } else {
+          blockBuilder_.setMessage(builderForValue.build());
+        }
+
+        return this;
+      }
+      /**
+       * <code>.message.TrustChainBlock block = 5;</code>
+       */
+      public Builder mergeBlock(nl.tudelft.cs4160.trustchain_android.message.MessageProto.TrustChainBlock value) {
+        if (blockBuilder_ == null) {
+          if (block_ != null) {
+            block_ =
+              nl.tudelft.cs4160.trustchain_android.message.MessageProto.TrustChainBlock.newBuilder(block_).mergeFrom(value).buildPartial();
+          } else {
+            block_ = value;
+          }
+          onChanged();
+        } else {
+          blockBuilder_.mergeFrom(value);
+        }
+
+        return this;
+      }
+      /**
+       * <code>.message.TrustChainBlock block = 5;</code>
+       */
+      public Builder clearBlock() {
+        if (blockBuilder_ == null) {
+          block_ = null;
+          onChanged();
+        } else {
+          block_ = null;
+          blockBuilder_ = null;
+        }
+
+        return this;
+      }
+      /**
+       * <code>.message.TrustChainBlock block = 5;</code>
+       */
+      public nl.tudelft.cs4160.trustchain_android.message.MessageProto.TrustChainBlock.Builder getBlockBuilder() {
+        
+        onChanged();
+        return getBlockFieldBuilder().getBuilder();
+      }
+      /**
+       * <code>.message.TrustChainBlock block = 5;</code>
+       */
+      public nl.tudelft.cs4160.trustchain_android.message.MessageProto.TrustChainBlockOrBuilder getBlockOrBuilder() {
+        if (blockBuilder_ != null) {
+          return blockBuilder_.getMessageOrBuilder();
+        } else {
+          return block_ == null ?
+              nl.tudelft.cs4160.trustchain_android.message.MessageProto.TrustChainBlock.getDefaultInstance() : block_;
+        }
+      }
+      /**
+       * <code>.message.TrustChainBlock block = 5;</code>
+       */
+      private com.google.protobuf.SingleFieldBuilderV3<
+          nl.tudelft.cs4160.trustchain_android.message.MessageProto.TrustChainBlock, nl.tudelft.cs4160.trustchain_android.message.MessageProto.TrustChainBlock.Builder, nl.tudelft.cs4160.trustchain_android.message.MessageProto.TrustChainBlockOrBuilder> 
+          getBlockFieldBuilder() {
+        if (blockBuilder_ == null) {
+          blockBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
+              nl.tudelft.cs4160.trustchain_android.message.MessageProto.TrustChainBlock, nl.tudelft.cs4160.trustchain_android.message.MessageProto.TrustChainBlock.Builder, nl.tudelft.cs4160.trustchain_android.message.MessageProto.TrustChainBlockOrBuilder>(
+                  getBlock(),
+                  getParentForChildren(),
+                  isClean());
+          block_ = null;
+        }
+        return blockBuilder_;
+      }
+
+      private nl.tudelft.cs4160.trustchain_android.message.MessageProto.CrawlRequest crawlRequest_ = null;
+      private com.google.protobuf.SingleFieldBuilderV3<
+          nl.tudelft.cs4160.trustchain_android.message.MessageProto.CrawlRequest, nl.tudelft.cs4160.trustchain_android.message.MessageProto.CrawlRequest.Builder, nl.tudelft.cs4160.trustchain_android.message.MessageProto.CrawlRequestOrBuilder> crawlRequestBuilder_;
+      /**
+       * <code>.message.CrawlRequest crawlRequest = 6;</code>
+       */
+      public boolean hasCrawlRequest() {
+        return crawlRequestBuilder_ != null || crawlRequest_ != null;
+      }
+      /**
+       * <code>.message.CrawlRequest crawlRequest = 6;</code>
+       */
+      public nl.tudelft.cs4160.trustchain_android.message.MessageProto.CrawlRequest getCrawlRequest() {
+        if (crawlRequestBuilder_ == null) {
+          return crawlRequest_ == null ? nl.tudelft.cs4160.trustchain_android.message.MessageProto.CrawlRequest.getDefaultInstance() : crawlRequest_;
+        } else {
+          return crawlRequestBuilder_.getMessage();
+        }
+      }
+      /**
+       * <code>.message.CrawlRequest crawlRequest = 6;</code>
+       */
+      public Builder setCrawlRequest(nl.tudelft.cs4160.trustchain_android.message.MessageProto.CrawlRequest value) {
+        if (crawlRequestBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          crawlRequest_ = value;
+          onChanged();
+        } else {
+          crawlRequestBuilder_.setMessage(value);
+        }
+
+        return this;
+      }
+      /**
+       * <code>.message.CrawlRequest crawlRequest = 6;</code>
+       */
+      public Builder setCrawlRequest(
+          nl.tudelft.cs4160.trustchain_android.message.MessageProto.CrawlRequest.Builder builderForValue) {
+        if (crawlRequestBuilder_ == null) {
+          crawlRequest_ = builderForValue.build();
+          onChanged();
+        } else {
+          crawlRequestBuilder_.setMessage(builderForValue.build());
+        }
+
+        return this;
+      }
+      /**
+       * <code>.message.CrawlRequest crawlRequest = 6;</code>
+       */
+      public Builder mergeCrawlRequest(nl.tudelft.cs4160.trustchain_android.message.MessageProto.CrawlRequest value) {
+        if (crawlRequestBuilder_ == null) {
+          if (crawlRequest_ != null) {
+            crawlRequest_ =
+              nl.tudelft.cs4160.trustchain_android.message.MessageProto.CrawlRequest.newBuilder(crawlRequest_).mergeFrom(value).buildPartial();
+          } else {
+            crawlRequest_ = value;
+          }
+          onChanged();
+        } else {
+          crawlRequestBuilder_.mergeFrom(value);
+        }
+
+        return this;
+      }
+      /**
+       * <code>.message.CrawlRequest crawlRequest = 6;</code>
+       */
+      public Builder clearCrawlRequest() {
+        if (crawlRequestBuilder_ == null) {
+          crawlRequest_ = null;
+          onChanged();
+        } else {
+          crawlRequest_ = null;
+          crawlRequestBuilder_ = null;
+        }
+
+        return this;
+      }
+      /**
+       * <code>.message.CrawlRequest crawlRequest = 6;</code>
+       */
+      public nl.tudelft.cs4160.trustchain_android.message.MessageProto.CrawlRequest.Builder getCrawlRequestBuilder() {
+        
+        onChanged();
+        return getCrawlRequestFieldBuilder().getBuilder();
+      }
+      /**
+       * <code>.message.CrawlRequest crawlRequest = 6;</code>
+       */
+      public nl.tudelft.cs4160.trustchain_android.message.MessageProto.CrawlRequestOrBuilder getCrawlRequestOrBuilder() {
+        if (crawlRequestBuilder_ != null) {
+          return crawlRequestBuilder_.getMessageOrBuilder();
+        } else {
+          return crawlRequest_ == null ?
+              nl.tudelft.cs4160.trustchain_android.message.MessageProto.CrawlRequest.getDefaultInstance() : crawlRequest_;
+        }
+      }
+      /**
+       * <code>.message.CrawlRequest crawlRequest = 6;</code>
+       */
+      private com.google.protobuf.SingleFieldBuilderV3<
+          nl.tudelft.cs4160.trustchain_android.message.MessageProto.CrawlRequest, nl.tudelft.cs4160.trustchain_android.message.MessageProto.CrawlRequest.Builder, nl.tudelft.cs4160.trustchain_android.message.MessageProto.CrawlRequestOrBuilder> 
+          getCrawlRequestFieldBuilder() {
+        if (crawlRequestBuilder_ == null) {
+          crawlRequestBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
+              nl.tudelft.cs4160.trustchain_android.message.MessageProto.CrawlRequest, nl.tudelft.cs4160.trustchain_android.message.MessageProto.CrawlRequest.Builder, nl.tudelft.cs4160.trustchain_android.message.MessageProto.CrawlRequestOrBuilder>(
+                  getCrawlRequest(),
+                  getParentForChildren(),
+                  isClean());
+          crawlRequest_ = null;
+        }
+        return crawlRequestBuilder_;
       }
       public final Builder setUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
@@ -5522,14 +5719,19 @@ public final class MessageProto {
       com.google.protobuf.MessageOrBuilder {
 
     /**
-     * <code>bytes connection_type = 1;</code>
+     * <code>int64 connection_type = 1;</code>
      */
-    com.google.protobuf.ByteString getConnectionType();
+    long getConnectionType();
 
     /**
-     * <code>bytes network_operator = 2;</code>
+     * <code>string network_operator = 2;</code>
      */
-    com.google.protobuf.ByteString getNetworkOperator();
+    java.lang.String getNetworkOperator();
+    /**
+     * <code>string network_operator = 2;</code>
+     */
+    com.google.protobuf.ByteString
+        getNetworkOperatorBytes();
   }
   /**
    * Protobuf type {@code message.IntroductionRequest}
@@ -5544,8 +5746,8 @@ public final class MessageProto {
       super(builder);
     }
     private IntroductionRequest() {
-      connectionType_ = com.google.protobuf.ByteString.EMPTY;
-      networkOperator_ = com.google.protobuf.ByteString.EMPTY;
+      connectionType_ = 0L;
+      networkOperator_ = "";
     }
 
     @java.lang.Override
@@ -5579,14 +5781,15 @@ public final class MessageProto {
               }
               break;
             }
-            case 10: {
+            case 8: {
 
-              connectionType_ = input.readBytes();
+              connectionType_ = input.readInt64();
               break;
             }
             case 18: {
+              java.lang.String s = input.readStringRequireUtf8();
 
-              networkOperator_ = input.readBytes();
+              networkOperator_ = s;
               break;
             }
           }
@@ -5614,21 +5817,46 @@ public final class MessageProto {
     }
 
     public static final int CONNECTION_TYPE_FIELD_NUMBER = 1;
-    private com.google.protobuf.ByteString connectionType_;
+    private long connectionType_;
     /**
-     * <code>bytes connection_type = 1;</code>
+     * <code>int64 connection_type = 1;</code>
      */
-    public com.google.protobuf.ByteString getConnectionType() {
+    public long getConnectionType() {
       return connectionType_;
     }
 
     public static final int NETWORK_OPERATOR_FIELD_NUMBER = 2;
-    private com.google.protobuf.ByteString networkOperator_;
+    private volatile java.lang.Object networkOperator_;
     /**
-     * <code>bytes network_operator = 2;</code>
+     * <code>string network_operator = 2;</code>
      */
-    public com.google.protobuf.ByteString getNetworkOperator() {
-      return networkOperator_;
+    public java.lang.String getNetworkOperator() {
+      java.lang.Object ref = networkOperator_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        networkOperator_ = s;
+        return s;
+      }
+    }
+    /**
+     * <code>string network_operator = 2;</code>
+     */
+    public com.google.protobuf.ByteString
+        getNetworkOperatorBytes() {
+      java.lang.Object ref = networkOperator_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        networkOperator_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
     }
 
     private byte memoizedIsInitialized = -1;
@@ -5643,11 +5871,11 @@ public final class MessageProto {
 
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
-      if (!connectionType_.isEmpty()) {
-        output.writeBytes(1, connectionType_);
+      if (connectionType_ != 0L) {
+        output.writeInt64(1, connectionType_);
       }
-      if (!networkOperator_.isEmpty()) {
-        output.writeBytes(2, networkOperator_);
+      if (!getNetworkOperatorBytes().isEmpty()) {
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 2, networkOperator_);
       }
       unknownFields.writeTo(output);
     }
@@ -5657,13 +5885,12 @@ public final class MessageProto {
       if (size != -1) return size;
 
       size = 0;
-      if (!connectionType_.isEmpty()) {
+      if (connectionType_ != 0L) {
         size += com.google.protobuf.CodedOutputStream
-          .computeBytesSize(1, connectionType_);
+          .computeInt64Size(1, connectionType_);
       }
-      if (!networkOperator_.isEmpty()) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeBytesSize(2, networkOperator_);
+      if (!getNetworkOperatorBytes().isEmpty()) {
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(2, networkOperator_);
       }
       size += unknownFields.getSerializedSize();
       memoizedSize = size;
@@ -5681,8 +5908,8 @@ public final class MessageProto {
       nl.tudelft.cs4160.trustchain_android.message.MessageProto.IntroductionRequest other = (nl.tudelft.cs4160.trustchain_android.message.MessageProto.IntroductionRequest) obj;
 
       boolean result = true;
-      result = result && getConnectionType()
-          .equals(other.getConnectionType());
+      result = result && (getConnectionType()
+          == other.getConnectionType());
       result = result && getNetworkOperator()
           .equals(other.getNetworkOperator());
       result = result && unknownFields.equals(other.unknownFields);
@@ -5697,7 +5924,8 @@ public final class MessageProto {
       int hash = 41;
       hash = (19 * hash) + getDescriptor().hashCode();
       hash = (37 * hash) + CONNECTION_TYPE_FIELD_NUMBER;
-      hash = (53 * hash) + getConnectionType().hashCode();
+      hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
+          getConnectionType());
       hash = (37 * hash) + NETWORK_OPERATOR_FIELD_NUMBER;
       hash = (53 * hash) + getNetworkOperator().hashCode();
       hash = (29 * hash) + unknownFields.hashCode();
@@ -5829,9 +6057,9 @@ public final class MessageProto {
       }
       public Builder clear() {
         super.clear();
-        connectionType_ = com.google.protobuf.ByteString.EMPTY;
+        connectionType_ = 0L;
 
-        networkOperator_ = com.google.protobuf.ByteString.EMPTY;
+        networkOperator_ = "";
 
         return this;
       }
@@ -5898,11 +6126,12 @@ public final class MessageProto {
 
       public Builder mergeFrom(nl.tudelft.cs4160.trustchain_android.message.MessageProto.IntroductionRequest other) {
         if (other == nl.tudelft.cs4160.trustchain_android.message.MessageProto.IntroductionRequest.getDefaultInstance()) return this;
-        if (other.getConnectionType() != com.google.protobuf.ByteString.EMPTY) {
+        if (other.getConnectionType() != 0L) {
           setConnectionType(other.getConnectionType());
         }
-        if (other.getNetworkOperator() != com.google.protobuf.ByteString.EMPTY) {
-          setNetworkOperator(other.getNetworkOperator());
+        if (!other.getNetworkOperator().isEmpty()) {
+          networkOperator_ = other.networkOperator_;
+          onChanged();
         }
         this.mergeUnknownFields(other.unknownFields);
         onChanged();
@@ -5931,46 +6160,69 @@ public final class MessageProto {
         return this;
       }
 
-      private com.google.protobuf.ByteString connectionType_ = com.google.protobuf.ByteString.EMPTY;
+      private long connectionType_ ;
       /**
-       * <code>bytes connection_type = 1;</code>
+       * <code>int64 connection_type = 1;</code>
        */
-      public com.google.protobuf.ByteString getConnectionType() {
+      public long getConnectionType() {
         return connectionType_;
       }
       /**
-       * <code>bytes connection_type = 1;</code>
+       * <code>int64 connection_type = 1;</code>
        */
-      public Builder setConnectionType(com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  
+      public Builder setConnectionType(long value) {
+        
         connectionType_ = value;
         onChanged();
         return this;
       }
       /**
-       * <code>bytes connection_type = 1;</code>
+       * <code>int64 connection_type = 1;</code>
        */
       public Builder clearConnectionType() {
         
-        connectionType_ = getDefaultInstance().getConnectionType();
+        connectionType_ = 0L;
         onChanged();
         return this;
       }
 
-      private com.google.protobuf.ByteString networkOperator_ = com.google.protobuf.ByteString.EMPTY;
+      private java.lang.Object networkOperator_ = "";
       /**
-       * <code>bytes network_operator = 2;</code>
+       * <code>string network_operator = 2;</code>
        */
-      public com.google.protobuf.ByteString getNetworkOperator() {
-        return networkOperator_;
+      public java.lang.String getNetworkOperator() {
+        java.lang.Object ref = networkOperator_;
+        if (!(ref instanceof java.lang.String)) {
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          networkOperator_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
       }
       /**
-       * <code>bytes network_operator = 2;</code>
+       * <code>string network_operator = 2;</code>
        */
-      public Builder setNetworkOperator(com.google.protobuf.ByteString value) {
+      public com.google.protobuf.ByteString
+          getNetworkOperatorBytes() {
+        java.lang.Object ref = networkOperator_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          networkOperator_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>string network_operator = 2;</code>
+       */
+      public Builder setNetworkOperator(
+          java.lang.String value) {
         if (value == null) {
     throw new NullPointerException();
   }
@@ -5980,11 +6232,25 @@ public final class MessageProto {
         return this;
       }
       /**
-       * <code>bytes network_operator = 2;</code>
+       * <code>string network_operator = 2;</code>
        */
       public Builder clearNetworkOperator() {
         
         networkOperator_ = getDefaultInstance().getNetworkOperator();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>string network_operator = 2;</code>
+       */
+      public Builder setNetworkOperatorBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  checkByteStringIsUtf8(value);
+        
+        networkOperator_ = value;
         onChanged();
         return this;
       }
@@ -6042,14 +6308,19 @@ public final class MessageProto {
       com.google.protobuf.MessageOrBuilder {
 
     /**
-     * <code>bytes connection_type = 1;</code>
+     * <code>int64 connection_type = 1;</code>
      */
-    com.google.protobuf.ByteString getConnectionType();
+    long getConnectionType();
 
     /**
-     * <code>bytes network_operator = 2;</code>
+     * <code>string network_operator = 2;</code>
      */
-    com.google.protobuf.ByteString getNetworkOperator();
+    java.lang.String getNetworkOperator();
+    /**
+     * <code>string network_operator = 2;</code>
+     */
+    com.google.protobuf.ByteString
+        getNetworkOperatorBytes();
 
     /**
      * <code>bytes internal_source = 3;</code>
@@ -6057,14 +6328,41 @@ public final class MessageProto {
     com.google.protobuf.ByteString getInternalSource();
 
     /**
-     * <code>bytes invitee = 4;</code>
+     * <code>.message.Peer invitee = 4;</code>
      */
-    com.google.protobuf.ByteString getInvitee();
+    boolean hasInvitee();
+    /**
+     * <code>.message.Peer invitee = 4;</code>
+     */
+    nl.tudelft.cs4160.trustchain_android.message.MessageProto.Peer getInvitee();
+    /**
+     * <code>.message.Peer invitee = 4;</code>
+     */
+    nl.tudelft.cs4160.trustchain_android.message.MessageProto.PeerOrBuilder getInviteeOrBuilder();
 
     /**
-     * <code>bytes pex = 5;</code>
+     * <code>repeated .message.Peer pex = 5;</code>
      */
-    com.google.protobuf.ByteString getPex();
+    java.util.List<nl.tudelft.cs4160.trustchain_android.message.MessageProto.Peer> 
+        getPexList();
+    /**
+     * <code>repeated .message.Peer pex = 5;</code>
+     */
+    nl.tudelft.cs4160.trustchain_android.message.MessageProto.Peer getPex(int index);
+    /**
+     * <code>repeated .message.Peer pex = 5;</code>
+     */
+    int getPexCount();
+    /**
+     * <code>repeated .message.Peer pex = 5;</code>
+     */
+    java.util.List<? extends nl.tudelft.cs4160.trustchain_android.message.MessageProto.PeerOrBuilder> 
+        getPexOrBuilderList();
+    /**
+     * <code>repeated .message.Peer pex = 5;</code>
+     */
+    nl.tudelft.cs4160.trustchain_android.message.MessageProto.PeerOrBuilder getPexOrBuilder(
+        int index);
   }
   /**
    * Protobuf type {@code message.IntroductionResponse}
@@ -6079,11 +6377,10 @@ public final class MessageProto {
       super(builder);
     }
     private IntroductionResponse() {
-      connectionType_ = com.google.protobuf.ByteString.EMPTY;
-      networkOperator_ = com.google.protobuf.ByteString.EMPTY;
+      connectionType_ = 0L;
+      networkOperator_ = "";
       internalSource_ = com.google.protobuf.ByteString.EMPTY;
-      invitee_ = com.google.protobuf.ByteString.EMPTY;
-      pex_ = com.google.protobuf.ByteString.EMPTY;
+      pex_ = java.util.Collections.emptyList();
     }
 
     @java.lang.Override
@@ -6117,14 +6414,15 @@ public final class MessageProto {
               }
               break;
             }
-            case 10: {
+            case 8: {
 
-              connectionType_ = input.readBytes();
+              connectionType_ = input.readInt64();
               break;
             }
             case 18: {
+              java.lang.String s = input.readStringRequireUtf8();
 
-              networkOperator_ = input.readBytes();
+              networkOperator_ = s;
               break;
             }
             case 26: {
@@ -6133,13 +6431,25 @@ public final class MessageProto {
               break;
             }
             case 34: {
+              nl.tudelft.cs4160.trustchain_android.message.MessageProto.Peer.Builder subBuilder = null;
+              if (invitee_ != null) {
+                subBuilder = invitee_.toBuilder();
+              }
+              invitee_ = input.readMessage(nl.tudelft.cs4160.trustchain_android.message.MessageProto.Peer.parser(), extensionRegistry);
+              if (subBuilder != null) {
+                subBuilder.mergeFrom(invitee_);
+                invitee_ = subBuilder.buildPartial();
+              }
 
-              invitee_ = input.readBytes();
               break;
             }
             case 42: {
-
-              pex_ = input.readBytes();
+              if (!((mutable_bitField0_ & 0x00000010) == 0x00000010)) {
+                pex_ = new java.util.ArrayList<nl.tudelft.cs4160.trustchain_android.message.MessageProto.Peer>();
+                mutable_bitField0_ |= 0x00000010;
+              }
+              pex_.add(
+                  input.readMessage(nl.tudelft.cs4160.trustchain_android.message.MessageProto.Peer.parser(), extensionRegistry));
               break;
             }
           }
@@ -6150,6 +6460,9 @@ public final class MessageProto {
         throw new com.google.protobuf.InvalidProtocolBufferException(
             e).setUnfinishedMessage(this);
       } finally {
+        if (((mutable_bitField0_ & 0x00000010) == 0x00000010)) {
+          pex_ = java.util.Collections.unmodifiableList(pex_);
+        }
         this.unknownFields = unknownFields.build();
         makeExtensionsImmutable();
       }
@@ -6166,22 +6479,48 @@ public final class MessageProto {
               nl.tudelft.cs4160.trustchain_android.message.MessageProto.IntroductionResponse.class, nl.tudelft.cs4160.trustchain_android.message.MessageProto.IntroductionResponse.Builder.class);
     }
 
+    private int bitField0_;
     public static final int CONNECTION_TYPE_FIELD_NUMBER = 1;
-    private com.google.protobuf.ByteString connectionType_;
+    private long connectionType_;
     /**
-     * <code>bytes connection_type = 1;</code>
+     * <code>int64 connection_type = 1;</code>
      */
-    public com.google.protobuf.ByteString getConnectionType() {
+    public long getConnectionType() {
       return connectionType_;
     }
 
     public static final int NETWORK_OPERATOR_FIELD_NUMBER = 2;
-    private com.google.protobuf.ByteString networkOperator_;
+    private volatile java.lang.Object networkOperator_;
     /**
-     * <code>bytes network_operator = 2;</code>
+     * <code>string network_operator = 2;</code>
      */
-    public com.google.protobuf.ByteString getNetworkOperator() {
-      return networkOperator_;
+    public java.lang.String getNetworkOperator() {
+      java.lang.Object ref = networkOperator_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        networkOperator_ = s;
+        return s;
+      }
+    }
+    /**
+     * <code>string network_operator = 2;</code>
+     */
+    public com.google.protobuf.ByteString
+        getNetworkOperatorBytes() {
+      java.lang.Object ref = networkOperator_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        networkOperator_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
     }
 
     public static final int INTERNAL_SOURCE_FIELD_NUMBER = 3;
@@ -6194,21 +6533,59 @@ public final class MessageProto {
     }
 
     public static final int INVITEE_FIELD_NUMBER = 4;
-    private com.google.protobuf.ByteString invitee_;
+    private nl.tudelft.cs4160.trustchain_android.message.MessageProto.Peer invitee_;
     /**
-     * <code>bytes invitee = 4;</code>
+     * <code>.message.Peer invitee = 4;</code>
      */
-    public com.google.protobuf.ByteString getInvitee() {
-      return invitee_;
+    public boolean hasInvitee() {
+      return invitee_ != null;
+    }
+    /**
+     * <code>.message.Peer invitee = 4;</code>
+     */
+    public nl.tudelft.cs4160.trustchain_android.message.MessageProto.Peer getInvitee() {
+      return invitee_ == null ? nl.tudelft.cs4160.trustchain_android.message.MessageProto.Peer.getDefaultInstance() : invitee_;
+    }
+    /**
+     * <code>.message.Peer invitee = 4;</code>
+     */
+    public nl.tudelft.cs4160.trustchain_android.message.MessageProto.PeerOrBuilder getInviteeOrBuilder() {
+      return getInvitee();
     }
 
     public static final int PEX_FIELD_NUMBER = 5;
-    private com.google.protobuf.ByteString pex_;
+    private java.util.List<nl.tudelft.cs4160.trustchain_android.message.MessageProto.Peer> pex_;
     /**
-     * <code>bytes pex = 5;</code>
+     * <code>repeated .message.Peer pex = 5;</code>
      */
-    public com.google.protobuf.ByteString getPex() {
+    public java.util.List<nl.tudelft.cs4160.trustchain_android.message.MessageProto.Peer> getPexList() {
       return pex_;
+    }
+    /**
+     * <code>repeated .message.Peer pex = 5;</code>
+     */
+    public java.util.List<? extends nl.tudelft.cs4160.trustchain_android.message.MessageProto.PeerOrBuilder> 
+        getPexOrBuilderList() {
+      return pex_;
+    }
+    /**
+     * <code>repeated .message.Peer pex = 5;</code>
+     */
+    public int getPexCount() {
+      return pex_.size();
+    }
+    /**
+     * <code>repeated .message.Peer pex = 5;</code>
+     */
+    public nl.tudelft.cs4160.trustchain_android.message.MessageProto.Peer getPex(int index) {
+      return pex_.get(index);
+    }
+    /**
+     * <code>repeated .message.Peer pex = 5;</code>
+     */
+    public nl.tudelft.cs4160.trustchain_android.message.MessageProto.PeerOrBuilder getPexOrBuilder(
+        int index) {
+      return pex_.get(index);
     }
 
     private byte memoizedIsInitialized = -1;
@@ -6223,20 +6600,20 @@ public final class MessageProto {
 
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
-      if (!connectionType_.isEmpty()) {
-        output.writeBytes(1, connectionType_);
+      if (connectionType_ != 0L) {
+        output.writeInt64(1, connectionType_);
       }
-      if (!networkOperator_.isEmpty()) {
-        output.writeBytes(2, networkOperator_);
+      if (!getNetworkOperatorBytes().isEmpty()) {
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 2, networkOperator_);
       }
       if (!internalSource_.isEmpty()) {
         output.writeBytes(3, internalSource_);
       }
-      if (!invitee_.isEmpty()) {
-        output.writeBytes(4, invitee_);
+      if (invitee_ != null) {
+        output.writeMessage(4, getInvitee());
       }
-      if (!pex_.isEmpty()) {
-        output.writeBytes(5, pex_);
+      for (int i = 0; i < pex_.size(); i++) {
+        output.writeMessage(5, pex_.get(i));
       }
       unknownFields.writeTo(output);
     }
@@ -6246,25 +6623,24 @@ public final class MessageProto {
       if (size != -1) return size;
 
       size = 0;
-      if (!connectionType_.isEmpty()) {
+      if (connectionType_ != 0L) {
         size += com.google.protobuf.CodedOutputStream
-          .computeBytesSize(1, connectionType_);
+          .computeInt64Size(1, connectionType_);
       }
-      if (!networkOperator_.isEmpty()) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeBytesSize(2, networkOperator_);
+      if (!getNetworkOperatorBytes().isEmpty()) {
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(2, networkOperator_);
       }
       if (!internalSource_.isEmpty()) {
         size += com.google.protobuf.CodedOutputStream
           .computeBytesSize(3, internalSource_);
       }
-      if (!invitee_.isEmpty()) {
+      if (invitee_ != null) {
         size += com.google.protobuf.CodedOutputStream
-          .computeBytesSize(4, invitee_);
+          .computeMessageSize(4, getInvitee());
       }
-      if (!pex_.isEmpty()) {
+      for (int i = 0; i < pex_.size(); i++) {
         size += com.google.protobuf.CodedOutputStream
-          .computeBytesSize(5, pex_);
+          .computeMessageSize(5, pex_.get(i));
       }
       size += unknownFields.getSerializedSize();
       memoizedSize = size;
@@ -6282,16 +6658,19 @@ public final class MessageProto {
       nl.tudelft.cs4160.trustchain_android.message.MessageProto.IntroductionResponse other = (nl.tudelft.cs4160.trustchain_android.message.MessageProto.IntroductionResponse) obj;
 
       boolean result = true;
-      result = result && getConnectionType()
-          .equals(other.getConnectionType());
+      result = result && (getConnectionType()
+          == other.getConnectionType());
       result = result && getNetworkOperator()
           .equals(other.getNetworkOperator());
       result = result && getInternalSource()
           .equals(other.getInternalSource());
-      result = result && getInvitee()
-          .equals(other.getInvitee());
-      result = result && getPex()
-          .equals(other.getPex());
+      result = result && (hasInvitee() == other.hasInvitee());
+      if (hasInvitee()) {
+        result = result && getInvitee()
+            .equals(other.getInvitee());
+      }
+      result = result && getPexList()
+          .equals(other.getPexList());
       result = result && unknownFields.equals(other.unknownFields);
       return result;
     }
@@ -6304,15 +6683,20 @@ public final class MessageProto {
       int hash = 41;
       hash = (19 * hash) + getDescriptor().hashCode();
       hash = (37 * hash) + CONNECTION_TYPE_FIELD_NUMBER;
-      hash = (53 * hash) + getConnectionType().hashCode();
+      hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
+          getConnectionType());
       hash = (37 * hash) + NETWORK_OPERATOR_FIELD_NUMBER;
       hash = (53 * hash) + getNetworkOperator().hashCode();
       hash = (37 * hash) + INTERNAL_SOURCE_FIELD_NUMBER;
       hash = (53 * hash) + getInternalSource().hashCode();
-      hash = (37 * hash) + INVITEE_FIELD_NUMBER;
-      hash = (53 * hash) + getInvitee().hashCode();
-      hash = (37 * hash) + PEX_FIELD_NUMBER;
-      hash = (53 * hash) + getPex().hashCode();
+      if (hasInvitee()) {
+        hash = (37 * hash) + INVITEE_FIELD_NUMBER;
+        hash = (53 * hash) + getInvitee().hashCode();
+      }
+      if (getPexCount() > 0) {
+        hash = (37 * hash) + PEX_FIELD_NUMBER;
+        hash = (53 * hash) + getPexList().hashCode();
+      }
       hash = (29 * hash) + unknownFields.hashCode();
       memoizedHashCode = hash;
       return hash;
@@ -6438,20 +6822,29 @@ public final class MessageProto {
       private void maybeForceBuilderInitialization() {
         if (com.google.protobuf.GeneratedMessageV3
                 .alwaysUseFieldBuilders) {
+          getPexFieldBuilder();
         }
       }
       public Builder clear() {
         super.clear();
-        connectionType_ = com.google.protobuf.ByteString.EMPTY;
+        connectionType_ = 0L;
 
-        networkOperator_ = com.google.protobuf.ByteString.EMPTY;
+        networkOperator_ = "";
 
         internalSource_ = com.google.protobuf.ByteString.EMPTY;
 
-        invitee_ = com.google.protobuf.ByteString.EMPTY;
-
-        pex_ = com.google.protobuf.ByteString.EMPTY;
-
+        if (inviteeBuilder_ == null) {
+          invitee_ = null;
+        } else {
+          invitee_ = null;
+          inviteeBuilder_ = null;
+        }
+        if (pexBuilder_ == null) {
+          pex_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00000010);
+        } else {
+          pexBuilder_.clear();
+        }
         return this;
       }
 
@@ -6474,11 +6867,26 @@ public final class MessageProto {
 
       public nl.tudelft.cs4160.trustchain_android.message.MessageProto.IntroductionResponse buildPartial() {
         nl.tudelft.cs4160.trustchain_android.message.MessageProto.IntroductionResponse result = new nl.tudelft.cs4160.trustchain_android.message.MessageProto.IntroductionResponse(this);
+        int from_bitField0_ = bitField0_;
+        int to_bitField0_ = 0;
         result.connectionType_ = connectionType_;
         result.networkOperator_ = networkOperator_;
         result.internalSource_ = internalSource_;
-        result.invitee_ = invitee_;
-        result.pex_ = pex_;
+        if (inviteeBuilder_ == null) {
+          result.invitee_ = invitee_;
+        } else {
+          result.invitee_ = inviteeBuilder_.build();
+        }
+        if (pexBuilder_ == null) {
+          if (((bitField0_ & 0x00000010) == 0x00000010)) {
+            pex_ = java.util.Collections.unmodifiableList(pex_);
+            bitField0_ = (bitField0_ & ~0x00000010);
+          }
+          result.pex_ = pex_;
+        } else {
+          result.pex_ = pexBuilder_.build();
+        }
+        result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
       }
@@ -6520,20 +6928,44 @@ public final class MessageProto {
 
       public Builder mergeFrom(nl.tudelft.cs4160.trustchain_android.message.MessageProto.IntroductionResponse other) {
         if (other == nl.tudelft.cs4160.trustchain_android.message.MessageProto.IntroductionResponse.getDefaultInstance()) return this;
-        if (other.getConnectionType() != com.google.protobuf.ByteString.EMPTY) {
+        if (other.getConnectionType() != 0L) {
           setConnectionType(other.getConnectionType());
         }
-        if (other.getNetworkOperator() != com.google.protobuf.ByteString.EMPTY) {
-          setNetworkOperator(other.getNetworkOperator());
+        if (!other.getNetworkOperator().isEmpty()) {
+          networkOperator_ = other.networkOperator_;
+          onChanged();
         }
         if (other.getInternalSource() != com.google.protobuf.ByteString.EMPTY) {
           setInternalSource(other.getInternalSource());
         }
-        if (other.getInvitee() != com.google.protobuf.ByteString.EMPTY) {
-          setInvitee(other.getInvitee());
+        if (other.hasInvitee()) {
+          mergeInvitee(other.getInvitee());
         }
-        if (other.getPex() != com.google.protobuf.ByteString.EMPTY) {
-          setPex(other.getPex());
+        if (pexBuilder_ == null) {
+          if (!other.pex_.isEmpty()) {
+            if (pex_.isEmpty()) {
+              pex_ = other.pex_;
+              bitField0_ = (bitField0_ & ~0x00000010);
+            } else {
+              ensurePexIsMutable();
+              pex_.addAll(other.pex_);
+            }
+            onChanged();
+          }
+        } else {
+          if (!other.pex_.isEmpty()) {
+            if (pexBuilder_.isEmpty()) {
+              pexBuilder_.dispose();
+              pexBuilder_ = null;
+              pex_ = other.pex_;
+              bitField0_ = (bitField0_ & ~0x00000010);
+              pexBuilder_ = 
+                com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
+                   getPexFieldBuilder() : null;
+            } else {
+              pexBuilder_.addAllMessages(other.pex_);
+            }
+          }
         }
         this.mergeUnknownFields(other.unknownFields);
         onChanged();
@@ -6561,47 +6993,71 @@ public final class MessageProto {
         }
         return this;
       }
+      private int bitField0_;
 
-      private com.google.protobuf.ByteString connectionType_ = com.google.protobuf.ByteString.EMPTY;
+      private long connectionType_ ;
       /**
-       * <code>bytes connection_type = 1;</code>
+       * <code>int64 connection_type = 1;</code>
        */
-      public com.google.protobuf.ByteString getConnectionType() {
+      public long getConnectionType() {
         return connectionType_;
       }
       /**
-       * <code>bytes connection_type = 1;</code>
+       * <code>int64 connection_type = 1;</code>
        */
-      public Builder setConnectionType(com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  
+      public Builder setConnectionType(long value) {
+        
         connectionType_ = value;
         onChanged();
         return this;
       }
       /**
-       * <code>bytes connection_type = 1;</code>
+       * <code>int64 connection_type = 1;</code>
        */
       public Builder clearConnectionType() {
         
-        connectionType_ = getDefaultInstance().getConnectionType();
+        connectionType_ = 0L;
         onChanged();
         return this;
       }
 
-      private com.google.protobuf.ByteString networkOperator_ = com.google.protobuf.ByteString.EMPTY;
+      private java.lang.Object networkOperator_ = "";
       /**
-       * <code>bytes network_operator = 2;</code>
+       * <code>string network_operator = 2;</code>
        */
-      public com.google.protobuf.ByteString getNetworkOperator() {
-        return networkOperator_;
+      public java.lang.String getNetworkOperator() {
+        java.lang.Object ref = networkOperator_;
+        if (!(ref instanceof java.lang.String)) {
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          networkOperator_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
       }
       /**
-       * <code>bytes network_operator = 2;</code>
+       * <code>string network_operator = 2;</code>
        */
-      public Builder setNetworkOperator(com.google.protobuf.ByteString value) {
+      public com.google.protobuf.ByteString
+          getNetworkOperatorBytes() {
+        java.lang.Object ref = networkOperator_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          networkOperator_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>string network_operator = 2;</code>
+       */
+      public Builder setNetworkOperator(
+          java.lang.String value) {
         if (value == null) {
     throw new NullPointerException();
   }
@@ -6611,11 +7067,25 @@ public final class MessageProto {
         return this;
       }
       /**
-       * <code>bytes network_operator = 2;</code>
+       * <code>string network_operator = 2;</code>
        */
       public Builder clearNetworkOperator() {
         
         networkOperator_ = getDefaultInstance().getNetworkOperator();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>string network_operator = 2;</code>
+       */
+      public Builder setNetworkOperatorBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  checkByteStringIsUtf8(value);
+        
+        networkOperator_ = value;
         onChanged();
         return this;
       }
@@ -6649,62 +7119,361 @@ public final class MessageProto {
         return this;
       }
 
-      private com.google.protobuf.ByteString invitee_ = com.google.protobuf.ByteString.EMPTY;
+      private nl.tudelft.cs4160.trustchain_android.message.MessageProto.Peer invitee_ = null;
+      private com.google.protobuf.SingleFieldBuilderV3<
+          nl.tudelft.cs4160.trustchain_android.message.MessageProto.Peer, nl.tudelft.cs4160.trustchain_android.message.MessageProto.Peer.Builder, nl.tudelft.cs4160.trustchain_android.message.MessageProto.PeerOrBuilder> inviteeBuilder_;
       /**
-       * <code>bytes invitee = 4;</code>
+       * <code>.message.Peer invitee = 4;</code>
        */
-      public com.google.protobuf.ByteString getInvitee() {
-        return invitee_;
+      public boolean hasInvitee() {
+        return inviteeBuilder_ != null || invitee_ != null;
       }
       /**
-       * <code>bytes invitee = 4;</code>
+       * <code>.message.Peer invitee = 4;</code>
        */
-      public Builder setInvitee(com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  
-        invitee_ = value;
-        onChanged();
+      public nl.tudelft.cs4160.trustchain_android.message.MessageProto.Peer getInvitee() {
+        if (inviteeBuilder_ == null) {
+          return invitee_ == null ? nl.tudelft.cs4160.trustchain_android.message.MessageProto.Peer.getDefaultInstance() : invitee_;
+        } else {
+          return inviteeBuilder_.getMessage();
+        }
+      }
+      /**
+       * <code>.message.Peer invitee = 4;</code>
+       */
+      public Builder setInvitee(nl.tudelft.cs4160.trustchain_android.message.MessageProto.Peer value) {
+        if (inviteeBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          invitee_ = value;
+          onChanged();
+        } else {
+          inviteeBuilder_.setMessage(value);
+        }
+
         return this;
       }
       /**
-       * <code>bytes invitee = 4;</code>
+       * <code>.message.Peer invitee = 4;</code>
+       */
+      public Builder setInvitee(
+          nl.tudelft.cs4160.trustchain_android.message.MessageProto.Peer.Builder builderForValue) {
+        if (inviteeBuilder_ == null) {
+          invitee_ = builderForValue.build();
+          onChanged();
+        } else {
+          inviteeBuilder_.setMessage(builderForValue.build());
+        }
+
+        return this;
+      }
+      /**
+       * <code>.message.Peer invitee = 4;</code>
+       */
+      public Builder mergeInvitee(nl.tudelft.cs4160.trustchain_android.message.MessageProto.Peer value) {
+        if (inviteeBuilder_ == null) {
+          if (invitee_ != null) {
+            invitee_ =
+              nl.tudelft.cs4160.trustchain_android.message.MessageProto.Peer.newBuilder(invitee_).mergeFrom(value).buildPartial();
+          } else {
+            invitee_ = value;
+          }
+          onChanged();
+        } else {
+          inviteeBuilder_.mergeFrom(value);
+        }
+
+        return this;
+      }
+      /**
+       * <code>.message.Peer invitee = 4;</code>
        */
       public Builder clearInvitee() {
-        
-        invitee_ = getDefaultInstance().getInvitee();
-        onChanged();
+        if (inviteeBuilder_ == null) {
+          invitee_ = null;
+          onChanged();
+        } else {
+          invitee_ = null;
+          inviteeBuilder_ = null;
+        }
+
         return this;
+      }
+      /**
+       * <code>.message.Peer invitee = 4;</code>
+       */
+      public nl.tudelft.cs4160.trustchain_android.message.MessageProto.Peer.Builder getInviteeBuilder() {
+        
+        onChanged();
+        return getInviteeFieldBuilder().getBuilder();
+      }
+      /**
+       * <code>.message.Peer invitee = 4;</code>
+       */
+      public nl.tudelft.cs4160.trustchain_android.message.MessageProto.PeerOrBuilder getInviteeOrBuilder() {
+        if (inviteeBuilder_ != null) {
+          return inviteeBuilder_.getMessageOrBuilder();
+        } else {
+          return invitee_ == null ?
+              nl.tudelft.cs4160.trustchain_android.message.MessageProto.Peer.getDefaultInstance() : invitee_;
+        }
+      }
+      /**
+       * <code>.message.Peer invitee = 4;</code>
+       */
+      private com.google.protobuf.SingleFieldBuilderV3<
+          nl.tudelft.cs4160.trustchain_android.message.MessageProto.Peer, nl.tudelft.cs4160.trustchain_android.message.MessageProto.Peer.Builder, nl.tudelft.cs4160.trustchain_android.message.MessageProto.PeerOrBuilder> 
+          getInviteeFieldBuilder() {
+        if (inviteeBuilder_ == null) {
+          inviteeBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
+              nl.tudelft.cs4160.trustchain_android.message.MessageProto.Peer, nl.tudelft.cs4160.trustchain_android.message.MessageProto.Peer.Builder, nl.tudelft.cs4160.trustchain_android.message.MessageProto.PeerOrBuilder>(
+                  getInvitee(),
+                  getParentForChildren(),
+                  isClean());
+          invitee_ = null;
+        }
+        return inviteeBuilder_;
       }
 
-      private com.google.protobuf.ByteString pex_ = com.google.protobuf.ByteString.EMPTY;
+      private java.util.List<nl.tudelft.cs4160.trustchain_android.message.MessageProto.Peer> pex_ =
+        java.util.Collections.emptyList();
+      private void ensurePexIsMutable() {
+        if (!((bitField0_ & 0x00000010) == 0x00000010)) {
+          pex_ = new java.util.ArrayList<nl.tudelft.cs4160.trustchain_android.message.MessageProto.Peer>(pex_);
+          bitField0_ |= 0x00000010;
+         }
+      }
+
+      private com.google.protobuf.RepeatedFieldBuilderV3<
+          nl.tudelft.cs4160.trustchain_android.message.MessageProto.Peer, nl.tudelft.cs4160.trustchain_android.message.MessageProto.Peer.Builder, nl.tudelft.cs4160.trustchain_android.message.MessageProto.PeerOrBuilder> pexBuilder_;
+
       /**
-       * <code>bytes pex = 5;</code>
+       * <code>repeated .message.Peer pex = 5;</code>
        */
-      public com.google.protobuf.ByteString getPex() {
-        return pex_;
+      public java.util.List<nl.tudelft.cs4160.trustchain_android.message.MessageProto.Peer> getPexList() {
+        if (pexBuilder_ == null) {
+          return java.util.Collections.unmodifiableList(pex_);
+        } else {
+          return pexBuilder_.getMessageList();
+        }
       }
       /**
-       * <code>bytes pex = 5;</code>
+       * <code>repeated .message.Peer pex = 5;</code>
        */
-      public Builder setPex(com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  
-        pex_ = value;
-        onChanged();
+      public int getPexCount() {
+        if (pexBuilder_ == null) {
+          return pex_.size();
+        } else {
+          return pexBuilder_.getCount();
+        }
+      }
+      /**
+       * <code>repeated .message.Peer pex = 5;</code>
+       */
+      public nl.tudelft.cs4160.trustchain_android.message.MessageProto.Peer getPex(int index) {
+        if (pexBuilder_ == null) {
+          return pex_.get(index);
+        } else {
+          return pexBuilder_.getMessage(index);
+        }
+      }
+      /**
+       * <code>repeated .message.Peer pex = 5;</code>
+       */
+      public Builder setPex(
+          int index, nl.tudelft.cs4160.trustchain_android.message.MessageProto.Peer value) {
+        if (pexBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensurePexIsMutable();
+          pex_.set(index, value);
+          onChanged();
+        } else {
+          pexBuilder_.setMessage(index, value);
+        }
         return this;
       }
       /**
-       * <code>bytes pex = 5;</code>
+       * <code>repeated .message.Peer pex = 5;</code>
+       */
+      public Builder setPex(
+          int index, nl.tudelft.cs4160.trustchain_android.message.MessageProto.Peer.Builder builderForValue) {
+        if (pexBuilder_ == null) {
+          ensurePexIsMutable();
+          pex_.set(index, builderForValue.build());
+          onChanged();
+        } else {
+          pexBuilder_.setMessage(index, builderForValue.build());
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .message.Peer pex = 5;</code>
+       */
+      public Builder addPex(nl.tudelft.cs4160.trustchain_android.message.MessageProto.Peer value) {
+        if (pexBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensurePexIsMutable();
+          pex_.add(value);
+          onChanged();
+        } else {
+          pexBuilder_.addMessage(value);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .message.Peer pex = 5;</code>
+       */
+      public Builder addPex(
+          int index, nl.tudelft.cs4160.trustchain_android.message.MessageProto.Peer value) {
+        if (pexBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensurePexIsMutable();
+          pex_.add(index, value);
+          onChanged();
+        } else {
+          pexBuilder_.addMessage(index, value);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .message.Peer pex = 5;</code>
+       */
+      public Builder addPex(
+          nl.tudelft.cs4160.trustchain_android.message.MessageProto.Peer.Builder builderForValue) {
+        if (pexBuilder_ == null) {
+          ensurePexIsMutable();
+          pex_.add(builderForValue.build());
+          onChanged();
+        } else {
+          pexBuilder_.addMessage(builderForValue.build());
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .message.Peer pex = 5;</code>
+       */
+      public Builder addPex(
+          int index, nl.tudelft.cs4160.trustchain_android.message.MessageProto.Peer.Builder builderForValue) {
+        if (pexBuilder_ == null) {
+          ensurePexIsMutable();
+          pex_.add(index, builderForValue.build());
+          onChanged();
+        } else {
+          pexBuilder_.addMessage(index, builderForValue.build());
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .message.Peer pex = 5;</code>
+       */
+      public Builder addAllPex(
+          java.lang.Iterable<? extends nl.tudelft.cs4160.trustchain_android.message.MessageProto.Peer> values) {
+        if (pexBuilder_ == null) {
+          ensurePexIsMutable();
+          com.google.protobuf.AbstractMessageLite.Builder.addAll(
+              values, pex_);
+          onChanged();
+        } else {
+          pexBuilder_.addAllMessages(values);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .message.Peer pex = 5;</code>
        */
       public Builder clearPex() {
-        
-        pex_ = getDefaultInstance().getPex();
-        onChanged();
+        if (pexBuilder_ == null) {
+          pex_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00000010);
+          onChanged();
+        } else {
+          pexBuilder_.clear();
+        }
         return this;
+      }
+      /**
+       * <code>repeated .message.Peer pex = 5;</code>
+       */
+      public Builder removePex(int index) {
+        if (pexBuilder_ == null) {
+          ensurePexIsMutable();
+          pex_.remove(index);
+          onChanged();
+        } else {
+          pexBuilder_.remove(index);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .message.Peer pex = 5;</code>
+       */
+      public nl.tudelft.cs4160.trustchain_android.message.MessageProto.Peer.Builder getPexBuilder(
+          int index) {
+        return getPexFieldBuilder().getBuilder(index);
+      }
+      /**
+       * <code>repeated .message.Peer pex = 5;</code>
+       */
+      public nl.tudelft.cs4160.trustchain_android.message.MessageProto.PeerOrBuilder getPexOrBuilder(
+          int index) {
+        if (pexBuilder_ == null) {
+          return pex_.get(index);  } else {
+          return pexBuilder_.getMessageOrBuilder(index);
+        }
+      }
+      /**
+       * <code>repeated .message.Peer pex = 5;</code>
+       */
+      public java.util.List<? extends nl.tudelft.cs4160.trustchain_android.message.MessageProto.PeerOrBuilder> 
+           getPexOrBuilderList() {
+        if (pexBuilder_ != null) {
+          return pexBuilder_.getMessageOrBuilderList();
+        } else {
+          return java.util.Collections.unmodifiableList(pex_);
+        }
+      }
+      /**
+       * <code>repeated .message.Peer pex = 5;</code>
+       */
+      public nl.tudelft.cs4160.trustchain_android.message.MessageProto.Peer.Builder addPexBuilder() {
+        return getPexFieldBuilder().addBuilder(
+            nl.tudelft.cs4160.trustchain_android.message.MessageProto.Peer.getDefaultInstance());
+      }
+      /**
+       * <code>repeated .message.Peer pex = 5;</code>
+       */
+      public nl.tudelft.cs4160.trustchain_android.message.MessageProto.Peer.Builder addPexBuilder(
+          int index) {
+        return getPexFieldBuilder().addBuilder(
+            index, nl.tudelft.cs4160.trustchain_android.message.MessageProto.Peer.getDefaultInstance());
+      }
+      /**
+       * <code>repeated .message.Peer pex = 5;</code>
+       */
+      public java.util.List<nl.tudelft.cs4160.trustchain_android.message.MessageProto.Peer.Builder> 
+           getPexBuilderList() {
+        return getPexFieldBuilder().getBuilderList();
+      }
+      private com.google.protobuf.RepeatedFieldBuilderV3<
+          nl.tudelft.cs4160.trustchain_android.message.MessageProto.Peer, nl.tudelft.cs4160.trustchain_android.message.MessageProto.Peer.Builder, nl.tudelft.cs4160.trustchain_android.message.MessageProto.PeerOrBuilder> 
+          getPexFieldBuilder() {
+        if (pexBuilder_ == null) {
+          pexBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
+              nl.tudelft.cs4160.trustchain_android.message.MessageProto.Peer, nl.tudelft.cs4160.trustchain_android.message.MessageProto.Peer.Builder, nl.tudelft.cs4160.trustchain_android.message.MessageProto.PeerOrBuilder>(
+                  pex_,
+                  ((bitField0_ & 0x00000010) == 0x00000010),
+                  getParentForChildren(),
+                  isClean());
+          pex_ = null;
+        }
+        return pexBuilder_;
       }
       public final Builder setUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
@@ -7219,9 +7988,17 @@ public final class MessageProto {
     com.google.protobuf.ByteString getSource();
 
     /**
-     * <code>bytes puncture_peer = 2;</code>
+     * <code>.message.Peer puncture_peer = 2;</code>
      */
-    com.google.protobuf.ByteString getPuncturePeer();
+    boolean hasPuncturePeer();
+    /**
+     * <code>.message.Peer puncture_peer = 2;</code>
+     */
+    nl.tudelft.cs4160.trustchain_android.message.MessageProto.Peer getPuncturePeer();
+    /**
+     * <code>.message.Peer puncture_peer = 2;</code>
+     */
+    nl.tudelft.cs4160.trustchain_android.message.MessageProto.PeerOrBuilder getPuncturePeerOrBuilder();
   }
   /**
    * Protobuf type {@code message.PunctureRequest}
@@ -7237,7 +8014,6 @@ public final class MessageProto {
     }
     private PunctureRequest() {
       source_ = com.google.protobuf.ByteString.EMPTY;
-      puncturePeer_ = com.google.protobuf.ByteString.EMPTY;
     }
 
     @java.lang.Override
@@ -7277,8 +8053,16 @@ public final class MessageProto {
               break;
             }
             case 18: {
+              nl.tudelft.cs4160.trustchain_android.message.MessageProto.Peer.Builder subBuilder = null;
+              if (puncturePeer_ != null) {
+                subBuilder = puncturePeer_.toBuilder();
+              }
+              puncturePeer_ = input.readMessage(nl.tudelft.cs4160.trustchain_android.message.MessageProto.Peer.parser(), extensionRegistry);
+              if (subBuilder != null) {
+                subBuilder.mergeFrom(puncturePeer_);
+                puncturePeer_ = subBuilder.buildPartial();
+              }
 
-              puncturePeer_ = input.readBytes();
               break;
             }
           }
@@ -7315,12 +8099,24 @@ public final class MessageProto {
     }
 
     public static final int PUNCTURE_PEER_FIELD_NUMBER = 2;
-    private com.google.protobuf.ByteString puncturePeer_;
+    private nl.tudelft.cs4160.trustchain_android.message.MessageProto.Peer puncturePeer_;
     /**
-     * <code>bytes puncture_peer = 2;</code>
+     * <code>.message.Peer puncture_peer = 2;</code>
      */
-    public com.google.protobuf.ByteString getPuncturePeer() {
-      return puncturePeer_;
+    public boolean hasPuncturePeer() {
+      return puncturePeer_ != null;
+    }
+    /**
+     * <code>.message.Peer puncture_peer = 2;</code>
+     */
+    public nl.tudelft.cs4160.trustchain_android.message.MessageProto.Peer getPuncturePeer() {
+      return puncturePeer_ == null ? nl.tudelft.cs4160.trustchain_android.message.MessageProto.Peer.getDefaultInstance() : puncturePeer_;
+    }
+    /**
+     * <code>.message.Peer puncture_peer = 2;</code>
+     */
+    public nl.tudelft.cs4160.trustchain_android.message.MessageProto.PeerOrBuilder getPuncturePeerOrBuilder() {
+      return getPuncturePeer();
     }
 
     private byte memoizedIsInitialized = -1;
@@ -7338,8 +8134,8 @@ public final class MessageProto {
       if (!source_.isEmpty()) {
         output.writeBytes(1, source_);
       }
-      if (!puncturePeer_.isEmpty()) {
-        output.writeBytes(2, puncturePeer_);
+      if (puncturePeer_ != null) {
+        output.writeMessage(2, getPuncturePeer());
       }
       unknownFields.writeTo(output);
     }
@@ -7353,9 +8149,9 @@ public final class MessageProto {
         size += com.google.protobuf.CodedOutputStream
           .computeBytesSize(1, source_);
       }
-      if (!puncturePeer_.isEmpty()) {
+      if (puncturePeer_ != null) {
         size += com.google.protobuf.CodedOutputStream
-          .computeBytesSize(2, puncturePeer_);
+          .computeMessageSize(2, getPuncturePeer());
       }
       size += unknownFields.getSerializedSize();
       memoizedSize = size;
@@ -7375,8 +8171,11 @@ public final class MessageProto {
       boolean result = true;
       result = result && getSource()
           .equals(other.getSource());
-      result = result && getPuncturePeer()
-          .equals(other.getPuncturePeer());
+      result = result && (hasPuncturePeer() == other.hasPuncturePeer());
+      if (hasPuncturePeer()) {
+        result = result && getPuncturePeer()
+            .equals(other.getPuncturePeer());
+      }
       result = result && unknownFields.equals(other.unknownFields);
       return result;
     }
@@ -7390,8 +8189,10 @@ public final class MessageProto {
       hash = (19 * hash) + getDescriptor().hashCode();
       hash = (37 * hash) + SOURCE_FIELD_NUMBER;
       hash = (53 * hash) + getSource().hashCode();
-      hash = (37 * hash) + PUNCTURE_PEER_FIELD_NUMBER;
-      hash = (53 * hash) + getPuncturePeer().hashCode();
+      if (hasPuncturePeer()) {
+        hash = (37 * hash) + PUNCTURE_PEER_FIELD_NUMBER;
+        hash = (53 * hash) + getPuncturePeer().hashCode();
+      }
       hash = (29 * hash) + unknownFields.hashCode();
       memoizedHashCode = hash;
       return hash;
@@ -7523,8 +8324,12 @@ public final class MessageProto {
         super.clear();
         source_ = com.google.protobuf.ByteString.EMPTY;
 
-        puncturePeer_ = com.google.protobuf.ByteString.EMPTY;
-
+        if (puncturePeerBuilder_ == null) {
+          puncturePeer_ = null;
+        } else {
+          puncturePeer_ = null;
+          puncturePeerBuilder_ = null;
+        }
         return this;
       }
 
@@ -7548,7 +8353,11 @@ public final class MessageProto {
       public nl.tudelft.cs4160.trustchain_android.message.MessageProto.PunctureRequest buildPartial() {
         nl.tudelft.cs4160.trustchain_android.message.MessageProto.PunctureRequest result = new nl.tudelft.cs4160.trustchain_android.message.MessageProto.PunctureRequest(this);
         result.source_ = source_;
-        result.puncturePeer_ = puncturePeer_;
+        if (puncturePeerBuilder_ == null) {
+          result.puncturePeer_ = puncturePeer_;
+        } else {
+          result.puncturePeer_ = puncturePeerBuilder_.build();
+        }
         onBuilt();
         return result;
       }
@@ -7593,8 +8402,8 @@ public final class MessageProto {
         if (other.getSource() != com.google.protobuf.ByteString.EMPTY) {
           setSource(other.getSource());
         }
-        if (other.getPuncturePeer() != com.google.protobuf.ByteString.EMPTY) {
-          setPuncturePeer(other.getPuncturePeer());
+        if (other.hasPuncturePeer()) {
+          mergePuncturePeer(other.getPuncturePeer());
         }
         this.mergeUnknownFields(other.unknownFields);
         onChanged();
@@ -7652,33 +8461,121 @@ public final class MessageProto {
         return this;
       }
 
-      private com.google.protobuf.ByteString puncturePeer_ = com.google.protobuf.ByteString.EMPTY;
+      private nl.tudelft.cs4160.trustchain_android.message.MessageProto.Peer puncturePeer_ = null;
+      private com.google.protobuf.SingleFieldBuilderV3<
+          nl.tudelft.cs4160.trustchain_android.message.MessageProto.Peer, nl.tudelft.cs4160.trustchain_android.message.MessageProto.Peer.Builder, nl.tudelft.cs4160.trustchain_android.message.MessageProto.PeerOrBuilder> puncturePeerBuilder_;
       /**
-       * <code>bytes puncture_peer = 2;</code>
+       * <code>.message.Peer puncture_peer = 2;</code>
        */
-      public com.google.protobuf.ByteString getPuncturePeer() {
-        return puncturePeer_;
+      public boolean hasPuncturePeer() {
+        return puncturePeerBuilder_ != null || puncturePeer_ != null;
       }
       /**
-       * <code>bytes puncture_peer = 2;</code>
+       * <code>.message.Peer puncture_peer = 2;</code>
        */
-      public Builder setPuncturePeer(com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  
-        puncturePeer_ = value;
-        onChanged();
+      public nl.tudelft.cs4160.trustchain_android.message.MessageProto.Peer getPuncturePeer() {
+        if (puncturePeerBuilder_ == null) {
+          return puncturePeer_ == null ? nl.tudelft.cs4160.trustchain_android.message.MessageProto.Peer.getDefaultInstance() : puncturePeer_;
+        } else {
+          return puncturePeerBuilder_.getMessage();
+        }
+      }
+      /**
+       * <code>.message.Peer puncture_peer = 2;</code>
+       */
+      public Builder setPuncturePeer(nl.tudelft.cs4160.trustchain_android.message.MessageProto.Peer value) {
+        if (puncturePeerBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          puncturePeer_ = value;
+          onChanged();
+        } else {
+          puncturePeerBuilder_.setMessage(value);
+        }
+
         return this;
       }
       /**
-       * <code>bytes puncture_peer = 2;</code>
+       * <code>.message.Peer puncture_peer = 2;</code>
+       */
+      public Builder setPuncturePeer(
+          nl.tudelft.cs4160.trustchain_android.message.MessageProto.Peer.Builder builderForValue) {
+        if (puncturePeerBuilder_ == null) {
+          puncturePeer_ = builderForValue.build();
+          onChanged();
+        } else {
+          puncturePeerBuilder_.setMessage(builderForValue.build());
+        }
+
+        return this;
+      }
+      /**
+       * <code>.message.Peer puncture_peer = 2;</code>
+       */
+      public Builder mergePuncturePeer(nl.tudelft.cs4160.trustchain_android.message.MessageProto.Peer value) {
+        if (puncturePeerBuilder_ == null) {
+          if (puncturePeer_ != null) {
+            puncturePeer_ =
+              nl.tudelft.cs4160.trustchain_android.message.MessageProto.Peer.newBuilder(puncturePeer_).mergeFrom(value).buildPartial();
+          } else {
+            puncturePeer_ = value;
+          }
+          onChanged();
+        } else {
+          puncturePeerBuilder_.mergeFrom(value);
+        }
+
+        return this;
+      }
+      /**
+       * <code>.message.Peer puncture_peer = 2;</code>
        */
       public Builder clearPuncturePeer() {
-        
-        puncturePeer_ = getDefaultInstance().getPuncturePeer();
-        onChanged();
+        if (puncturePeerBuilder_ == null) {
+          puncturePeer_ = null;
+          onChanged();
+        } else {
+          puncturePeer_ = null;
+          puncturePeerBuilder_ = null;
+        }
+
         return this;
+      }
+      /**
+       * <code>.message.Peer puncture_peer = 2;</code>
+       */
+      public nl.tudelft.cs4160.trustchain_android.message.MessageProto.Peer.Builder getPuncturePeerBuilder() {
+        
+        onChanged();
+        return getPuncturePeerFieldBuilder().getBuilder();
+      }
+      /**
+       * <code>.message.Peer puncture_peer = 2;</code>
+       */
+      public nl.tudelft.cs4160.trustchain_android.message.MessageProto.PeerOrBuilder getPuncturePeerOrBuilder() {
+        if (puncturePeerBuilder_ != null) {
+          return puncturePeerBuilder_.getMessageOrBuilder();
+        } else {
+          return puncturePeer_ == null ?
+              nl.tudelft.cs4160.trustchain_android.message.MessageProto.Peer.getDefaultInstance() : puncturePeer_;
+        }
+      }
+      /**
+       * <code>.message.Peer puncture_peer = 2;</code>
+       */
+      private com.google.protobuf.SingleFieldBuilderV3<
+          nl.tudelft.cs4160.trustchain_android.message.MessageProto.Peer, nl.tudelft.cs4160.trustchain_android.message.MessageProto.Peer.Builder, nl.tudelft.cs4160.trustchain_android.message.MessageProto.PeerOrBuilder> 
+          getPuncturePeerFieldBuilder() {
+        if (puncturePeerBuilder_ == null) {
+          puncturePeerBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
+              nl.tudelft.cs4160.trustchain_android.message.MessageProto.Peer, nl.tudelft.cs4160.trustchain_android.message.MessageProto.Peer.Builder, nl.tudelft.cs4160.trustchain_android.message.MessageProto.PeerOrBuilder>(
+                  getPuncturePeer(),
+                  getParentForChildren(),
+                  isClean());
+          puncturePeer_ = null;
+        }
+        return puncturePeerBuilder_;
       }
       public final Builder setUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
@@ -7724,6 +8621,1048 @@ public final class MessageProto {
     }
 
     public nl.tudelft.cs4160.trustchain_android.message.MessageProto.PunctureRequest getDefaultInstanceForType() {
+      return DEFAULT_INSTANCE;
+    }
+
+  }
+
+  public interface PeerOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:message.Peer)
+      com.google.protobuf.MessageOrBuilder {
+
+    /**
+     * <code>string peer_id = 1;</code>
+     */
+    java.lang.String getPeerId();
+    /**
+     * <code>string peer_id = 1;</code>
+     */
+    com.google.protobuf.ByteString
+        getPeerIdBytes();
+
+    /**
+     * <code>bytes address = 2;</code>
+     */
+    com.google.protobuf.ByteString getAddress();
+
+    /**
+     * <code>int32 port = 3;</code>
+     */
+    int getPort();
+
+    /**
+     * <code>.google.protobuf.Timestamp last_send_time = 4;</code>
+     */
+    boolean hasLastSendTime();
+    /**
+     * <code>.google.protobuf.Timestamp last_send_time = 4;</code>
+     */
+    com.google.protobuf.Timestamp getLastSendTime();
+    /**
+     * <code>.google.protobuf.Timestamp last_send_time = 4;</code>
+     */
+    com.google.protobuf.TimestampOrBuilder getLastSendTimeOrBuilder();
+
+    /**
+     * <code>.google.protobuf.Timestamp creation_time = 5;</code>
+     */
+    boolean hasCreationTime();
+    /**
+     * <code>.google.protobuf.Timestamp creation_time = 5;</code>
+     */
+    com.google.protobuf.Timestamp getCreationTime();
+    /**
+     * <code>.google.protobuf.Timestamp creation_time = 5;</code>
+     */
+    com.google.protobuf.TimestampOrBuilder getCreationTimeOrBuilder();
+  }
+  /**
+   * Protobuf type {@code message.Peer}
+   */
+  public  static final class Peer extends
+      com.google.protobuf.GeneratedMessageV3 implements
+      // @@protoc_insertion_point(message_implements:message.Peer)
+      PeerOrBuilder {
+  private static final long serialVersionUID = 0L;
+    // Use Peer.newBuilder() to construct.
+    private Peer(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+      super(builder);
+    }
+    private Peer() {
+      peerId_ = "";
+      address_ = com.google.protobuf.ByteString.EMPTY;
+      port_ = 0;
+    }
+
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+    getUnknownFields() {
+      return this.unknownFields;
+    }
+    private Peer(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      this();
+      if (extensionRegistry == null) {
+        throw new java.lang.NullPointerException();
+      }
+      int mutable_bitField0_ = 0;
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            default: {
+              if (!parseUnknownFieldProto3(
+                  input, unknownFields, extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
+            case 10: {
+              java.lang.String s = input.readStringRequireUtf8();
+
+              peerId_ = s;
+              break;
+            }
+            case 18: {
+
+              address_ = input.readBytes();
+              break;
+            }
+            case 24: {
+
+              port_ = input.readInt32();
+              break;
+            }
+            case 34: {
+              com.google.protobuf.Timestamp.Builder subBuilder = null;
+              if (lastSendTime_ != null) {
+                subBuilder = lastSendTime_.toBuilder();
+              }
+              lastSendTime_ = input.readMessage(com.google.protobuf.Timestamp.parser(), extensionRegistry);
+              if (subBuilder != null) {
+                subBuilder.mergeFrom(lastSendTime_);
+                lastSendTime_ = subBuilder.buildPartial();
+              }
+
+              break;
+            }
+            case 42: {
+              com.google.protobuf.Timestamp.Builder subBuilder = null;
+              if (creationTime_ != null) {
+                subBuilder = creationTime_.toBuilder();
+              }
+              creationTime_ = input.readMessage(com.google.protobuf.Timestamp.parser(), extensionRegistry);
+              if (subBuilder != null) {
+                subBuilder.mergeFrom(creationTime_);
+                creationTime_ = subBuilder.buildPartial();
+              }
+
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e).setUnfinishedMessage(this);
+      } finally {
+        this.unknownFields = unknownFields.build();
+        makeExtensionsImmutable();
+      }
+    }
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return nl.tudelft.cs4160.trustchain_android.message.MessageProto.internal_static_message_Peer_descriptor;
+    }
+
+    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return nl.tudelft.cs4160.trustchain_android.message.MessageProto.internal_static_message_Peer_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              nl.tudelft.cs4160.trustchain_android.message.MessageProto.Peer.class, nl.tudelft.cs4160.trustchain_android.message.MessageProto.Peer.Builder.class);
+    }
+
+    public static final int PEER_ID_FIELD_NUMBER = 1;
+    private volatile java.lang.Object peerId_;
+    /**
+     * <code>string peer_id = 1;</code>
+     */
+    public java.lang.String getPeerId() {
+      java.lang.Object ref = peerId_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        peerId_ = s;
+        return s;
+      }
+    }
+    /**
+     * <code>string peer_id = 1;</code>
+     */
+    public com.google.protobuf.ByteString
+        getPeerIdBytes() {
+      java.lang.Object ref = peerId_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        peerId_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    public static final int ADDRESS_FIELD_NUMBER = 2;
+    private com.google.protobuf.ByteString address_;
+    /**
+     * <code>bytes address = 2;</code>
+     */
+    public com.google.protobuf.ByteString getAddress() {
+      return address_;
+    }
+
+    public static final int PORT_FIELD_NUMBER = 3;
+    private int port_;
+    /**
+     * <code>int32 port = 3;</code>
+     */
+    public int getPort() {
+      return port_;
+    }
+
+    public static final int LAST_SEND_TIME_FIELD_NUMBER = 4;
+    private com.google.protobuf.Timestamp lastSendTime_;
+    /**
+     * <code>.google.protobuf.Timestamp last_send_time = 4;</code>
+     */
+    public boolean hasLastSendTime() {
+      return lastSendTime_ != null;
+    }
+    /**
+     * <code>.google.protobuf.Timestamp last_send_time = 4;</code>
+     */
+    public com.google.protobuf.Timestamp getLastSendTime() {
+      return lastSendTime_ == null ? com.google.protobuf.Timestamp.getDefaultInstance() : lastSendTime_;
+    }
+    /**
+     * <code>.google.protobuf.Timestamp last_send_time = 4;</code>
+     */
+    public com.google.protobuf.TimestampOrBuilder getLastSendTimeOrBuilder() {
+      return getLastSendTime();
+    }
+
+    public static final int CREATION_TIME_FIELD_NUMBER = 5;
+    private com.google.protobuf.Timestamp creationTime_;
+    /**
+     * <code>.google.protobuf.Timestamp creation_time = 5;</code>
+     */
+    public boolean hasCreationTime() {
+      return creationTime_ != null;
+    }
+    /**
+     * <code>.google.protobuf.Timestamp creation_time = 5;</code>
+     */
+    public com.google.protobuf.Timestamp getCreationTime() {
+      return creationTime_ == null ? com.google.protobuf.Timestamp.getDefaultInstance() : creationTime_;
+    }
+    /**
+     * <code>.google.protobuf.Timestamp creation_time = 5;</code>
+     */
+    public com.google.protobuf.TimestampOrBuilder getCreationTimeOrBuilder() {
+      return getCreationTime();
+    }
+
+    private byte memoizedIsInitialized = -1;
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized == 1) return true;
+      if (isInitialized == 0) return false;
+
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      if (!getPeerIdBytes().isEmpty()) {
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 1, peerId_);
+      }
+      if (!address_.isEmpty()) {
+        output.writeBytes(2, address_);
+      }
+      if (port_ != 0) {
+        output.writeInt32(3, port_);
+      }
+      if (lastSendTime_ != null) {
+        output.writeMessage(4, getLastSendTime());
+      }
+      if (creationTime_ != null) {
+        output.writeMessage(5, getCreationTime());
+      }
+      unknownFields.writeTo(output);
+    }
+
+    public int getSerializedSize() {
+      int size = memoizedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      if (!getPeerIdBytes().isEmpty()) {
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, peerId_);
+      }
+      if (!address_.isEmpty()) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(2, address_);
+      }
+      if (port_ != 0) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt32Size(3, port_);
+      }
+      if (lastSendTime_ != null) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(4, getLastSendTime());
+      }
+      if (creationTime_ != null) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(5, getCreationTime());
+      }
+      size += unknownFields.getSerializedSize();
+      memoizedSize = size;
+      return size;
+    }
+
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
+      if (obj == this) {
+       return true;
+      }
+      if (!(obj instanceof nl.tudelft.cs4160.trustchain_android.message.MessageProto.Peer)) {
+        return super.equals(obj);
+      }
+      nl.tudelft.cs4160.trustchain_android.message.MessageProto.Peer other = (nl.tudelft.cs4160.trustchain_android.message.MessageProto.Peer) obj;
+
+      boolean result = true;
+      result = result && getPeerId()
+          .equals(other.getPeerId());
+      result = result && getAddress()
+          .equals(other.getAddress());
+      result = result && (getPort()
+          == other.getPort());
+      result = result && (hasLastSendTime() == other.hasLastSendTime());
+      if (hasLastSendTime()) {
+        result = result && getLastSendTime()
+            .equals(other.getLastSendTime());
+      }
+      result = result && (hasCreationTime() == other.hasCreationTime());
+      if (hasCreationTime()) {
+        result = result && getCreationTime()
+            .equals(other.getCreationTime());
+      }
+      result = result && unknownFields.equals(other.unknownFields);
+      return result;
+    }
+
+    @java.lang.Override
+    public int hashCode() {
+      if (memoizedHashCode != 0) {
+        return memoizedHashCode;
+      }
+      int hash = 41;
+      hash = (19 * hash) + getDescriptor().hashCode();
+      hash = (37 * hash) + PEER_ID_FIELD_NUMBER;
+      hash = (53 * hash) + getPeerId().hashCode();
+      hash = (37 * hash) + ADDRESS_FIELD_NUMBER;
+      hash = (53 * hash) + getAddress().hashCode();
+      hash = (37 * hash) + PORT_FIELD_NUMBER;
+      hash = (53 * hash) + getPort();
+      if (hasLastSendTime()) {
+        hash = (37 * hash) + LAST_SEND_TIME_FIELD_NUMBER;
+        hash = (53 * hash) + getLastSendTime().hashCode();
+      }
+      if (hasCreationTime()) {
+        hash = (37 * hash) + CREATION_TIME_FIELD_NUMBER;
+        hash = (53 * hash) + getCreationTime().hashCode();
+      }
+      hash = (29 * hash) + unknownFields.hashCode();
+      memoizedHashCode = hash;
+      return hash;
+    }
+
+    public static nl.tudelft.cs4160.trustchain_android.message.MessageProto.Peer parseFrom(
+        java.nio.ByteBuffer data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static nl.tudelft.cs4160.trustchain_android.message.MessageProto.Peer parseFrom(
+        java.nio.ByteBuffer data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static nl.tudelft.cs4160.trustchain_android.message.MessageProto.Peer parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static nl.tudelft.cs4160.trustchain_android.message.MessageProto.Peer parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static nl.tudelft.cs4160.trustchain_android.message.MessageProto.Peer parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static nl.tudelft.cs4160.trustchain_android.message.MessageProto.Peer parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static nl.tudelft.cs4160.trustchain_android.message.MessageProto.Peer parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static nl.tudelft.cs4160.trustchain_android.message.MessageProto.Peer parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static nl.tudelft.cs4160.trustchain_android.message.MessageProto.Peer parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input);
+    }
+    public static nl.tudelft.cs4160.trustchain_android.message.MessageProto.Peer parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static nl.tudelft.cs4160.trustchain_android.message.MessageProto.Peer parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static nl.tudelft.cs4160.trustchain_android.message.MessageProto.Peer parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder() {
+      return DEFAULT_INSTANCE.toBuilder();
+    }
+    public static Builder newBuilder(nl.tudelft.cs4160.trustchain_android.message.MessageProto.Peer prototype) {
+      return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+    }
+    public Builder toBuilder() {
+      return this == DEFAULT_INSTANCE
+          ? new Builder() : new Builder().mergeFrom(this);
+    }
+
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    /**
+     * Protobuf type {@code message.Peer}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
+        // @@protoc_insertion_point(builder_implements:message.Peer)
+        nl.tudelft.cs4160.trustchain_android.message.MessageProto.PeerOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return nl.tudelft.cs4160.trustchain_android.message.MessageProto.internal_static_message_Peer_descriptor;
+      }
+
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return nl.tudelft.cs4160.trustchain_android.message.MessageProto.internal_static_message_Peer_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                nl.tudelft.cs4160.trustchain_android.message.MessageProto.Peer.class, nl.tudelft.cs4160.trustchain_android.message.MessageProto.Peer.Builder.class);
+      }
+
+      // Construct using nl.tudelft.cs4160.trustchain_android.message.MessageProto.Peer.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+
+      private Builder(
+          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessageV3
+                .alwaysUseFieldBuilders) {
+        }
+      }
+      public Builder clear() {
+        super.clear();
+        peerId_ = "";
+
+        address_ = com.google.protobuf.ByteString.EMPTY;
+
+        port_ = 0;
+
+        if (lastSendTimeBuilder_ == null) {
+          lastSendTime_ = null;
+        } else {
+          lastSendTime_ = null;
+          lastSendTimeBuilder_ = null;
+        }
+        if (creationTimeBuilder_ == null) {
+          creationTime_ = null;
+        } else {
+          creationTime_ = null;
+          creationTimeBuilder_ = null;
+        }
+        return this;
+      }
+
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return nl.tudelft.cs4160.trustchain_android.message.MessageProto.internal_static_message_Peer_descriptor;
+      }
+
+      public nl.tudelft.cs4160.trustchain_android.message.MessageProto.Peer getDefaultInstanceForType() {
+        return nl.tudelft.cs4160.trustchain_android.message.MessageProto.Peer.getDefaultInstance();
+      }
+
+      public nl.tudelft.cs4160.trustchain_android.message.MessageProto.Peer build() {
+        nl.tudelft.cs4160.trustchain_android.message.MessageProto.Peer result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      public nl.tudelft.cs4160.trustchain_android.message.MessageProto.Peer buildPartial() {
+        nl.tudelft.cs4160.trustchain_android.message.MessageProto.Peer result = new nl.tudelft.cs4160.trustchain_android.message.MessageProto.Peer(this);
+        result.peerId_ = peerId_;
+        result.address_ = address_;
+        result.port_ = port_;
+        if (lastSendTimeBuilder_ == null) {
+          result.lastSendTime_ = lastSendTime_;
+        } else {
+          result.lastSendTime_ = lastSendTimeBuilder_.build();
+        }
+        if (creationTimeBuilder_ == null) {
+          result.creationTime_ = creationTime_;
+        } else {
+          result.creationTime_ = creationTimeBuilder_.build();
+        }
+        onBuilt();
+        return result;
+      }
+
+      public Builder clone() {
+        return (Builder) super.clone();
+      }
+      public Builder setField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return (Builder) super.setField(field, value);
+      }
+      public Builder clearField(
+          com.google.protobuf.Descriptors.FieldDescriptor field) {
+        return (Builder) super.clearField(field);
+      }
+      public Builder clearOneof(
+          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+        return (Builder) super.clearOneof(oneof);
+      }
+      public Builder setRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          int index, java.lang.Object value) {
+        return (Builder) super.setRepeatedField(field, index, value);
+      }
+      public Builder addRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return (Builder) super.addRepeatedField(field, value);
+      }
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof nl.tudelft.cs4160.trustchain_android.message.MessageProto.Peer) {
+          return mergeFrom((nl.tudelft.cs4160.trustchain_android.message.MessageProto.Peer)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(nl.tudelft.cs4160.trustchain_android.message.MessageProto.Peer other) {
+        if (other == nl.tudelft.cs4160.trustchain_android.message.MessageProto.Peer.getDefaultInstance()) return this;
+        if (!other.getPeerId().isEmpty()) {
+          peerId_ = other.peerId_;
+          onChanged();
+        }
+        if (other.getAddress() != com.google.protobuf.ByteString.EMPTY) {
+          setAddress(other.getAddress());
+        }
+        if (other.getPort() != 0) {
+          setPort(other.getPort());
+        }
+        if (other.hasLastSendTime()) {
+          mergeLastSendTime(other.getLastSendTime());
+        }
+        if (other.hasCreationTime()) {
+          mergeCreationTime(other.getCreationTime());
+        }
+        this.mergeUnknownFields(other.unknownFields);
+        onChanged();
+        return this;
+      }
+
+      public final boolean isInitialized() {
+        return true;
+      }
+
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        nl.tudelft.cs4160.trustchain_android.message.MessageProto.Peer parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (nl.tudelft.cs4160.trustchain_android.message.MessageProto.Peer) e.getUnfinishedMessage();
+          throw e.unwrapIOException();
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
+          }
+        }
+        return this;
+      }
+
+      private java.lang.Object peerId_ = "";
+      /**
+       * <code>string peer_id = 1;</code>
+       */
+      public java.lang.String getPeerId() {
+        java.lang.Object ref = peerId_;
+        if (!(ref instanceof java.lang.String)) {
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          peerId_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>string peer_id = 1;</code>
+       */
+      public com.google.protobuf.ByteString
+          getPeerIdBytes() {
+        java.lang.Object ref = peerId_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          peerId_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>string peer_id = 1;</code>
+       */
+      public Builder setPeerId(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  
+        peerId_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>string peer_id = 1;</code>
+       */
+      public Builder clearPeerId() {
+        
+        peerId_ = getDefaultInstance().getPeerId();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>string peer_id = 1;</code>
+       */
+      public Builder setPeerIdBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  checkByteStringIsUtf8(value);
+        
+        peerId_ = value;
+        onChanged();
+        return this;
+      }
+
+      private com.google.protobuf.ByteString address_ = com.google.protobuf.ByteString.EMPTY;
+      /**
+       * <code>bytes address = 2;</code>
+       */
+      public com.google.protobuf.ByteString getAddress() {
+        return address_;
+      }
+      /**
+       * <code>bytes address = 2;</code>
+       */
+      public Builder setAddress(com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  
+        address_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>bytes address = 2;</code>
+       */
+      public Builder clearAddress() {
+        
+        address_ = getDefaultInstance().getAddress();
+        onChanged();
+        return this;
+      }
+
+      private int port_ ;
+      /**
+       * <code>int32 port = 3;</code>
+       */
+      public int getPort() {
+        return port_;
+      }
+      /**
+       * <code>int32 port = 3;</code>
+       */
+      public Builder setPort(int value) {
+        
+        port_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>int32 port = 3;</code>
+       */
+      public Builder clearPort() {
+        
+        port_ = 0;
+        onChanged();
+        return this;
+      }
+
+      private com.google.protobuf.Timestamp lastSendTime_ = null;
+      private com.google.protobuf.SingleFieldBuilderV3<
+          com.google.protobuf.Timestamp, com.google.protobuf.Timestamp.Builder, com.google.protobuf.TimestampOrBuilder> lastSendTimeBuilder_;
+      /**
+       * <code>.google.protobuf.Timestamp last_send_time = 4;</code>
+       */
+      public boolean hasLastSendTime() {
+        return lastSendTimeBuilder_ != null || lastSendTime_ != null;
+      }
+      /**
+       * <code>.google.protobuf.Timestamp last_send_time = 4;</code>
+       */
+      public com.google.protobuf.Timestamp getLastSendTime() {
+        if (lastSendTimeBuilder_ == null) {
+          return lastSendTime_ == null ? com.google.protobuf.Timestamp.getDefaultInstance() : lastSendTime_;
+        } else {
+          return lastSendTimeBuilder_.getMessage();
+        }
+      }
+      /**
+       * <code>.google.protobuf.Timestamp last_send_time = 4;</code>
+       */
+      public Builder setLastSendTime(com.google.protobuf.Timestamp value) {
+        if (lastSendTimeBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          lastSendTime_ = value;
+          onChanged();
+        } else {
+          lastSendTimeBuilder_.setMessage(value);
+        }
+
+        return this;
+      }
+      /**
+       * <code>.google.protobuf.Timestamp last_send_time = 4;</code>
+       */
+      public Builder setLastSendTime(
+          com.google.protobuf.Timestamp.Builder builderForValue) {
+        if (lastSendTimeBuilder_ == null) {
+          lastSendTime_ = builderForValue.build();
+          onChanged();
+        } else {
+          lastSendTimeBuilder_.setMessage(builderForValue.build());
+        }
+
+        return this;
+      }
+      /**
+       * <code>.google.protobuf.Timestamp last_send_time = 4;</code>
+       */
+      public Builder mergeLastSendTime(com.google.protobuf.Timestamp value) {
+        if (lastSendTimeBuilder_ == null) {
+          if (lastSendTime_ != null) {
+            lastSendTime_ =
+              com.google.protobuf.Timestamp.newBuilder(lastSendTime_).mergeFrom(value).buildPartial();
+          } else {
+            lastSendTime_ = value;
+          }
+          onChanged();
+        } else {
+          lastSendTimeBuilder_.mergeFrom(value);
+        }
+
+        return this;
+      }
+      /**
+       * <code>.google.protobuf.Timestamp last_send_time = 4;</code>
+       */
+      public Builder clearLastSendTime() {
+        if (lastSendTimeBuilder_ == null) {
+          lastSendTime_ = null;
+          onChanged();
+        } else {
+          lastSendTime_ = null;
+          lastSendTimeBuilder_ = null;
+        }
+
+        return this;
+      }
+      /**
+       * <code>.google.protobuf.Timestamp last_send_time = 4;</code>
+       */
+      public com.google.protobuf.Timestamp.Builder getLastSendTimeBuilder() {
+        
+        onChanged();
+        return getLastSendTimeFieldBuilder().getBuilder();
+      }
+      /**
+       * <code>.google.protobuf.Timestamp last_send_time = 4;</code>
+       */
+      public com.google.protobuf.TimestampOrBuilder getLastSendTimeOrBuilder() {
+        if (lastSendTimeBuilder_ != null) {
+          return lastSendTimeBuilder_.getMessageOrBuilder();
+        } else {
+          return lastSendTime_ == null ?
+              com.google.protobuf.Timestamp.getDefaultInstance() : lastSendTime_;
+        }
+      }
+      /**
+       * <code>.google.protobuf.Timestamp last_send_time = 4;</code>
+       */
+      private com.google.protobuf.SingleFieldBuilderV3<
+          com.google.protobuf.Timestamp, com.google.protobuf.Timestamp.Builder, com.google.protobuf.TimestampOrBuilder> 
+          getLastSendTimeFieldBuilder() {
+        if (lastSendTimeBuilder_ == null) {
+          lastSendTimeBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
+              com.google.protobuf.Timestamp, com.google.protobuf.Timestamp.Builder, com.google.protobuf.TimestampOrBuilder>(
+                  getLastSendTime(),
+                  getParentForChildren(),
+                  isClean());
+          lastSendTime_ = null;
+        }
+        return lastSendTimeBuilder_;
+      }
+
+      private com.google.protobuf.Timestamp creationTime_ = null;
+      private com.google.protobuf.SingleFieldBuilderV3<
+          com.google.protobuf.Timestamp, com.google.protobuf.Timestamp.Builder, com.google.protobuf.TimestampOrBuilder> creationTimeBuilder_;
+      /**
+       * <code>.google.protobuf.Timestamp creation_time = 5;</code>
+       */
+      public boolean hasCreationTime() {
+        return creationTimeBuilder_ != null || creationTime_ != null;
+      }
+      /**
+       * <code>.google.protobuf.Timestamp creation_time = 5;</code>
+       */
+      public com.google.protobuf.Timestamp getCreationTime() {
+        if (creationTimeBuilder_ == null) {
+          return creationTime_ == null ? com.google.protobuf.Timestamp.getDefaultInstance() : creationTime_;
+        } else {
+          return creationTimeBuilder_.getMessage();
+        }
+      }
+      /**
+       * <code>.google.protobuf.Timestamp creation_time = 5;</code>
+       */
+      public Builder setCreationTime(com.google.protobuf.Timestamp value) {
+        if (creationTimeBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          creationTime_ = value;
+          onChanged();
+        } else {
+          creationTimeBuilder_.setMessage(value);
+        }
+
+        return this;
+      }
+      /**
+       * <code>.google.protobuf.Timestamp creation_time = 5;</code>
+       */
+      public Builder setCreationTime(
+          com.google.protobuf.Timestamp.Builder builderForValue) {
+        if (creationTimeBuilder_ == null) {
+          creationTime_ = builderForValue.build();
+          onChanged();
+        } else {
+          creationTimeBuilder_.setMessage(builderForValue.build());
+        }
+
+        return this;
+      }
+      /**
+       * <code>.google.protobuf.Timestamp creation_time = 5;</code>
+       */
+      public Builder mergeCreationTime(com.google.protobuf.Timestamp value) {
+        if (creationTimeBuilder_ == null) {
+          if (creationTime_ != null) {
+            creationTime_ =
+              com.google.protobuf.Timestamp.newBuilder(creationTime_).mergeFrom(value).buildPartial();
+          } else {
+            creationTime_ = value;
+          }
+          onChanged();
+        } else {
+          creationTimeBuilder_.mergeFrom(value);
+        }
+
+        return this;
+      }
+      /**
+       * <code>.google.protobuf.Timestamp creation_time = 5;</code>
+       */
+      public Builder clearCreationTime() {
+        if (creationTimeBuilder_ == null) {
+          creationTime_ = null;
+          onChanged();
+        } else {
+          creationTime_ = null;
+          creationTimeBuilder_ = null;
+        }
+
+        return this;
+      }
+      /**
+       * <code>.google.protobuf.Timestamp creation_time = 5;</code>
+       */
+      public com.google.protobuf.Timestamp.Builder getCreationTimeBuilder() {
+        
+        onChanged();
+        return getCreationTimeFieldBuilder().getBuilder();
+      }
+      /**
+       * <code>.google.protobuf.Timestamp creation_time = 5;</code>
+       */
+      public com.google.protobuf.TimestampOrBuilder getCreationTimeOrBuilder() {
+        if (creationTimeBuilder_ != null) {
+          return creationTimeBuilder_.getMessageOrBuilder();
+        } else {
+          return creationTime_ == null ?
+              com.google.protobuf.Timestamp.getDefaultInstance() : creationTime_;
+        }
+      }
+      /**
+       * <code>.google.protobuf.Timestamp creation_time = 5;</code>
+       */
+      private com.google.protobuf.SingleFieldBuilderV3<
+          com.google.protobuf.Timestamp, com.google.protobuf.Timestamp.Builder, com.google.protobuf.TimestampOrBuilder> 
+          getCreationTimeFieldBuilder() {
+        if (creationTimeBuilder_ == null) {
+          creationTimeBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
+              com.google.protobuf.Timestamp, com.google.protobuf.Timestamp.Builder, com.google.protobuf.TimestampOrBuilder>(
+                  getCreationTime(),
+                  getParentForChildren(),
+                  isClean());
+          creationTime_ = null;
+        }
+        return creationTimeBuilder_;
+      }
+      public final Builder setUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.setUnknownFieldsProto3(unknownFields);
+      }
+
+      public final Builder mergeUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.mergeUnknownFields(unknownFields);
+      }
+
+
+      // @@protoc_insertion_point(builder_scope:message.Peer)
+    }
+
+    // @@protoc_insertion_point(class_scope:message.Peer)
+    private static final nl.tudelft.cs4160.trustchain_android.message.MessageProto.Peer DEFAULT_INSTANCE;
+    static {
+      DEFAULT_INSTANCE = new nl.tudelft.cs4160.trustchain_android.message.MessageProto.Peer();
+    }
+
+    public static nl.tudelft.cs4160.trustchain_android.message.MessageProto.Peer getDefaultInstance() {
+      return DEFAULT_INSTANCE;
+    }
+
+    private static final com.google.protobuf.Parser<Peer>
+        PARSER = new com.google.protobuf.AbstractParser<Peer>() {
+      public Peer parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return new Peer(input, extensionRegistry);
+      }
+    };
+
+    public static com.google.protobuf.Parser<Peer> parser() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<Peer> getParserForType() {
+      return PARSER;
+    }
+
+    public nl.tudelft.cs4160.trustchain_android.message.MessageProto.Peer getDefaultInstanceForType() {
       return DEFAULT_INSTANCE;
     }
 
@@ -7779,6 +9718,11 @@ public final class MessageProto {
   private static final 
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_message_PunctureRequest_fieldAccessorTable;
+  private static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_message_Peer_descriptor;
+  private static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_message_Peer_fieldAccessorTable;
 
   public static com.google.protobuf.Descriptors.FileDescriptor
       getDescriptor() {
@@ -7789,40 +9733,46 @@ public final class MessageProto {
   static {
     java.lang.String[] descriptorData = {
       "\n\rMessage.proto\022\007message\032\037google/protobu" +
-      "f/timestamp.proto\"f\n\007Message\022\017\n\007peer_id\030" +
-      "\001 \001(\014\022\023\n\013destination\030\002 \001(\014\022\022\n\npublic_key" +
-      "\030\003 \001(\014\022!\n\007payload\030\004 \001(\0132\020.message.Payloa" +
-      "d\"\263\002\n\007Payload\022+\n\thalfBlock\030\001 \001(\0132\030.messa" +
-      "ge.TrustChainBlock\022+\n\014crawlRequest\030\002 \001(\013" +
-      "2\025.message.CrawlRequest\0229\n\023introductionR" +
-      "equest\030\003 \001(\0132\034.message.IntroductionReque" +
-      "st\022;\n\024introductionResponse\030\004 \001(\0132\035.messa" +
-      "ge.IntroductionResponse\022#\n\010puncture\030\005 \001(" +
-      "\0132\021.message.Puncture\0221\n\017punctureRequest\030" +
-      "\006 \001(\0132\030.message.PunctureRequest\"\321\003\n\017Trus" +
-      "tChainBlock\022\022\n\npublic_key\030\001 \001(\014\022\027\n\017seque" +
-      "nce_number\030\002 \001(\005\022\027\n\017link_public_key\030\003 \001(" +
-      "\014\022\034\n\024link_sequence_number\030\004 \001(\005\022\025\n\rprevi" +
-      "ous_hash\030\005 \001(\014\022\021\n\tsignature\030\006 \001(\014\0229\n\013tra" +
-      "nsaction\030\007 \001(\0132$.message.TrustChainBlock" +
-      ".Transaction\022/\n\013insert_time\030\010 \001(\0132\032.goog" +
-      "le.protobuf.Timestamp\032Q\n\013Transaction\022\023\n\013" +
-      "unformatted\030\001 \001(\014\022-\n\005claim\030\002 \001(\0132\036.messa" +
-      "ge.TrustChainBlock.Claim\032q\n\005Claim\022\014\n\004nam" +
-      "e\030\001 \001(\014\022-\n\ttimestamp\030\002 \001(\0132\032.google.prot" +
-      "obuf.Timestamp\022\025\n\rvalidity_term\030\003 \001(\005\022\024\n" +
-      "\014proof_format\030\004 \001(\014\"T\n\014CrawlRequest\022\022\n\np" +
-      "ublic_key\030\001 \001(\014\022!\n\031requested_sequence_nu" +
-      "mber\030\002 \001(\005\022\r\n\005limit\030\003 \001(\005\"H\n\023Introductio" +
-      "nRequest\022\027\n\017connection_type\030\001 \001(\014\022\030\n\020net" +
-      "work_operator\030\002 \001(\014\"\200\001\n\024IntroductionResp" +
-      "onse\022\027\n\017connection_type\030\001 \001(\014\022\030\n\020network" +
-      "_operator\030\002 \001(\014\022\027\n\017internal_source\030\003 \001(\014" +
-      "\022\017\n\007invitee\030\004 \001(\014\022\013\n\003pex\030\005 \001(\014\"\032\n\010Punctu" +
-      "re\022\016\n\006source\030\001 \001(\014\"8\n\017PunctureRequest\022\016\n" +
-      "\006source\030\001 \001(\014\022\025\n\rpuncture_peer\030\002 \001(\014B<\n," +
-      "nl.tudelft.cs4160.trustchain_android.mes" +
-      "sageB\014MessageProtob\006proto3"
+      "f/timestamp.proto\"\226\001\n\007Message\022\017\n\007peer_id" +
+      "\030\001 \001(\t\022\033\n\023destination_address\030\002 \001(\014\022\030\n\020d" +
+      "estination_port\030\003 \001(\005\022\022\n\npublic_key\030\004 \001(" +
+      "\014\022\014\n\004type\030\005 \001(\005\022!\n\007payload\030\006 \001(\0132\020.messa" +
+      "ge.Payload\"\257\002\n\007Payload\0229\n\023introductionRe" +
+      "quest\030\001 \001(\0132\034.message.IntroductionReques" +
+      "t\022;\n\024introductionResponse\030\002 \001(\0132\035.messag" +
+      "e.IntroductionResponse\022#\n\010puncture\030\003 \001(\013" +
+      "2\021.message.Puncture\0221\n\017punctureRequest\030\004" +
+      " \001(\0132\030.message.PunctureRequest\022\'\n\005block\030" +
+      "\005 \001(\0132\030.message.TrustChainBlock\022+\n\014crawl" +
+      "Request\030\006 \001(\0132\025.message.CrawlRequest\"\321\003\n" +
+      "\017TrustChainBlock\022\022\n\npublic_key\030\001 \001(\014\022\027\n\017" +
+      "sequence_number\030\002 \001(\005\022\027\n\017link_public_key" +
+      "\030\003 \001(\014\022\034\n\024link_sequence_number\030\004 \001(\005\022\025\n\r" +
+      "previous_hash\030\005 \001(\014\022\021\n\tsignature\030\006 \001(\014\0229" +
+      "\n\013transaction\030\007 \001(\0132$.message.TrustChain" +
+      "Block.Transaction\022/\n\013insert_time\030\010 \001(\0132\032" +
+      ".google.protobuf.Timestamp\032Q\n\013Transactio" +
+      "n\022\023\n\013unformatted\030\001 \001(\014\022-\n\005claim\030\002 \001(\0132\036." +
+      "message.TrustChainBlock.Claim\032q\n\005Claim\022\014" +
+      "\n\004name\030\001 \001(\014\022-\n\ttimestamp\030\002 \001(\0132\032.google" +
+      ".protobuf.Timestamp\022\025\n\rvalidity_term\030\003 \001" +
+      "(\005\022\024\n\014proof_format\030\004 \001(\014\"T\n\014CrawlRequest" +
+      "\022\022\n\npublic_key\030\001 \001(\014\022!\n\031requested_sequen" +
+      "ce_number\030\002 \001(\005\022\r\n\005limit\030\003 \001(\005\"H\n\023Introd" +
+      "uctionRequest\022\027\n\017connection_type\030\001 \001(\003\022\030" +
+      "\n\020network_operator\030\002 \001(\t\"\236\001\n\024Introductio" +
+      "nResponse\022\027\n\017connection_type\030\001 \001(\003\022\030\n\020ne" +
+      "twork_operator\030\002 \001(\t\022\027\n\017internal_source\030" +
+      "\003 \001(\014\022\036\n\007invitee\030\004 \001(\0132\r.message.Peer\022\032\n" +
+      "\003pex\030\005 \003(\0132\r.message.Peer\"\032\n\010Puncture\022\016\n" +
+      "\006source\030\001 \001(\014\"G\n\017PunctureRequest\022\016\n\006sour" +
+      "ce\030\001 \001(\014\022$\n\rpuncture_peer\030\002 \001(\0132\r.messag" +
+      "e.Peer\"\235\001\n\004Peer\022\017\n\007peer_id\030\001 \001(\t\022\017\n\007addr" +
+      "ess\030\002 \001(\014\022\014\n\004port\030\003 \001(\005\0222\n\016last_send_tim" +
+      "e\030\004 \001(\0132\032.google.protobuf.Timestamp\0221\n\rc" +
+      "reation_time\030\005 \001(\0132\032.google.protobuf.Tim" +
+      "estampB<\n,nl.tudelft.cs4160.trustchain_a" +
+      "ndroid.messageB\014MessageProtob\006proto3"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
@@ -7842,13 +9792,13 @@ public final class MessageProto {
     internal_static_message_Message_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_message_Message_descriptor,
-        new java.lang.String[] { "PeerId", "Destination", "PublicKey", "Payload", });
+        new java.lang.String[] { "PeerId", "DestinationAddress", "DestinationPort", "PublicKey", "Type", "Payload", });
     internal_static_message_Payload_descriptor =
       getDescriptor().getMessageTypes().get(1);
     internal_static_message_Payload_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_message_Payload_descriptor,
-        new java.lang.String[] { "HalfBlock", "CrawlRequest", "IntroductionRequest", "IntroductionResponse", "Puncture", "PunctureRequest", });
+        new java.lang.String[] { "IntroductionRequest", "IntroductionResponse", "Puncture", "PunctureRequest", "Block", "CrawlRequest", });
     internal_static_message_TrustChainBlock_descriptor =
       getDescriptor().getMessageTypes().get(2);
     internal_static_message_TrustChainBlock_fieldAccessorTable = new
@@ -7897,6 +9847,12 @@ public final class MessageProto {
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_message_PunctureRequest_descriptor,
         new java.lang.String[] { "Source", "PuncturePeer", });
+    internal_static_message_Peer_descriptor =
+      getDescriptor().getMessageTypes().get(8);
+    internal_static_message_Peer_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_message_Peer_descriptor,
+        new java.lang.String[] { "PeerId", "Address", "Port", "LastSendTime", "CreationTime", });
     com.google.protobuf.TimestampProto.getDescriptor();
   }
 

@@ -6,6 +6,8 @@ import android.os.AsyncTask;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 
+import org.libsodium.jni.keys.PublicKey;
+
 import java.io.IOException;
 import java.net.Inet4Address;
 import java.net.InetAddress;
@@ -279,54 +281,55 @@ public class Network {
         }
 
         try {
-            Message message = Message.createFromByteBuffer(data);
-            Log.d(TAG, "Received " + message);
-            // if message is null we received a malformed packet
-            if(message == null) {
-                return;
-            }
-            String peerId = message.getPeerId();
+            MessageProto.Message message = MessageProto.Message.parseFrom(data);
+            Log.d(TAG, "Received " + message.toString());
+            String peerId = message.getPeerId().toStringUtf8();
 
             if (networkCommunicationListener != null) {
                 networkCommunicationListener.updateWan(message);
 
                 PeerAppToApp peer = networkCommunicationListener.getPeerHandler().getOrMakePeer(peerId, address, PeerAppToApp.INCOMING);
 
-                String pubKey = message.getPubKey();
+                PublicKey pubKey = new PublicKey(message.getPublicKey().toByteArray());
                 String ip = address.getAddress().toString().replace("/", "") + ":" + address.getPort();
                 PubKeyAndAddressPairStorage.addPubkeyAndAddressPair(context, pubKey, ip);
                 if (peer == null) return;
                 peer.received(data);
                 switch (message.getType()) {
                     case Message.INTRODUCTION_REQUEST_ID:
-                        networkCommunicationListener.handleIntroductionRequest(peer, (IntroductionRequest) message);
+                        networkCommunicationListener.handleIntroductionRequest(peer, message.getPayload().getIntroductionRequest());
                         break;
                     case Message.INTRODUCTION_RESPONSE_ID:
-                        networkCommunicationListener.handleIntroductionResponse(peer, (IntroductionResponse) message);
+                        networkCommunicationListener.handleIntroductionResponse(peer, message.getPayload().getIntroductionResponse());
                         break;
                     case Message.PUNCTURE_ID:
-                        networkCommunicationListener.handlePuncture(peer, (Puncture) message);
+                        networkCommunicationListener.handlePuncture(peer, message.getPayload().getPuncture());
                         break;
                     case Message.PUNCTURE_REQUEST_ID:
-                        networkCommunicationListener.handlePunctureRequest(peer, (PunctureRequest) message);
+                        networkCommunicationListener.handlePunctureRequest(peer, message.getPayload().getPunctureRequest());
                         break;
                     case Message.BLOCK_MESSAGE_ID:
-                        BlockMessage blockMessage = (BlockMessage) message;
+                        MessageProto.TrustChainBlock block = message.getPayload().getBlock();
                         addPeerToInbox(pubKey, address, context, peerId);
+                        // TODO: remove the newblock field
+                        // TODO: check if a block is meant for us and if we have already signed it
+                        // TODO: if we have not yet signed it add it to the inbox
+                        // TODO: otherwise just add it to the database.
+
                         if (blockMessage.isNewBlock()) {
                             addBlockToInbox(pubKey,blockMessage,context);
-                            networkCommunicationListener.handleBlockMessageRequest(peer, blockMessage);
+                            networkCommunicationListener.handleReceivedBlock(peer, blockMessage);
                             if(crawlRequestListener != null) {
                                 crawlRequestListener.blockAdded(blockMessage);
                             }
-                        }else{
+                        } else{
                             if(crawlRequestListener != null) {
                                 crawlRequestListener.handleCrawlRequestBlockMessageRequest(peer, blockMessage);
                             }
                         }
                         break;
                     case Message.CRAWL_REQUEST_ID:
-                        networkCommunicationListener.handleCrawlRequest(peer, (CrawlRequest) message);
+                        networkCommunicationListener.handleCrawlRequest(peer, message.getPayload().getCrawlRequest());
                         break;
                 }
                 networkCommunicationListener.updatePeerLists();
@@ -344,7 +347,7 @@ public class Network {
      * @param context needed for storage
      * @param peerId
      */
-    private static void addPeerToInbox(String pubKey,InetSocketAddress address, Context context, String peerId) {
+    private static void addPeerToInbox(PublicKey pubKey,InetSocketAddress address, Context context, String peerId) {
         if (pubKey != null) {
             String ip = address.getAddress().toString().replace("/", "");
             InboxItem i = new InboxItem(peerId, new ArrayList<Integer>(), ip, pubKey, address.getPort());
