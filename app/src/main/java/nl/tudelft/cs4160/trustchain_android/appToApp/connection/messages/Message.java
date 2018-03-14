@@ -17,9 +17,6 @@ import nl.tudelft.cs4160.trustchain_android.bencode.BencodeReadException;
 import nl.tudelft.cs4160.trustchain_android.bencode.BencodeReader;
 import nl.tudelft.cs4160.trustchain_android.bencode.BencodeWriter;
 
-/**
- * Created by jaap on 5/31/16.
- */
 public abstract class Message extends HashMap {
     public final static int INTRODUCTION_REQUEST_ID = 1;
     public final static int INTRODUCTION_RESPONSE_ID = 2;

@@ -3,9 +3,6 @@ package nl.tudelft.cs4160.trustchain_android.appToApp.connection.messages;
 import java.net.InetSocketAddress;
 import java.util.Map;
 
-/**
- * Created by jaap on 5/31/16.
- */
 public class Puncture extends Message {
     final private static String SOURCE = "source";
 
