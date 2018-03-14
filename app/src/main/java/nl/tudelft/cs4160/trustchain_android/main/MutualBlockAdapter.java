@@ -122,7 +122,7 @@ public class MutualBlockAdapter extends RecyclerView.Adapter<MutualBlockAdapter.
         View.OnClickListener mOnClickListener = new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                ((TrustChainActivity) context).requestPermission(mutualBlocks.get(position).getBlock());
+                ((PeerOverviewActivity) context).requestPermission(mutualBlocks.get(position).getBlock());
             }
         };
         holder.signButton.setOnClickListener(mOnClickListener);

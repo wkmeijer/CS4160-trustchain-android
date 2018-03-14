@@ -9,7 +9,6 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import java.security.KeyPair;
 import java.util.ArrayList;
 
 import nl.tudelft.cs4160.trustchain_android.R;
@@ -18,7 +17,7 @@ import nl.tudelft.cs4160.trustchain_android.Util.ByteArrayConverter;
 import nl.tudelft.cs4160.trustchain_android.color.ChainColor;
 import nl.tudelft.cs4160.trustchain_android.crypto.DualSecret;
 import nl.tudelft.cs4160.trustchain_android.crypto.Key;
-import nl.tudelft.cs4160.trustchain_android.main.TrustChainActivity;
+import nl.tudelft.cs4160.trustchain_android.main.PeerOverviewActivity;
 
 public class MutualBlockAdapter extends RecyclerView.Adapter<MutualBlockAdapter.ViewHolder> {
 
@@ -127,7 +126,7 @@ public class MutualBlockAdapter extends RecyclerView.Adapter<MutualBlockAdapter.
         View.OnClickListener mOnClickListener = new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                ((TrustChainActivity) context).requestPermission(mutualBlocks.get(position).getBlock());
+                ((PeerOverviewActivity) context).requestPermission(mutualBlocks.get(position).getBlock());
             }
         };
         holder.signButton.setOnClickListener(mOnClickListener);

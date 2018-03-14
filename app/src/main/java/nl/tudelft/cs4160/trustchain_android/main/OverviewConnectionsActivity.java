@@ -59,8 +59,6 @@ import nl.tudelft.cs4160.trustchain_android.message.MessageProto;
 import nl.tudelft.cs4160.trustchain_android.qr.ExportWalletQRActivity;
 import nl.tudelft.cs4160.trustchain_android.qr.ScanQRActivity;
 
-import static nl.tudelft.cs4160.trustchain_android.block.TrustChainBlockHelper.GENESIS_SEQ;
-
 public class OverviewConnectionsActivity extends AppCompatActivity implements NetworkCommunicationListener, PeerListener {
 
     // The server ip address, this is the bootstrap phone that's always running

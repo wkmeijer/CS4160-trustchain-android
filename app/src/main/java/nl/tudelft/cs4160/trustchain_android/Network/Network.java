@@ -281,7 +281,10 @@ public class Network {
         try {
             Message message = Message.createFromByteBuffer(data);
             Log.d(TAG, "Received " + message);
-
+            // if message is null we received a malformed packet
+            if(message == null) {
+                return;
+            }
             String peerId = message.getPeerId();
 
             if (networkCommunicationListener != null) {

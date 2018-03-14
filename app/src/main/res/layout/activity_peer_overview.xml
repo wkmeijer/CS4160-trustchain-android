@@ -5,81 +5,12 @@
     android:layout_height="match_parent"
     android:padding="10dp"
     android:id="@+id/myCoordinatorLayout"
-    tools:context="nl.tudelft.cs4160.trustchain_android.main.TrustChainActivity">
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
-        <View
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1" />
-
-        <TextView
-            android:id="@+id/developer_mode_text"
-            android:layout_width="wrap_content"
-            android:textColor="@color/colorGray"
-            android:layout_height="wrap_content"
-            android:text="@string/developer_mode" />
-
-        <android.support.v7.widget.SwitchCompat
-            android:id="@+id/switch_developer_mode"
-            android:layout_width="50dp"
-            android:layout_height="20dp" />
-    </LinearLayout>
+    tools:context="nl.tudelft.cs4160.trustchain_android.main.PeerOverviewActivity">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
-
-        <LinearLayout
-            android:id="@+id/extra_information_panel"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:visibility="gone"
-            android:orientation="vertical">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/my_external_ip" />
-
-            <TextView
-                android:id="@+id/my_external_ip"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/my_local_ip" />
-
-            <TextView
-                android:id="@+id/my_local_ip"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="40dp"
-                android:text="@string/connect_to" />
-
-            <EditText
-                android:id="@+id/destination_IP"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="@string/connect_ip_hint" />
-
-            <EditText
-                android:id="@+id/destination_port"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/default_port" />
-
-        </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"

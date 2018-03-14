@@ -31,6 +31,7 @@ public class BlockMessage extends Message {
             message = MessageProto.Message.parseFrom(ByteArrayConverter.hexStringToByteArray(messageAsString));
         } catch (InvalidProtocolBufferException e) {
             e.printStackTrace();
+            return null;
         }
         return new BlockMessage(peerId, destination, pubKey, message, isNewBlock);
     }
