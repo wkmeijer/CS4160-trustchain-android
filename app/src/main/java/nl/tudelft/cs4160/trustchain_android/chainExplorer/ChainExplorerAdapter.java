@@ -123,7 +123,7 @@ public class ChainExplorerAdapter extends BaseAdapter {
         seqNum.setText(seqNumStr);
         linkPeer.setText(linkPeerAlias);
         linkSeqNum.setText(linkSeqNumStr);
-        transaction.setText(block.getTransaction().toStringUtf8());
+        transaction.setText(block.getTransaction().getUnformatted().toStringUtf8());
 
         // expanded view
         TextView pubKey = convertView.findViewById(R.id.pub_key);
@@ -139,7 +139,7 @@ public class ChainExplorerAdapter extends BaseAdapter {
         prevHash.setText(ByteArrayConverter.bytesToHexString(block.getPreviousHash().toByteArray()));
 
         signature.setText(ByteArrayConverter.bytesToHexString(block.getSignature().toByteArray()));
-        expTransaction.setText(block.getTransaction().toStringUtf8());
+        expTransaction.setText(block.getTransaction().getUnformatted().toStringUtf8());
 
         if (peerAlias.equals("me")) {
             ownChainIndicator.setBackgroundColor(ChainColor.getMyColor(context));

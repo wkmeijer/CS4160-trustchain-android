@@ -229,7 +229,7 @@ public class TrustChainActivity extends AppCompatActivity implements CompoundBut
                         blockStatus += "unknown status";
                     }
 
-                    mutualBlocks.add(new MutualBlockItem(activity.inboxItemOtherPeer.getUserName(), block.getSequenceNumber(), block.getLinkSequenceNumber(), blockStatus, block.getTransaction().toStringUtf8(), block));
+                    mutualBlocks.add(new MutualBlockItem(activity.inboxItemOtherPeer.getUserName(), block.getSequenceNumber(), block.getLinkSequenceNumber(), blockStatus, block.getTransaction().getUnformatted().toStringUtf8(), block));
                 }
             }
             return mutualBlocks;
@@ -448,7 +448,7 @@ public class TrustChainActivity extends AppCompatActivity implements CompoundBut
                     builder = new AlertDialog.Builder(context);
                 }
                 try {
-                    builder.setMessage("Do you want to sign Block[ " + block.getTransaction().toString("UTF-8") + " ] from " + inboxItemOtherPeer.getUserName() + "?")
+                    builder.setMessage("Do you want to sign Block[ " + block.getTransaction().getUnformatted().toString("UTF-8") + " ] from " + inboxItemOtherPeer.getUserName() + "?")
                             .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int id) {
                                     signAndSendHalfBlock(block);

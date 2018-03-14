@@ -74,7 +74,7 @@ public class ExportWalletQRActivity extends AppCompatActivity {
             QRTransaction transaction = new QRTransaction();
             try {
                 MessageProto.TrustChainBlock lastBlock = dbHelper.getLatestBlock(keyPairOfA.getPublicKeyPair().toBytes());
-                JSONObject object = new JSONObject(lastBlock.getTransaction().toStringUtf8());
+                JSONObject object = new JSONObject(lastBlock.getTransaction().getUnformatted().toStringUtf8());
                 System.out.println(object.toString());
                 // Pretend that some transfer identity
                 // uploaded to you by the same amount that you uploaded to others.

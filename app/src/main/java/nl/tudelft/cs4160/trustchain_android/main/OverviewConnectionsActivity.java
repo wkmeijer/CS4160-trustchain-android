@@ -94,6 +94,48 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
         }
     }
 
+    /**
+     * Initialize all local variables
+     * If this activity is opened with a saved instance state
+     * we load the list of peers from this saved state.
+     * @param savedInstanceState
+     */
+    private void initVariables(Bundle savedInstanceState) {
+        peerHandler = new PeerHandler(UserNameStorage.getUserName(this));
+        dbHelper = new TrustChainDBHelper(this);
+        initKey();
+        network = Network.getInstance(getApplicationContext());
+
+        if (savedInstanceState != null) {
+            ArrayList<PeerAppToApp> list = (ArrayList<PeerAppToApp>) savedInstanceState.getSerializable("peers");
+            getPeerHandler().setPeerList(list);
+        }
+
+        getPeerHandler().setPeerListener(this);
+        network.setNetworkCommunicationListener(this);
+        network.updateConnectionType((ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE));
+        ((TextView) findViewById(R.id.peer_id)).setText(peerHandler.getHashId());
+    }
+
+    /**
+     * If the app is launched for the first time
+     * a new keyPair is created and saved locally in the storage.
+     * A genesis block is also created automatically.
+     */
+    private void initKey() {
+        DualSecret kp = Key.loadKeys(getApplicationContext());
+        if (kp == null) {
+            kp = Key.createAndSaveKeys(getApplicationContext());
+            MessageProto.TrustChainBlock block = TrustChainBlockHelper.createGenesisBlock(kp);
+            dbHelper.insertInDB(block);
+        }
+    }
+
+    /**
+     * Inflates the menu with a layout.
+     * @param menu
+     * @return
+     */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
@@ -145,65 +187,6 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
     }
 
     /**
-     * If the app is launched for the first time
-     * a new keyPair is created and save locally in the storage.
-     * A genesis block is also created automatically.
-     */
-    private void initKey() {
-        DualSecret kp = Key.loadKeys(getApplicationContext());
-        if (kp == null) {
-            kp = Key.createAndSaveKeys(getApplicationContext());
-        }
-        if (isStartedFirstTime(dbHelper, kp)) {
-            MessageProto.TrustChainBlock block = TrustChainBlockHelper.createGenesisBlock(kp);
-            dbHelper.insertInDB(block);
-        }
-    }
-
-    /**
-     * Checks if this is the first time the app is started and returns a boolean value indicating
-     * this state.
-     *
-     * @return state - false if the app has been initialized before, true if first time app started
-     */
-    public boolean isStartedFirstTime(TrustChainDBHelper dbHelper, DualSecret kp) {
-        // check if a genesis block is present in database
-        MessageProto.TrustChainBlock genesisBlock = dbHelper.getBlock(kp.getPublicKeyPair().toBytes(), GENESIS_SEQ);
-        return (genesisBlock == null);
-    }
-
-    /**
-     * Initialize all local variables
-     * If this activity is opened with a saved instance state
-     * we load the list of peers from this saved state.
-     * @param savedInstanceState
-     */
-    private void initVariables(Bundle savedInstanceState) {
-        peerHandler = new PeerHandler(UserNameStorage.getUserName(this));
-        dbHelper = new TrustChainDBHelper(this);
-        initKey();
-        network = Network.getInstance(getApplicationContext());
-
-        if (savedInstanceState != null) {
-            ArrayList<PeerAppToApp> list = (ArrayList<PeerAppToApp>) savedInstanceState.getSerializable("peers");
-            setPeersFromSavedInstance(list);
-        }
-
-        setPeerListener(this);
-        network.setNetworkCommunicationListener(this);
-        network.updateConnectionType((ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE));
-        ((TextView) findViewById(R.id.peer_id)).setText(peerHandler.getHashId());
-    }
-
-    public void setPeersFromSavedInstance(ArrayList<PeerAppToApp> peers) {
-        getPeerHandler().setPeerList(peers);
-    }
-
-    public void setPeerListener(PeerListener peerListener) {
-        getPeerHandler().setPeerListener(peerListener);
-    }
-
-    /**
      * Initialize the exit button.
      */
     private void initExitButton() {
@@ -230,7 +213,7 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
 
 
     /**
-     * This method is the callback when submitting the ip address.
+     * This method is the callback when submitting the new bootstrap address.
      * The method is called when leaving the BootstrapActivity.
      * The filled in ip address is passed on to this method.
      * When the callback of the bootstrap activity is successful
@@ -254,7 +237,13 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
     }
 
     /**
-     * Add the intial hard-coded connectable inboxItem to the inboxItem list.
+     *
+     * NETWORKING STUFF
+     *
+     */
+
+    /**
+     * Add the initial hard-coded connectable inboxItem to the inboxItem list.
      */
     public void addInitialPeer() {
         String address = BootstrapIPStorage.getIP(this);
@@ -299,7 +288,6 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
             return inetSocketAddress;
         }
     }
-
 
     /**
      * Start the thread send thread responsible for sending a {@link IntroductionRequest} to a random inboxItem every 5 seconds.
@@ -359,6 +347,18 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
         });
         listenThread.start();
         Log.d("App-To-App Log", "Listen thread started");
+    }
+
+    /**
+     * Update wan address
+     * @param message
+     * @throws MessageException
+     */
+    public void updateWan(Message message) throws MessageException {
+        if (peerHandler.getWanVote().vote(message.getDestination())) {
+            wan = peerHandler.getWanVote().getAddress().toString();
+        }
+        setWanvote(wan);
     }
 
     /**
@@ -443,7 +443,6 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
         }
     }
 
-
     /**
      * Handle the (half) block request.
      * This block is placed in in the TrustChainDB.
@@ -516,30 +515,6 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
         super.onSaveInstanceState(outState);
         outState.putSerializable("peers", peerHandler.getPeerList());
         super.onSaveInstanceState(outState);
-    }
-
-    /**
-     * Update wan address
-     * @param message
-     * @throws MessageException
-     */
-    public void updateWan(Message message) throws MessageException {
-        if (peerHandler.getWanVote().vote(message.getDestination())) {
-            wan = peerHandler.getWanVote().getAddress().toString();
-        }
-        setWanvote(wan);
-    }
-
-    /**
-     * get or make peer this is handled by the peer handler.
-     * @param id peer id
-     * @param address socket address
-     * @param incoming boolean to indicate if this is a incoming or outgoing connection
-     * @return
-     */
-    @Override
-    public PeerAppToApp getOrMakePeer(String id, InetSocketAddress address, boolean incoming) {
-        return peerHandler.getOrMakePeer(id, address, incoming);
     }
 
     /**

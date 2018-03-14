@@ -2,12 +2,18 @@ syntax = "proto3";
 
 package message;
 
+import "google/protobuf/timestamp.proto";
+
 option java_package = "nl.tudelft.cs4160.trustchain_android.message";
 option java_outer_classname = "MessageProto";
 
 message Message {
     TrustChainBlock halfBlock = 1;
-    CrawlRequest crawlRequest= 2;
+    CrawlRequest crawlRequest = 2;
+    IntroductionRequest introductionRequest = 3;
+    IntroductionResponse introductionResponse = 4;
+    Puncture puncture = 5;
+    PunctureRequest punctureRequest = 6;
 }
 
 message TrustChainBlock {
@@ -17,11 +23,40 @@ message TrustChainBlock {
     int32 link_sequence_number = 4;
     bytes previous_hash = 5;
     bytes signature = 6;
-    bytes transaction = 7;
+    Transaction transaction = 7;
+    google.protobuf.Timestamp insert_time = 8;
+
+    message Transaction {
+        bytes unformatted = 1;
+        Claim claim = 2;
+    }
+
+    message Claim {
+        bytes name = 1;
+        google.protobuf.Timestamp timestamp = 2;
+        int32 validity_term = 3;
+        bytes proof_format = 4;
+    }
 }
 
 message CrawlRequest {
     bytes public_key = 1;
     int32 requested_sequence_number = 2;
     int32 limit = 3;
+}
+
+message IntroductionRequest {
+
+}
+
+message IntroductionResponse {
+
+}
+
+message Puncture {
+
+}
+
+message PunctureRequest {
+
 }

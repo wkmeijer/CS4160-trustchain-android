@@ -34,7 +34,7 @@ public class FundsAdapter extends ArrayAdapter<MessageProto.TrustChainBlock> {
 
         MessageProto.TrustChainBlock block = this.getItem(position);
 
-        transactionString = block.getTransaction().toStringUtf8();
+        transactionString = block.getTransaction().getUnformatted().toStringUtf8();
         System.out.println("Found " + transactionString);
 
         long up = 0;

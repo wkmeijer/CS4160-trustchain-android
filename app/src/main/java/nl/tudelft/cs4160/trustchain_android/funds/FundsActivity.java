@@ -52,7 +52,7 @@ public class FundsActivity extends AppCompatActivity {
         try {
 
             MessageProto.TrustChainBlock latestBlock = helper.getLatestBlock(myPublicKey);
-            String transactionString = latestBlock.getTransaction().toStringUtf8();
+            String transactionString = latestBlock.getTransaction().getUnformatted().toStringUtf8();
             Log.i("FundsActivity", transactionString);
             JSONObject object = new JSONObject(transactionString); // TODO refactor to some kind of factory
             total_up = object.getLong("total_up");

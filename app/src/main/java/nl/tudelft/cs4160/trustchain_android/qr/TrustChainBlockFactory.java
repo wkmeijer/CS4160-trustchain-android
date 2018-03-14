@@ -37,7 +37,7 @@ public class TrustChainBlockFactory {
 
         QRTransaction tx;
         try {
-            ByteString tx_data = helper.getLatestBlock(myPublicKey).getTransaction();
+            ByteString tx_data = helper.getLatestBlock(myPublicKey).getTransaction().getUnformatted();
             String tx_string = tx_data.toStringUtf8();
             tx = transactionAdapter.fromJson( tx_string);
 
@@ -66,7 +66,7 @@ public class TrustChainBlockFactory {
         DualSecret walletKeyPair = getKeyPairFromWallet(wallet);
 
         MessageProto.TrustChainBlock block = MessageProto.TrustChainBlock.newBuilder().
-                setTransaction(ByteString.copyFromUtf8(transactionString))
+                setTransaction(MessageProto.Transaction.newBuilder().setUnformatted(ByteString.copyFromUtf8(transactionString)).build())
                 .setPublicKey(ByteString.copyFrom(walletKeyPair.getPublicKeyPair().toBytes()))
                 .setSequenceNumber(wallet.block.sequenceNumber)
                 .setPreviousHash(ByteString.copyFrom(Base64.decode(wallet.block.blockHashBase64, Base64.DEFAULT)))

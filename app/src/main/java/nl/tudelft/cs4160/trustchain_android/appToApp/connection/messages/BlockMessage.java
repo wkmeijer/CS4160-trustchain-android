@@ -15,11 +15,8 @@ public class BlockMessage extends Message {
     public BlockMessage(String peerId, InetSocketAddress destination, String pubKey, MessageProto.Message message, boolean isNewBlock) {
         super(BLOCK_MESSAGE_ID, peerId, destination, pubKey);
         put(BLOCK_MESSAGE_KEY, ByteArrayConverter.bytesToHexString(message.toByteArray()));
-        if(isNewBlock){
-            put(NEW_BLOCK,Boolean.toString(isNewBlock));
-        }else{
-            put(NEW_BLOCK,Boolean.toString(isNewBlock));
-        }
+        put(NEW_BLOCK,Boolean.toString(isNewBlock));
+
     }
 
     public static Message fromMap(Map map) throws MessageException {

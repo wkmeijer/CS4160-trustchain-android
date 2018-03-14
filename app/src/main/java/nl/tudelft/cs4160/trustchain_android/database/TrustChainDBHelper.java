@@ -77,7 +77,7 @@ public class TrustChainDBHelper extends SQLiteOpenHelper {
         MessageProto.TrustChainBlock b = block;
         SQLiteDatabase db = getWritableDatabase();
         ContentValues values = new ContentValues();
-        values.put(TrustChainDBContract.BlockEntry.COLUMN_NAME_TX, block.getTransaction().toStringUtf8());
+        values.put(TrustChainDBContract.BlockEntry.COLUMN_NAME_TX, block.getTransaction().getUnformatted().toStringUtf8());
         values.put(TrustChainDBContract.BlockEntry.COLUMN_NAME_PUBLIC_KEY, Base64.encodeToString(block.getPublicKey().toByteArray(), Base64.DEFAULT));
         values.put(TrustChainDBContract.BlockEntry.COLUMN_NAME_SEQUENCE_NUMBER, block.getSequenceNumber());
         values.put(TrustChainDBContract.BlockEntry.COLUMN_NAME_LINK_PUBLIC_KEY, Base64.encodeToString(block.getLinkPublicKey().toByteArray(), Base64.DEFAULT));
@@ -100,7 +100,7 @@ public class TrustChainDBHelper extends SQLiteOpenHelper {
         MessageProto.TrustChainBlock b = block;
         SQLiteDatabase db = getWritableDatabase();
         ContentValues values = new ContentValues();
-        values.put(TrustChainDBContract.BlockEntry.COLUMN_NAME_TX, block.getTransaction().toStringUtf8());
+        values.put(TrustChainDBContract.BlockEntry.COLUMN_NAME_TX, block.getTransaction().getUnformatted().toStringUtf8());
         values.put(TrustChainDBContract.BlockEntry.COLUMN_NAME_PUBLIC_KEY, Base64.encodeToString(block.getPublicKey().toByteArray(), Base64.DEFAULT));
         values.put(TrustChainDBContract.BlockEntry.COLUMN_NAME_SEQUENCE_NUMBER, block.getSequenceNumber());
         values.put(TrustChainDBContract.BlockEntry.COLUMN_NAME_LINK_PUBLIC_KEY, Base64.encodeToString(block.getLinkPublicKey().toByteArray(), Base64.DEFAULT));
@@ -395,8 +395,8 @@ public class TrustChainDBHelper extends SQLiteOpenHelper {
         MessageProto.TrustChainBlock.Builder builder = MessageProto.TrustChainBlock.newBuilder();
 
         while (cursor.moveToNext()) {
-            builder.setTransaction(ByteString.copyFromUtf8(cursor.getString(
-                    cursor.getColumnIndex(TrustChainDBContract.BlockEntry.COLUMN_NAME_TX))))
+            builder.setTransaction(MessageProto.Transaction.newBuilder().setUnformatted(ByteString.copyFromUtf8(cursor.getString(
+                    cursor.getColumnIndex(TrustChainDBContract.BlockEntry.COLUMN_NAME_TX)))).build())
                     .setPublicKey(ByteString.copyFrom(Base64.decode(cursor.getString(
                             cursor.getColumnIndex(TrustChainDBContract.BlockEntry.COLUMN_NAME_PUBLIC_KEY)), Base64.DEFAULT)))
                     .setSequenceNumber(cursor.getInt(

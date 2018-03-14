@@ -25,6 +25,5 @@ public interface NetworkCommunicationListener {
     void handleBlockMessageRequest(PeerAppToApp peer, BlockMessage message) throws IOException, MessageException;
     void handleCrawlRequest(PeerAppToApp peer, CrawlRequest request) throws IOException, MessageException;
     void handlePuncture(PeerAppToApp peer, Puncture message) throws IOException;
-    PeerAppToApp getOrMakePeer(String id, InetSocketAddress address, boolean incoming);
     PeerHandler getPeerHandler();
 }

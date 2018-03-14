@@ -34,7 +34,7 @@ public class TrustChainBlockHelper {
      */
     public static MessageProto.TrustChainBlock createGenesisBlock(DualSecret kp) {
         MessageProto.TrustChainBlock block = MessageProto.TrustChainBlock.newBuilder()
-                .setTransaction(ByteString.EMPTY)
+                .setTransaction(MessageProto.Transaction.newBuilder().setUnformatted(ByteString.EMPTY).build())
                 .setPublicKey(ByteString.copyFrom(kp.getPublicKeyPair().toBytes()))
                 .setSequenceNumber(GENESIS_SEQ)
                 .setLinkPublicKey(EMPTY_PK)
@@ -66,7 +66,7 @@ public class TrustChainBlockHelper {
                     .setLinkPublicKey(linkedBlock.getPublicKey())
                     .setLinkSequenceNumber(linkedBlock.getSequenceNumber());
         } else {
-            builder.setTransaction(ByteString.copyFrom(transaction))
+            builder.setTransaction(MessageProto.Transaction.newBuilder().setUnformatted(ByteString.copyFrom(transaction)).build())
                     .setLinkPublicKey(ByteString.copyFrom(linkpubk))
                     .setLinkSequenceNumber(TrustChainBlockHelper.UNKNOWN_SEQ);
         }
@@ -363,7 +363,7 @@ public class TrustChainBlockHelper {
         res += "\tLink Sequence Number: " + block.getLinkSequenceNumber() + "\n";
         res += "\tPrevious Hash: " + ByteArrayConverter.bytesToHexString(block.getPreviousHash().toByteArray()) + "\n";
         res += "\tSignature: " + ByteArrayConverter.bytesToHexString(block.getSignature().toByteArray()) + "\n";
-        res += "\tTransaction: \n" + block.getTransaction().toStringUtf8() + "\n";
+        res += "\tTransaction: \n" + block.getTransaction().getUnformatted().toStringUtf8() + "\n";
         res += "}";
         return res;
     }
@@ -387,7 +387,7 @@ public class TrustChainBlockHelper {
     public static String transferDataToString(MessageProto.TrustChainBlock block){
         String res = "Trustchainblock: { ";
         try {
-            res += " data: " + block.getTransaction().toString("UTF-8") + "\n";
+            res += " data: " + block.getTransaction().getUnformatted().toString("UTF-8") + "\n";
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }

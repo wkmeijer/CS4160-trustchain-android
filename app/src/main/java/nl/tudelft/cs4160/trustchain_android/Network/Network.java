@@ -287,7 +287,7 @@ public class Network {
             if (networkCommunicationListener != null) {
                 networkCommunicationListener.updateWan(message);
 
-                PeerAppToApp peer = networkCommunicationListener.getOrMakePeer(peerId, address, PeerAppToApp.INCOMING);
+                PeerAppToApp peer = networkCommunicationListener.getPeerHandler().getOrMakePeer(peerId, address, PeerAppToApp.INCOMING);
 
                 String pubKey = message.getPubKey();
                 String ip = address.getAddress().toString().replace("/", "") + ":" + address.getPort();
