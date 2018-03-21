@@ -30,6 +30,7 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import nl.tudelft.cs4160.trustchain_android.Network.CrawlRequestListener;
 import nl.tudelft.cs4160.trustchain_android.Network.Network;
@@ -150,11 +151,11 @@ public class PeerOverviewActivity extends AppCompatActivity implements CrawlRequ
      */
     public void requestChain() {
         network = Network.getInstance(getApplicationContext());
-        network.setCrawlRequestListener(this);
+        network.setMutualblockListener(this);
         network.updateConnectionType((ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE));
 
         int sq = -5;
-        MessageProto.TrustChainBlock block = dbHelper.getBlock(inboxItemOtherPeer.getPublicKey().getBytes(), dbHelper.getMaxSeqNum(inboxItemOtherPeer.getPublicKey().getBytes()));
+        MessageProto.TrustChainBlock block = dbHelper.getBlock(inboxItemOtherPeer.getPublicKey().toBytes(), dbHelper.getMaxSeqNum(inboxItemOtherPeer.getPublicKey().toBytes()));
         if (block != null) {
             sq = block.getSequenceNumber();
         } else {
@@ -188,11 +189,9 @@ public class PeerOverviewActivity extends AppCompatActivity implements CrawlRequ
      * @param view
      */
     public void onClickViewChain(View view) {
-        String publicKey = null;
-
         // Try to instantiate public key.
         if (this.inboxItemOtherPeer.getPublicKey() != null) {
-            publicKey = this.inboxItemOtherPeer.getPublicKey();
+            byte[] publicKey = this.inboxItemOtherPeer.getPublicKey().toBytes();
             if (publicKey != null) {
                 Intent intent = new Intent(context, ChainExplorerActivity.class);
                 intent.putExtra(ChainExplorerActivity.BUNDLE_EXTRAS_PUBLIC_KEY , publicKey);
@@ -220,7 +219,7 @@ public class PeerOverviewActivity extends AppCompatActivity implements CrawlRequ
     public void onClickSend(View view) throws UnsupportedEncodingException {
         byte[] publicKey = Key.loadKeys(this).getPublicKeyPair().toBytes();
         byte[] transactionData = messageEditText.getText().toString().getBytes("UTF-8");
-        final MessageProto.TrustChainBlock block = createBlock(transactionData, DBHelper, publicKey, null, ByteArrayConverter.hexStringToByteArray(inboxItemOtherPeer.getPublicKey()));
+        final MessageProto.TrustChainBlock block = createBlock(transactionData, DBHelper, publicKey, null, inboxItemOtherPeer.getPublicKey().toBytes());
         final MessageProto.TrustChainBlock signedBlock = TrustChainBlockHelper.sign(block, Key.loadKeys(getApplicationContext()).getSigningKey());
         messageEditText.setText("");
         messageEditText.clearFocus();
@@ -289,7 +288,7 @@ public class PeerOverviewActivity extends AppCompatActivity implements CrawlRequ
         DualSecret keyPair = Key.loadKeys(this);
         MessageProto.TrustChainBlock block = createBlock(null, DBHelper,
                 keyPair.getPublicKeyPair().toBytes(),
-                linkedBlock, ByteArrayConverter.hexStringToByteArray(inboxItemOtherPeer.getPublicKey()));
+                linkedBlock, inboxItemOtherPeer.getPublicKey().toBytes());
 
         final MessageProto.TrustChainBlock signedBlock = sign(block, keyPair.getSigningKey());
 
@@ -315,18 +314,16 @@ public class PeerOverviewActivity extends AppCompatActivity implements CrawlRequ
      * The responding peer will send his/her entire chain.
      * All those blocks are added to the local db.
      * @param peer
-     * @param message
+     * @param block
      * @throws IOException
      * @throws MessageException
      */
-    @Override
-    public void handleCrawlRequestBlockMessageRequest(PeerAppToApp peer, BlockMessage message) throws IOException, MessageException {
-        MessageProto.Message msg = message.getMessageProto();
-        MessageProto.TrustChainBlock block = msg.getHalfBlock();
-        if (dbHelper.getBlock(msg.getHalfBlock().getPublicKey().toByteArray(), msg.getHalfBlock().getSequenceNumber()) == null) {
-            dbHelper.insertInDB(block);
-        }
-    }
+//    @Override
+//    public void handleCrawlRequestBlockMessageRequest(PeerAppToApp peer, MessageProto.TrustChainBlock block) throws IOException, MessageException {
+//        if (dbHelper.getBlock(block.getPublicKey().toByteArray(), block.getSequenceNumber()) == null) {
+//            dbHelper.insertInDB(block);
+//        }
+//    }
 
     /**
      * Block received and added to the inbox.
@@ -336,18 +333,14 @@ public class PeerOverviewActivity extends AppCompatActivity implements CrawlRequ
      * @param block the received block
      */
     @Override
-    public void blockAdded(BlockMessage block) {
+    public void blockAdded(MessageProto.TrustChainBlock block) {
         DualSecret keyPair = Key.loadKeys(this);
-        String myPublicKeyString = ByteArrayConverter.bytesToHexString(keyPair.getPublicKeyPair().toBytes());
-        String peerPublicKeyString = this.inboxItemOtherPeer.getPublicKey();
-        try {
-            String publicKey = ByteArrayConverter.byteStringToString(block.getMessageProto().getHalfBlock().getPublicKey());
-            String linkedPublicKey = ByteArrayConverter.byteStringToString(block.getMessageProto().getHalfBlock().getLinkPublicKey());
-            if (linkedPublicKey.equals(myPublicKeyString) && publicKey.equals(peerPublicKeyString)) {
-                initializeMutualBlockRecycleView();
-            }
-        } catch (MessageException e) {
-            e.printStackTrace();
+        byte[] myPublicKey = keyPair.getPublicKeyPair().toBytes();
+        byte[] peerPublicKey = this.inboxItemOtherPeer.getPublicKey().toBytes();
+        byte[] publicKey = block.getPublicKey().toByteArray();
+        byte[] linkedPublicKey = block.getLinkPublicKey().toByteArray();
+        if (Arrays.equals(myPublicKey,linkedPublicKey) && Arrays.equals(peerPublicKey, publicKey)) {
+            initializeMutualBlockRecycleView();
         }
     }
 
@@ -380,13 +373,13 @@ public class PeerOverviewActivity extends AppCompatActivity implements CrawlRequ
             ArrayList<MutualBlockItem> mutualBlocks = new ArrayList<>();
             int validationResultStatus = ValidationResult.NO_INFO;
             DualSecret keyPair = Key.loadKeys(activity);
-            String myPublicKeyString = ByteArrayConverter.bytesToHexString(keyPair.getPublicKeyPair().toBytes());
-            String peerPublicKeyString = activity.inboxItemOtherPeer.getPublicKey();
+            byte[] myPublicKey = keyPair.getPublicKeyPair().toBytes();
+            byte[] peerPublicKey = activity.inboxItemOtherPeer.getPublicKey().toBytes();
 
             for (MessageProto.TrustChainBlock block : activity.DBHelper.getBlocks(keyPair.getPublicKeyPair().toBytes(), true)) {
-                String linkedPublicKey = ByteArrayConverter.bytesToHexString(block.getLinkPublicKey().toByteArray());
-                String publicKey = ByteArrayConverter.byteStringToString(block.getPublicKey());
-                if (linkedPublicKey.equals(myPublicKeyString) && publicKey.equals(peerPublicKeyString)) {
+                byte[] linkedPublicKey = block.getLinkPublicKey().toByteArray();
+                byte[] publicKey = block.getPublicKey().toByteArray();
+                if (Arrays.equals(linkedPublicKey,myPublicKey) && Arrays.equals(publicKey,peerPublicKey)) {
                     String blockStatus = "Status of Block: ";
                     try {
                         validationResultStatus = TrustChainBlockHelper.validate(block, activity.DBHelper).getStatus();

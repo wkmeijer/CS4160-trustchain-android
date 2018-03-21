@@ -38,6 +38,7 @@ import nl.tudelft.cs4160.trustchain_android.bencode.BencodeReadException;
 import nl.tudelft.cs4160.trustchain_android.crypto.Key;
 import nl.tudelft.cs4160.trustchain_android.inbox.InboxItem;
 import nl.tudelft.cs4160.trustchain_android.main.OverviewConnectionsActivity;
+import nl.tudelft.cs4160.trustchain_android.main.PeerOverviewActivity;
 import nl.tudelft.cs4160.trustchain_android.message.MessageProto;
 
 import static nl.tudelft.cs4160.trustchain_android.message.MessageProto.Message.newBuilder;
@@ -54,7 +55,7 @@ public class Network {
     private static Network network;
     private String publicKey;
     private static NetworkCommunicationListener networkCommunicationListener;
-    private static CrawlRequestListener crawlRequestListener;
+    private static PeerOverviewActivity mutualblockListener;
 
     /**
      * Emtpy constructor
@@ -86,10 +87,10 @@ public class Network {
 
     /**
      * Set the crawl request listener
-     * @param crawlRequestListener
+     * @param mutualblockListener
      */
-    public void setCrawlRequestListener(CrawlRequestListener crawlRequestListener) {
-        Network.crawlRequestListener = crawlRequestListener;
+    public void setMutualblockListener(PeerOverviewActivity mutualblockListener) {
+        Network.mutualblockListener = mutualblockListener;
     }
 
     /**
@@ -283,7 +284,7 @@ public class Network {
         try {
             MessageProto.Message message = MessageProto.Message.parseFrom(data);
             Log.d(TAG, "Received " + message.toString());
-            String peerId = message.getPeerId().toStringUtf8();
+            String peerId = message.getPeerId();
 
             if (networkCommunicationListener != null) {
                 networkCommunicationListener.updateWan(message);
@@ -316,17 +317,17 @@ public class Network {
                         // TODO: if we have not yet signed it add it to the inbox
                         // TODO: otherwise just add it to the database.
 
-                        if (blockMessage.isNewBlock()) {
-                            addBlockToInbox(pubKey,blockMessage,context);
-                            networkCommunicationListener.handleReceivedBlock(peer, blockMessage);
-                            if(crawlRequestListener != null) {
-                                crawlRequestListener.blockAdded(blockMessage);
+//                        if (blockMessage.isNewBlock()) {
+                            addBlockToInbox(pubKey,block,context);
+                            networkCommunicationListener.handleReceivedBlock(peer, block);
+                            if(mutualblockListener != null) {
+                                mutualblockListener.blockAdded(block);
                             }
-                        } else{
-                            if(crawlRequestListener != null) {
-                                crawlRequestListener.handleCrawlRequestBlockMessageRequest(peer, blockMessage);
-                            }
-                        }
+//                        } else{
+//                            if(crawlRequestListener != null) {
+//                                crawlRequestListener.handleCrawlRequestBlockMessageRequest(peer, blockMessage);
+//                            }
+//                        }
                         break;
                     case Message.CRAWL_REQUEST_ID:
                         networkCommunicationListener.handleCrawlRequest(peer, message.getPayload().getCrawlRequest());
