@@ -21,6 +21,7 @@ public class PeerHandler {
     private PeerListener peerListener;
     public String hashId;
     private WanVote wanVote;
+    final String TAG = this.getClass().toString();
 
     /**
      * Peer handler constructor.
@@ -152,7 +153,7 @@ public class PeerHandler {
         peerListLock.lock();
         try {
             if (hashId.equals(peerId)) {
-                Log.d("App-To-App Log", "Not adding self");
+                Log.d(TAG, "Not adding self");
                 PeerAppToApp self = null;
                 for (PeerAppToApp p : peerList) {
                     if (p.getAddress().equals(wanVote.getAddress()))
@@ -160,12 +161,12 @@ public class PeerHandler {
                 }
                 if (self != null) {
                     peerList.remove(self);
-                    Log.d("App-To-App Log", "Removed self");
+                    Log.d(TAG, "Removed self");
                 }
                 return null;
             }
             if (wanVote.getAddress() != null && wanVote.getAddress().equals(address)) {
-                Log.d("App-To-App Log", "Not adding inboxItem with same address as wanVote");
+                Log.d(TAG, "Not adding inboxItem with same address as wanVote");
                 return null;
             }
             for (PeerAppToApp peer : peerList) {
@@ -181,7 +182,7 @@ public class PeerHandler {
                     try {
                         peerList.add(peer);
                         splitPeerList();
-                        Log.d("App-To-App Log", "Added " + peer);
+                        Log.d(TAG, "Added " + peer);
                     } finally {
                         peerListLock.unlock();
                     }
@@ -241,7 +242,7 @@ public class PeerHandler {
                 }
             }
             if (eligiblePeers.size() == 0) {
-                Log.d("App-To-App Log", "No elegible peers!");
+                Log.d(TAG, "No elegible peers!");
                 return null;
             }
             Random random = new Random();
@@ -266,7 +267,7 @@ public class PeerHandler {
                 for (PeerAppToApp peer : peerList) {
                     if (id.equals(peer.getPeerId())) {
                         if (!address.equals(peer.getAddress())) {
-                            Log.d("App-To-App Log", "Peer address differs from known address");
+                            Log.d(TAG, "Peer address differs from known address");
                             peer.setAddress(address);
                             removeDuplicates();
                         }

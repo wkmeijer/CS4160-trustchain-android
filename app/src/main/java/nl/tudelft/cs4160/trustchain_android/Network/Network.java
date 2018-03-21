@@ -56,7 +56,7 @@ public class Network {
     private static InetSocketAddress internalSourceAddress;
     private String networkOperator;
     private static Network network;
-    private byte[] publicKey;
+    private PublicKey publicKey;
     private static NetworkCommunicationListener networkCommunicationListener;
     private static PeerOverviewActivity mutualblockListener;
 
@@ -104,7 +104,7 @@ public class Network {
         TelephonyManager telephonyManager = ((TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE));
         networkOperator = telephonyManager.getNetworkOperatorName();
         hashId = UserNameStorage.getUserName(context);
-        publicKey = Key.loadKeys(context).getPublicKeyPair().toBytes();
+        publicKey = Key.loadKeys(context).getPublicKeyPair().getPublicKey();
         openChannel();
         showLocalIpAddress();
     }
@@ -176,11 +176,12 @@ public class Network {
                 .setConnectionType(connectionType)
                 .setNetworkOperator(networkOperator)
                 .build();
+
         MessageProto.Message message = MessageProto.Message.newBuilder()
                 .setPeerId(peer.getPeerId())
                 .setDestinationAddress(ByteString.copyFrom(peer.getAddress().getAddress().getAddress()))
                 .setDestinationPort(peer.getAddress().getPort())
-                .setPublicKey(ByteString.copyFrom(publicKey))
+                .setPublicKey(ByteString.copyFrom(publicKey.toBytes()))
                 .setType(Message.INTRODUCTION_REQUEST_ID)
                 .setPayload(MessageProto.Payload.newBuilder().setIntroductionRequest(request))
                 .build();
@@ -199,7 +200,7 @@ public class Network {
                 .setPeerId(peer.getPeerId())
                 .setDestinationAddress(ByteString.copyFrom(peer.getAddress().getAddress().getAddress()))
                 .setDestinationPort(peer.getAddress().getPort())
-                .setPublicKey(ByteString.copyFrom(publicKey))
+                .setPublicKey(ByteString.copyFrom(publicKey.toBytes()))
                 .setType(Message.BLOCK_MESSAGE_ID)
                 .setPayload(MessageProto.Payload.newBuilder().setBlock(block))
                 .build();
@@ -218,7 +219,7 @@ public class Network {
                 .setPeerId(peer.getPeerId())
                 .setDestinationAddress(ByteString.copyFrom(peer.getAddress().getAddress().getAddress()))
                 .setDestinationPort(peer.getAddress().getPort())
-                .setPublicKey(ByteString.copyFrom(publicKey))
+                .setPublicKey(ByteString.copyFrom(publicKey.toBytes()))
                 .setType(Message.CRAWL_REQUEST_ID)
                 .setPayload(MessageProto.Payload.newBuilder().setCrawlRequest(request))
                 .build();
@@ -243,7 +244,7 @@ public class Network {
                 .setPeerId(peer.getPeerId())
                 .setDestinationAddress(ByteString.copyFrom(peer.getAddress().getAddress().getAddress()))
                 .setDestinationPort(peer.getAddress().getPort())
-                .setPublicKey(ByteString.copyFrom(publicKey))
+                .setPublicKey(ByteString.copyFrom(publicKey.toBytes()))
                 .setType(Message.PUNCTURE_REQUEST_ID)
                 .setPayload(MessageProto.Payload.newBuilder().setPunctureRequest(pRequest))
                 .build();
@@ -266,7 +267,7 @@ public class Network {
                 .setPeerId(peer.getPeerId())
                 .setDestinationAddress(ByteString.copyFrom(peer.getAddress().getAddress().getAddress()))
                 .setDestinationPort(peer.getAddress().getPort())
-                .setPublicKey(ByteString.copyFrom(publicKey))
+                .setPublicKey(ByteString.copyFrom(publicKey.toBytes()))
                 .setType(Message.PUNCTURE_ID)
                 .setPayload(MessageProto.Payload.newBuilder().setPuncture(puncture))
                 .build();
@@ -300,7 +301,7 @@ public class Network {
                 .setPeerId(peer.getPeerId())
                 .setDestinationAddress(ByteString.copyFrom(peer.getAddress().getAddress().getAddress()))
                 .setDestinationPort(peer.getAddress().getPort())
-                .setPublicKey(ByteString.copyFrom(publicKey))
+                .setPublicKey(ByteString.copyFrom(publicKey.toBytes()))
                 .setType(Message.INTRODUCTION_RESPONSE_ID)
                 .setPayload(MessageProto.Payload.newBuilder().setIntroductionResponse(response))
                 .build();

@@ -65,7 +65,8 @@ import nl.tudelft.cs4160.trustchain_android.qr.ScanQRActivity;
 public class OverviewConnectionsActivity extends AppCompatActivity implements NetworkCommunicationListener, PeerListener {
 
     // The server ip address, this is the bootstrap phone that's always running
-    public static String CONNECTABLE_ADDRESS = "130.161.211.254";
+//    public static String CONNECTABLE_ADDRESS = "130.161.211.254";
+    public static String CONNECTABLE_ADDRESS = "145.94.226.167";
     public final static int DEFAULT_PORT = 1873;
     private static final int BUFFER_SIZE = 65536;
     private PeerListAdapter incomingPeerAdapter;
@@ -281,7 +282,7 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
                 int port = Integer.parseInt(params[1]);
                 inetSocketAddress = new InetSocketAddress(connectableAddress, port);
 
-                activity.peerHandler.addPeer(null, inetSocketAddress, PeerAppToApp.OUTGOING);
+                activity.peerHandler.addPeer("", inetSocketAddress, PeerAppToApp.OUTGOING);
             } catch (UnknownHostException e) {
                 e.printStackTrace();
             }
@@ -384,7 +385,7 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
     /**
      * Handle an introduction request. Send a puncture request to the included invitee.
      *
-     * @param peer    the origin inboxItem.
+     * @param peer    the orimessagegin inboxItem.
      * @param request the message.
      * @throws IOException
      */
