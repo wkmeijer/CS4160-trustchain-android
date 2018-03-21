@@ -318,7 +318,7 @@ public class Network {
                         // TODO: otherwise just add it to the database.
 
 //                        if (blockMessage.isNewBlock()) {
-                            addBlockToInbox(pubKey,block,context);
+                            addBlockToInbox(block,context);
                             networkCommunicationListener.handleReceivedBlock(peer, block);
                             if(mutualblockListener != null) {
                                 mutualblockListener.blockAdded(block);
@@ -358,18 +358,13 @@ public class Network {
 
     /**
      * Add a block reference to the InboxItem and store this again locally.
-     * @param pubKey
      * @param blockMessage the block of which the reference should be stored.
      * @param context needed for storage
      */
-    private static void addBlockToInbox(String pubKey,BlockMessage blockMessage, Context context) {
-        if (pubKey != null) {
-            try {
-                InboxItemStorage.addHalfBlock(context, blockMessage.getPubKey(), blockMessage.getMessageProto().getHalfBlock().getSequenceNumber());
-            } catch (MessageException e) {
-                e.printStackTrace();
-            }
-        }
+    private static void addBlockToInbox(MessageProto.TrustChainBlock block, Context context) {
+        // TODO: change the way pub keys are given to this method,
+        InboxItemStorage.addHalfBlock(context, ByteArrayConverter.bytesToHexString(block.getPublicKey().toByteArray())
+                , block.getSequenceNumber());
     }
 
     /**
