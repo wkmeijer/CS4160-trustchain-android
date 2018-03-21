@@ -62,16 +62,16 @@ message IntroductionRequest {
 message IntroductionResponse {
     int64 connection_type = 1;
     string network_operator = 2;
-    bytes internal_source = 3;
+    string internal_source_socket = 3;
     bytes invitee = 4;
     repeated bytes pex = 5;
 }
 
 message Puncture {
-    bytes source = 1;
+    string sourceSocket = 1;
 }
 
 message PunctureRequest {
-    bytes source = 1;
+    string source_socket = 1;
     bytes puncture_peer = 2;
 }

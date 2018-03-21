@@ -6,9 +6,12 @@ import android.os.AsyncTask;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 
+import com.google.protobuf.ByteString;
+
 import org.libsodium.jni.keys.PublicKey;
 
 import java.io.IOException;
+import java.io.OutputStream;
 import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
@@ -26,6 +29,7 @@ import nl.tudelft.cs4160.trustchain_android.SharedPreferences.PubKeyAndAddressPa
 import nl.tudelft.cs4160.trustchain_android.SharedPreferences.UserNameStorage;
 import nl.tudelft.cs4160.trustchain_android.Util.ByteArrayConverter;
 import nl.tudelft.cs4160.trustchain_android.appToApp.PeerAppToApp;
+import nl.tudelft.cs4160.trustchain_android.appToApp.connection.ByteBufferOutputStream;
 import nl.tudelft.cs4160.trustchain_android.appToApp.connection.messages.BlockMessage;
 import nl.tudelft.cs4160.trustchain_android.appToApp.connection.messages.CrawlRequest;
 import nl.tudelft.cs4160.trustchain_android.appToApp.connection.messages.IntroductionRequest;
@@ -49,11 +53,10 @@ public class Network {
     private DatagramChannel channel;
     private String hashId;
     private int connectionType;
-    private ByteBuffer outBuffer;
     private static InetSocketAddress internalSourceAddress;
     private String networkOperator;
     private static Network network;
-    private String publicKey;
+    private byte[] publicKey;
     private static NetworkCommunicationListener networkCommunicationListener;
     private static PeerOverviewActivity mutualblockListener;
 
@@ -100,9 +103,8 @@ public class Network {
     private void initVariables(Context context) {
         TelephonyManager telephonyManager = ((TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE));
         networkOperator = telephonyManager.getNetworkOperatorName();
-        outBuffer = ByteBuffer.allocate(BUFFER_SIZE);
         hashId = UserNameStorage.getUserName(context);
-        publicKey = ByteArrayConverter.bytesToHexString(Key.loadKeys(context).getPublicKeyPair().toBytes());
+        publicKey = Key.loadKeys(context).getPublicKeyPair().toBytes();
         openChannel();
         showLocalIpAddress();
     }
@@ -165,26 +167,44 @@ public class Network {
 
     /**
      * Send an introduction request.
-     *
+     * A introduction request is build and put into a message.
      * @param peer the destination.
      * @throws IOException
      */
     public void sendIntroductionRequest(PeerAppToApp peer) throws IOException {
-        IntroductionRequest request = new IntroductionRequest(hashId, peer.getAddress(), connectionType, networkOperator, publicKey);
-        sendMessage(request, peer);
+        MessageProto.IntroductionRequest request = MessageProto.IntroductionRequest.newBuilder()
+                .setConnectionType(connectionType)
+                .setNetworkOperator(networkOperator)
+                .build();
+        MessageProto.Message message = MessageProto.Message.newBuilder()
+                .setPeerId(peer.getPeerId())
+                .setDestinationAddress(ByteString.copyFrom(peer.getAddress().getAddress().getAddress()))
+                .setDestinationPort(peer.getAddress().getPort())
+                .setPublicKey(ByteString.copyFrom(publicKey))
+                .setType(Message.INTRODUCTION_REQUEST_ID)
+                .setPayload(MessageProto.Payload.newBuilder().setIntroductionRequest(request))
+                .build();
+
+        sendMessage(message, peer);
     }
 
     /**
      * Send a block message via the network to a peer
      * @param peer the receiving peer
      * @param block the data
-     * @param isNewBlock determine if this is a new block or a old block as respond to a crawlrequest.
      * @throws IOException
      */
-    public void sendBlockMessage(PeerAppToApp peer, MessageProto.TrustChainBlock block, boolean isNewBlock) throws IOException {
-        MessageProto.Message message = newBuilder().setHalfBlock(block).build();
-        BlockMessage request = new BlockMessage(hashId, peer.getAddress(), publicKey, message,isNewBlock);
-        sendMessage(request, peer);
+    public void sendBlockMessage(PeerAppToApp peer, MessageProto.TrustChainBlock block) throws IOException {
+        MessageProto.Message message = MessageProto.Message.newBuilder()
+                .setPeerId(peer.getPeerId())
+                .setDestinationAddress(ByteString.copyFrom(peer.getAddress().getAddress().getAddress()))
+                .setDestinationPort(peer.getAddress().getPort())
+                .setPublicKey(ByteString.copyFrom(publicKey))
+                .setType(Message.BLOCK_MESSAGE_ID)
+                .setPayload(MessageProto.Payload.newBuilder().setBlock(block))
+                .build();
+
+        sendMessage(message, peer);
     }
 
     /**
@@ -194,8 +214,16 @@ public class Network {
      * @throws IOException
      */
     public void sendCrawlRequest(PeerAppToApp peer, MessageProto.CrawlRequest request) throws IOException {
-        CrawlRequest req = new CrawlRequest(hashId, peer.getAddress(), publicKey, request);
-        sendMessage(req, peer);
+        MessageProto.Message message = MessageProto.Message.newBuilder()
+                .setPeerId(peer.getPeerId())
+                .setDestinationAddress(ByteString.copyFrom(peer.getAddress().getAddress().getAddress()))
+                .setDestinationPort(peer.getAddress().getPort())
+                .setPublicKey(ByteString.copyFrom(publicKey))
+                .setType(Message.CRAWL_REQUEST_ID)
+                .setPayload(MessageProto.Payload.newBuilder().setCrawlRequest(request))
+                .build();
+
+        sendMessage(message, peer);
     }
 
     /**
@@ -206,8 +234,21 @@ public class Network {
      * @throws IOException
      */
     public void sendPunctureRequest(PeerAppToApp peer, PeerAppToApp puncturePeer) throws IOException {
-        PunctureRequest request = new PunctureRequest(hashId, peer.getAddress(), internalSourceAddress, puncturePeer, publicKey);
-        sendMessage(request, peer);
+        MessageProto.PunctureRequest pRequest = MessageProto.PunctureRequest.newBuilder()
+                .setSourceSocket(internalSourceAddress.toString())
+                .setPuncturePeer(ByteString.copyFrom(PeerAppToApp.serialize(puncturePeer)))
+                .build();
+
+        MessageProto.Message message = MessageProto.Message.newBuilder()
+                .setPeerId(peer.getPeerId())
+                .setDestinationAddress(ByteString.copyFrom(peer.getAddress().getAddress().getAddress()))
+                .setDestinationPort(peer.getAddress().getPort())
+                .setPublicKey(ByteString.copyFrom(publicKey))
+                .setType(Message.PUNCTURE_REQUEST_ID)
+                .setPayload(MessageProto.Payload.newBuilder().setPunctureRequest(pRequest))
+                .build();
+
+        sendMessage(message, peer);
     }
 
     /**
@@ -217,8 +258,20 @@ public class Network {
      * @throws IOException
      */
     public void sendPuncture(PeerAppToApp peer) throws IOException {
-        Puncture puncture = new Puncture(hashId, peer.getAddress(), internalSourceAddress, publicKey);
-        sendMessage(puncture, peer);
+        MessageProto.Puncture puncture = MessageProto.Puncture.newBuilder()
+                .setSourceSocket(internalSourceAddress.toString())
+                .build();
+
+        MessageProto.Message message = MessageProto.Message.newBuilder()
+                .setPeerId(peer.getPeerId())
+                .setDestinationAddress(ByteString.copyFrom(peer.getAddress().getAddress().getAddress()))
+                .setDestinationPort(peer.getAddress().getPort())
+                .setPublicKey(ByteString.copyFrom(publicKey))
+                .setType(Message.PUNCTURE_ID)
+                .setPayload(MessageProto.Payload.newBuilder().setPuncture(puncture))
+                .build();
+
+        sendMessage(message, peer);
     }
 
     /**
@@ -229,15 +282,30 @@ public class Network {
      * @throws IOException
      */
     public void sendIntroductionResponse(PeerAppToApp peer, PeerAppToApp invitee) throws IOException {
-        List<PeerAppToApp> pexPeers = new ArrayList<>();
+        List<ByteString> pexPeers = new ArrayList<>();
         for (PeerAppToApp p : networkCommunicationListener.getPeerHandler().getPeerList()) {
             if (p.hasReceivedData() && p.getPeerId() != null && p.isAlive())
-                pexPeers.add(p);
+                pexPeers.add(ByteString.copyFrom(PeerAppToApp.serialize(p)));
         }
 
-        IntroductionResponse response = new IntroductionResponse(hashId, internalSourceAddress, peer
-                .getAddress(), invitee, connectionType, pexPeers, networkOperator, publicKey);
-        sendMessage(response, peer);
+        MessageProto.IntroductionResponse response = MessageProto.IntroductionResponse.newBuilder()
+                .setConnectionType(connectionType)
+                .setNetworkOperator(networkOperator)
+                .setInternalSourceSocket(internalSourceAddress.toString())
+                .setInvitee(ByteString.copyFrom(PeerAppToApp.serialize(invitee)))
+                .addAllPex(pexPeers)
+                .build();
+
+        MessageProto.Message message = MessageProto.Message.newBuilder()
+                .setPeerId(peer.getPeerId())
+                .setDestinationAddress(ByteString.copyFrom(peer.getAddress().getAddress().getAddress()))
+                .setDestinationPort(peer.getAddress().getPort())
+                .setPublicKey(ByteString.copyFrom(publicKey))
+                .setType(Message.INTRODUCTION_RESPONSE_ID)
+                .setPayload(MessageProto.Payload.newBuilder().setIntroductionResponse(response))
+                .build();
+
+        sendMessage(message, peer);
     }
 
     /**
@@ -247,13 +315,10 @@ public class Network {
      * @param peer    the destination inboxItem.
      * @throws IOException
      */
-    private synchronized void sendMessage(Message message, PeerAppToApp peer) throws IOException {
-        message.putPubKey(publicKey);
+    private synchronized void sendMessage(MessageProto.Message message, PeerAppToApp peer) throws IOException {
+        ByteBuffer outputBuffer = ByteBuffer.allocate(BUFFER_SIZE);
+        channel.send(outputBuffer.wrap(message.toByteArray()), peer.getAddress());
         Log.d(TAG, "Sending " + message);
-        outBuffer.clear();
-        message.writeToByteBuffer(outBuffer);
-        outBuffer.flip();
-        channel.send(outBuffer, peer.getAddress());
         peer.sentData();
         if (networkCommunicationListener != null) {
             networkCommunicationListener.updatePeerLists();
@@ -335,7 +400,7 @@ public class Network {
                 }
                 networkCommunicationListener.updatePeerLists();
             }
-        } catch (BencodeReadException | IOException | MessageException e) {
+        } catch (IOException | MessageException e) {
             e.printStackTrace();
         }
     }
@@ -358,7 +423,7 @@ public class Network {
 
     /**
      * Add a block reference to the InboxItem and store this again locally.
-     * @param blockMessage the block of which the reference should be stored.
+     * @param block the block of which the reference should be stored.
      * @param context needed for storage
      */
     private static void addBlockToInbox(MessageProto.TrustChainBlock block, Context context) {
