@@ -36,7 +36,7 @@ public class PubKeyAndAddressPairStorage {
      */
     public static String getAddressByPubkey(Context context, PublicKey pubkey) {
         Log.d("PubKeyAndAddres", "get address of: " + pubkey.toString());
-        return SharedPreferencesStorage.readSharedPreferences(context, PUBKEY_KEY_PREFIX + pubkey);
+        return SharedPreferencesStorage.readSharedPreferences(context, PUBKEY_KEY_PREFIX + pubkey.toString());
     }
 
     /**
@@ -45,8 +45,9 @@ public class PubKeyAndAddressPairStorage {
      * @param address
      * @return
      */
-    public static String getPubKeyByAddress(Context context, String address) {
+    public static PublicKey getPubKeyByAddress(Context context, String address) {
         Log.d("PubKeyAndAddres", "get key of: " + address);
-        return SharedPreferencesStorage.readSharedPreferences(context, ADDRESS_KEY_PREFIX + address);
+        String pubKey =  SharedPreferencesStorage.readSharedPreferences(context, ADDRESS_KEY_PREFIX + address);
+        return new PublicKey(pubKey);
     }
 }

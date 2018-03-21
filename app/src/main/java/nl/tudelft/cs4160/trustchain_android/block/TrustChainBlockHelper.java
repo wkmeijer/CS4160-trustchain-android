@@ -18,6 +18,7 @@ import nl.tudelft.cs4160.trustchain_android.crypto.PublicKeyPair;
 import nl.tudelft.cs4160.trustchain_android.crypto.SigningKey;
 import nl.tudelft.cs4160.trustchain_android.database.TrustChainDBHelper;
 import nl.tudelft.cs4160.trustchain_android.message.MessageProto;
+import nl.tudelft.cs4160.trustchain_android.message.MessageProto.TrustChainBlock.Transaction;
 
 import static nl.tudelft.cs4160.trustchain_android.Util.Util.ellipsize;
 
@@ -34,7 +35,7 @@ public class TrustChainBlockHelper {
      */
     public static MessageProto.TrustChainBlock createGenesisBlock(DualSecret kp) {
         MessageProto.TrustChainBlock block = MessageProto.TrustChainBlock.newBuilder()
-                .setTransaction(MessageProto.Transaction.newBuilder().setUnformatted(ByteString.EMPTY).build())
+                .setTransaction(Transaction.newBuilder().setUnformatted(ByteString.EMPTY).build())
                 .setPublicKey(ByteString.copyFrom(kp.getPublicKeyPair().toBytes()))
                 .setSequenceNumber(GENESIS_SEQ)
                 .setLinkPublicKey(EMPTY_PK)
@@ -66,7 +67,7 @@ public class TrustChainBlockHelper {
                     .setLinkPublicKey(linkedBlock.getPublicKey())
                     .setLinkSequenceNumber(linkedBlock.getSequenceNumber());
         } else {
-            builder.setTransaction(MessageProto.Transaction.newBuilder().setUnformatted(ByteString.copyFrom(transaction)).build())
+            builder.setTransaction(Transaction.newBuilder().setUnformatted(ByteString.copyFrom(transaction)).build())
                     .setLinkPublicKey(ByteString.copyFrom(linkpubk))
                     .setLinkSequenceNumber(TrustChainBlockHelper.UNKNOWN_SEQ);
         }

@@ -12,6 +12,8 @@ import android.widget.Toast;
 
 import com.google.protobuf.ByteString;
 
+import org.libsodium.jni.keys.PublicKey;
+
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -26,7 +28,7 @@ import nl.tudelft.cs4160.trustchain_android.message.MessageProto;
 public class ChainExplorerAdapter extends BaseAdapter {
     static final String TAG = "ChainExplorerAdapter";
 
-    private final static String PEER_NAME_UNKNOWN = "unkown";
+    private final static String PEER_NAME_UNKNOWN = "unknown";
 
     private Context context;
     private List<MessageProto.TrustChainBlock> blocksList;
@@ -50,7 +52,7 @@ public class ChainExplorerAdapter extends BaseAdapter {
     }
 
     private String retrievePeerName(byte[] key) {
-        String name = UserNameStorage.getPeerByPublicKey(context, key);
+        String name = UserNameStorage.getPeerByPublicKey(context, new PublicKey(key));
         if(name == null) {
             return PEER_NAME_UNKNOWN;
         }
@@ -163,7 +165,7 @@ public class ChainExplorerAdapter extends BaseAdapter {
     }
 
     private String checkUserNameStorage(byte[] pubKey) {
-        String name = UserNameStorage.getPeerByPublicKey(context, pubKey);
+        String name = UserNameStorage.getPeerByPublicKey(context, new PublicKey(pubKey));
         if(name == null) {
             return "peer " + (peerList.size()-1);
         }

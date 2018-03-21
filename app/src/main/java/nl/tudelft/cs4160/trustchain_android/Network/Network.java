@@ -383,11 +383,11 @@ public class Network {
                         // TODO: otherwise just add it to the database.
 
 //                        if (blockMessage.isNewBlock()) {
-                            addBlockToInbox(block,context);
-                            networkCommunicationListener.handleReceivedBlock(peer, block);
-                            if(mutualblockListener != null) {
-                                mutualblockListener.blockAdded(block);
-                            }
+                        addBlockToInbox(block, context);
+                        networkCommunicationListener.handleReceivedBlock(peer, block);
+                        if (mutualblockListener != null) {
+                            mutualblockListener.blockAdded(block);
+                        }
 //                        } else{
 //                            if(crawlRequestListener != null) {
 //                                crawlRequestListener.handleCrawlRequestBlockMessageRequest(peer, blockMessage);
@@ -400,7 +400,7 @@ public class Network {
                 }
                 networkCommunicationListener.updatePeerLists();
             }
-        } catch (IOException | MessageException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -428,7 +428,7 @@ public class Network {
      */
     private static void addBlockToInbox(MessageProto.TrustChainBlock block, Context context) {
         // TODO: change the way pub keys are given to this method,
-        InboxItemStorage.addHalfBlock(context, ByteArrayConverter.bytesToHexString(block.getPublicKey().toByteArray())
+        InboxItemStorage.addHalfBlock(context, new PublicKey(block.getPublicKey().toByteArray())
                 , block.getSequenceNumber());
     }
 

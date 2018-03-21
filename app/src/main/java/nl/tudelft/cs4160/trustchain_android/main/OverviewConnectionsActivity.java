@@ -21,6 +21,8 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.google.protobuf.ByteString;
+
 import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.net.InetAddress;
@@ -383,7 +385,7 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
      * Handle an introduction request. Send a puncture request to the included invitee.
      *
      * @param peer    the origin inboxItem.
-     * @param message the message.
+     * @param request the message.
      * @throws IOException
      */
     @Override
@@ -407,18 +409,19 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
      * Handle an introduction response. Parse incoming PEX peers.
      *
      * @param peer    the origin inboxItem.
-     * @param message the message.
+     * @param response the message.
      */
     @Override
-    public void handleIntroductionResponse(PeerAppToApp peer, MessageProto.IntroductionResponse response) throws UnknownHostException {
+    public void handleIntroductionResponse(PeerAppToApp peer, MessageProto.IntroductionResponse response) throws Exception {
         peer.setConnectionType((int) response.getConnectionType());
         peer.setNetworkOperator(response.getNetworkOperator());
-        List<MessageProto.Peer> pex = response.getPexList();
-        for (MessageProto.Peer pexPeer : pex) {
-            if (getPeerHandler().hashId.equals(pexPeer.getPeerId())) continue;
-            InetAddress addr = InetAddress.getByAddress(pexPeer.getAddress().toByteArray());
-            int port = pexPeer.getPort();
-            getPeerHandler().getOrMakePeer(pexPeer.getPeerId(), new InetSocketAddress(addr,port), PeerAppToApp.OUTGOING);
+        List<ByteString> pex = response.getPexList();
+        for (ByteString pexPeer : pex) {
+            PeerAppToApp p = PeerAppToApp.deserialize(pexPeer.toByteArray());
+
+            if (!getPeerHandler().hashId.equals(p.getPeerId())) {
+                getPeerHandler().getOrMakePeer(p.getPeerId(), p.getAddress(), PeerAppToApp.OUTGOING);
+            }
         }
     }
 
@@ -426,7 +429,7 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
      * Handle a puncture. Does nothing because the only purpose of a puncture is to punch a hole in the NAT.
      *
      * @param peer    the origin inboxItem.
-     * @param message the message.
+     * @param puncture the message.
      * @throws IOException
      */
     @Override
@@ -437,7 +440,7 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
      * Handle a puncture request. Sends a puncture to the puncture inboxItem included in the message.
      *
      * @param peer    the origin inboxItem.
-     * @param message the message.
+     * @param request the message.
      * @throws IOException
      * @throws MessageException
      */
@@ -458,7 +461,7 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
      * Handle the received (half) block.
      * This block is placed in in the TrustChainDB, except if it is INVALID.
      * @param peer the sending peer
-     * @param message the data send
+     * @param block the data send
      * @throws IOException
      * @throws MessageException
      */
@@ -484,7 +487,7 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
     public void handleCrawlRequest(PeerAppToApp peer, MessageProto.CrawlRequest request) throws IOException, MessageException {
         //ToDo for future application sending the entire chain is a bit too much
         for (MessageProto.TrustChainBlock block : dbHelper.getAllBlocks()) {
-            network.sendBlockMessage(peer, block, false);
+            network.sendBlockMessage(peer, block);
         }
     }
 

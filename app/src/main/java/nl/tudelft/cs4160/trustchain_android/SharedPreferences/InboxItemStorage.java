@@ -2,6 +2,8 @@ package nl.tudelft.cs4160.trustchain_android.SharedPreferences;
 
 import android.content.Context;
 
+import org.libsodium.jni.keys.PublicKey;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -84,14 +86,14 @@ public class InboxItemStorage {
      * @param pubKey
      * @param halfBlockSequenceNumber the sequence number of the block that is added.
      */
-    public static void addHalfBlock(Context context, String pubKey, int halfBlockSequenceNumber) {
+    public static void addHalfBlock(Context context, PublicKey pubKey, int halfBlockSequenceNumber) {
         InboxItem[] array = SharedPreferencesStorage.readSharedPreferences(context, INBOX_ITEM_KEY, InboxItem[].class);
         if (array == null) {
             return;
         } else {
             for (int i = 0; i < array.length; i++) {
-                String p = pubKey;
-                String p2 = array[i].getPublicKey();
+                PublicKey p = pubKey;
+                PublicKey p2 = array[i].getPublicKey();
                 if (array[i].getPublicKey().equals(pubKey)) {
                     InboxItem item = array[i];
                     item.addHalfBlocks(halfBlockSequenceNumber);

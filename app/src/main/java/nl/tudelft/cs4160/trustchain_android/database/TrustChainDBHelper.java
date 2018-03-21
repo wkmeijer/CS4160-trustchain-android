@@ -15,6 +15,7 @@ import java.util.List;
 
 import nl.tudelft.cs4160.trustchain_android.block.TrustChainBlockHelper;
 import nl.tudelft.cs4160.trustchain_android.message.MessageProto;
+import nl.tudelft.cs4160.trustchain_android.message.MessageProto.TrustChainBlock.Transaction;
 
 public class TrustChainDBHelper extends SQLiteOpenHelper {
     public static final int DATABASE_VERSION = 1;
@@ -395,7 +396,7 @@ public class TrustChainDBHelper extends SQLiteOpenHelper {
         MessageProto.TrustChainBlock.Builder builder = MessageProto.TrustChainBlock.newBuilder();
 
         while (cursor.moveToNext()) {
-            builder.setTransaction(MessageProto.Transaction.newBuilder().setUnformatted(ByteString.copyFromUtf8(cursor.getString(
+            builder.setTransaction(Transaction.newBuilder().setUnformatted(ByteString.copyFromUtf8(cursor.getString(
                     cursor.getColumnIndex(TrustChainDBContract.BlockEntry.COLUMN_NAME_TX)))).build())
                     .setPublicKey(ByteString.copyFrom(Base64.decode(cursor.getString(
                             cursor.getColumnIndex(TrustChainDBContract.BlockEntry.COLUMN_NAME_PUBLIC_KEY)), Base64.DEFAULT)))

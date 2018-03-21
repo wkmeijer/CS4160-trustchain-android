@@ -14,6 +14,7 @@ import nl.tudelft.cs4160.trustchain_android.block.TrustChainBlockHelper;
 import nl.tudelft.cs4160.trustchain_android.crypto.DualSecret;
 import nl.tudelft.cs4160.trustchain_android.database.TrustChainDBHelper;
 import nl.tudelft.cs4160.trustchain_android.message.MessageProto;
+import nl.tudelft.cs4160.trustchain_android.message.MessageProto.TrustChainBlock.Transaction;
 import nl.tudelft.cs4160.trustchain_android.qr.exception.InvalidDualKeyException;
 import nl.tudelft.cs4160.trustchain_android.qr.exception.QRWalletImportException;
 import nl.tudelft.cs4160.trustchain_android.qr.models.QRTransaction;
@@ -66,7 +67,7 @@ public class TrustChainBlockFactory {
         DualSecret walletKeyPair = getKeyPairFromWallet(wallet);
 
         MessageProto.TrustChainBlock block = MessageProto.TrustChainBlock.newBuilder().
-                setTransaction(MessageProto.Transaction.newBuilder().setUnformatted(ByteString.copyFromUtf8(transactionString)).build())
+                setTransaction(Transaction.newBuilder().setUnformatted(ByteString.copyFromUtf8(transactionString)).build())
                 .setPublicKey(ByteString.copyFrom(walletKeyPair.getPublicKeyPair().toBytes()))
                 .setSequenceNumber(wallet.block.sequenceNumber)
                 .setPreviousHash(ByteString.copyFrom(Base64.decode(wallet.block.blockHashBase64, Base64.DEFAULT)))

@@ -11,6 +11,8 @@ import android.widget.ArrayAdapter;
 import android.widget.TableLayout;
 import android.widget.TextView;
 
+import org.libsodium.jni.keys.PublicKey;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -149,7 +151,7 @@ public class PeerListAdapter extends ArrayAdapter<PeerAppToApp> {
                 int pos = (int) v.getTag();
                 PeerAppToApp peer = getItem(pos);
                 if(peer.isAlive() && peer.hasReceivedData()) {
-                    String pubKey = PubKeyAndAddressPairStorage.getPubKeyByAddress(context, peer.getAddress().toString().replace("/", ""));
+                    PublicKey pubKey = PubKeyAndAddressPairStorage.getPubKeyByAddress(context, peer.getAddress().toString().replace("/", ""));
                     if(pubKey != null && !pubKey.equals("")) {
                         InboxItem i = new InboxItem(peer.getPeerId(), new ArrayList<Integer>(), peer.getAddress().getHostString(), pubKey, peer.getPort());
                         UserNameStorage.setNewPeerByPublicKey(context, peer.getPeerId(), pubKey);

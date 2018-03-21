@@ -232,7 +232,7 @@ public class PeerOverviewActivity extends AppCompatActivity implements CrawlRequ
             @Override
             public void run() {
                 try {
-                    network.sendBlockMessage(inboxItemOtherPeer.getPeerAppToApp(), signedBlock, true);
+                    network.sendBlockMessage(inboxItemOtherPeer.getPeerAppToApp(), signedBlock);
                     Snackbar mySnackbar = Snackbar.make(findViewById(R.id.myCoordinatorLayout),"Half block send!", Snackbar.LENGTH_SHORT);
                     mySnackbar.show();
                 } catch (IOException e) {
@@ -299,7 +299,7 @@ public class PeerOverviewActivity extends AppCompatActivity implements CrawlRequ
             @Override
             public void run() {
                 try {
-                    network.sendBlockMessage(inboxItemOtherPeer.getPeerAppToApp(), signedBlock, true);
+                    network.sendBlockMessage(inboxItemOtherPeer.getPeerAppToApp(), signedBlock);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }

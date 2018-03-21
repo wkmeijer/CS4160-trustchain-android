@@ -19,6 +19,8 @@ import android.widget.ProgressBar;
 
 import com.google.protobuf.ByteString;
 
+import org.libsodium.jni.keys.PublicKey;
+
 import java.util.Arrays;
 import java.util.List;
 
@@ -114,7 +116,7 @@ public class ChainExplorerActivity extends AppCompatActivity {
                     this.setTitle(TITLE);
                 } else {
                     this.setTitle("Chain of " + UserNameStorage.getPeerByPublicKey(this,
-                            ByteArrayConverter.byteStringToString(blocks.get(0).getPublicKey())));
+                            new PublicKey(blocks.get(0).getPublicKey().toByteArray())));
                 }
                 adapter = new ChainExplorerAdapter(this, blocks,
                         kp.getPublicKeyPair().toBytes(), publicKey);
