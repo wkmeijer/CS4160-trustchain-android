@@ -1,8 +1,4 @@
-<<<<<<< HEAD:app/src/test/java/nl/tudelft/cs4160/trustchain_android/appToAppTest/connectionTest/messagesTest/MessageTest.java
-package nl.tudelft.cs4160.trustchain_android.appToAppTest.connectionTest.messagesTest;
-=======
 package nl.tudelft.cs4160.trustchain_android.appToApp.connectionTest.messagesTest;
->>>>>>> 29aa341a74003f041d63668cec12d1f42177436b:app/src/test/java/nl/tudelft/cs4160/trustchain_android/appToApp/connectionTest/messagesTest/MessageTest.java
 
 import org.junit.Before;
 import org.junit.Test;
@@ -16,10 +12,6 @@ import nl.tudelft.cs4160.trustchain_android.appToApp.connection.messages.Message
 import nl.tudelft.cs4160.trustchain_android.appToApp.connection.messages.MessageException;
 
 import static org.junit.Assert.assertEquals;
-
-/**
- * Created by Boning on 12/18/2017.
- */
 
 public class MessageTest {
 
@@ -38,14 +30,14 @@ public class MessageTest {
 
     @Test
     public void testCreateAddressMap() {
-        Map<String, Object> m = Message.createAddressMap(source);
+        Map m = Message.createAddressMap(source);
         assertEquals(m.get("port"), (long) 11);
         assertEquals("111.111.11.11", m.get("address"));
     }
 
     @Test
     public void testCreatePeerMap() {
-        Map<String, Object> m = Message.createPeerMap(peer1);
+        Map m = Message.createPeerMap(peer1);
         assertEquals(m.get("port"), (long) 33);
         assertEquals("123", m.get("peer_id"));
     }

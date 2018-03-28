@@ -1,8 +1,4 @@
-<<<<<<< HEAD:app/src/test/java/nl/tudelft/cs4160/trustchain_android/appToAppTest/connectionTest/messagesTest/IntroductionRequestTest.java
-package nl.tudelft.cs4160.trustchain_android.appToAppTest.connectionTest.messagesTest;
-=======
 package nl.tudelft.cs4160.trustchain_android.appToApp.connectionTest.messagesTest;
->>>>>>> 29aa341a74003f041d63668cec12d1f42177436b:app/src/test/java/nl/tudelft/cs4160/trustchain_android/appToApp/connectionTest/messagesTest/IntroductionRequestTest.java
 
 import org.junit.Before;
 import org.junit.Test;

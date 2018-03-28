@@ -9,9 +9,6 @@ import nl.tudelft.cs4160.trustchain_android.message.MessageProto;
 
 import static org.junit.Assert.assertNotEquals;
 
-<<<<<<<HEAD
-        =======
-        >>>>>>>29aa341a74003f041d63668cec12d1f42177436b
 
 public class MutualBlockItemTest extends TestCase {
 
@@ -150,14 +147,10 @@ public class MutualBlockItemTest extends TestCase {
         assertNotEquals(m1, m2);
     }
 
-<<<<<<< HEAD
-=======
     @Test
     public void testEqualsWithAnotherTypeObjectShouldNotBeEqual() {
         MutualBlockItem m1 = new MutualBlockItem(testString, 0, linkSeqNum, testString, testString, block);
         Object obj = new Object();
         assertNotEquals(m1, obj);
     }
-
->>>>>>> 29aa341a74003f041d63668cec12d1f42177436b
 }

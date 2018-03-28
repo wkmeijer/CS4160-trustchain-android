@@ -12,6 +12,7 @@ public class PubKeyAndAddressPairStorage {
 
     private final static String PUBKEY_KEY_PREFIX = "PUBKEY_KEY_PREFIX:";
     private final static String ADDRESS_KEY_PREFIX = "ADDRESS_KEY_PREFIX:";
+    private final static String TAG = "PubKAndAddressPairStrg";
 
     /**
      * Store locally public key combined with address.
@@ -23,9 +24,9 @@ public class PubKeyAndAddressPairStorage {
         if(pubkey == null || address == null) {
             return;
         }
-        Log.d("PubKeyAndAddress", "add " + address + " - " + pubkey.toString());
-        SharedPreferencesStorage.writeSharedPreferences(context, PUBKEY_KEY_PREFIX + pubkey, address);
-        SharedPreferencesStorage.writeSharedPreferences(context, ADDRESS_KEY_PREFIX + address, pubkey);
+        Log.i(TAG, "add " + address + " - " + pubkey.toString());
+        SharedPreferencesStorage.writeSharedPreferences(context, PUBKEY_KEY_PREFIX + pubkey.toString(), address);
+        SharedPreferencesStorage.writeSharedPreferences(context, ADDRESS_KEY_PREFIX + address, pubkey.toString());
     }
 
     /**
@@ -35,7 +36,7 @@ public class PubKeyAndAddressPairStorage {
      * @return
      */
     public static String getAddressByPubkey(Context context, PublicKey pubkey) {
-        Log.d("PubKeyAndAddres", "get address of: " + pubkey.toString());
+        Log.i(TAG, "get address of: " + pubkey.toString());
         return SharedPreferencesStorage.readSharedPreferences(context, PUBKEY_KEY_PREFIX + pubkey.toString());
     }
 
@@ -46,7 +47,7 @@ public class PubKeyAndAddressPairStorage {
      * @return
      */
     public static PublicKey getPubKeyByAddress(Context context, String address) {
-        Log.d("PubKeyAndAddres", "get key of: " + address);
+        Log.i(TAG, "get key of: " + address);
         String pubKey =  SharedPreferencesStorage.readSharedPreferences(context, ADDRESS_KEY_PREFIX + address);
         return new PublicKey(pubKey);
     }

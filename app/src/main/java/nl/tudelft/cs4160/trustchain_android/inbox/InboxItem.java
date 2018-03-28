@@ -12,7 +12,8 @@ public class InboxItem implements Serializable {
     private String userName;
     private ArrayList<Integer> halfBlockSequenceNumbers;
     private String address;
-    private PublicKey publicKey;
+    // byte array because libsodium PublicKey is not serializable
+    private byte[] publicKey;
     private int port;
 
     /**
@@ -27,7 +28,7 @@ public class InboxItem implements Serializable {
         this.userName = userName;
         this.halfBlockSequenceNumbers = halfBlockSequenceNumbers;
         this.address = address;
-        this.publicKey = publicKey;
+        this.publicKey = publicKey.toBytes();
         this.port = port;
     }
 
@@ -68,11 +69,11 @@ public class InboxItem implements Serializable {
     }
 
     public PublicKey getPublicKey() {
-        return publicKey;
+        return new PublicKey(publicKey);
     }
 
     public void setPublicKey(PublicKey publicKey) {
-        this.publicKey = publicKey;
+        this.publicKey = publicKey.toBytes();
     }
 
     /**

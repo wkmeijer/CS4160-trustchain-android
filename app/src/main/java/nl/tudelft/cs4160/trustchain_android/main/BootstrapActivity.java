@@ -17,6 +17,7 @@ import nl.tudelft.cs4160.trustchain_android.SharedPreferences.BootstrapIPStorage
 
 public class BootstrapActivity extends AppCompatActivity {
     private EditText bootstrapView;
+    private final String TAG = this.getClass().getName();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,13 +35,15 @@ public class BootstrapActivity extends AppCompatActivity {
         try{
             Object res = InetAddress.getByName(bootstrapView.getText().toString());
             if(!(res instanceof Inet4Address) && !(res instanceof Inet6Address)){
-                Log.i("Bootstrap IP Adress: ", res.toString());
+                Log.i(TAG, res.toString());
                 throw new Exception("Bootstrap IP is not a valid IP4 or IP6 address.");
             }
             Intent returnIntent = new Intent();
-            BootstrapIPStorage.setIP(this, bootstrapView.getText().toString());
-            returnIntent.putExtra("ConnectableAddress",bootstrapView.getText().toString());
+            String newBootstrap = bootstrapView.getText().toString();
+            BootstrapIPStorage.setIP(this, newBootstrap);
+            returnIntent.putExtra("ConnectableAddress",newBootstrap);
             setResult(OverviewConnectionsActivity.RESULT_OK,returnIntent);
+            Log.i(TAG, "Updated bootstrap IP to: " + newBootstrap);
             finish();
         } catch (Exception e){
             Toast.makeText(this, "The bootstrap IP address is not a valid IP address: " + bootstrapView.getText().toString(), Toast.LENGTH_SHORT).show();

@@ -319,7 +319,7 @@ public class Network {
     private synchronized void sendMessage(MessageProto.Message message, PeerAppToApp peer) throws IOException {
         ByteBuffer outputBuffer = ByteBuffer.allocate(BUFFER_SIZE);
         channel.send(outputBuffer.wrap(message.toByteArray()), peer.getAddress());
-        Log.d(TAG, "Sending " + message);
+        Log.i(TAG, "Sending " + message);
         peer.sentData();
         if (networkCommunicationListener != null) {
             networkCommunicationListener.updatePeerLists();
@@ -349,7 +349,7 @@ public class Network {
 
         try {
             MessageProto.Message message = MessageProto.Message.parseFrom(data);
-            Log.d(TAG, "Received " + message.toString());
+            Log.i(TAG, "Received " + message.toString());
             String peerId = message.getPeerId();
 
             if (networkCommunicationListener != null) {
