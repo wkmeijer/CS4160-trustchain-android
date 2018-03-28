@@ -66,7 +66,7 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
 
     // The server ip address, this is the bootstrap phone that's always running
 //    public static String CONNECTABLE_ADDRESS = "130.161.211.254";
-    public static String CONNECTABLE_ADDRESS = "145.94.226.167";
+    public static String CONNECTABLE_ADDRESS = "145.94.226.168";
     public final static int DEFAULT_PORT = 1873;
     private static final int BUFFER_SIZE = 65536;
     private PeerListAdapter incomingPeerAdapter;
