@@ -22,6 +22,6 @@ public class PubKeyConversion {
         DualSecret keyPair = Key.createNewKeyPair();
         PublicKey pubKey = keyPair.getPublicKey();
         byte[] keyBytes = pubKey.toBytes();
-        Assert.assertEquals(pubKey, new PublicKey(keyBytes));
+        Assert.assertEquals(pubKey.toString(), new PublicKey(keyBytes).toString());
     }
 }

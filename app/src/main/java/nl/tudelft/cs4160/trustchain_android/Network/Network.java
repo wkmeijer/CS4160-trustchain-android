@@ -40,6 +40,7 @@ import nl.tudelft.cs4160.trustchain_android.appToApp.connection.messages.Punctur
 import nl.tudelft.cs4160.trustchain_android.appToApp.connection.messages.PunctureRequest;
 import nl.tudelft.cs4160.trustchain_android.bencode.BencodeReadException;
 import nl.tudelft.cs4160.trustchain_android.crypto.Key;
+import nl.tudelft.cs4160.trustchain_android.crypto.PublicKeyPair;
 import nl.tudelft.cs4160.trustchain_android.inbox.InboxItem;
 import nl.tudelft.cs4160.trustchain_android.main.OverviewConnectionsActivity;
 import nl.tudelft.cs4160.trustchain_android.main.PeerOverviewActivity;
@@ -56,7 +57,7 @@ public class Network {
     private static InetSocketAddress internalSourceAddress;
     private String networkOperator;
     private static Network network;
-    private PublicKey publicKey;
+    private PublicKeyPair publicKey;
     private static NetworkCommunicationListener networkCommunicationListener;
     private static PeerOverviewActivity mutualblockListener;
 
@@ -104,7 +105,7 @@ public class Network {
         TelephonyManager telephonyManager = ((TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE));
         networkOperator = telephonyManager.getNetworkOperatorName();
         hashId = UserNameStorage.getUserName(context);
-        publicKey = Key.loadKeys(context).getPublicKeyPair().getPublicKey();
+        publicKey = Key.loadKeys(context).getPublicKeyPair();
         openChannel();
         showLocalIpAddress();
     }
@@ -357,7 +358,7 @@ public class Network {
 
                 PeerAppToApp peer = networkCommunicationListener.getPeerHandler().getOrMakePeer(peerId, address, PeerAppToApp.INCOMING);
 
-                PublicKey pubKey = new PublicKey(message.getPublicKey().toByteArray());
+                PublicKey pubKey = new PublicKeyPair(message.getPublicKey().toByteArray()).getPublicKey();
                 String ip = address.getAddress().toString().replace("/", "") + ":" + address.getPort();
                 PubKeyAndAddressPairStorage.addPubkeyAndAddressPair(context, pubKey, ip);
                 if (peer == null) return;
@@ -429,7 +430,7 @@ public class Network {
      */
     private static void addBlockToInbox(MessageProto.TrustChainBlock block, Context context) {
         // TODO: change the way pub keys are given to this method,
-        InboxItemStorage.addHalfBlock(context, new PublicKey(block.getPublicKey().toByteArray())
+        InboxItemStorage.addHalfBlock(context, new PublicKeyPair(block.getPublicKey().toByteArray()).getPublicKey()
                 , block.getSequenceNumber());
     }
 
