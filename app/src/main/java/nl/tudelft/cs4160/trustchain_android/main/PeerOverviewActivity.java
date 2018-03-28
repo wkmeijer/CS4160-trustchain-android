@@ -155,7 +155,7 @@ public class PeerOverviewActivity extends AppCompatActivity implements CrawlRequ
         network.updateConnectionType((ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE));
 
         int sq = -5;
-        MessageProto.TrustChainBlock block = dbHelper.getBlock(inboxItemOtherPeer.getPublicKey().toBytes(), dbHelper.getMaxSeqNum(inboxItemOtherPeer.getPublicKey().toBytes()));
+        MessageProto.TrustChainBlock block = dbHelper.getBlock(inboxItemOtherPeer.getPublicKeyPair().toBytes(), dbHelper.getMaxSeqNum(inboxItemOtherPeer.getPublicKeyPair().toBytes()));
         if (block != null) {
             sq = block.getSequenceNumber();
         } else {
@@ -190,8 +190,8 @@ public class PeerOverviewActivity extends AppCompatActivity implements CrawlRequ
      */
     public void onClickViewChain(View view) {
         // Try to instantiate public key.
-        if (this.inboxItemOtherPeer.getPublicKey() != null) {
-            byte[] publicKey = this.inboxItemOtherPeer.getPublicKey().toBytes();
+        if (this.inboxItemOtherPeer.getPublicKeyPair() != null) {
+            byte[] publicKey = this.inboxItemOtherPeer.getPublicKeyPair().toBytes();
             if (publicKey != null) {
                 Intent intent = new Intent(context, ChainExplorerActivity.class);
                 intent.putExtra(ChainExplorerActivity.BUNDLE_EXTRAS_PUBLIC_KEY , publicKey);
@@ -219,7 +219,7 @@ public class PeerOverviewActivity extends AppCompatActivity implements CrawlRequ
     public void onClickSend(View view) throws UnsupportedEncodingException {
         byte[] publicKey = Key.loadKeys(this).getPublicKeyPair().toBytes();
         byte[] transactionData = messageEditText.getText().toString().getBytes("UTF-8");
-        final MessageProto.TrustChainBlock block = createBlock(transactionData, DBHelper, publicKey, null, inboxItemOtherPeer.getPublicKey().toBytes());
+        final MessageProto.TrustChainBlock block = createBlock(transactionData, DBHelper, publicKey, null, inboxItemOtherPeer.getPublicKeyPair().toBytes());
         final MessageProto.TrustChainBlock signedBlock = TrustChainBlockHelper.sign(block, Key.loadKeys(getApplicationContext()).getSigningKey());
         messageEditText.setText("");
         messageEditText.clearFocus();
@@ -288,7 +288,7 @@ public class PeerOverviewActivity extends AppCompatActivity implements CrawlRequ
         DualSecret keyPair = Key.loadKeys(this);
         MessageProto.TrustChainBlock block = createBlock(null, DBHelper,
                 keyPair.getPublicKeyPair().toBytes(),
-                linkedBlock, inboxItemOtherPeer.getPublicKey().toBytes());
+                linkedBlock, inboxItemOtherPeer.getPublicKeyPair().toBytes());
 
         final MessageProto.TrustChainBlock signedBlock = sign(block, keyPair.getSigningKey());
 
@@ -336,7 +336,7 @@ public class PeerOverviewActivity extends AppCompatActivity implements CrawlRequ
     public void blockAdded(MessageProto.TrustChainBlock block) {
         DualSecret keyPair = Key.loadKeys(this);
         byte[] myPublicKey = keyPair.getPublicKeyPair().toBytes();
-        byte[] peerPublicKey = this.inboxItemOtherPeer.getPublicKey().toBytes();
+        byte[] peerPublicKey = this.inboxItemOtherPeer.getPublicKeyPair().toBytes();
         byte[] publicKey = block.getPublicKey().toByteArray();
         byte[] linkedPublicKey = block.getLinkPublicKey().toByteArray();
         if (Arrays.equals(myPublicKey,linkedPublicKey) && Arrays.equals(peerPublicKey, publicKey)) {
@@ -374,7 +374,7 @@ public class PeerOverviewActivity extends AppCompatActivity implements CrawlRequ
             int validationResultStatus = ValidationResult.NO_INFO;
             DualSecret keyPair = Key.loadKeys(activity);
             byte[] myPublicKey = keyPair.getPublicKeyPair().toBytes();
-            byte[] peerPublicKey = activity.inboxItemOtherPeer.getPublicKey().toBytes();
+            byte[] peerPublicKey = activity.inboxItemOtherPeer.getPublicKeyPair().toBytes();
 
             for (MessageProto.TrustChainBlock block : activity.DBHelper.getBlocks(keyPair.getPublicKeyPair().toBytes(), true)) {
                 byte[] linkedPublicKey = block.getLinkPublicKey().toByteArray();

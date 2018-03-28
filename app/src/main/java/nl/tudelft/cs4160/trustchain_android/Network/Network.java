@@ -358,9 +358,9 @@ public class Network {
 
                 PeerAppToApp peer = networkCommunicationListener.getPeerHandler().getOrMakePeer(peerId, address, PeerAppToApp.INCOMING);
 
-                PublicKey pubKey = new PublicKeyPair(message.getPublicKey().toByteArray()).getPublicKey();
+                PublicKeyPair pubKeyPair = new PublicKeyPair(message.getPublicKey().toByteArray());
                 String ip = address.getAddress().toString().replace("/", "") + ":" + address.getPort();
-                PubKeyAndAddressPairStorage.addPubkeyAndAddressPair(context, pubKey, ip);
+                PubKeyAndAddressPairStorage.addPubkeyAndAddressPair(context, pubKeyPair, ip);
                 if (peer == null) return;
                 peer.received(data);
                 switch (message.getType()) {
@@ -378,7 +378,7 @@ public class Network {
                         break;
                     case Message.BLOCK_MESSAGE_ID:
                         MessageProto.TrustChainBlock block = message.getPayload().getBlock();
-                        addPeerToInbox(pubKey, address, context, peerId);
+                        addPeerToInbox(pubKeyPair, address, context, peerId);
                         // TODO: remove the newblock field
                         // TODO: check if a block is meant for us and if we have already signed it
                         // TODO: if we have not yet signed it add it to the inbox
@@ -410,15 +410,15 @@ public class Network {
     /**
      * Add peer to inbox.
      * This means storing the InboxItem object in the local preferences.
-     * @param pubKey
+     * @param pubKeyPair
      * @param address Socket address
      * @param context needed for storage
      * @param peerId
      */
-    private static void addPeerToInbox(PublicKey pubKey,InetSocketAddress address, Context context, String peerId) {
-        if (pubKey != null) {
+    private static void addPeerToInbox(PublicKeyPair pubKeyPair,InetSocketAddress address, Context context, String peerId) {
+        if (pubKeyPair != null) {
             String ip = address.getAddress().toString().replace("/", "");
-            InboxItem i = new InboxItem(peerId, new ArrayList<Integer>(), ip, pubKey, address.getPort());
+            InboxItem i = new InboxItem(peerId, new ArrayList<Integer>(), ip, pubKeyPair, address.getPort());
             InboxItemStorage.addInboxItem(context, i);
         }
     }
@@ -430,7 +430,7 @@ public class Network {
      */
     private static void addBlockToInbox(MessageProto.TrustChainBlock block, Context context) {
         // TODO: change the way pub keys are given to this method,
-        InboxItemStorage.addHalfBlock(context, new PublicKeyPair(block.getPublicKey().toByteArray()).getPublicKey()
+        InboxItemStorage.addHalfBlock(context, new PublicKeyPair(block.getPublicKey().toByteArray())
                 , block.getSequenceNumber());
     }
 

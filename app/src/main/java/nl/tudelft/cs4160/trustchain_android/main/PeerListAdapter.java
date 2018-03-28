@@ -21,6 +21,7 @@ import nl.tudelft.cs4160.trustchain_android.SharedPreferences.InboxItemStorage;
 import nl.tudelft.cs4160.trustchain_android.SharedPreferences.PubKeyAndAddressPairStorage;
 import nl.tudelft.cs4160.trustchain_android.SharedPreferences.UserNameStorage;
 import nl.tudelft.cs4160.trustchain_android.appToApp.PeerAppToApp;
+import nl.tudelft.cs4160.trustchain_android.crypto.PublicKeyPair;
 import nl.tudelft.cs4160.trustchain_android.inbox.InboxItem;
 
 public class PeerListAdapter extends ArrayAdapter<PeerAppToApp> {
@@ -151,10 +152,10 @@ public class PeerListAdapter extends ArrayAdapter<PeerAppToApp> {
                 int pos = (int) v.getTag();
                 PeerAppToApp peer = getItem(pos);
                 if(peer.isAlive() && peer.hasReceivedData()) {
-                    PublicKey pubKey = PubKeyAndAddressPairStorage.getPubKeyByAddress(context, peer.getAddress().toString().replace("/", ""));
-                    if(pubKey != null && !pubKey.equals("")) {
-                        InboxItem i = new InboxItem(peer.getPeerId(), new ArrayList<Integer>(), peer.getAddress().getHostString(), pubKey, peer.getPort());
-                        UserNameStorage.setNewPeerByPublicKey(context, peer.getPeerId(), pubKey);
+                    PublicKeyPair pubKeyPair = PubKeyAndAddressPairStorage.getPubKeyByAddress(context, peer.getAddress().toString().replace("/", ""));
+                    if(pubKeyPair != null && !pubKeyPair.equals("")) {
+                        InboxItem i = new InboxItem(peer.getPeerId(), new ArrayList<Integer>(), peer.getAddress().getHostString(), pubKeyPair, peer.getPort());
+                        UserNameStorage.setNewPeerByPublicKey(context, peer.getPeerId(), pubKeyPair);
                         InboxItemStorage.addInboxItem(context, i);
                         Snackbar mySnackbar = Snackbar.make(coordinatorLayout,
                                 peer.getPeerId() + " added to inbox", Snackbar.LENGTH_SHORT);

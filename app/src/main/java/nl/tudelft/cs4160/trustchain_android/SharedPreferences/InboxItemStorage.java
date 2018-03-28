@@ -7,6 +7,7 @@ import org.libsodium.jni.keys.PublicKey;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import nl.tudelft.cs4160.trustchain_android.crypto.PublicKeyPair;
 import nl.tudelft.cs4160.trustchain_android.inbox.InboxItem;
 
 public class InboxItemStorage {
@@ -49,7 +50,7 @@ public class InboxItemStorage {
             InboxItem[] inboxItems = new InboxItem[array.length + 1];
             for (int i = 0; i < array.length; i++) {
                 inboxItems[i] = array[i];
-                if (array[i].getPublicKey() != null && array[i].getPublicKey().equals(inboxItem.getPublicKey())) {
+                if (array[i].getPublicKeyPair() != null && array[i].getPublicKeyPair().equals(inboxItem.getPublicKeyPair())) {
                     return;
                 }
             }
@@ -69,7 +70,7 @@ public class InboxItemStorage {
             return;
         } else {
             for (int i = 0; i < array.length; i++) {
-                if (array[i].getPublicKey().equals(inboxItem.getPublicKey())) {
+                if (array[i].getPublicKeyPair().equals(inboxItem.getPublicKeyPair())) {
                     InboxItem item = array[i];
                     item.setHalfBlocks(new ArrayList<Integer>());
                     array[i] = item;
@@ -86,15 +87,15 @@ public class InboxItemStorage {
      * @param pubKey
      * @param halfBlockSequenceNumber the sequence number of the block that is added.
      */
-    public static void addHalfBlock(Context context, PublicKey pubKey, int halfBlockSequenceNumber) {
+    public static void addHalfBlock(Context context, PublicKeyPair pubKeyPair, int halfBlockSequenceNumber) {
         InboxItem[] array = SharedPreferencesStorage.readSharedPreferences(context, INBOX_ITEM_KEY, InboxItem[].class);
         if (array == null) {
             return;
         } else {
             for (int i = 0; i < array.length; i++) {
-                PublicKey p = pubKey;
-                PublicKey p2 = array[i].getPublicKey();
-                if (array[i].getPublicKey().equals(pubKey)) {
+                PublicKeyPair p = pubKeyPair;
+                PublicKeyPair p2 = array[i].getPublicKeyPair();
+                if (array[i].getPublicKeyPair().equals(pubKeyPair)) {
                     InboxItem item = array[i];
                     item.addHalfBlocks(halfBlockSequenceNumber);
                     array[i] = item;

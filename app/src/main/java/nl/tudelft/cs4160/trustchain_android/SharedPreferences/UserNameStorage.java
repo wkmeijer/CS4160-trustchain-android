@@ -1,10 +1,12 @@
 package nl.tudelft.cs4160.trustchain_android.SharedPreferences;
 
 import android.content.Context;
+import android.util.Base64;
 
 import org.libsodium.jni.keys.PublicKey;
 
 import nl.tudelft.cs4160.trustchain_android.Util.ByteArrayConverter;
+import nl.tudelft.cs4160.trustchain_android.crypto.PublicKeyPair;
 
 /**
  * This class will store the chosen username of the user locally.
@@ -21,11 +23,11 @@ public class UserNameStorage {
         return SharedPreferencesStorage.readSharedPreferences(context, userNameStorage);
     }
 
-    public static void setNewPeerByPublicKey(Context context, String userName, PublicKey publicKey){
-        SharedPreferencesStorage.writeSharedPreferences(context, publicKey.toString(), userName);
+    public static void setNewPeerByPublicKey(Context context, String userName, PublicKeyPair pubKeyPair){
+        SharedPreferencesStorage.writeSharedPreferences(context, Base64.encodeToString(pubKeyPair.toBytes(),Base64.DEFAULT), userName);
     }
 
-    public static String getPeerByPublicKey(Context context, PublicKey publicKey){
-        return SharedPreferencesStorage.readSharedPreferences(context, publicKey.toString());
+    public static String getPeerByPublicKey(Context context, PublicKeyPair pubKeyPair){
+        return SharedPreferencesStorage.readSharedPreferences(context, Base64.encodeToString(pubKeyPair.toBytes(),Base64.DEFAULT));
     }
 }

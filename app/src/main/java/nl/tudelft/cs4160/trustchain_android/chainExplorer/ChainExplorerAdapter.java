@@ -23,6 +23,7 @@ import nl.tudelft.cs4160.trustchain_android.SharedPreferences.UserNameStorage;
 import nl.tudelft.cs4160.trustchain_android.Util.ByteArrayConverter;
 import nl.tudelft.cs4160.trustchain_android.block.TrustChainBlockHelper;
 import nl.tudelft.cs4160.trustchain_android.color.ChainColor;
+import nl.tudelft.cs4160.trustchain_android.crypto.PublicKeyPair;
 import nl.tudelft.cs4160.trustchain_android.message.MessageProto;
 
 public class ChainExplorerAdapter extends BaseAdapter {
@@ -52,7 +53,7 @@ public class ChainExplorerAdapter extends BaseAdapter {
     }
 
     private String retrievePeerName(byte[] key) {
-        String name = UserNameStorage.getPeerByPublicKey(context, new PublicKey(key));
+        String name = UserNameStorage.getPeerByPublicKey(context, new PublicKeyPair(key));
         if(name == null) {
             return PEER_NAME_UNKNOWN;
         }
@@ -165,7 +166,7 @@ public class ChainExplorerAdapter extends BaseAdapter {
     }
 
     private String checkUserNameStorage(byte[] pubKey) {
-        String name = UserNameStorage.getPeerByPublicKey(context, new PublicKey(pubKey));
+        String name = UserNameStorage.getPeerByPublicKey(context, new PublicKeyPair(pubKey));
         if(name == null) {
             return "peer " + (peerList.size()-1);
         }
