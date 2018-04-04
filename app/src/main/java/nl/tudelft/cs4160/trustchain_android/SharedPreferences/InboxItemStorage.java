@@ -50,7 +50,7 @@ public class InboxItemStorage {
             InboxItem[] inboxItems = new InboxItem[array.length + 1];
             for (int i = 0; i < array.length; i++) {
                 inboxItems[i] = array[i];
-                if (array[i].getPublicKeyPair() != null && array[i].getPublicKeyPair().equals(inboxItem.getPublicKeyPair())) {
+                if (array[i].getPublicKeyPair() != null && Arrays.equals(array[i].getPublicKeyPair().toBytes(),inboxItem.getPublicKeyPair().toBytes())) {
                     return;
                 }
             }
@@ -84,7 +84,7 @@ public class InboxItemStorage {
     /**
      * Add the link of a half block to the inbox item it concerns.
      * @param context
-     * @param pubKey
+     * @param pubKeyPair
      * @param halfBlockSequenceNumber the sequence number of the block that is added.
      */
     public static void addHalfBlock(Context context, PublicKeyPair pubKeyPair, int halfBlockSequenceNumber) {

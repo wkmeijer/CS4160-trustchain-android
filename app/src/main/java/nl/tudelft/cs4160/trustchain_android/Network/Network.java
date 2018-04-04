@@ -73,7 +73,7 @@ public class Network {
      * @param context
      * @return
      */
-    public static Network getInstance(Context context) {
+    public synchronized static Network getInstance(Context context) {
         if (network == null) {
             network = new Network();
             network.initVariables(context);

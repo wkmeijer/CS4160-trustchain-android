@@ -91,6 +91,7 @@ public class InboxAdapter extends RecyclerView.Adapter<InboxAdapter.ViewHolder> 
     }
 
     // Replace the contents of a view (invoked by the layout manager)
+    // This updates the connection status color of each peer.
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         // - get element from your dataset at this position
@@ -111,8 +112,8 @@ public class InboxAdapter extends RecyclerView.Adapter<InboxAdapter.ViewHolder> 
                 h.mAddressTextView.setText(inboxItem.getAddress() + ":" + inboxItem.getPort());
 
                 h.mStatusTextView.setTextColor(h.mAddressTextView.getContext().getResources().getColor(R.color.colorStatusCantConnect));
+                String name = inboxItem.getUserName();
                 for (PeerAppToApp curr : peerList) {
-                    String name = inboxItem.getUserName();
                     if (curr != null && curr.getPeerId() != null && curr.getPeerId().equals(name)) {
                         if (curr.isAlive()) {
                             h.mStatusTextView.setTextColor(h.mAddressTextView.getContext().getResources().getColor(R.color.colorStatusConnected));
