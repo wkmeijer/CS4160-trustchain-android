@@ -114,8 +114,9 @@ public class PeerOverviewActivity extends AppCompatActivity implements CrawlRequ
                 } else {
                     Toast.makeText(getApplicationContext(), "Requires at least API 19 (KitKat)", Toast.LENGTH_LONG).show();
                 }
-            default:
                 return true;
+            default:
+                return false;
         }
     }
 

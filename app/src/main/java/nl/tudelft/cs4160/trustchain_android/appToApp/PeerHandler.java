@@ -14,7 +14,6 @@ import nl.tudelft.cs4160.trustchain_android.appToApp.connection.PeerListener;
 import nl.tudelft.cs4160.trustchain_android.appToApp.connection.WanVote;
 
 public class PeerHandler {
-    private final ReentrantLock peerListLock = new ReentrantLock();
     private ArrayList<PeerAppToApp> peerList;
     private List<PeerAppToApp> incomingList = new ArrayList<>();
     private List<PeerAppToApp> outgoingList = new ArrayList<>();
@@ -41,67 +40,47 @@ public class PeerHandler {
     /**
      * Remove duplicate peers from the peerlist.
      */
-    public void removeDuplicates() {
-        peerListLock.lock();
-        try {
-            for (int i = 0; i < peerList.size(); i++) {
-                PeerAppToApp p1 = peerList.get(i);
-                for (int j = 0; j < peerList.size(); j++) {
-                    PeerAppToApp p2 = peerList.get(j);
-                    if (j != i && p1.getPeerId() != null && p1.getPeerId().equals(p2.getPeerId())) {
-                        peerList.remove(p2);
-                    }
+    public synchronized void removeDuplicates() {
+        for (int i = 0; i < peerList.size(); i++) {
+            PeerAppToApp p1 = peerList.get(i);
+            for (int j = 0; j < peerList.size(); j++) {
+                PeerAppToApp p2 = peerList.get(j);
+                if (j != i && p1.getPeerId() != null && p1.getPeerId().equals(p2.getPeerId())) {
+                    peerList.remove(p2);
                 }
             }
-        } finally {
-            peerListLock.unlock();
         }
     }
 
     /**
      * Remove all inactive peers.
      */
-    public void removeDeadPeers() {
-        peerListLock.lock();
-        try {
-            for (PeerAppToApp peer : new ArrayList<>(peerList)) {
-                if (peer.canBeRemoved()) {
-                    peerList.remove(peer);
-                }
+    public synchronized void removeDeadPeers() {
+        for (PeerAppToApp peer : new ArrayList<>(peerList)) {
+            if (peer.canBeRemoved()) {
+                peerList.remove(peer);
             }
-        } finally {
-            peerListLock.unlock();
         }
     }
 
     /**
      * Add peer to the list.
-     * Lock is to make sure this happens thread safe.
+     * Synchronized is to make sure this happens thread safe.
      *
      * @param p
      */
-    public void add(PeerAppToApp p) {
-        peerListLock.lock();
-        try {
-            this.peerList.add(p);
-        } finally {
-            peerListLock.unlock();
-        }
+    public synchronized void add(PeerAppToApp p) {
+        this.peerList.add(p);
     }
 
     /**
      * Remove a peer from the list.
-     * Lock is to make sure this happens thread safe.
+     * Synchronized is to make sure this happens thread safe.
      *
      * @param p
      */
-    public void remove(PeerAppToApp p) {
-        peerListLock.lock();
-        try {
-            this.peerList.remove(p);
-        } finally {
-            peerListLock.unlock();
-        }
+    public synchronized void remove(PeerAppToApp p) {
+        this.peerList.remove(p);
     }
 
     /**
@@ -110,146 +89,115 @@ public class PeerHandler {
      *
      * @return
      */
-    public int size() {
-        peerListLock.lock();
-        try {
-            return peerList.size();
-        } finally {
-            peerListLock.unlock();
-        }
+    public synchronized int size() {
+        return peerList.size();
     }
 
     /**
      * Check if a peer exists in the list.
-     * Lock is to make sure this happens thread safe.
+     * Synchronized is to make sure this happens thread safe.
      *
      * @param peer
      * @return
      */
-    public boolean peerExistsInList(PeerAppToApp peer) {
-        peerListLock.lock();
-        try {
-            if (peer.getPeerId() == null) return false;
-            for (PeerAppToApp p : this.peerList) {
-                if (peer.getPeerId().equals(p.getPeerId())) {
-                    return true;
-                }
+    public synchronized boolean peerExistsInList(PeerAppToApp peer) {
+        if (peer.getPeerId() == null) return false;
+        for (PeerAppToApp p : this.peerList) {
+            if (peer.getPeerId().equals(p.getPeerId())) {
+                return true;
             }
-            return false;
-        } finally {
-            peerListLock.unlock();
         }
+        return false;
     }
 
     /**
      * Add a inboxItem to the inboxItem list.
-     * Lock is to make sure this happens thread safe.
+     * Synchronized is to make sure this happens thread safe.
      * @param peerId   the inboxItem's id.
      * @param address  the inboxItem's address.
-     * @param incoming whether the inboxItem is an incoming inboxItem.
      * @return the added inboxItem.
      */
-    public synchronized PeerAppToApp addPeer(String peerId, InetSocketAddress address, boolean incoming) {
-        peerListLock.lock();
-        try {
-            if (hashId.equals(peerId)) {
-                Log.d(TAG, "Not adding self");
-                PeerAppToApp self = null;
-                for (PeerAppToApp p : peerList) {
-                    if (p.getAddress().equals(wanVote.getAddress()))
-                        self = p;
-                }
-                if (self != null) {
-                    peerList.remove(self);
-                    Log.d(TAG, "Removed self");
-                }
-                return null;
+    public synchronized PeerAppToApp addPeer(String peerId, InetSocketAddress address) {
+        if (hashId.equals(peerId)) {
+            Log.i(TAG, "Not adding self");
+            PeerAppToApp self = null;
+            for (PeerAppToApp p : peerList) {
+                if (p.getAddress().equals(wanVote.getAddress()))
+                    self = p;
             }
-            if (wanVote.getAddress() != null && wanVote.getAddress().equals(address)) {
-                Log.d(TAG, "Not adding inboxItem with same address as wanVote");
-                return null;
+            if (self != null) {
+                peerList.remove(self);
+                Log.i(TAG, "Removed self");
             }
-            for (PeerAppToApp peer : peerList) {
-                if (peer.getPeerId() != null && peer.getPeerId().equals(peerId)) return peer;
-                if (peer.getAddress().equals(address)) return peer;
-            }
-            final PeerAppToApp peer = new PeerAppToApp(peerId, address);
-
-            new Handler(Looper.getMainLooper()).post(new Runnable() {
-                @Override
-                public void run() {
-                    peerListLock.lock();
-                    try {
-                        peerList.add(peer);
-                        splitPeerList();
-                        Log.d(TAG, "Added " + peer);
-                    } finally {
-                        peerListLock.unlock();
-                    }
-                    peerListener.updateIncomingPeers();
-                    peerListener.updateOutgoingPeers();
-                }
-            });
-            return peer;
-        } finally {
-            peerListLock.unlock();
+            return null;
         }
+        if (wanVote.getAddress() != null && wanVote.getAddress().equals(address)) {
+            Log.i(TAG, "Not adding inboxItem with same address as wanVote");
+            return null;
+        }
+        for (PeerAppToApp peer : peerList) {
+            if (peer.getPeerId() != null && peer.getPeerId().equals(peerId)) return peer;
+            if (peer.getAddress().equals(address)) return peer;
+        }
+        final PeerAppToApp peer = new PeerAppToApp(peerId, address);
+
+        new Handler(Looper.getMainLooper()).post(new Runnable() {
+            @Override
+            public synchronized void run() {
+                    peerList.add(peer);
+                    splitPeerList();
+                    Log.i(TAG, "Added " + peer + " Peerlist now has size: " + peerList.size());
+                peerListener.updateIncomingPeers();
+                peerListener.updateOutgoingPeers();
+            }
+        });
+        return peer;
     }
 
     /**
      * Split the inboxItem list between incoming and outgoing peers.
-     * Lock is to make sure this happens thread safe.
+     * Synchronized is to make sure this happens thread safe.
      */
-    public void splitPeerList() {
-        peerListLock.lock();
-        try {
-            List<PeerAppToApp> newIncoming = new ArrayList<>();
-            List<PeerAppToApp> newOutgoing = new ArrayList<>();
-            for (PeerAppToApp peer : peerList) {
-                if (peer.hasReceivedData()) {
-                    newIncoming.add(peer);
-                } else {
-                    newOutgoing.add(peer);
-                }
+    public synchronized void splitPeerList() {
+        List<PeerAppToApp> newIncoming = new ArrayList<>();
+        List<PeerAppToApp> newOutgoing = new ArrayList<>();
+        for (PeerAppToApp peer : peerList) {
+            if (peer.hasReceivedData()) {
+                newIncoming.add(peer);
+            } else {
+                newOutgoing.add(peer);
             }
-            if (!newIncoming.equals(incomingList)) {
-                incomingList.clear();
-                incomingList.addAll(newIncoming);
-            }
-            if (!newOutgoing.equals(outgoingList)) {
-                outgoingList.clear();
-                outgoingList.addAll(newOutgoing);
-            }
-        } finally {
-            peerListLock.unlock();
+        }
+        if (!newIncoming.equals(incomingList)) {
+            incomingList.clear();
+            incomingList.addAll(newIncoming);
+        }
+        if (!newOutgoing.equals(outgoingList)) {
+            outgoingList.clear();
+            outgoingList.addAll(newOutgoing);
         }
     }
 
 
     /**
      * Pick a random eligible inboxItem/invitee for sending an introduction request to.
-     * Lock is to make sure this happens thread safe.
+     * Synchronized is to make sure this happens thread safe.
      * @param excludePeer inboxItem to which the invitee is sent.
      * @return the eligible inboxItem if any, else null.
      */
-    public PeerAppToApp getEligiblePeer(PeerAppToApp excludePeer) {
-        peerListLock.lock();
-        try {
-            List<PeerAppToApp> eligiblePeers = new ArrayList<>();
-            for (PeerAppToApp p : peerList) {
-                if (p.isAlive() && !p.equals(excludePeer)) {
-                    eligiblePeers.add(p);
-                }
+    public synchronized PeerAppToApp getEligiblePeer(PeerAppToApp excludePeer) {
+        List<PeerAppToApp> eligiblePeers = new ArrayList<>();
+        for (PeerAppToApp p : peerList) {
+            if (p.isAlive() && !p.equals(excludePeer)) {
+                eligiblePeers.add(p);
             }
-            if (eligiblePeers.size() == 0) {
-                Log.d(TAG, "No elegible peers!");
-                return null;
-            }
-            Random random = new Random();
-            return eligiblePeers.get(random.nextInt(eligiblePeers.size()));
-        } finally {
-            peerListLock.unlock();
         }
+        if (eligiblePeers.size() == 0) {
+            Log.d(TAG, "No elegible peers!");
+            return null;
+        }
+        Random random = new Random();
+        return eligiblePeers.get(random.nextInt(eligiblePeers.size()));
     }
 
     /**
@@ -257,34 +205,28 @@ public class PeerHandler {
      *
      * @param id       the inboxItem's unique id.
      * @param address  the inboxItem's address.
-     * @param incoming boolean indicator whether the inboxItem is incoming.
      * @return the resolved or create inboxItem.
      */
-    synchronized public PeerAppToApp getOrMakePeer(String id, InetSocketAddress address, boolean incoming) {
-        peerListLock.lock();
-        try {
-            if (id != null) {
-                for (PeerAppToApp peer : peerList) {
-                    if (id.equals(peer.getPeerId())) {
-                        if (!address.equals(peer.getAddress())) {
-                            Log.d(TAG, "Peer address differs from known address");
-                            peer.setAddress(address);
-                            removeDuplicates();
-                        }
-                        return peer;
-                    }
-                }
-            }
+    public synchronized PeerAppToApp getOrMakePeer(String id, InetSocketAddress address) {
+        if (id != null) {
             for (PeerAppToApp peer : peerList) {
-                if (peer.getAddress().equals(address)) {
-                    if (id != null) peer.setPeerId(id);
+                if (id.equals(peer.getPeerId())) {
+                    if (!address.equals(peer.getAddress())) {
+                        Log.i(TAG, "Peer address differs from known address | address: " + address.toString() + " peer.getAddress(): " + peer.getAddress().toString());
+                        peer.setAddress(address);
+                        removeDuplicates();
+                    }
                     return peer;
                 }
             }
-            return addPeer(id, address, incoming);
-        } finally {
-            peerListLock.unlock();
         }
+        for (PeerAppToApp peer : peerList) {
+            if (peer.getAddress().equals(address)) {
+                if (id != null) peer.setPeerId(id);
+                return peer;
+            }
+        }
+        return addPeer(id, address);
     }
 
     public String getHashId() {
@@ -305,29 +247,19 @@ public class PeerHandler {
 
     /**
      * Get the peer list
-     * Lock is to make sure this happens thread safe.
+     * Synchronized is to make sure this happens thread safe.
      * @return
      */
-    public ArrayList<PeerAppToApp> getPeerList() {
-        peerListLock.lock();
-        try {
-            return peerList;
-        } finally {
-            peerListLock.unlock();
-        }
+    public synchronized ArrayList<PeerAppToApp> getPeerList() {
+        return peerList;
     }
 
     /**
      * Set the peer list.
-     * Lock is to make sure this happens thread safe.
+     * Synchronized is to make sure this happens thread safe.
      * @param peerList
      */
-    public void setPeerList(ArrayList<PeerAppToApp> peerList) {
-        peerListLock.lock();
-        try {
-            this.peerList = peerList;
-        } finally {
-            peerListLock.unlock();
-        }
+    public synchronized void setPeerList(ArrayList<PeerAppToApp> peerList) {
+        this.peerList = peerList;
     }
 }

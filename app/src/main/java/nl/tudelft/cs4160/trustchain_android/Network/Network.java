@@ -178,16 +178,17 @@ public class Network {
                 .setNetworkOperator(networkOperator)
                 .build();
 
-        MessageProto.Message message = MessageProto.Message.newBuilder()
-                .setPeerId(peer.getPeerId())
-                .setDestinationAddress(ByteString.copyFrom(peer.getAddress().getAddress().getAddress()))
+        MessageProto.Message.Builder messageBuilder = MessageProto.Message.newBuilder();
+                if(peer.getPeerId() != null) {
+                    messageBuilder.setPeerId(peer.getPeerId());
+                }
+                messageBuilder.setDestinationAddress(ByteString.copyFrom(peer.getAddress().getAddress().getAddress()))
                 .setDestinationPort(peer.getAddress().getPort())
                 .setPublicKey(ByteString.copyFrom(publicKey.toBytes()))
                 .setType(Message.INTRODUCTION_REQUEST_ID)
-                .setPayload(MessageProto.Payload.newBuilder().setIntroductionRequest(request))
-                .build();
+                .setPayload(MessageProto.Payload.newBuilder().setIntroductionRequest(request));
 
-        sendMessage(message, peer);
+        sendMessage(messageBuilder.build(), peer);
     }
 
     /**
@@ -356,7 +357,7 @@ public class Network {
             if (networkCommunicationListener != null) {
                 networkCommunicationListener.updateWan(message);
 
-                PeerAppToApp peer = networkCommunicationListener.getPeerHandler().getOrMakePeer(peerId, address, PeerAppToApp.INCOMING);
+                PeerAppToApp peer = networkCommunicationListener.getPeerHandler().getOrMakePeer(peerId, address);
 
                 PublicKeyPair pubKeyPair = new PublicKeyPair(message.getPublicKey().toByteArray());
                 String ip = address.getAddress().toString().replace("/", "") + ":" + address.getPort();

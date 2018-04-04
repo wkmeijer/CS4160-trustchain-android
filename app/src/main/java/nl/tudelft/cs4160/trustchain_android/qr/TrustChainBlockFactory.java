@@ -45,7 +45,7 @@ public class TrustChainBlockFactory {
             wallet.transaction.totalUp += tx.totalUp;
             wallet.transaction.totalDown += tx.totalDown;
         } catch (Exception e) {
-
+            e.printStackTrace();
         }
 
 

@@ -58,7 +58,7 @@ public class FundsActivity extends AppCompatActivity {
             total_up = object.getLong("total_up");
             total_down = object.getLong("total_down");
         } catch (Exception e) {
-
+            e.printStackTrace();
         }
         long max = Math.max(total_down,total_up);
 

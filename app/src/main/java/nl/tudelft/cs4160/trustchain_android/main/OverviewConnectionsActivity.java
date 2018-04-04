@@ -65,10 +65,10 @@ import nl.tudelft.cs4160.trustchain_android.qr.ScanQRActivity;
 public class OverviewConnectionsActivity extends AppCompatActivity implements NetworkCommunicationListener, PeerListener {
 
     // The server ip address, this is the bootstrap phone that's always running
-//    public static String CONNECTABLE_ADDRESS = "130.161.211.254";
-    public static String CONNECTABLE_ADDRESS = "145.94.225.226";
+//    public final static String CONNECTABLE_ADDRESS = "130.161.211.254";
+    public final static String CONNECTABLE_ADDRESS = "145.94.225.226";
     public final static int DEFAULT_PORT = 1873;
-    private static final int BUFFER_SIZE = 65536;
+    private final static int BUFFER_SIZE = 65536;
     private PeerListAdapter incomingPeerAdapter;
     private PeerListAdapter outgoingPeerAdapter;
     private TrustChainDBHelper dbHelper;
@@ -173,8 +173,9 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
             case R.id.find_peer:
                 Intent bootstrapActivity = new Intent(this, BootstrapActivity.class);
                 startActivityForResult(bootstrapActivity, 1);
-            default:
                 return true;
+            default:
+                return false;
         }
     }
 
@@ -207,9 +208,9 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
     private void initPeerLists() {
         ListView incomingPeerConnectionListView = findViewById(R.id.incoming_peer_connection_list_view);
         ListView outgoingPeerConnectionListView = findViewById(R.id.outgoing_peer_connection_list_view);
-        incomingPeerAdapter = new PeerListAdapter(getApplicationContext(), R.layout.peer_connection_list_item, peerHandler.getIncomingList(), PeerAppToApp.INCOMING, (CoordinatorLayout) findViewById(R.id.myCoordinatorLayout));
+        incomingPeerAdapter = new PeerListAdapter(getApplicationContext(), R.layout.peer_connection_list_item, peerHandler.getIncomingList(), (CoordinatorLayout) findViewById(R.id.myCoordinatorLayout));
         incomingPeerConnectionListView.setAdapter(incomingPeerAdapter);
-        outgoingPeerAdapter = new PeerListAdapter(getApplicationContext(), R.layout.peer_connection_list_item, peerHandler.getOutgoingList(), PeerAppToApp.OUTGOING, (CoordinatorLayout) findViewById(R.id.myCoordinatorLayout));
+        outgoingPeerAdapter = new PeerListAdapter(getApplicationContext(), R.layout.peer_connection_list_item, peerHandler.getOutgoingList(), (CoordinatorLayout) findViewById(R.id.myCoordinatorLayout));
         outgoingPeerConnectionListView.setAdapter(outgoingPeerAdapter);
     }
 
@@ -282,7 +283,7 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
                 int port = Integer.parseInt(params[1]);
                 inetSocketAddress = new InetSocketAddress(connectableAddress, port);
 
-                activity.peerHandler.addPeer("", inetSocketAddress, PeerAppToApp.OUTGOING);
+                activity.peerHandler.addPeer(null, inetSocketAddress);
             } catch (UnknownHostException e) {
                 e.printStackTrace();
             }
@@ -421,7 +422,7 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
             PeerAppToApp p = PeerAppToApp.deserialize(pexPeer.toByteArray());
 
             if (!getPeerHandler().hashId.equals(p.getPeerId())) {
-                getPeerHandler().getOrMakePeer(p.getPeerId(), p.getAddress(), PeerAppToApp.OUTGOING);
+                getPeerHandler().getOrMakePeer(p.getPeerId(), p.getAddress());
             }
         }
     }
