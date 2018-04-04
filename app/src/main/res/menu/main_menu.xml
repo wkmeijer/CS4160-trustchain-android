@@ -29,4 +29,10 @@
         android:id="@+id/export_tokens"
         android:title="@string/export_tokens"
         app:showAsAction="never" />
+
+    <item
+        android:id="@+id/passport_scan"
+        android:title="@string/scan_passport"
+        app:showAsAction="never"/>
+
 </menu>

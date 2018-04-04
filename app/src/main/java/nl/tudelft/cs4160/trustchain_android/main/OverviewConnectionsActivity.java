@@ -56,6 +56,7 @@ import nl.tudelft.cs4160.trustchain_android.database.TrustChainDBHelper;
 import nl.tudelft.cs4160.trustchain_android.funds.FundsActivity;
 import nl.tudelft.cs4160.trustchain_android.inbox.InboxActivity;
 import nl.tudelft.cs4160.trustchain_android.message.MessageProto;
+import nl.tudelft.cs4160.trustchain_android.passport.ocr.camera.CameraActivity;
 import nl.tudelft.cs4160.trustchain_android.qr.ExportWalletQRActivity;
 import nl.tudelft.cs4160.trustchain_android.qr.ScanQRActivity;
 
@@ -129,6 +130,9 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
             case R.id.find_peer:
                 Intent bootstrapActivity = new Intent(this, BootstrapActivity.class);
                 startActivityForResult(bootstrapActivity, 1);
+            case R.id.passport_scan:
+                Intent cameraActivity = new Intent(this, CameraActivity.class);
+                startActivityForResult(cameraActivity, 1);
             default:
                 return true;
         }
