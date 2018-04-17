@@ -25,7 +25,6 @@ import android.graphics.Bitmap;
 import android.graphics.Matrix;
 import android.graphics.RectF;
 import android.graphics.SurfaceTexture;
-import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -45,7 +44,6 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-
 
 import java.util.ArrayList;
 import java.util.List;
@@ -72,11 +70,19 @@ public class CameraFragment extends Fragment implements ActivityCompat.OnRequest
     private Runnable scanningTakingLongTimeout = new Runnable() {
         @Override
         public void run() {
-            getActivity().runOnUiThread(new Runnable() {
+            manualInput.post(new Runnable() {
                 @Override
                 public void run() {
                     manualInput.setVisibility(View.VISIBLE);
-                    overlay.setMargins(0,0,0,infoText.getHeight() + manualInput.getHeight());
+                }
+            });
+            final ViewTreeObserver observer = manualInput.getViewTreeObserver();
+            observer.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                @Override
+                public void onGlobalLayout() {
+                    // Set the margins when the manualInput became visible.
+                    overlay.setMargins(0, 0, 0, controlPanel.getHeight());
+                    observer.removeOnGlobalLayoutListener(this);
                 }
             });
         }
@@ -223,13 +229,13 @@ public class CameraFragment extends Fragment implements ActivityCompat.OnRequest
 //        infoText.setTypeface(typeFace);
 //        manualInput.setTypeface(typeFace);
         controlPanel = view.findViewById(R.id.control);
-        final ViewTreeObserver observer= view.findViewById(R.id.control).getViewTreeObserver();
+        final ViewTreeObserver observer = controlPanel.getViewTreeObserver();
         observer.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
             public void onGlobalLayout() {
                 // Set the margins when the view is available.
                 overlay.setMargins(0, 0, 0, controlPanel.getHeight());
-                view.findViewById(R.id.control).getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                controlPanel.getViewTreeObserver().removeOnGlobalLayoutListener(this);
             }
         });
     }
