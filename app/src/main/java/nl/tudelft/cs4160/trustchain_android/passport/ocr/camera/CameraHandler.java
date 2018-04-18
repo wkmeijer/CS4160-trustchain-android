@@ -29,12 +29,14 @@ import java.util.Collections;
 import java.util.concurrent.TimeUnit;
 
 import nl.tudelft.cs4160.trustchain_android.R;
+import nl.tudelft.cs4160.trustchain_android.passport.ocr.util.ErrorDialog;
 
 /**
  * Created by wkmeijer on 13-6-17.
  */
 
 public class CameraHandler {
+    private static final String CAMERA_ERROR_TAG = "cameraError";
     // The fragment this camera device is associated with
     private CameraFragment fragment;
 
@@ -110,8 +112,6 @@ public class CameraHandler {
         }
     };
 
-
-
     /**
      * Constructor, needs a link to a fragment to be able to set parameters in accordence to the
      * size of the devices screen.
@@ -186,7 +186,9 @@ public class CameraHandler {
             e.printStackTrace();
         } catch (NullPointerException e) {
             // An NPE is thrown when the Camera2API is used but not supported on the device this code runs.
-            fragment.showInfoDialog(R.string.ocr_camera_error);
+            Log.e(TAG, "Camera2API is not supported!");
+            ErrorDialog.newInstance(fragment.getString(R.string.ocr_camera_error))
+                    .show(fragment.getFragmentManager(), CAMERA_ERROR_TAG);
         }
     }
 
@@ -239,7 +241,6 @@ public class CameraHandler {
     public void openCamera(int width, int height) {
         if (ContextCompat.checkSelfPermission(fragment.getActivity(), Manifest.permission.CAMERA)
                 != PackageManager.PERMISSION_GRANTED) {
-//            fragment.requestCameraPermission();
             return;
         }
         setUpCameraOutputs(width, height);
@@ -327,7 +328,7 @@ public class CameraHandler {
 
                     // Finally, we start displaying the camera preview.
                     mPreviewRequest = mPreviewRequestBuilder.build();
-                    if (!fragment.isStateAlreadySaved())
+//                    if (!fragment.isStateAlreadySaved())
                         mCaptureSession.setRepeatingRequest(mPreviewRequest,
                                 null, mBackgroundHandler);
                 } catch (CameraAccessException e) {

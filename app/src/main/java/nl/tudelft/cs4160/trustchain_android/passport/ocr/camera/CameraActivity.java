@@ -15,24 +15,19 @@ package nl.tudelft.cs4160.trustchain_android.passport.ocr.camera;/*
  */
 
 
-import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
-import android.util.Log;
+import android.support.annotation.NonNull;
 
 import nl.tudelft.cs4160.trustchain_android.R;
-import nl.tudelft.cs4160.trustchain_android.passport.ocr.util.ErrorDialog;
 
 import static nl.tudelft.cs4160.trustchain_android.passport.ocr.camera.CameraFragment.GET_DOC_INFO;
+import static nl.tudelft.cs4160.trustchain_android.passport.ocr.camera.CameraFragment.REQUEST_WRITE_CAMERA_PERMISSIONS;
 
 public class CameraActivity extends Activity {
-    private static final int REQUEST_CAMERA_PERMISSION = 1;
-    private static final int REQUEST_WRITE_PERMISSIONS = 3;
     private static final String TAG = "CameraActivity";
+    private static final String FRAGMENT_TAG = "cameraFragment";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,13 +35,8 @@ public class CameraActivity extends Activity {
         setContentView(R.layout.activity_camera);
         if (null == savedInstanceState) {
             getFragmentManager().beginTransaction()
-                    .replace(R.id.container, CameraFragment.newInstance())
+                    .replace(R.id.container, CameraFragment.newInstance(), FRAGMENT_TAG)
                     .commit();
-        }
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
-                != PackageManager.PERMISSION_GRANTED) {
-            requestCameraPermission();
-            return;
         }
     }
 
@@ -66,27 +56,21 @@ public class CameraActivity extends Activity {
         }
     }
 
-    public void requestCameraPermission() {
-        if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.CAMERA)) {
-//            showInfoDialog(R.string.ocr_camera_permission_explanation);
-            Log.e(TAG, "infodialog");
-
+    /**
+     * Hack: receives permission callback from fragment if API level < 23.
+     * If called, manually delegates the call back to CameraFragment
+     * @param requestCode
+     * @param permissions
+     * @param grantResults
+     */
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
+                                           @NonNull int[] grantResults) {
+       if (requestCode == REQUEST_WRITE_CAMERA_PERMISSIONS) {
+           ((CameraFragment) getFragmentManager().findFragmentByTag(FRAGMENT_TAG))
+                   .onRequestPermissionsResult(requestCode, permissions, grantResults);
         } else {
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA},
-                    REQUEST_CAMERA_PERMISSION);
+            super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         }
     }
-
-    public void requestStoragePermissions() {
-        if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-//            showInfoDialog(R.string.storage_permission_explanation);
-            Log.e(TAG, "infodialog");
-        } else {
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_WRITE_PERMISSIONS);
-        }
-    }
-
-//    public void showInfoDialog(int stringId) {
-//        ErrorDialog.newInstance(getString(stringId)).sh
-//    }
 }

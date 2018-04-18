@@ -1,30 +1,17 @@
-package nl.tudelft.cs4160.trustchain_android.passport.ocr.camera;/*
- * Copyright 2014 The Android Open Source Project
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- *
- * This file was modified by the Digital Voting Pass group. (https://github.com/digital-voting-pass)
- */
+package nl.tudelft.cs4160.trustchain_android.passport.ocr.camera;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.Fragment;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Matrix;
 import android.graphics.RectF;
 import android.graphics.SurfaceTexture;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -54,15 +41,13 @@ import nl.tudelft.cs4160.trustchain_android.passport.ocr.ManualInputActivity;
 import nl.tudelft.cs4160.trustchain_android.passport.ocr.Mrz;
 import nl.tudelft.cs4160.trustchain_android.passport.ocr.TesseractOCR;
 import nl.tudelft.cs4160.trustchain_android.passport.ocr.util.DocumentData;
-import nl.tudelft.cs4160.trustchain_android.passport.ocr.util.ErrorDialog;
 
-public class CameraFragment extends Fragment implements ActivityCompat.OnRequestPermissionsResultCallback {
+public class CameraFragment extends Fragment {
     public static final int GET_DOC_INFO = 1; //TODO check for collisions
 
 
     // tag for the log and the error dialog
     private static final String TAG = "CameraFragment";
-    private static final String FRAGMENT_DIALOG = "dialog";
 
     private static final int DELAY_BETWEEN_OCR_THREADS_MILLIS = 500;
     private List<TesseractOCR> tesseractThreads = new ArrayList<>();
@@ -80,7 +65,7 @@ public class CameraFragment extends Fragment implements ActivityCompat.OnRequest
             observer.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
                 @Override
                 public void onGlobalLayout() {
-                    // Set the margins when the manualInput became visible.
+                    // Set the margins after the manualInputButton became visible.
                     overlay.setMargins(0, 0, 0, controlPanel.getHeight());
                     observer.removeOnGlobalLayoutListener(this);
                 }
@@ -96,11 +81,9 @@ public class CameraFragment extends Fragment implements ActivityCompat.OnRequest
     private View controlPanel;
 
     // Conversion from screen rotation to JPEG orientation.
-    private static final int REQUEST_CAMERA_PERMISSION = 1;
-    private static final int REQUEST_WRITE_PERMISSIONS = 3;
+    public static final int REQUEST_WRITE_CAMERA_PERMISSIONS = 3;
 
-    boolean mIsStateAlreadySaved = false;
-    boolean mPendingShowDialog = false;
+    boolean showingPermissionExplanation = false;
 
     // listener for detecting orientation changes
     private OrientationEventListener orientationListener = null;
@@ -174,12 +157,6 @@ public class CameraFragment extends Fragment implements ActivityCompat.OnRequest
         int threadsToStart = Runtime.getRuntime().availableProcessors() / 2;
         createOCRThreads(threadsToStart);
         mCameraHandler = new CameraHandler(this);
-//        if (ContextCompat.checkSelfPermission(fragment.getActivity(), Manifest.permission.WRITE_EXTERNAL_STORAGE)
-//                != PackageManager.PERMISSION_GRANTED) {
-//            Log.e(TAG, "Cant start Camera due to no data permissions.");
-//            fragment.requestStoragePermissions();
-//            return;
-//        }
     }
 
     /**
@@ -225,15 +202,12 @@ public class CameraFragment extends Fragment implements ActivityCompat.OnRequest
          });
 
         infoText = (TextView) view.findViewById(R.id.info_text);
-//        Typeface typeFace= Typeface.createFromAsset(getActivity().getAssets(), "fonts/ro.ttf");
-//        infoText.setTypeface(typeFace);
-//        manualInput.setTypeface(typeFace);
         controlPanel = view.findViewById(R.id.control);
         final ViewTreeObserver observer = controlPanel.getViewTreeObserver();
         observer.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
             public void onGlobalLayout() {
-                // Set the margins when the view is available.
+                // Set the overlay's margins when the view is available.
                 overlay.setMargins(0, 0, 0, controlPanel.getHeight());
                 controlPanel.getViewTreeObserver().removeOnGlobalLayoutListener(this);
             }
@@ -253,33 +227,12 @@ public class CameraFragment extends Fragment implements ActivityCompat.OnRequest
         // available, and "onSurfaceTextureAvailable" will not be called. In that case, we can open
         // a camera and start preview from here (otherwise, we wait until the surface is ready in
         // the SurfaceTextureListener).
-        if (mTextureView.isAvailable()) {
+        if (mTextureView.isAvailable() && !showingPermissionExplanation) {
             mCameraHandler.openCamera(mTextureView.getWidth(), mTextureView.getHeight());
         } else {
             mTextureView.setSurfaceTextureListener(mSurfaceTextureListener);
         }
-        mIsStateAlreadySaved = false;
-        if(mPendingShowDialog){
-            mPendingShowDialog = false;
-            if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.CAMERA)
-                    != PackageManager.PERMISSION_GRANTED) {
-                showInfoDialog(R.string.ocr_camera_permission_explanation);
-            } else if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                    != PackageManager.PERMISSION_GRANTED) {
-                showInfoDialog(R.string.storage_permission_explanation);
-            }
-        } else {
-            startOCRThreads();
-        }
-    }
-
-    /**
-     * Displays an information dialog with the given string.
-     * @param stringId
-     */
-    public void showInfoDialog(int stringId) {
-        ErrorDialog.newInstance(getString(stringId))
-                .show(getChildFragmentManager(), FRAGMENT_DIALOG);
+        startOCRThreads();
     }
 
     @Override
@@ -287,7 +240,6 @@ public class CameraFragment extends Fragment implements ActivityCompat.OnRequest
         mCameraHandler.closeCamera();
         mCameraHandler.stopBackgroundThread();
         stopTesseractThreads();
-        mIsStateAlreadySaved = true;
         super.onPause();
     }
 
@@ -301,40 +253,57 @@ public class CameraFragment extends Fragment implements ActivityCompat.OnRequest
         super.onStop();
     }
 
-    public void requestCameraPermission() {
-        if (ActivityCompat.shouldShowRequestPermissionRationale(getActivity(), Manifest.permission.CAMERA)) {
-            showInfoDialog(R.string.ocr_camera_permission_explanation);
-        } else {
-            ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.CAMERA},
-                    REQUEST_CAMERA_PERMISSION);
-        }
-    }
-
-    private void requestStoragePermissions() {
-        if (ActivityCompat.shouldShowRequestPermissionRationale(getActivity(), Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-            showInfoDialog(R.string.storage_permission_explanation);
-        } else {
-            ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_WRITE_PERMISSIONS);
+    private void requestPermissions() {
+        if (!showingPermissionExplanation) {
+            // If currently showing the rationale, this will be called again after dismissal.
+            if (Build.VERSION.SDK_INT >= 23) {
+                // If API 23 or up onRequestPermissionsResult is handled by this fragment, otherwise this method will be called in the Activity
+                requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.CAMERA}, REQUEST_WRITE_CAMERA_PERMISSIONS);
+            } else {
+                ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.CAMERA}, REQUEST_WRITE_CAMERA_PERMISSIONS);
+            }
         }
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
-                                           @NonNull int[] grantResults) {
-        if (requestCode == REQUEST_CAMERA_PERMISSION) {
-            if (grantResults.length != 1 || grantResults[0] != PackageManager.PERMISSION_GRANTED) {
-                if(mIsStateAlreadySaved){
-                    mPendingShowDialog = true;
-                } else {
-                    showInfoDialog(R.string.ocr_camera_permission_explanation);
-                }
-            }
-        } else if (requestCode == REQUEST_WRITE_PERMISSIONS) {
-            if (grantResults.length != 1 || grantResults[0] != PackageManager.PERMISSION_GRANTED) {
-                if(mIsStateAlreadySaved){
-                    mPendingShowDialog = true;
-                } else {
-                    showInfoDialog(R.string.storage_permission_explanation);
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if (requestCode == REQUEST_WRITE_CAMERA_PERMISSIONS) {
+            for (int i = 0; i < permissions.length; i++) {
+                switch (permissions[i]) {
+                    case Manifest.permission.WRITE_EXTERNAL_STORAGE:
+                        if (grantResults[i] != PackageManager.PERMISSION_GRANTED) {
+                            showingPermissionExplanation = true;
+                            new AlertDialog.Builder(getActivity())
+                                    .setMessage(getString(R.string.storage_permission_explanation))
+                                    .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialogInterface, int i) {
+                                            showingPermissionExplanation = false;
+                                            requestPermissions();
+                                        }
+                                    })
+                                    .show();
+                        }
+                        break;
+                    case Manifest.permission.CAMERA:
+                        if (grantResults[i] != PackageManager.PERMISSION_GRANTED) {
+                            showingPermissionExplanation = true;
+                            new AlertDialog.Builder(getActivity())
+                                    .setMessage(getString(R.string.ocr_camera_permission_explanation))
+                                    .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialogInterface, int i) {
+                                            showingPermissionExplanation = false;
+                                            requestPermissions();
+                                        }
+                                    })
+                                    .show();
+                        }
+                        break;
+                    default:
+                        Log.w(TAG, "Callback for unknown permission: " + permissions[i]);
+                        break;
+
                 }
             }
         } else {
@@ -347,14 +316,10 @@ public class CameraFragment extends Fragment implements ActivityCompat.OnRequest
      */
     private void startOCRThreads() {
         if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED ||
+            ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.CAMERA)
                 != PackageManager.PERMISSION_GRANTED) {
-            requestStoragePermissions();
-            return;
-        }
-        if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.CAMERA)
-                != PackageManager.PERMISSION_GRANTED) {
-            requestCameraPermission();
-            Log.e(TAG, "Cant start OCR due to no camera permissions.");
+            requestPermissions();
             return;
         }
         int i = 0;
@@ -372,8 +337,6 @@ public class CameraFragment extends Fragment implements ActivityCompat.OnRequest
             ocr.stopScanner();
         }
     }
-
-
 
     /**
      * Method for delivering correct MRZ when found. This method returns the MRZ as result data and
@@ -474,10 +437,6 @@ public class CameraFragment extends Fragment implements ActivityCompat.OnRequest
 
     public ImageView getScanSegment() {
         return scanSegment;
-    }
-
-    public boolean isStateAlreadySaved() {
-        return mIsStateAlreadySaved;
     }
 
     public Runnable getScanningTakingLongTimeout() {
