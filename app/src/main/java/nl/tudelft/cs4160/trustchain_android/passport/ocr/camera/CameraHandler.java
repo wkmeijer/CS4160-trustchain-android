@@ -328,9 +328,7 @@ public class CameraHandler {
 
                     // Finally, we start displaying the camera preview.
                     mPreviewRequest = mPreviewRequestBuilder.build();
-//                    if (!fragment.isStateAlreadySaved())
-                        mCaptureSession.setRepeatingRequest(mPreviewRequest,
-                                null, mBackgroundHandler);
+                    mCaptureSession.setRepeatingRequest(mPreviewRequest, null, mBackgroundHandler);
                 } catch (CameraAccessException e) {
                     e.printStackTrace();
                 }
