@@ -53,7 +53,7 @@ dependencies {
     implementation 'com.android.support.constraint:constraint-layout:1.0.2'
     implementation 'com.google.code.gson:gson:2.8.2'
     implementation 'com.android.support:multidex:1.0.2'
-    implementation 'com.rmtheis:tess-two:6.3.0'
+    implementation 'com.rmtheis:tess-two:9.0.0'
     testImplementation 'junit:junit:4.12'
     testImplementation 'org.mockito:mockito-core:2.7.22'
     androidTestImplementation 'org.mockito:mockito-android:2.7.22'
