@@ -26,9 +26,10 @@ public class Mrz {
      */
     private void cleanMRZString() {
         try {
-            String[] spl = mrz.replace(" ", "").replace("\n\n", "\n").split("\n"); // Delete any space characters and replace double newline with a single newline
-            mrz = spl[0] + "\n" + spl[1]; // Extract only first 2 lines, sometimes random errorous data is detected beyond.
-        }catch (Exception ignored) {
+            // Exchange spaces for newlines and replace double newline with a single newline
+            String[] spl = mrz.replace(" ", "\n").replace("\n\n", "\n").split("\n");
+            mrz = spl[0] + "\n" + spl[1]; // Extract only first 2 lines, sometimes random erroneous data is detected beyond.
+        } catch (Exception ignored) {
         }
     }
 

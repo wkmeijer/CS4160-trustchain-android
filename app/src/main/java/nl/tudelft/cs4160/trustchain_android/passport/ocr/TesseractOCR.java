@@ -13,6 +13,7 @@ import com.googlecode.tesseract.android.TessBaseAPI;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.concurrent.Semaphore;
 
 import nl.tudelft.cs4160.trustchain_android.passport.ocr.camera.CameraFragment;
@@ -21,8 +22,8 @@ import nl.tudelft.cs4160.trustchain_android.passport.ocr.util.Util;
 public class TesseractOCR {
     private static final String TAG = "TesseractOCR";
 
-    private static final long INTER_SCAN_DELAY_MILLIS = 500;
-    private static final long OCR_SCAN_TIMEOUT_MILLIS = 5000;
+    private static final long INTER_SCAN_DELAY_MILLIS = 100;
+    private static final long OCR_SCAN_TIMEOUT_MILLIS = 1000;
 
     private static final String trainedData = "ocrb.traineddata";
 
@@ -52,14 +53,13 @@ public class TesseractOCR {
     private static Semaphore mDeviceStorageAccessLock = new Semaphore(1);
 
     /**
-     * CURRENTLY NOT FUNCTIONAL
-     * Timeout Thread, should end OCR detection when timeout occurs
+     * Timeout Thread, ends OCR detection when timeout occurs
      */
     private Runnable timeout = new Runnable() {
         @Override
         public void run() {
-            Log.e(TAG, "TIMEOUT");
-//            baseApi.stop(); // Does not stop baseApi.getUTF8Text()
+            Log.v(TAG, "Timeout");
+            baseApi.stop();
         }
     };
 
@@ -77,6 +77,7 @@ public class TesseractOCR {
                 Log.i(TAG, "took " + timetook / 1000f + " sec");
                 times.add(timetook);
                 if (mrz != null && mrz.valid()) {
+                    Log.i(TAG, "Valid MRZ was scanned in " + timetook/1000f + " sec");
                     fragment.scanResultFound(mrz);
                 }
                 timeoutHandler.removeCallbacks(timeout);
@@ -108,7 +109,10 @@ public class TesseractOCR {
      * Starts (enqueues) a stop routine in a new thread, then returns immediately.
      */
     public void stopScanner() {
-        HandlerThread ht = new HandlerThread("stopper");
+        stopping = true;
+        baseApi.stop();
+
+        HandlerThread ht = new HandlerThread("cleaner");
         ht.start();
         cleanHandler = new Handler(ht.getLooper());
         cleanHandler.post(new Runnable() {
@@ -179,7 +183,9 @@ public class TesseractOCR {
             baseApi.setImage(bitmap);
             baseApi.setVariable("tessedit_char_whitelist",
                     "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ<");
-            String recognizedText = baseApi.getUTF8Text();
+            String htmlFormattedText = baseApi.getHOCRText(0);
+            String recognizedText = htmlFormattedText == null ? null : // On timeout HTML text is null
+                    android.text.Html.fromHtml(htmlFormattedText).toString();
             Log.v(TAG, "OCR Result: " + recognizedText);
             return new Mrz(recognizedText);
         } else {
@@ -195,7 +201,6 @@ public class TesseractOCR {
     public void cleanup () {
         if (isInitialized) {
             giveStats();
-            stopping = true;
             myThread.quitSafely();
             myHandler.removeCallbacks(scan);
             timeoutHandler.removeCallbacks(timeout);
@@ -216,10 +221,9 @@ public class TesseractOCR {
      * Prints some statistics about the run time of the OCR scanning
      */
     private void giveStats() {
-        long max = 0;
+        long max = Collections.max(times);
         long curravg = 0;
         for (int i=0; i < times.size(); i++) {
-            if (times.get(i) > max) max = times.get(i);
             curravg += times.get(i);
         }
         // prevent divide by zero
