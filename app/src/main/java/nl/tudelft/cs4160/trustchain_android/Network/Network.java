@@ -178,11 +178,9 @@ public class Network {
                 .setNetworkOperator(networkOperator)
                 .build();
 
-        MessageProto.Message.Builder messageBuilder = MessageProto.Message.newBuilder();
-                if(peer.getPeerId() != null) {
-                    messageBuilder.setPeerId(peer.getPeerId());
-                }
-                messageBuilder.setDestinationAddress(ByteString.copyFrom(peer.getAddress().getAddress().getAddress()))
+        MessageProto.Message.Builder messageBuilder = MessageProto.Message.newBuilder()
+                .setSourcePeerId(hashId)
+                .setDestinationAddress(ByteString.copyFrom(peer.getAddress().getAddress().getAddress()))
                 .setDestinationPort(peer.getAddress().getPort())
                 .setPublicKey(ByteString.copyFrom(publicKey.toBytes()))
                 .setType(Message.INTRODUCTION_REQUEST_ID)
@@ -199,7 +197,7 @@ public class Network {
      */
     public void sendBlockMessage(PeerAppToApp peer, MessageProto.TrustChainBlock block) throws IOException {
         MessageProto.Message message = MessageProto.Message.newBuilder()
-                .setPeerId(peer.getPeerId())
+                .setSourcePeerId(hashId)
                 .setDestinationAddress(ByteString.copyFrom(peer.getAddress().getAddress().getAddress()))
                 .setDestinationPort(peer.getAddress().getPort())
                 .setPublicKey(ByteString.copyFrom(publicKey.toBytes()))
@@ -218,7 +216,7 @@ public class Network {
      */
     public void sendCrawlRequest(PeerAppToApp peer, MessageProto.CrawlRequest request) throws IOException {
         MessageProto.Message message = MessageProto.Message.newBuilder()
-                .setPeerId(peer.getPeerId())
+                .setSourcePeerId(hashId)
                 .setDestinationAddress(ByteString.copyFrom(peer.getAddress().getAddress().getAddress()))
                 .setDestinationPort(peer.getAddress().getPort())
                 .setPublicKey(ByteString.copyFrom(publicKey.toBytes()))
@@ -243,7 +241,7 @@ public class Network {
                 .build();
 
         MessageProto.Message message = MessageProto.Message.newBuilder()
-                .setPeerId(peer.getPeerId())
+                .setSourcePeerId(hashId)
                 .setDestinationAddress(ByteString.copyFrom(peer.getAddress().getAddress().getAddress()))
                 .setDestinationPort(peer.getAddress().getPort())
                 .setPublicKey(ByteString.copyFrom(publicKey.toBytes()))
@@ -266,7 +264,7 @@ public class Network {
                 .build();
 
         MessageProto.Message message = MessageProto.Message.newBuilder()
-                .setPeerId(peer.getPeerId())
+                .setSourcePeerId(hashId)
                 .setDestinationAddress(ByteString.copyFrom(peer.getAddress().getAddress().getAddress()))
                 .setDestinationPort(peer.getAddress().getPort())
                 .setPublicKey(ByteString.copyFrom(publicKey.toBytes()))
@@ -300,7 +298,7 @@ public class Network {
                 .build();
 
         MessageProto.Message message = MessageProto.Message.newBuilder()
-                .setPeerId(peer.getPeerId())
+                .setSourcePeerId(hashId)
                 .setDestinationAddress(ByteString.copyFrom(peer.getAddress().getAddress().getAddress()))
                 .setDestinationPort(peer.getAddress().getPort())
                 .setPublicKey(ByteString.copyFrom(publicKey.toBytes()))
@@ -352,7 +350,7 @@ public class Network {
         try {
             MessageProto.Message message = MessageProto.Message.parseFrom(data);
             Log.i(TAG, "Received " + message.toString());
-            String peerId = message.getPeerId();
+            String peerId = message.getSourcePeerId();
 
             if (networkCommunicationListener != null) {
                 networkCommunicationListener.updateWan(message);

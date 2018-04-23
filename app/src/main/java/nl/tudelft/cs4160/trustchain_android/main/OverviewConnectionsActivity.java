@@ -75,6 +75,7 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
     private Network network;
     private PeerHandler peerHandler;
     private String wan = "";
+    private static final String TAG = "OverviewConnections";
 
     /**
      * Initialize views, start send and receive threads if necessary.
@@ -410,7 +411,7 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
     /**
      * Handle an introduction response. Parse incoming PEX peers.
      *
-     * @param peer    the origin inboxItem.
+     * @param peer    the peer that sent this response.
      * @param response the message.
      */
     @Override
@@ -420,6 +421,7 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
         List<ByteString> pex = response.getPexList();
         for (ByteString pexPeer : pex) {
             PeerAppToApp p = PeerAppToApp.deserialize(pexPeer.toByteArray());
+            Log.d(TAG, "From " + peer + " | found peer in pexList: " + p);
 
             if (!getPeerHandler().hashId.equals(p.getPeerId())) {
                 getPeerHandler().getOrMakePeer(p.getPeerId(), p.getAddress());

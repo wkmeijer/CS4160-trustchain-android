@@ -19,14 +19,14 @@ public final class MessageProto {
       com.google.protobuf.MessageOrBuilder {
 
     /**
-     * <code>string peer_id = 1;</code>
+     * <code>string source_peer_id = 1;</code>
      */
-    java.lang.String getPeerId();
+    java.lang.String getSourcePeerId();
     /**
-     * <code>string peer_id = 1;</code>
+     * <code>string source_peer_id = 1;</code>
      */
     com.google.protobuf.ByteString
-        getPeerIdBytes();
+        getSourcePeerIdBytes();
 
     /**
      * <code>bytes destination_address = 2;</code>
@@ -74,7 +74,7 @@ public final class MessageProto {
       super(builder);
     }
     private Message() {
-      peerId_ = "";
+      sourcePeerId_ = "";
       destinationAddress_ = com.google.protobuf.ByteString.EMPTY;
       destinationPort_ = 0;
       publicKey_ = com.google.protobuf.ByteString.EMPTY;
@@ -115,7 +115,7 @@ public final class MessageProto {
             case 10: {
               java.lang.String s = input.readStringRequireUtf8();
 
-              peerId_ = s;
+              sourcePeerId_ = s;
               break;
             }
             case 18: {
@@ -175,34 +175,34 @@ public final class MessageProto {
               nl.tudelft.cs4160.trustchain_android.message.MessageProto.Message.class, nl.tudelft.cs4160.trustchain_android.message.MessageProto.Message.Builder.class);
     }
 
-    public static final int PEER_ID_FIELD_NUMBER = 1;
-    private volatile java.lang.Object peerId_;
+    public static final int SOURCE_PEER_ID_FIELD_NUMBER = 1;
+    private volatile java.lang.Object sourcePeerId_;
     /**
-     * <code>string peer_id = 1;</code>
+     * <code>string source_peer_id = 1;</code>
      */
-    public java.lang.String getPeerId() {
-      java.lang.Object ref = peerId_;
+    public java.lang.String getSourcePeerId() {
+      java.lang.Object ref = sourcePeerId_;
       if (ref instanceof java.lang.String) {
         return (java.lang.String) ref;
       } else {
         com.google.protobuf.ByteString bs = 
             (com.google.protobuf.ByteString) ref;
         java.lang.String s = bs.toStringUtf8();
-        peerId_ = s;
+        sourcePeerId_ = s;
         return s;
       }
     }
     /**
-     * <code>string peer_id = 1;</code>
+     * <code>string source_peer_id = 1;</code>
      */
     public com.google.protobuf.ByteString
-        getPeerIdBytes() {
-      java.lang.Object ref = peerId_;
+        getSourcePeerIdBytes() {
+      java.lang.Object ref = sourcePeerId_;
       if (ref instanceof java.lang.String) {
         com.google.protobuf.ByteString b = 
             com.google.protobuf.ByteString.copyFromUtf8(
                 (java.lang.String) ref);
-        peerId_ = b;
+        sourcePeerId_ = b;
         return b;
       } else {
         return (com.google.protobuf.ByteString) ref;
@@ -278,8 +278,8 @@ public final class MessageProto {
 
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
-      if (!getPeerIdBytes().isEmpty()) {
-        com.google.protobuf.GeneratedMessageV3.writeString(output, 1, peerId_);
+      if (!getSourcePeerIdBytes().isEmpty()) {
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 1, sourcePeerId_);
       }
       if (!destinationAddress_.isEmpty()) {
         output.writeBytes(2, destinationAddress_);
@@ -304,8 +304,8 @@ public final class MessageProto {
       if (size != -1) return size;
 
       size = 0;
-      if (!getPeerIdBytes().isEmpty()) {
-        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, peerId_);
+      if (!getSourcePeerIdBytes().isEmpty()) {
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, sourcePeerId_);
       }
       if (!destinationAddress_.isEmpty()) {
         size += com.google.protobuf.CodedOutputStream
@@ -343,8 +343,8 @@ public final class MessageProto {
       nl.tudelft.cs4160.trustchain_android.message.MessageProto.Message other = (nl.tudelft.cs4160.trustchain_android.message.MessageProto.Message) obj;
 
       boolean result = true;
-      result = result && getPeerId()
-          .equals(other.getPeerId());
+      result = result && getSourcePeerId()
+          .equals(other.getSourcePeerId());
       result = result && getDestinationAddress()
           .equals(other.getDestinationAddress());
       result = result && (getDestinationPort()
@@ -369,8 +369,8 @@ public final class MessageProto {
       }
       int hash = 41;
       hash = (19 * hash) + getDescriptor().hashCode();
-      hash = (37 * hash) + PEER_ID_FIELD_NUMBER;
-      hash = (53 * hash) + getPeerId().hashCode();
+      hash = (37 * hash) + SOURCE_PEER_ID_FIELD_NUMBER;
+      hash = (53 * hash) + getSourcePeerId().hashCode();
       hash = (37 * hash) + DESTINATION_ADDRESS_FIELD_NUMBER;
       hash = (53 * hash) + getDestinationAddress().hashCode();
       hash = (37 * hash) + DESTINATION_PORT_FIELD_NUMBER;
@@ -512,7 +512,7 @@ public final class MessageProto {
       }
       public Builder clear() {
         super.clear();
-        peerId_ = "";
+        sourcePeerId_ = "";
 
         destinationAddress_ = com.google.protobuf.ByteString.EMPTY;
 
@@ -550,7 +550,7 @@ public final class MessageProto {
 
       public nl.tudelft.cs4160.trustchain_android.message.MessageProto.Message buildPartial() {
         nl.tudelft.cs4160.trustchain_android.message.MessageProto.Message result = new nl.tudelft.cs4160.trustchain_android.message.MessageProto.Message(this);
-        result.peerId_ = peerId_;
+        result.sourcePeerId_ = sourcePeerId_;
         result.destinationAddress_ = destinationAddress_;
         result.destinationPort_ = destinationPort_;
         result.publicKey_ = publicKey_;
@@ -601,8 +601,8 @@ public final class MessageProto {
 
       public Builder mergeFrom(nl.tudelft.cs4160.trustchain_android.message.MessageProto.Message other) {
         if (other == nl.tudelft.cs4160.trustchain_android.message.MessageProto.Message.getDefaultInstance()) return this;
-        if (!other.getPeerId().isEmpty()) {
-          peerId_ = other.peerId_;
+        if (!other.getSourcePeerId().isEmpty()) {
+          sourcePeerId_ = other.sourcePeerId_;
           onChanged();
         }
         if (other.getDestinationAddress() != com.google.protobuf.ByteString.EMPTY) {
@@ -647,71 +647,71 @@ public final class MessageProto {
         return this;
       }
 
-      private java.lang.Object peerId_ = "";
+      private java.lang.Object sourcePeerId_ = "";
       /**
-       * <code>string peer_id = 1;</code>
+       * <code>string source_peer_id = 1;</code>
        */
-      public java.lang.String getPeerId() {
-        java.lang.Object ref = peerId_;
+      public java.lang.String getSourcePeerId() {
+        java.lang.Object ref = sourcePeerId_;
         if (!(ref instanceof java.lang.String)) {
           com.google.protobuf.ByteString bs =
               (com.google.protobuf.ByteString) ref;
           java.lang.String s = bs.toStringUtf8();
-          peerId_ = s;
+          sourcePeerId_ = s;
           return s;
         } else {
           return (java.lang.String) ref;
         }
       }
       /**
-       * <code>string peer_id = 1;</code>
+       * <code>string source_peer_id = 1;</code>
        */
       public com.google.protobuf.ByteString
-          getPeerIdBytes() {
-        java.lang.Object ref = peerId_;
+          getSourcePeerIdBytes() {
+        java.lang.Object ref = sourcePeerId_;
         if (ref instanceof String) {
           com.google.protobuf.ByteString b = 
               com.google.protobuf.ByteString.copyFromUtf8(
                   (java.lang.String) ref);
-          peerId_ = b;
+          sourcePeerId_ = b;
           return b;
         } else {
           return (com.google.protobuf.ByteString) ref;
         }
       }
       /**
-       * <code>string peer_id = 1;</code>
+       * <code>string source_peer_id = 1;</code>
        */
-      public Builder setPeerId(
+      public Builder setSourcePeerId(
           java.lang.String value) {
         if (value == null) {
     throw new NullPointerException();
   }
   
-        peerId_ = value;
+        sourcePeerId_ = value;
         onChanged();
         return this;
       }
       /**
-       * <code>string peer_id = 1;</code>
+       * <code>string source_peer_id = 1;</code>
        */
-      public Builder clearPeerId() {
+      public Builder clearSourcePeerId() {
         
-        peerId_ = getDefaultInstance().getPeerId();
+        sourcePeerId_ = getDefaultInstance().getSourcePeerId();
         onChanged();
         return this;
       }
       /**
-       * <code>string peer_id = 1;</code>
+       * <code>string source_peer_id = 1;</code>
        */
-      public Builder setPeerIdBytes(
+      public Builder setSourcePeerIdBytes(
           com.google.protobuf.ByteString value) {
         if (value == null) {
     throw new NullPointerException();
   }
   checkByteStringIsUtf8(value);
         
-        peerId_ = value;
+        sourcePeerId_ = value;
         onChanged();
         return this;
       }
@@ -8430,42 +8430,42 @@ public final class MessageProto {
   static {
     java.lang.String[] descriptorData = {
       "\n\rMessage.proto\022\007message\032\037google/protobu" +
-      "f/timestamp.proto\"\226\001\n\007Message\022\017\n\007peer_id" +
-      "\030\001 \001(\t\022\033\n\023destination_address\030\002 \001(\014\022\030\n\020d" +
-      "estination_port\030\003 \001(\005\022\022\n\npublic_key\030\004 \001(" +
-      "\014\022\014\n\004type\030\005 \001(\005\022!\n\007payload\030\006 \001(\0132\020.messa" +
-      "ge.Payload\"\257\002\n\007Payload\0229\n\023introductionRe" +
-      "quest\030\001 \001(\0132\034.message.IntroductionReques" +
-      "t\022;\n\024introductionResponse\030\002 \001(\0132\035.messag" +
-      "e.IntroductionResponse\022#\n\010puncture\030\003 \001(\013" +
-      "2\021.message.Puncture\0221\n\017punctureRequest\030\004" +
-      " \001(\0132\030.message.PunctureRequest\022\'\n\005block\030" +
-      "\005 \001(\0132\030.message.TrustChainBlock\022+\n\014crawl" +
-      "Request\030\006 \001(\0132\025.message.CrawlRequest\"\321\003\n" +
-      "\017TrustChainBlock\022\022\n\npublic_key\030\001 \001(\014\022\027\n\017" +
-      "sequence_number\030\002 \001(\005\022\027\n\017link_public_key" +
-      "\030\003 \001(\014\022\034\n\024link_sequence_number\030\004 \001(\005\022\025\n\r" +
-      "previous_hash\030\005 \001(\014\022\021\n\tsignature\030\006 \001(\014\0229" +
-      "\n\013transaction\030\007 \001(\0132$.message.TrustChain" +
-      "Block.Transaction\022/\n\013insert_time\030\010 \001(\0132\032" +
-      ".google.protobuf.Timestamp\032Q\n\013Transactio" +
-      "n\022\023\n\013unformatted\030\001 \001(\014\022-\n\005claim\030\002 \001(\0132\036." +
-      "message.TrustChainBlock.Claim\032q\n\005Claim\022\014" +
-      "\n\004name\030\001 \001(\014\022-\n\ttimestamp\030\002 \001(\0132\032.google" +
-      ".protobuf.Timestamp\022\025\n\rvalidity_term\030\003 \001" +
-      "(\005\022\024\n\014proof_format\030\004 \001(\014\"T\n\014CrawlRequest" +
-      "\022\022\n\npublic_key\030\001 \001(\014\022!\n\031requested_sequen" +
-      "ce_number\030\002 \001(\005\022\r\n\005limit\030\003 \001(\005\"H\n\023Introd" +
-      "uctionRequest\022\027\n\017connection_type\030\001 \001(\003\022\030" +
-      "\n\020network_operator\030\002 \001(\t\"\207\001\n\024Introductio" +
-      "nResponse\022\027\n\017connection_type\030\001 \001(\003\022\030\n\020ne" +
-      "twork_operator\030\002 \001(\t\022\036\n\026internal_source_" +
-      "socket\030\003 \001(\t\022\017\n\007invitee\030\004 \001(\014\022\013\n\003pex\030\005 \003" +
-      "(\014\" \n\010Puncture\022\024\n\014sourceSocket\030\001 \001(\t\"?\n\017" +
-      "PunctureRequest\022\025\n\rsource_socket\030\001 \001(\t\022\025" +
-      "\n\rpuncture_peer\030\002 \001(\014B<\n,nl.tudelft.cs41" +
-      "60.trustchain_android.messageB\014MessagePr" +
-      "otob\006proto3"
+      "f/timestamp.proto\"\235\001\n\007Message\022\026\n\016source_" +
+      "peer_id\030\001 \001(\t\022\033\n\023destination_address\030\002 \001" +
+      "(\014\022\030\n\020destination_port\030\003 \001(\005\022\022\n\npublic_k" +
+      "ey\030\004 \001(\014\022\014\n\004type\030\005 \001(\005\022!\n\007payload\030\006 \001(\0132" +
+      "\020.message.Payload\"\257\002\n\007Payload\0229\n\023introdu" +
+      "ctionRequest\030\001 \001(\0132\034.message.Introductio" +
+      "nRequest\022;\n\024introductionResponse\030\002 \001(\0132\035" +
+      ".message.IntroductionResponse\022#\n\010punctur" +
+      "e\030\003 \001(\0132\021.message.Puncture\0221\n\017punctureRe" +
+      "quest\030\004 \001(\0132\030.message.PunctureRequest\022\'\n" +
+      "\005block\030\005 \001(\0132\030.message.TrustChainBlock\022+" +
+      "\n\014crawlRequest\030\006 \001(\0132\025.message.CrawlRequ" +
+      "est\"\321\003\n\017TrustChainBlock\022\022\n\npublic_key\030\001 " +
+      "\001(\014\022\027\n\017sequence_number\030\002 \001(\005\022\027\n\017link_pub" +
+      "lic_key\030\003 \001(\014\022\034\n\024link_sequence_number\030\004 " +
+      "\001(\005\022\025\n\rprevious_hash\030\005 \001(\014\022\021\n\tsignature\030" +
+      "\006 \001(\014\0229\n\013transaction\030\007 \001(\0132$.message.Tru" +
+      "stChainBlock.Transaction\022/\n\013insert_time\030" +
+      "\010 \001(\0132\032.google.protobuf.Timestamp\032Q\n\013Tra" +
+      "nsaction\022\023\n\013unformatted\030\001 \001(\014\022-\n\005claim\030\002" +
+      " \001(\0132\036.message.TrustChainBlock.Claim\032q\n\005" +
+      "Claim\022\014\n\004name\030\001 \001(\014\022-\n\ttimestamp\030\002 \001(\0132\032" +
+      ".google.protobuf.Timestamp\022\025\n\rvalidity_t" +
+      "erm\030\003 \001(\005\022\024\n\014proof_format\030\004 \001(\014\"T\n\014Crawl" +
+      "Request\022\022\n\npublic_key\030\001 \001(\014\022!\n\031requested" +
+      "_sequence_number\030\002 \001(\005\022\r\n\005limit\030\003 \001(\005\"H\n" +
+      "\023IntroductionRequest\022\027\n\017connection_type\030" +
+      "\001 \001(\003\022\030\n\020network_operator\030\002 \001(\t\"\207\001\n\024Intr" +
+      "oductionResponse\022\027\n\017connection_type\030\001 \001(" +
+      "\003\022\030\n\020network_operator\030\002 \001(\t\022\036\n\026internal_" +
+      "source_socket\030\003 \001(\t\022\017\n\007invitee\030\004 \001(\014\022\013\n\003" +
+      "pex\030\005 \003(\014\" \n\010Puncture\022\024\n\014sourceSocket\030\001 " +
+      "\001(\t\"?\n\017PunctureRequest\022\025\n\rsource_socket\030" +
+      "\001 \001(\t\022\025\n\rpuncture_peer\030\002 \001(\014B<\n,nl.tudel" +
+      "ft.cs4160.trustchain_android.messageB\014Me" +
+      "ssageProtob\006proto3"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
@@ -8485,7 +8485,7 @@ public final class MessageProto {
     internal_static_message_Message_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_message_Message_descriptor,
-        new java.lang.String[] { "PeerId", "DestinationAddress", "DestinationPort", "PublicKey", "Type", "Payload", });
+        new java.lang.String[] { "SourcePeerId", "DestinationAddress", "DestinationPort", "PublicKey", "Type", "Payload", });
     internal_static_message_Payload_descriptor =
       getDescriptor().getMessageTypes().get(1);
     internal_static_message_Payload_fieldAccessorTable = new

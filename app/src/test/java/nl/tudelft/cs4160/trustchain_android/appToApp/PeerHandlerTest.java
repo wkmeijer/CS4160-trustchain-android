@@ -8,6 +8,7 @@ import org.junit.Test;
 import java.net.InetSocketAddress;
 import java.util.ArrayList;
 
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
@@ -31,13 +32,13 @@ public class PeerHandlerTest {
         PeerAppToApp peer2 = new PeerAppToApp("peer2", rnadomInet);
         PeerAppToApp peer3 = new PeerAppToApp("peer3", rnadomInet);
 
-        originalIpList = new ArrayList<PeerAppToApp>();
+        originalIpList = new ArrayList<>();
         originalIpList.add(peer1);
         originalIpList.add(peer2);
         originalIpList.add(peer3);
         originalIpList.add(peer1);
 
-        expectedIpList = new ArrayList<PeerAppToApp>();
+        expectedIpList = new ArrayList<>();
         expectedIpList.add(peer1);
         expectedIpList.add(peer2);
         expectedIpList.add(peer3);
@@ -58,10 +59,8 @@ public class PeerHandlerTest {
                 break;
             }
         }
-
         if (expectedIpList.size() != 0) failed = false;
         assertFalse(failed);
-
     }
 
     @Test
@@ -83,25 +82,12 @@ public class PeerHandlerTest {
 
     @Test
     public void testWanVoteNull() {
-        assertEquals(
-                peerHandler.getWanVote().getAddress(), null);
+        assertEquals(peerHandler.getWanVote().getAddress(), null);
     }
 
     @Test
     public void testSetPeerlist() {
-
-        PeerAppToApp peer1 = new PeerAppToApp("peer1", rnadomInet);
-        PeerAppToApp peer2 = new PeerAppToApp("peer2", rnadomInet);
-        PeerAppToApp peer3 = new PeerAppToApp("peer3", rnadomInet);
-        ArrayList<PeerAppToApp> list = new ArrayList<PeerAppToApp>();
-        list.add(peer1);
-        list.add(peer2);
-        list.add(peer3);
-        list.add(peer1);
-
-        peerHandler.setPeerList(list);
-        assertEquals(
-                peerHandler.getPeerList().toString(), list.toString());
+        assertEquals(expectedIpList.size(),peerHandler.getPeerList().size());
     }
 
     @Test
@@ -109,8 +95,7 @@ public class PeerHandlerTest {
         int size = peerHandler.getPeerList().size();
         PeerAppToApp peer2 = new PeerAppToApp("peer2", rnadomInet);
         peerHandler.add(peer2);
-        assertEquals(
-                peerHandler.getPeerList().size(), size + 1);
+        assertEquals(peerHandler.getPeerList().size(), size + 1);
     }
 
 
@@ -126,7 +111,6 @@ public class PeerHandlerTest {
         assertEquals(peerHandler.getPeerList().size(), size - 1);
     }
 
-
     @Test
     public void testExistsIn() {
         assertTrue(peerHandler.peerExistsInList(originalIpList.get(0)));
@@ -136,16 +120,18 @@ public class PeerHandlerTest {
     public void testNotExistsIn() {
         assertFalse(peerHandler.peerExistsInList(new PeerAppToApp("peerA??", new InetSocketAddress(202))));
     }
+
     @Test
     public void testAdd() {
         PeerAppToApp randomPeer = new PeerAppToApp("peerA??", new InetSocketAddress(202));
         peerHandler.add(randomPeer);
         assertTrue(peerHandler.peerExistsInList(randomPeer));
     }
+
     @Test
     public void testAddPeerAlreadyInList() {
         int size = peerHandler.getPeerList().size();
-        peerHandler.addPeer(originalIpList.get(0).getPeerId(), originalIpList.get(0).getAddress(), true);
+        peerHandler.addPeer(originalIpList.get(0).getPeerId(), originalIpList.get(0).getAddress());
         assertEquals(peerHandler.getPeerList().size(), size);
     }
 

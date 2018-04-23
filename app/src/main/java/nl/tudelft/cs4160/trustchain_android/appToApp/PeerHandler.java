@@ -111,7 +111,7 @@ public class PeerHandler {
     }
 
     /**
-     * Add a inboxItem to the inboxItem list.
+     * Add a inboxItem to the peerlist.
      * Synchronized is to make sure this happens thread safe.
      * @param peerId   the inboxItem's id.
      * @param address  the inboxItem's address.
@@ -212,7 +212,7 @@ public class PeerHandler {
             for (PeerAppToApp peer : peerList) {
                 if (id.equals(peer.getPeerId())) {
                     if (!address.equals(peer.getAddress())) {
-                        Log.i(TAG, "Peer address differs from known address | address: " + address.toString() + " peer.getAddress(): " + peer.getAddress().toString());
+                        Log.i(TAG, "Peer address differs from known address | address: " + address.toString() + " | peer.getAddress(): " + peer.getAddress().toString() + " | id: " + id + " | hashid: " + hashId);
                         peer.setAddress(address);
                         removeDuplicates();
                     }
@@ -261,5 +261,6 @@ public class PeerHandler {
      */
     public synchronized void setPeerList(ArrayList<PeerAppToApp> peerList) {
         this.peerList = peerList;
+        removeDuplicates();
     }
 }
