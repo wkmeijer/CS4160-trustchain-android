@@ -94,7 +94,6 @@ public class Key {
      */
     public static PrivateKey loadPrivateKey(Context context, String file) {
         String key = Util.readFile(context, file);
-        Log.i(TAG, "PRIVATE FROM FILE: " + key);
         return loadPrivateKey(key);
     }
 
@@ -115,7 +114,6 @@ public class Key {
 
     public static SigningKey loadSigningKey(Context context, String file) {
         String contents = Util.readFile(context, file);
-        Log.i(TAG, "SIGNING KEY FROM FILE: " + contents);
         return loadSigningKey(contents);
     }
 
