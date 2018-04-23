@@ -19,7 +19,7 @@ import nl.tudelft.cs4160.trustchain_android.block.TrustChainBlockHelper;
 import nl.tudelft.cs4160.trustchain_android.block.ValidationResult;
 import nl.tudelft.cs4160.trustchain_android.crypto.DualSecret;
 import nl.tudelft.cs4160.trustchain_android.crypto.Key;
-import nl.tudelft.cs4160.trustchain_android.database.TrustChainDBHelper;
+import nl.tudelft.cs4160.trustchain_android.storage.database.TrustChainDBHelper;
 import nl.tudelft.cs4160.trustchain_android.main.OverviewConnectionsActivity;
 import nl.tudelft.cs4160.trustchain_android.message.MessageProto;
 

@@ -1,4 +1,4 @@
-package nl.tudelft.cs4160.trustchain_android.peer.connection;
+package nl.tudelft.cs4160.trustchain_android.network.peer;
 
 /**
  * Created by timbu on 15/01/2018.

@@ -1,4 +1,4 @@
-package nl.tudelft.cs4160.trustchain_android.peer;
+package nl.tudelft.cs4160.trustchain_android.network.peer;
 
 import android.os.Handler;
 import android.os.Looper;
@@ -9,8 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import nl.tudelft.cs4160.trustchain_android.peer.connection.PeerListener;
-import nl.tudelft.cs4160.trustchain_android.peer.connection.WanVote;
+import nl.tudelft.cs4160.trustchain_android.network.WanVote;
 
 public class PeerHandler {
     private ArrayList<Peer> peerList;

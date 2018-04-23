@@ -12,9 +12,9 @@ import android.widget.TextView;
 import java.util.ArrayList;
 
 import nl.tudelft.cs4160.trustchain_android.R;
-import nl.tudelft.cs4160.trustchain_android.sharedpreferences.UserNameStorage;
+import nl.tudelft.cs4160.trustchain_android.storage.sharedpreferences.UserNameStorage;
 import nl.tudelft.cs4160.trustchain_android.util.ByteArrayConverter;
-import nl.tudelft.cs4160.trustchain_android.color.ChainColor;
+import nl.tudelft.cs4160.trustchain_android.chainExplorer.ChainColor;
 import nl.tudelft.cs4160.trustchain_android.crypto.DualSecret;
 import nl.tudelft.cs4160.trustchain_android.crypto.Key;
 import nl.tudelft.cs4160.trustchain_android.main.PeerOverviewActivity;

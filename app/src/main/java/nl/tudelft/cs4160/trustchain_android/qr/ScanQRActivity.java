@@ -25,7 +25,7 @@ import nl.tudelft.cs4160.trustchain_android.R;
 import nl.tudelft.cs4160.trustchain_android.util.Util;
 import nl.tudelft.cs4160.trustchain_android.crypto.DualSecret;
 import nl.tudelft.cs4160.trustchain_android.crypto.Key;
-import nl.tudelft.cs4160.trustchain_android.database.TrustChainDBHelper;
+import nl.tudelft.cs4160.trustchain_android.storage.database.TrustChainDBHelper;
 import nl.tudelft.cs4160.trustchain_android.message.MessageProto;
 import nl.tudelft.cs4160.trustchain_android.qr.exception.QRWalletImportException;
 import nl.tudelft.cs4160.trustchain_android.qr.exception.QRWalletParseException;

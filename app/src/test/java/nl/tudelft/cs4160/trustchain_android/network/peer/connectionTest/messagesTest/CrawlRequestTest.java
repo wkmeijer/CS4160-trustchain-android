@@ -1,4 +1,4 @@
-package nl.tudelft.cs4160.trustchain_android.peer.connectionTest.messagesTest;
+package nl.tudelft.cs4160.trustchain_android.network.peer.connectionTest.messagesTest;
 
 import com.google.protobuf.InvalidProtocolBufferException;
 
@@ -7,7 +7,7 @@ import org.junit.Test;
 
 import java.util.Map;
 
-import nl.tudelft.cs4160.trustchain_android.peer.connection.messages.CrawlRequest;
+import nl.tudelft.cs4160.trustchain_android.network.peer.connection.messages.CrawlRequest;
 
 /**
  * Created by Boning on 1/27/2018.

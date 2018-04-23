@@ -1,4 +1,4 @@
-package nl.tudelft.cs4160.trustchain_android.peer;
+package nl.tudelft.cs4160.trustchain_android.network.peer;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;

@@ -1,4 +1,4 @@
-package nl.tudelft.cs4160.trustchain_android.color;
+package nl.tudelft.cs4160.trustchain_android.chainExplorer;
 
 import android.content.Context;
 

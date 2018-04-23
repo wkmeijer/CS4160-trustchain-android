@@ -1,4 +1,4 @@
-package nl.tudelft.cs4160.trustchain_android.sharedpreferences;
+package nl.tudelft.cs4160.trustchain_android.storage.sharedpreferences;
 
 import android.content.Context;
 import android.util.Base64;

@@ -1,4 +1,4 @@
-package nl.tudelft.cs4160.trustchain_android.peer.connectionTest.messagesTest;
+package nl.tudelft.cs4160.trustchain_android.network.peer.connectionTest.messagesTest;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -7,9 +7,9 @@ import java.net.InetSocketAddress;
 import java.util.HashMap;
 import java.util.Map;
 
-import nl.tudelft.cs4160.trustchain_android.peer.Peer;
-import nl.tudelft.cs4160.trustchain_android.peer.connection.messages.Message;
-import nl.tudelft.cs4160.trustchain_android.peer.connection.messages.MessageException;
+import nl.tudelft.cs4160.trustchain_android.network.peer.Peer;
+import nl.tudelft.cs4160.trustchain_android.network.peer.connection.messages.Message;
+import nl.tudelft.cs4160.trustchain_android.network.peer.connection.messages.MessageException;
 
 import static org.junit.Assert.assertEquals;
 

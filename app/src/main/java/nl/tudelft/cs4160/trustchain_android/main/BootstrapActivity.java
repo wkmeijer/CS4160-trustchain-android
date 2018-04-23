@@ -13,7 +13,7 @@ import java.net.Inet6Address;
 import java.net.InetAddress;
 
 import nl.tudelft.cs4160.trustchain_android.R;
-import nl.tudelft.cs4160.trustchain_android.sharedpreferences.BootstrapIPStorage;
+import nl.tudelft.cs4160.trustchain_android.storage.sharedpreferences.BootstrapIPStorage;
 
 public class BootstrapActivity extends AppCompatActivity {
     private EditText bootstrapView;

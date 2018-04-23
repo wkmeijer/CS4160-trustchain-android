@@ -1,4 +1,4 @@
-package nl.tudelft.cs4160.trustchain_android.database;
+package nl.tudelft.cs4160.trustchain_android.storage.database;
 
 import android.provider.BaseColumns;
 

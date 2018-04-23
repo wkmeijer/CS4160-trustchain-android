@@ -3,8 +3,8 @@ package nl.tudelft.cs4160.trustchain_android.network;
 import java.io.IOException;
 import java.net.UnknownHostException;
 
-import nl.tudelft.cs4160.trustchain_android.peer.Peer;
-import nl.tudelft.cs4160.trustchain_android.peer.PeerHandler;
+import nl.tudelft.cs4160.trustchain_android.network.peer.Peer;
+import nl.tudelft.cs4160.trustchain_android.network.peer.PeerHandler;
 import nl.tudelft.cs4160.trustchain_android.message.MessageProto;
 
 public interface NetworkCommunicationListener {

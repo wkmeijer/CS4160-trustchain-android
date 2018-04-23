@@ -21,10 +21,10 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 
-import nl.tudelft.cs4160.trustchain_android.sharedpreferences.InboxItemStorage;
-import nl.tudelft.cs4160.trustchain_android.sharedpreferences.PubKeyAndAddressPairStorage;
-import nl.tudelft.cs4160.trustchain_android.sharedpreferences.UserNameStorage;
-import nl.tudelft.cs4160.trustchain_android.peer.Peer;
+import nl.tudelft.cs4160.trustchain_android.storage.sharedpreferences.InboxItemStorage;
+import nl.tudelft.cs4160.trustchain_android.storage.sharedpreferences.PubKeyAndAddressPairStorage;
+import nl.tudelft.cs4160.trustchain_android.storage.sharedpreferences.UserNameStorage;
+import nl.tudelft.cs4160.trustchain_android.network.peer.Peer;
 import nl.tudelft.cs4160.trustchain_android.crypto.Key;
 import nl.tudelft.cs4160.trustchain_android.crypto.PublicKeyPair;
 import nl.tudelft.cs4160.trustchain_android.inbox.InboxItem;

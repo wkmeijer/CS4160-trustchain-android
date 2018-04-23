@@ -1,4 +1,4 @@
-package nl.tudelft.cs4160.trustchain_android.peer.connection;
+package nl.tudelft.cs4160.trustchain_android.network;
 
 import java.net.InetSocketAddress;
 import java.util.HashMap;
@@ -7,8 +7,7 @@ import java.util.Map;
 
 /**
  * The WanVote counts address votes and return the majority vote, or when equal the last vote.
- * <p/>
- * Created by jaap on 6/1/16.
+ *
  */
 public class WanVote {
     private final static int MAX_SIZE = 3;
@@ -26,10 +25,7 @@ public class WanVote {
         if (votes.size() > MAX_SIZE)
             votes.removeFirst();
         calculateAddress();
-        if (!majorityAddress.equals(originalAddress)) {
-            return true;
-        }
-        return false;
+        return !majorityAddress.equals(originalAddress);
     }
 
     private void calculateAddress() {
