@@ -4,8 +4,6 @@ import junit.framework.TestCase;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.libsodium.jni.keys.KeyPair;
-import org.libsodium.jni.keys.PublicKey;
 
 import java.util.ArrayList;
 

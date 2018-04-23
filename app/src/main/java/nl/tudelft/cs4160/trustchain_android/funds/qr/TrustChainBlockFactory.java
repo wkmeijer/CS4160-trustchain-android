@@ -12,13 +12,13 @@ import java.util.Arrays;
 
 import nl.tudelft.cs4160.trustchain_android.block.TrustChainBlockHelper;
 import nl.tudelft.cs4160.trustchain_android.crypto.DualSecret;
-import nl.tudelft.cs4160.trustchain_android.storage.database.TrustChainDBHelper;
-import nl.tudelft.cs4160.trustchain_android.message.MessageProto;
-import nl.tudelft.cs4160.trustchain_android.message.MessageProto.TrustChainBlock.Transaction;
 import nl.tudelft.cs4160.trustchain_android.funds.qr.exception.InvalidDualKeyException;
 import nl.tudelft.cs4160.trustchain_android.funds.qr.exception.QRWalletImportException;
 import nl.tudelft.cs4160.trustchain_android.funds.qr.models.QRTransaction;
 import nl.tudelft.cs4160.trustchain_android.funds.qr.models.QRWallet;
+import nl.tudelft.cs4160.trustchain_android.message.MessageProto;
+import nl.tudelft.cs4160.trustchain_android.message.MessageProto.TrustChainBlock.Transaction;
+import nl.tudelft.cs4160.trustchain_android.storage.database.TrustChainDBHelper;
 
 public class TrustChainBlockFactory {
     Moshi moshi = new Moshi.Builder().build();

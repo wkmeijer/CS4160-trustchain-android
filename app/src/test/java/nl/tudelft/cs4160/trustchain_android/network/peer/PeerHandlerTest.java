@@ -8,7 +8,6 @@ import org.junit.Test;
 import java.net.InetSocketAddress;
 import java.util.ArrayList;
 
-import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
