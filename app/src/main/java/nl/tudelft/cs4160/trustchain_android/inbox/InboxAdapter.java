@@ -13,11 +13,11 @@ import android.widget.TextView;
 import java.util.ArrayList;
 
 import nl.tudelft.cs4160.trustchain_android.R;
-import nl.tudelft.cs4160.trustchain_android.appToApp.PeerAppToApp;
+import nl.tudelft.cs4160.trustchain_android.peer.Peer;
 import nl.tudelft.cs4160.trustchain_android.main.PeerOverviewActivity;
 public class InboxAdapter extends RecyclerView.Adapter<InboxAdapter.ViewHolder> {
     private ArrayList<InboxItem> mDataset;
-    private ArrayList<PeerAppToApp> peerList;
+    private ArrayList<Peer> peerList;
 
     // Provide a reference to the views for each data item
     // Complex data items may need more than one view per item, and
@@ -113,7 +113,7 @@ public class InboxAdapter extends RecyclerView.Adapter<InboxAdapter.ViewHolder> 
 
                 h.mStatusTextView.setTextColor(h.mAddressTextView.getContext().getResources().getColor(R.color.colorStatusCantConnect));
                 String name = inboxItem.getUserName();
-                for (PeerAppToApp curr : peerList) {
+                for (Peer curr : peerList) {
                     if (curr != null && curr.getPeerId() != null && curr.getPeerId().equals(name)) {
                         if (curr.isAlive()) {
                             h.mStatusTextView.setTextColor(h.mAddressTextView.getContext().getResources().getColor(R.color.colorStatusConnected));
@@ -160,7 +160,7 @@ public class InboxAdapter extends RecyclerView.Adapter<InboxAdapter.ViewHolder> 
         holder.mWrapperLinearLayout.setOnClickListener(mOnClickListener);
     }
 
-    public void setPeerList(ArrayList<PeerAppToApp> peerList) {
+    public void setPeerList(ArrayList<Peer> peerList) {
         this.peerList = peerList;
     }
 

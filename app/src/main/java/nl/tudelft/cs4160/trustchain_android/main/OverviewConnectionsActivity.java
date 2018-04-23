@@ -34,16 +34,14 @@ import java.nio.channels.DatagramChannel;
 import java.util.ArrayList;
 import java.util.List;
 
-import nl.tudelft.cs4160.trustchain_android.Network.Network;
-import nl.tudelft.cs4160.trustchain_android.Network.NetworkCommunicationListener;
+import nl.tudelft.cs4160.trustchain_android.network.Network;
+import nl.tudelft.cs4160.trustchain_android.network.NetworkCommunicationListener;
 import nl.tudelft.cs4160.trustchain_android.R;
-import nl.tudelft.cs4160.trustchain_android.SharedPreferences.BootstrapIPStorage;
-import nl.tudelft.cs4160.trustchain_android.SharedPreferences.UserNameStorage;
-import nl.tudelft.cs4160.trustchain_android.appToApp.PeerAppToApp;
-import nl.tudelft.cs4160.trustchain_android.appToApp.PeerHandler;
-import nl.tudelft.cs4160.trustchain_android.appToApp.connection.PeerListener;
-import nl.tudelft.cs4160.trustchain_android.appToApp.connection.messages.IntroductionRequest;
-import nl.tudelft.cs4160.trustchain_android.appToApp.connection.messages.MessageException;
+import nl.tudelft.cs4160.trustchain_android.sharedpreferences.BootstrapIPStorage;
+import nl.tudelft.cs4160.trustchain_android.sharedpreferences.UserNameStorage;
+import nl.tudelft.cs4160.trustchain_android.peer.Peer;
+import nl.tudelft.cs4160.trustchain_android.peer.PeerHandler;
+import nl.tudelft.cs4160.trustchain_android.peer.connection.PeerListener;
 import nl.tudelft.cs4160.trustchain_android.block.TrustChainBlockHelper;
 import nl.tudelft.cs4160.trustchain_android.block.ValidationResult;
 import nl.tudelft.cs4160.trustchain_android.chainExplorer.ChainExplorerActivity;
@@ -104,7 +102,7 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
         network = Network.getInstance(getApplicationContext());
 
         if (savedInstanceState != null) {
-            ArrayList<PeerAppToApp> list = (ArrayList<PeerAppToApp>) savedInstanceState.getSerializable("peers");
+            ArrayList<Peer> list = (ArrayList<Peer>) savedInstanceState.getSerializable("peers");
             getPeerHandler().setPeerList(list);
         }
 
@@ -297,7 +295,7 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
                 do {
                     try {
                         if (peerHandler.size() > 0) {
-                            PeerAppToApp peer = peerHandler.getEligiblePeer(null);
+                            Peer peer = peerHandler.getEligiblePeer(null);
                             if (peer != null) {
                                 network.sendIntroductionRequest(peer);
                                 //  sendBlockMessage(peer);
@@ -350,9 +348,8 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
     /**
      * Update wan address
      * @param message a message that was received, the destination is our wan address
-     * @throws MessageException
      */
-    public void updateWan(MessageProto.Message message) throws MessageException, UnknownHostException {
+    public void updateWan(MessageProto.Message message) throws UnknownHostException {
         InetAddress addr = InetAddress.getByAddress(message.getDestinationAddress().toByteArray());
         int port = message.getDestinationPort();
         InetSocketAddress socketAddress = new InetSocketAddress(addr, port);
@@ -386,11 +383,11 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
      * @throws IOException
      */
     @Override
-    public void handleIntroductionRequest(PeerAppToApp peer, MessageProto.IntroductionRequest request) throws IOException {
+    public void handleIntroductionRequest(Peer peer, MessageProto.IntroductionRequest request) throws IOException {
         peer.setConnectionType((int) request.getConnectionType());
         peer.setNetworkOperator(request.getNetworkOperator());
         if (getPeerHandler().size() > 1) {
-            PeerAppToApp invitee = getPeerHandler().getEligiblePeer(peer);
+            Peer invitee = getPeerHandler().getEligiblePeer(peer);
             if (invitee != null) {
                 network.sendIntroductionResponse(peer, invitee);
                 network.sendPunctureRequest(invitee, peer);
@@ -409,12 +406,12 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
      * @param response the message.
      */
     @Override
-    public void handleIntroductionResponse(PeerAppToApp peer, MessageProto.IntroductionResponse response) throws Exception {
+    public void handleIntroductionResponse(Peer peer, MessageProto.IntroductionResponse response) throws Exception {
         peer.setConnectionType((int) response.getConnectionType());
         peer.setNetworkOperator(response.getNetworkOperator());
         List<ByteString> pex = response.getPexList();
         for (ByteString pexPeer : pex) {
-            PeerAppToApp p = PeerAppToApp.deserialize(pexPeer.toByteArray());
+            Peer p = Peer.deserialize(pexPeer.toByteArray());
             Log.d(TAG, "From " + peer + " | found peer in pexList: " + p);
 
             if (!getPeerHandler().hashId.equals(p.getPeerId())) {
@@ -431,7 +428,7 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
      * @throws IOException
      */
     @Override
-    public void handlePuncture(PeerAppToApp peer, MessageProto.Puncture puncture) throws IOException {
+    public void handlePuncture(Peer peer, MessageProto.Puncture puncture) throws IOException {
     }
 
     /**
@@ -440,13 +437,12 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
      * @param peer    the origin inboxItem.
      * @param request the message.
      * @throws IOException
-     * @throws MessageException
      */
     @Override
-    public void handlePunctureRequest(PeerAppToApp peer, MessageProto.PunctureRequest request) throws IOException, MessageException {
-        PeerAppToApp puncturePeer = null;
+    public void handlePunctureRequest(Peer peer, MessageProto.PunctureRequest request) throws IOException {
+        Peer puncturePeer = null;
         try {
-            puncturePeer = PeerAppToApp.deserialize(request.getPuncturePeer().toByteArray());
+            puncturePeer = Peer.deserialize(request.getPuncturePeer().toByteArray());
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         }
@@ -461,10 +457,9 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
      * @param peer the sending peer
      * @param block the data send
      * @throws IOException
-     * @throws MessageException
      */
     @Override
-    public void handleReceivedBlock(PeerAppToApp peer, MessageProto.TrustChainBlock block) {
+    public void handleReceivedBlock(Peer peer, MessageProto.TrustChainBlock block) {
         try {
             if (TrustChainBlockHelper.validate(block,dbHelper).getStatus() != ValidationResult.INVALID ) {
                 dbHelper.replaceInDB(block);
@@ -479,10 +474,9 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
      * @param peer the sending peer
      * @param request the crawlRequest
      * @throws IOException
-     * @throws MessageException
      */
     @Override
-    public void handleCrawlRequest(PeerAppToApp peer, MessageProto.CrawlRequest request) throws IOException, MessageException {
+    public void handleCrawlRequest(Peer peer, MessageProto.CrawlRequest request) throws IOException {
         //ToDo for future application sending the entire chain is a bit too much
         for (MessageProto.TrustChainBlock block : dbHelper.getAllBlocks()) {
             network.sendBlockMessage(peer, block);

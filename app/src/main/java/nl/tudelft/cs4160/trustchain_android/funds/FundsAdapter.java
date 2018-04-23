@@ -15,7 +15,7 @@ import org.json.JSONObject;
 import nl.tudelft.cs4160.trustchain_android.R;
 import nl.tudelft.cs4160.trustchain_android.message.MessageProto;
 
-import static nl.tudelft.cs4160.trustchain_android.Util.Util.readableSize;
+import static nl.tudelft.cs4160.trustchain_android.util.Util.readableSize;
 
 public class FundsAdapter extends ArrayAdapter<MessageProto.TrustChainBlock> {
     public FundsAdapter(@NonNull Context context) {

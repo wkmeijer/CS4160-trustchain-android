@@ -23,7 +23,7 @@ import nl.tudelft.cs4160.trustchain_android.crypto.Key;
 import nl.tudelft.cs4160.trustchain_android.database.TrustChainDBHelper;
 import nl.tudelft.cs4160.trustchain_android.message.MessageProto;
 
-import static nl.tudelft.cs4160.trustchain_android.Util.Util.readableSize;
+import static nl.tudelft.cs4160.trustchain_android.util.Util.readableSize;
 
 public class FundsActivity extends AppCompatActivity {
 

@@ -5,7 +5,7 @@ import java.net.InetSocketAddress;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import nl.tudelft.cs4160.trustchain_android.appToApp.PeerAppToApp;
+import nl.tudelft.cs4160.trustchain_android.peer.Peer;
 import nl.tudelft.cs4160.trustchain_android.crypto.PublicKeyPair;
 
 public class InboxItem implements Serializable {
@@ -104,8 +104,8 @@ public class InboxItem implements Serializable {
         return publicKeyPair != null ? Arrays.equals(publicKeyPair, inboxItem.publicKeyPair) : inboxItem.publicKeyPair == null;
     }
 
-    public PeerAppToApp getPeerAppToApp(){
-       return new PeerAppToApp(userName, new InetSocketAddress(address,port));
+    public Peer getPeerAppToApp(){
+       return new Peer(userName, new InetSocketAddress(address,port));
     }
 
 }

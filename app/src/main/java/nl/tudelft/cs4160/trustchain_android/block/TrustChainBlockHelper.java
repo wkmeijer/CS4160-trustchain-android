@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import nl.tudelft.cs4160.trustchain_android.Util.ByteArrayConverter;
+import nl.tudelft.cs4160.trustchain_android.util.ByteArrayConverter;
 import nl.tudelft.cs4160.trustchain_android.crypto.DualSecret;
 import nl.tudelft.cs4160.trustchain_android.crypto.Key;
 import nl.tudelft.cs4160.trustchain_android.crypto.PublicKeyPair;
@@ -20,7 +20,7 @@ import nl.tudelft.cs4160.trustchain_android.database.TrustChainDBHelper;
 import nl.tudelft.cs4160.trustchain_android.message.MessageProto;
 import nl.tudelft.cs4160.trustchain_android.message.MessageProto.TrustChainBlock.Transaction;
 
-import static nl.tudelft.cs4160.trustchain_android.Util.Util.ellipsize;
+import static nl.tudelft.cs4160.trustchain_android.util.Util.ellipsize;
 
 public class TrustChainBlockHelper {
     public static final ByteString GENESIS_HASH = ByteString.copyFrom(new byte[] {0x00});

@@ -32,11 +32,10 @@ import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import nl.tudelft.cs4160.trustchain_android.Network.CrawlRequestListener;
-import nl.tudelft.cs4160.trustchain_android.Network.Network;
+import nl.tudelft.cs4160.trustchain_android.network.CrawlRequestListener;
+import nl.tudelft.cs4160.trustchain_android.network.Network;
 import nl.tudelft.cs4160.trustchain_android.R;
-import nl.tudelft.cs4160.trustchain_android.SharedPreferences.InboxItemStorage;
-import nl.tudelft.cs4160.trustchain_android.appToApp.connection.messages.MessageException;
+import nl.tudelft.cs4160.trustchain_android.sharedpreferences.InboxItemStorage;
 import nl.tudelft.cs4160.trustchain_android.block.TrustChainBlockHelper;
 import nl.tudelft.cs4160.trustchain_android.block.ValidationResult;
 import nl.tudelft.cs4160.trustchain_android.chainExplorer.ChainExplorerActivity;
@@ -45,8 +44,8 @@ import nl.tudelft.cs4160.trustchain_android.crypto.Key;
 import nl.tudelft.cs4160.trustchain_android.database.TrustChainDBHelper;
 import nl.tudelft.cs4160.trustchain_android.inbox.InboxItem;
 import nl.tudelft.cs4160.trustchain_android.message.MessageProto;
-import nl.tudelft.cs4160.trustchain_android.mutualBlock.MutualBlockAdapter;
-import nl.tudelft.cs4160.trustchain_android.mutualBlock.MutualBlockItem;
+import nl.tudelft.cs4160.trustchain_android.mutualblock.MutualBlockAdapter;
+import nl.tudelft.cs4160.trustchain_android.mutualblock.MutualBlockItem;
 
 import static nl.tudelft.cs4160.trustchain_android.block.TrustChainBlockHelper.GENESIS_SEQ;
 import static nl.tudelft.cs4160.trustchain_android.block.TrustChainBlockHelper.createBlock;
@@ -317,7 +316,7 @@ public class PeerOverviewActivity extends AppCompatActivity implements CrawlRequ
      * @throws MessageException
      */
 //    @Override
-//    public void handleCrawlRequestBlockMessageRequest(PeerAppToApp peer, MessageProto.TrustChainBlock block) throws IOException, MessageException {
+//    public void handleCrawlRequestBlockMessageRequest(Peer peer, MessageProto.TrustChainBlock block) throws IOException, MessageException {
 //        if (dbHelper.getBlock(block.getPublicKey().toByteArray(), block.getSequenceNumber()) == null) {
 //            dbHelper.insertInDB(block);
 //        }

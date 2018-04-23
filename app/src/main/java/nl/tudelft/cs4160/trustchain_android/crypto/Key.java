@@ -9,7 +9,7 @@ import org.libsodium.jni.Sodium;
 import org.libsodium.jni.keys.PrivateKey;
 import org.libsodium.jni.keys.VerifyKey;
 
-import nl.tudelft.cs4160.trustchain_android.Util.Util;
+import nl.tudelft.cs4160.trustchain_android.util.Util;
 
 /**
  * Manages key operations.

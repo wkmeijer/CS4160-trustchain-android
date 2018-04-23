@@ -15,18 +15,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 import nl.tudelft.cs4160.trustchain_android.R;
-import nl.tudelft.cs4160.trustchain_android.SharedPreferences.InboxItemStorage;
-import nl.tudelft.cs4160.trustchain_android.SharedPreferences.PubKeyAndAddressPairStorage;
-import nl.tudelft.cs4160.trustchain_android.SharedPreferences.UserNameStorage;
-import nl.tudelft.cs4160.trustchain_android.appToApp.PeerAppToApp;
+import nl.tudelft.cs4160.trustchain_android.sharedpreferences.InboxItemStorage;
+import nl.tudelft.cs4160.trustchain_android.sharedpreferences.PubKeyAndAddressPairStorage;
+import nl.tudelft.cs4160.trustchain_android.sharedpreferences.UserNameStorage;
+import nl.tudelft.cs4160.trustchain_android.peer.Peer;
 import nl.tudelft.cs4160.trustchain_android.crypto.PublicKeyPair;
 import nl.tudelft.cs4160.trustchain_android.inbox.InboxItem;
 
-public class PeerListAdapter extends ArrayAdapter<PeerAppToApp> {
+public class PeerListAdapter extends ArrayAdapter<Peer> {
     private final Context context;
     private CoordinatorLayout coordinatorLayout;
 
-    public PeerListAdapter(Context context, int resource, List<PeerAppToApp> peerConnectionList, CoordinatorLayout coordinatorLayout) {
+    public PeerListAdapter(Context context, int resource, List<Peer> peerConnectionList, CoordinatorLayout coordinatorLayout) {
         super(context, resource, peerConnectionList);
         this.context = context;
         this.coordinatorLayout = coordinatorLayout;
@@ -53,7 +53,7 @@ public class PeerListAdapter extends ArrayAdapter<PeerAppToApp> {
             holder = (ViewHolder) convertView.getTag();
         }
 
-        PeerAppToApp peer = getItem(position);
+        Peer peer = getItem(position);
 
         holder.mPeerId.setText(peer.getPeerId() == null ? "" : peer.getPeerId());
         if (peer.getNetworkOperator() != null) {
@@ -146,7 +146,7 @@ public class PeerListAdapter extends ArrayAdapter<PeerAppToApp> {
             @Override
             public void onClick(View v) {
                 int pos = (int) v.getTag();
-                PeerAppToApp peer = getItem(pos);
+                Peer peer = getItem(pos);
                 if(peer.isAlive() && peer.hasReceivedData()) {
                     PublicKeyPair pubKeyPair = PubKeyAndAddressPairStorage.getPubKeyByAddress(context, peer.getAddress().toString().replace("/", ""));
                     if(pubKeyPair != null) {
