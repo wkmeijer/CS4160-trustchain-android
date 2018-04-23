@@ -10,6 +10,8 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 
+import nl.tudelft.cs4160.trustchain_android.main.OverviewConnectionsActivity;
+
 /**
  * The peer object that is used to find other connected peers in the network.
  * The peer is identified by its unique peer id, which is the chosen username, and keeps track of the last send and receive time.
@@ -117,19 +119,20 @@ public class Peer implements Serializable {
      * @return
      */
     public boolean isAlive() {
-        if (hasSentData) {
-            return System.currentTimeMillis() - lastSendTime < TIMEOUT;
+        if (hasReceivedData) {
+            return System.currentTimeMillis() - lastReceiveTime < TIMEOUT;
         }
         return true;
     }
 
     /**
      * If a peer has sent data, but the last time it has sent is longer ago than the remove timeout, it can be removed.
+     * Never remove the bootstrap peer.
      * @return
      */
     boolean canBeRemoved() {
-        if (hasSentData) {
-            return System.currentTimeMillis() - lastSendTime > REMOVE_TIMEOUT;
+        if (hasSentData && !isBootstrap()) {
+            return System.currentTimeMillis() - lastReceiveTime > REMOVE_TIMEOUT;
         }
         return false;
     }
@@ -177,9 +180,21 @@ public class Peer implements Serializable {
         os.writeObject(obj);
         return out.toByteArray();
     }
+
     public static Peer deserialize(byte[] data) throws IOException, ClassNotFoundException {
         ByteArrayInputStream in = new ByteArrayInputStream(data);
         ObjectInputStream is = new ObjectInputStream(in);
         return (Peer) is.readObject();
+    }
+
+    /**
+     * Checks if this peer is the bootstrap address.
+     * @return
+     */
+    public boolean isBootstrap() {
+        if(OverviewConnectionsActivity.CONNECTABLE_ADDRESS.equals(address.getAddress().toString())){
+            return true;
+        }
+        return false;
     }
 }
