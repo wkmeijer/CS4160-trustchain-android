@@ -29,7 +29,7 @@ import nl.tudelft.cs4160.trustchain_android.crypto.Key;
 import nl.tudelft.cs4160.trustchain_android.crypto.PublicKeyPair;
 import nl.tudelft.cs4160.trustchain_android.inbox.InboxItem;
 import nl.tudelft.cs4160.trustchain_android.main.OverviewConnectionsActivity;
-import nl.tudelft.cs4160.trustchain_android.main.PeerOverviewActivity;
+import nl.tudelft.cs4160.trustchain_android.peersummary.PeerSummaryActivity;
 import nl.tudelft.cs4160.trustchain_android.message.MessageProto;
 
 public class Network {
@@ -43,7 +43,7 @@ public class Network {
     private static Network network;
     private PublicKeyPair publicKey;
     private static NetworkCommunicationListener networkCommunicationListener;
-    private static PeerOverviewActivity mutualBlockListener;
+    private static PeerSummaryActivity mutualBlockListener;
 
     public final static int INTRODUCTION_REQUEST_ID = 1;
     public final static int INTRODUCTION_RESPONSE_ID = 2;
@@ -84,7 +84,7 @@ public class Network {
      * Set the crawl request listener
      * @param mutualBlockListener
      */
-    public void setMutualBlockListener(PeerOverviewActivity mutualBlockListener) {
+    public void setMutualBlockListener(PeerSummaryActivity mutualBlockListener) {
         Network.mutualBlockListener = mutualBlockListener;
     }
 

@@ -1,4 +1,4 @@
-package nl.tudelft.cs4160.trustchain_android.main;
+package nl.tudelft.cs4160.trustchain_android.peersummary;
 
 import android.app.ActivityManager;
 import android.content.Context;
@@ -44,15 +44,15 @@ import nl.tudelft.cs4160.trustchain_android.crypto.Key;
 import nl.tudelft.cs4160.trustchain_android.storage.database.TrustChainDBHelper;
 import nl.tudelft.cs4160.trustchain_android.inbox.InboxItem;
 import nl.tudelft.cs4160.trustchain_android.message.MessageProto;
-import nl.tudelft.cs4160.trustchain_android.mutualblock.MutualBlockAdapter;
-import nl.tudelft.cs4160.trustchain_android.mutualblock.MutualBlockItem;
+import nl.tudelft.cs4160.trustchain_android.peersummary.mutualblock.MutualBlockAdapter;
+import nl.tudelft.cs4160.trustchain_android.peersummary.mutualblock.MutualBlockItem;
 
 import static nl.tudelft.cs4160.trustchain_android.block.TrustChainBlockHelper.GENESIS_SEQ;
 import static nl.tudelft.cs4160.trustchain_android.block.TrustChainBlockHelper.createBlock;
 import static nl.tudelft.cs4160.trustchain_android.block.TrustChainBlockHelper.sign;
 
-public class PeerOverviewActivity extends AppCompatActivity implements CrawlRequestListener {
-    private final static String TAG = PeerOverviewActivity.class.toString();
+public class PeerSummaryActivity extends AppCompatActivity implements CrawlRequestListener {
+    private final static String TAG = PeerSummaryActivity.class.toString();
     private Context context;
     private RecyclerView mRecyclerView;
     private RecyclerView.Adapter mAdapter;
@@ -62,7 +62,7 @@ public class PeerOverviewActivity extends AppCompatActivity implements CrawlRequ
     private TrustChainDBHelper DBHelper;
     TextView statusText;
     EditText messageEditText;
-    PeerOverviewActivity thisActivity;
+    PeerSummaryActivity thisActivity;
     DualSecret kp;
     TrustChainDBHelper dbHelper;
 
@@ -307,22 +307,6 @@ public class PeerOverviewActivity extends AppCompatActivity implements CrawlRequ
     }
 
     /**
-     * Handle a received crawl request.
-     * The responding peer will send his/her entire chain.
-     * All those blocks are added to the local db.
-     * @param peer
-     * @param block
-     * @throws IOException
-     * @throws MessageException
-     */
-//    @Override
-//    public void handleCrawlRequestBlockMessageRequest(Peer peer, MessageProto.TrustChainBlock block) throws IOException, MessageException {
-//        if (dbHelper.getBlock(block.getPublicKey().toByteArray(), block.getSequenceNumber()) == null) {
-//            dbHelper.insertInDB(block);
-//        }
-//    }
-
-    /**
      * Block received and added to the inbox.
      * If the received block should be displayed in the trustchain activity
      * the recycle adapter is reloaded. This makes sure new blocks show up
@@ -357,14 +341,14 @@ public class PeerOverviewActivity extends AppCompatActivity implements CrawlRequ
      * This method is called when the activity is started.
      */
     private static class FindMutualBlocksTask extends AsyncTask<Void, Void, ArrayList<MutualBlockItem>> {
-        private WeakReference<PeerOverviewActivity> activityReference;
+        private WeakReference<PeerSummaryActivity> activityReference;
 
-        FindMutualBlocksTask(PeerOverviewActivity context) {
+        FindMutualBlocksTask(PeerSummaryActivity context) {
             activityReference = new WeakReference<>(context);
         }
 
         protected ArrayList<MutualBlockItem> doInBackground(Void... params) {
-            PeerOverviewActivity activity = activityReference.get();
+            PeerSummaryActivity activity = activityReference.get();
             if (activity == null) return null;
 
             ArrayList<MutualBlockItem> mutualBlocks = new ArrayList<>();
@@ -417,7 +401,7 @@ public class PeerOverviewActivity extends AppCompatActivity implements CrawlRequ
          * @param mutualBlockList
          */
         protected void onPostExecute(ArrayList<MutualBlockItem> mutualBlockList) {
-            PeerOverviewActivity activity = activityReference.get();
+            PeerSummaryActivity activity = activityReference.get();
             if (activity == null) return;
 
             activity.mLayoutManager = new LinearLayoutManager(activity);

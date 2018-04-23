@@ -29,7 +29,6 @@ import nl.tudelft.cs4160.trustchain_android.crypto.DualSecret;
 import nl.tudelft.cs4160.trustchain_android.crypto.Key;
 import nl.tudelft.cs4160.trustchain_android.crypto.PublicKeyPair;
 import nl.tudelft.cs4160.trustchain_android.storage.database.TrustChainDBHelper;
-import nl.tudelft.cs4160.trustchain_android.main.ChainExplorerInfoActivity;
 import nl.tudelft.cs4160.trustchain_android.message.MessageProto;
 
 import static android.view.Gravity.CENTER;

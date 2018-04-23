@@ -1,4 +1,4 @@
-package nl.tudelft.cs4160.trustchain_android.qr.models;
+package nl.tudelft.cs4160.trustchain_android.funds.qr.models;
 
 import com.squareup.moshi.Json;
 

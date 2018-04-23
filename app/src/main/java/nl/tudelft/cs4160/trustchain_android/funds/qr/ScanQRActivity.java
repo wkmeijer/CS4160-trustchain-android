@@ -1,4 +1,4 @@
-package nl.tudelft.cs4160.trustchain_android.qr;
+package nl.tudelft.cs4160.trustchain_android.funds.qr;
 
 import android.Manifest;
 import android.content.Context;
@@ -27,11 +27,11 @@ import nl.tudelft.cs4160.trustchain_android.crypto.DualSecret;
 import nl.tudelft.cs4160.trustchain_android.crypto.Key;
 import nl.tudelft.cs4160.trustchain_android.storage.database.TrustChainDBHelper;
 import nl.tudelft.cs4160.trustchain_android.message.MessageProto;
-import nl.tudelft.cs4160.trustchain_android.qr.exception.QRWalletImportException;
-import nl.tudelft.cs4160.trustchain_android.qr.exception.QRWalletParseException;
-import nl.tudelft.cs4160.trustchain_android.qr.exception.QRWalletValidationException;
-import nl.tudelft.cs4160.trustchain_android.qr.models.QRTransaction;
-import nl.tudelft.cs4160.trustchain_android.qr.models.QRWallet;
+import nl.tudelft.cs4160.trustchain_android.funds.qr.exception.QRWalletImportException;
+import nl.tudelft.cs4160.trustchain_android.funds.qr.exception.QRWalletParseException;
+import nl.tudelft.cs4160.trustchain_android.funds.qr.exception.QRWalletValidationException;
+import nl.tudelft.cs4160.trustchain_android.funds.qr.models.QRTransaction;
+import nl.tudelft.cs4160.trustchain_android.funds.qr.models.QRWallet;
 
 
 public class ScanQRActivity extends AppCompatActivity {

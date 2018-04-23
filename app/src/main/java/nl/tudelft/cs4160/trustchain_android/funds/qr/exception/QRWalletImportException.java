@@ -1,4 +1,4 @@
-package nl.tudelft.cs4160.trustchain_android.qr.exception;
+package nl.tudelft.cs4160.trustchain_android.funds.qr.exception;
 
 public abstract class QRWalletImportException extends Exception {
     public QRWalletImportException() {

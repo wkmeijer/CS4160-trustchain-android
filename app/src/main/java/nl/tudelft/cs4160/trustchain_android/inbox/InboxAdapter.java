@@ -14,7 +14,7 @@ import java.util.ArrayList;
 
 import nl.tudelft.cs4160.trustchain_android.R;
 import nl.tudelft.cs4160.trustchain_android.network.peer.Peer;
-import nl.tudelft.cs4160.trustchain_android.main.PeerOverviewActivity;
+import nl.tudelft.cs4160.trustchain_android.peersummary.PeerSummaryActivity;
 public class InboxAdapter extends RecyclerView.Adapter<InboxAdapter.ViewHolder> {
     private ArrayList<InboxItem> mDataset;
     private ArrayList<Peer> peerList;
@@ -151,7 +151,7 @@ public class InboxAdapter extends RecyclerView.Adapter<InboxAdapter.ViewHolder> 
         View.OnClickListener mOnClickListener = new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(holder.mWrapperLinearLayout.getContext(), PeerOverviewActivity.class);
+                Intent intent = new Intent(holder.mWrapperLinearLayout.getContext(), PeerSummaryActivity.class);
                 InboxItem inboxItem = mDataset.get(position);
                 intent.putExtra("inboxItem", inboxItem);
                 holder.mWrapperLinearLayout.getContext().startActivity(intent);

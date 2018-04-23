@@ -1,4 +1,4 @@
-package nl.tudelft.cs4160.trustchain_android.mutualblock;
+package nl.tudelft.cs4160.trustchain_android.peersummary.mutualblock;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
@@ -17,7 +17,7 @@ import nl.tudelft.cs4160.trustchain_android.util.ByteArrayConverter;
 import nl.tudelft.cs4160.trustchain_android.chainExplorer.ChainColor;
 import nl.tudelft.cs4160.trustchain_android.crypto.DualSecret;
 import nl.tudelft.cs4160.trustchain_android.crypto.Key;
-import nl.tudelft.cs4160.trustchain_android.main.PeerOverviewActivity;
+import nl.tudelft.cs4160.trustchain_android.peersummary.PeerSummaryActivity;
 
 public class MutualBlockAdapter extends RecyclerView.Adapter<MutualBlockAdapter.ViewHolder> {
 
@@ -126,7 +126,7 @@ public class MutualBlockAdapter extends RecyclerView.Adapter<MutualBlockAdapter.
         View.OnClickListener mOnClickListener = new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                ((PeerOverviewActivity) context).requestPermission(mutualBlocks.get(position).getBlock());
+                ((PeerSummaryActivity) context).requestPermission(mutualBlocks.get(position).getBlock());
             }
         };
         holder.signButton.setOnClickListener(mOnClickListener);

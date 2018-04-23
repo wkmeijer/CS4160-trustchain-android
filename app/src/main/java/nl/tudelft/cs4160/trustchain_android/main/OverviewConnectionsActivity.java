@@ -51,8 +51,8 @@ import nl.tudelft.cs4160.trustchain_android.storage.database.TrustChainDBHelper;
 import nl.tudelft.cs4160.trustchain_android.funds.FundsActivity;
 import nl.tudelft.cs4160.trustchain_android.inbox.InboxActivity;
 import nl.tudelft.cs4160.trustchain_android.message.MessageProto;
-import nl.tudelft.cs4160.trustchain_android.qr.ExportWalletQRActivity;
-import nl.tudelft.cs4160.trustchain_android.qr.ScanQRActivity;
+import nl.tudelft.cs4160.trustchain_android.funds.qr.ExportWalletQRActivity;
+import nl.tudelft.cs4160.trustchain_android.funds.qr.ScanQRActivity;
 
 public class OverviewConnectionsActivity extends AppCompatActivity implements NetworkCommunicationListener, PeerListener {
 
