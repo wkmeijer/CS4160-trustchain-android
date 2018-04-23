@@ -57,8 +57,7 @@ import nl.tudelft.cs4160.trustchain_android.storage.sharedpreferences.UserNameSt
 public class OverviewConnectionsActivity extends AppCompatActivity implements NetworkCommunicationListener, PeerListener {
 
     // The server ip address, this is the bootstrap phone that's always running
-//    public final static String CONNECTABLE_ADDRESS = "130.161.211.254";
-    public final static String CONNECTABLE_ADDRESS = "145.94.225.50";
+    public final static String CONNECTABLE_ADDRESS = "130.161.211.254";
     public final static int DEFAULT_PORT = 1873;
     private final static int BUFFER_SIZE = 65536;
     private PeerListAdapter incomingPeerAdapter;
