@@ -19,8 +19,6 @@ import android.widget.ProgressBar;
 
 import com.google.protobuf.ByteString;
 
-import org.libsodium.jni.keys.PublicKey;
-
 import java.util.Arrays;
 import java.util.List;
 

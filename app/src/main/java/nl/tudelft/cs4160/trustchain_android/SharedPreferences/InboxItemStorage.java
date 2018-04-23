@@ -2,8 +2,6 @@ package nl.tudelft.cs4160.trustchain_android.SharedPreferences;
 
 import android.content.Context;
 
-import org.libsodium.jni.keys.PublicKey;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 

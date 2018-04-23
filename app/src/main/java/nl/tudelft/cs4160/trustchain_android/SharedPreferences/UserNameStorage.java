@@ -3,9 +3,6 @@ package nl.tudelft.cs4160.trustchain_android.SharedPreferences;
 import android.content.Context;
 import android.util.Base64;
 
-import org.libsodium.jni.keys.PublicKey;
-
-import nl.tudelft.cs4160.trustchain_android.Util.ByteArrayConverter;
 import nl.tudelft.cs4160.trustchain_android.crypto.PublicKeyPair;
 
 /**

@@ -2586,7 +2586,8 @@ public final class MessageProto {
      */
     nl.tudelft.cs4160.trustchain_android.message.MessageProto.TrustChainBlock.Transaction getTransaction();
     /**
-     * <code>.message.TrustChainBlock.Transaction transaction = 7;</code>
+     * <code>.message.TrustChainBlock.Transaction transaction = 7;</code>        // TODO: change the way pub keys are given to this method,
+
      */
     nl.tudelft.cs4160.trustchain_android.message.MessageProto.TrustChainBlock.TransactionOrBuilder getTransactionOrBuilder();
 

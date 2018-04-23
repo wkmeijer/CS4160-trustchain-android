@@ -8,10 +8,7 @@ import android.util.Log;
 
 import com.google.protobuf.ByteString;
 
-import org.libsodium.jni.keys.PublicKey;
-
 import java.io.IOException;
-import java.io.OutputStream;
 import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
@@ -27,26 +24,14 @@ import java.util.List;
 import nl.tudelft.cs4160.trustchain_android.SharedPreferences.InboxItemStorage;
 import nl.tudelft.cs4160.trustchain_android.SharedPreferences.PubKeyAndAddressPairStorage;
 import nl.tudelft.cs4160.trustchain_android.SharedPreferences.UserNameStorage;
-import nl.tudelft.cs4160.trustchain_android.Util.ByteArrayConverter;
 import nl.tudelft.cs4160.trustchain_android.appToApp.PeerAppToApp;
-import nl.tudelft.cs4160.trustchain_android.appToApp.connection.ByteBufferOutputStream;
-import nl.tudelft.cs4160.trustchain_android.appToApp.connection.messages.BlockMessage;
-import nl.tudelft.cs4160.trustchain_android.appToApp.connection.messages.CrawlRequest;
-import nl.tudelft.cs4160.trustchain_android.appToApp.connection.messages.IntroductionRequest;
-import nl.tudelft.cs4160.trustchain_android.appToApp.connection.messages.IntroductionResponse;
 import nl.tudelft.cs4160.trustchain_android.appToApp.connection.messages.Message;
-import nl.tudelft.cs4160.trustchain_android.appToApp.connection.messages.MessageException;
-import nl.tudelft.cs4160.trustchain_android.appToApp.connection.messages.Puncture;
-import nl.tudelft.cs4160.trustchain_android.appToApp.connection.messages.PunctureRequest;
-import nl.tudelft.cs4160.trustchain_android.bencode.BencodeReadException;
 import nl.tudelft.cs4160.trustchain_android.crypto.Key;
 import nl.tudelft.cs4160.trustchain_android.crypto.PublicKeyPair;
 import nl.tudelft.cs4160.trustchain_android.inbox.InboxItem;
 import nl.tudelft.cs4160.trustchain_android.main.OverviewConnectionsActivity;
 import nl.tudelft.cs4160.trustchain_android.main.PeerOverviewActivity;
 import nl.tudelft.cs4160.trustchain_android.message.MessageProto;
-
-import static nl.tudelft.cs4160.trustchain_android.message.MessageProto.Message.newBuilder;
 
 public class Network {
     private final String TAG = this.getClass().getName();
@@ -59,7 +44,7 @@ public class Network {
     private static Network network;
     private PublicKeyPair publicKey;
     private static NetworkCommunicationListener networkCommunicationListener;
-    private static PeerOverviewActivity mutualblockListener;
+    private static PeerOverviewActivity mutualBlockListener;
 
     /**
      * Emtpy constructor
@@ -91,10 +76,10 @@ public class Network {
 
     /**
      * Set the crawl request listener
-     * @param mutualblockListener
+     * @param mutualBlockListener
      */
-    public void setMutualblockListener(PeerOverviewActivity mutualblockListener) {
-        Network.mutualblockListener = mutualblockListener;
+    public void setMutualBlockListener(PeerOverviewActivity mutualBlockListener) {
+        Network.mutualBlockListener = mutualBlockListener;
     }
 
     /**
@@ -378,22 +363,11 @@ public class Network {
                     case Message.BLOCK_MESSAGE_ID:
                         MessageProto.TrustChainBlock block = message.getPayload().getBlock();
                         addPeerToInbox(pubKeyPair, address, context, peerId);
-                        // TODO: remove the newblock field
-                        // TODO: check if a block is meant for us and if we have already signed it
-                        // TODO: if we have not yet signed it add it to the inbox
-                        // TODO: otherwise just add it to the database.
-
-//                        if (blockMessage.isNewBlock()) {
                         addBlockToInbox(block, context);
                         networkCommunicationListener.handleReceivedBlock(peer, block);
-                        if (mutualblockListener != null) {
-                            mutualblockListener.blockAdded(block);
+                        if (mutualBlockListener != null) {
+                            mutualBlockListener.blockAdded(block);
                         }
-//                        } else{
-//                            if(crawlRequestListener != null) {
-//                                crawlRequestListener.handleCrawlRequestBlockMessageRequest(peer, blockMessage);
-//                            }
-//                        }
                         break;
                     case Message.CRAWL_REQUEST_ID:
                         networkCommunicationListener.handleCrawlRequest(peer, message.getPayload().getCrawlRequest());
@@ -428,7 +402,6 @@ public class Network {
      * @param context needed for storage
      */
     private static void addBlockToInbox(MessageProto.TrustChainBlock block, Context context) {
-        // TODO: change the way pub keys are given to this method,
         InboxItemStorage.addHalfBlock(context, new PublicKeyPair(block.getPublicKey().toByteArray())
                 , block.getSequenceNumber());
     }

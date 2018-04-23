@@ -12,8 +12,6 @@ import android.widget.Toast;
 
 import com.google.protobuf.ByteString;
 
-import org.libsodium.jni.keys.PublicKey;
-
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;

@@ -1,7 +1,5 @@
 package nl.tudelft.cs4160.trustchain_android.inbox;
 
-import org.libsodium.jni.keys.PublicKey;
-
 import java.io.Serializable;
 import java.net.InetSocketAddress;
 import java.util.ArrayList;

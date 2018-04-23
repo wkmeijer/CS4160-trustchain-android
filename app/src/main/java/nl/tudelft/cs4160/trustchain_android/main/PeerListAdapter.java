@@ -11,8 +11,6 @@ import android.widget.ArrayAdapter;
 import android.widget.TableLayout;
 import android.widget.TextView;
 
-import org.libsodium.jni.keys.PublicKey;
-
 import java.util.ArrayList;
 import java.util.List;
 
