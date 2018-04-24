@@ -34,6 +34,7 @@ import nl.tudelft.cs4160.trustchain_android.R;
 import nl.tudelft.cs4160.trustchain_android.passport.DocumentData;
 import nl.tudelft.cs4160.trustchain_android.passport.PassportHolder;
 import nl.tudelft.cs4160.trustchain_android.passport.ocr.ManualInputActivity;
+import nl.tudelft.cs4160.trustchain_android.passport.ocr.util.Util;
 
 public class PassportConActivity extends AppCompatActivity {
 
@@ -201,6 +202,7 @@ public class PassportConActivity extends AppCompatActivity {
                 byte[] signed = pcon.signData(bytesToSign);
 
                 Log.d(TAG, "Signed: " + signed);
+                Toast.makeText(this, "Response: " + Util.byteArrayToHexString(signed), Toast.LENGTH_LONG).show();
 
 //                SharedPreferences sharedPrefs = getSharedPreferences(getString(R.string.shared_preferences_file), Context.MODE_PRIVATE);
                 Gson gson = new Gson();
@@ -233,7 +235,7 @@ public class PassportConActivity extends AppCompatActivity {
      * @param e - The exception that was raised when the passportconnectoin failed
      */
     public void handleConnectionFailed(Exception e) {
-
+        e.printStackTrace();
         if(e.toString().toLowerCase().contains("authentication failed")){
             displayCheckInputSnackbar();
             progressView.setImageResource(R.drawable.nfc_icon_empty);

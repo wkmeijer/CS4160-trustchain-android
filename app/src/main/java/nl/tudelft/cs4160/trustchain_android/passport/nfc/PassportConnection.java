@@ -9,9 +9,9 @@ import net.sf.scuba.smartcards.CardServiceException;
 import org.jmrtd.BACKeySpec;
 import org.jmrtd.PassportService;
 import org.jmrtd.lds.LDSFileUtil;
-import org.jmrtd.lds.icao.DG15File;
-import org.jmrtd.lds.icao.DG1File;
-import org.jmrtd.lds.icao.MRZInfo;
+import org.jmrtd.lds.DG15File;
+import org.jmrtd.lds.DG1File;
+import org.jmrtd.lds.MRZInfo;
 
 import java.io.InputStream;
 import java.security.PublicKey;
@@ -98,7 +98,7 @@ public class PassportConnection {
             is15 = ps.getInputStream(PassportService.EF_DG15);
             // doAA of JMRTD library only returns signed data, and does not have the AA functionality yet
             // there is no need for sending public key information with the method.
-            return ps.doAA(null, null, null, data).getResponse();
+            return ps.doAA(null, null, null, data);
         } catch (Exception ex) {
             ex.printStackTrace();
             throw ex;
