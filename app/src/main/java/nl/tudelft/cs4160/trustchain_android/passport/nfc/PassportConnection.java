@@ -16,6 +16,7 @@ import org.jmrtd.lds.icao.MRZInfo;
 import java.io.InputStream;
 import java.security.PublicKey;
 
+import nl.tudelft.cs4160.trustchain_android.passport.DocumentData;
 import nl.tudelft.cs4160.trustchain_android.passport.PassportHolder;
 
 public class PassportConnection {

@@ -1,6 +1,6 @@
 package nl.tudelft.cs4160.trustchain_android.passport.ocr;
 
-import nl.tudelft.cs4160.trustchain_android.passport.ocr.util.DocumentData;
+import nl.tudelft.cs4160.trustchain_android.passport.DocumentData;
 
 public class Mrz {
 

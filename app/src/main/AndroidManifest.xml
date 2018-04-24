@@ -64,6 +64,7 @@
         <activity android:name=".inbox.InboxActivity"/>
         <activity android:name=".passport.ocr.camera.CameraActivity" />
         <activity android:name=".passport.ocr.ManualInputActivity" />
+        <activity android:name=".passport.nfc.PassportConActivity" />
 
     </application>
 

@@ -10,9 +10,12 @@ import android.os.Bundle;
 import android.provider.Settings;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -21,11 +24,14 @@ import com.google.gson.Gson;
 
 import org.jmrtd.PassportService;
 
+import java.nio.charset.StandardCharsets;
 import java.security.PublicKey;
 import java.security.Security;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import nl.tudelft.cs4160.trustchain_android.R;
+import nl.tudelft.cs4160.trustchain_android.passport.DocumentData;
 import nl.tudelft.cs4160.trustchain_android.passport.PassportHolder;
 import nl.tudelft.cs4160.trustchain_android.passport.ocr.ManualInputActivity;
 
@@ -33,6 +39,7 @@ public class PassportConActivity extends AppCompatActivity {
 
     private static final int GET_DOC_INFO = 1;
     private static final String TAG = PassportConActivity.class.getName();
+    public static final int MAX_SIGN_BYTES = 8;
 
     static {
         Security.insertProviderAt(new org.spongycastle.jce.provider.BouncyCastleProvider(), 0);
@@ -41,6 +48,7 @@ public class PassportConActivity extends AppCompatActivity {
     private NfcAdapter mNfcAdapter;
     private DocumentData documentData;
     private ImageView progressView;
+    private EditText dataToSignField;
     private PassportConActivity thisActivity;
 
     /**
@@ -51,17 +59,37 @@ public class PassportConActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_passport_con);
 
         Bundle extras = getIntent().getExtras();
         documentData = (DocumentData) extras.get(DocumentData.identifier);
         thisActivity = this;
 
-        setContentView(R.layout.activity_passport_con);
-        Toolbar appBar = (Toolbar) findViewById(R.id.app_bar);
-        setSupportActionBar(appBar);
-//        Util.setupAppBar(appBar, this);
         TextView notice = (TextView) findViewById(R.id.notice);
         progressView = (ImageView) findViewById(R.id.progress_view);
+        dataToSignField = (EditText) findViewById(R.id.data_to_sign);
+
+        dataToSignField.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                String text = editable.toString();
+                byte[] bytes = text.getBytes();
+                if (bytes.length > MAX_SIGN_BYTES) {
+                    byte[] newbytes = Arrays.copyOfRange(bytes, 0, MAX_SIGN_BYTES);
+                    editable.replace(0, editable.length(), new String(newbytes, StandardCharsets.UTF_8));
+                }
+            }
+        });
 
         mNfcAdapter = NfcAdapter.getDefaultAdapter(this);
         checkNFCStatus();
@@ -85,7 +113,6 @@ public class PassportConActivity extends AppCompatActivity {
     protected void onPause() {
         // Call this before super.onPause, otherwise an IllegalArgumentException is thrown as well.
         stopForegroundDispatch(this, mNfcAdapter);
-
         super.onPause();
     }
 
@@ -139,8 +166,8 @@ public class PassportConActivity extends AppCompatActivity {
     private void handleIntent(Intent intent) {
         progressView.setImageResource(R.drawable.nfc_icon_1);
 
-        // if nfc tag holds no data, return
         Tag tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
+        // if nfc tag holds no data, return
         if (tag == null) {
             return;
         }
@@ -157,7 +184,8 @@ public class PassportConActivity extends AppCompatActivity {
 
         if(ps != null) {
             try {
-
+                String dataToSign = dataToSignField.getText().toString();
+                byte[] bytesToSign = dataToSign.getBytes();
                 // Get public key from dg15
                 PublicKey pubKey = pcon.getAAPublicKey(ps);
 
@@ -167,11 +195,10 @@ public class PassportConActivity extends AppCompatActivity {
 
                 progressView.setImageResource(R.drawable.nfc_icon_2);
 
-                byte[] toSign = new byte[]{ 0, 2, 3, 4 };
+                Log.d(TAG, "Signing data: " + dataToSign);
+                Log.d(TAG, "Signing bytes: " + bytesToSign);
 
-                Log.d(TAG, "Signing data: " + toSign);
-
-                byte[] signed = pcon.signData(toSign);
+                byte[] signed = pcon.signData(bytesToSign);
 
                 Log.d(TAG, "Signed: " + signed);
 
@@ -224,15 +251,15 @@ public class PassportConActivity extends AppCompatActivity {
      * Creates new intent with the read data
      * @param pubKey The public key.
      * @param signedTransactions Signed data.
-     * @param voter The voter.
+     * @param holder The PassportHolder.
      */
     public void startResultActivity(PublicKey pubKey, ArrayList<byte[]> signedTransactions, PassportHolder holder) {
         if(pubKey != null && signedTransactions != null) {
 
-//            Intent intent = new Intent(getApplicationContext(), ResultActivity.class);
+//            Intent intent = new Intent(getApplica
+//            intent.putExtra("signedTransactions",tionContext(), ResultActivity.class);
 ////            intent.putExtra("voter", voter);
-//            intent.putExtra("pubKey", pubKey);
-//            intent.putExtra("signedTransactions", signedTransactions);
+//            intent.putExtra("pubKey", pubKey); signedTransactions);
 //            startActivity(intent);
             finish();
         } else {

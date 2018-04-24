@@ -13,16 +13,6 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <android.support.v7.widget.Toolbar
-            android:id="@+id/app_bar"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/actionBarHeight"
-            android:background="@color/govDarkBlue"
-            android:elevation="4dp"
-            app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
-            tools:layout_editor_absoluteY="0dp"
-            tools:layout_editor_absoluteX="8dp" />
-
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent">
@@ -35,7 +25,7 @@
                 android:layout_centerHorizontal="true"
                 android:gravity="center"
                 android:padding="40dp"
-                android:textColor="@color/govTextBlue"
+                android:textColor="@color/colorPrimaryDark"
                 android:textSize="17sp"
                 android:text="@string/nfc_enabled"/>
 
@@ -46,6 +36,17 @@
                 android:layout_gravity="center"
                 android:layout_centerInParent="true"
                 android:src="@drawable/nfc_icon_empty" />
+
+            <EditText
+                android:id="@+id/data_to_sign"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="29dp"
+                android:ems="10"
+                android:inputType="textPersonName"
+                android:text="Enter 8 bytes to sign" />
         </RelativeLayout>
     </LinearLayout>
 </android.support.design.widget.CoordinatorLayout>

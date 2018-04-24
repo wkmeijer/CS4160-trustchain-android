@@ -2,16 +2,13 @@ package nl.tudelft.cs4160.trustchain_android.passport.ocr;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
-import android.widget.TextView;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -19,8 +16,7 @@ import java.util.Date;
 import java.util.List;
 
 import nl.tudelft.cs4160.trustchain_android.R;
-import nl.tudelft.cs4160.trustchain_android.passport.ocr.util.DocumentData;
-import nl.tudelft.cs4160.trustchain_android.passport.ocr.util.Util;
+import nl.tudelft.cs4160.trustchain_android.passport.DocumentData;
 
 public class ManualInputActivity extends AppCompatActivity {
     private EditText docNumber;
