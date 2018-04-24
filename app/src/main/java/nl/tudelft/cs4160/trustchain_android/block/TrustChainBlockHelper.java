@@ -11,15 +11,16 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import nl.tudelft.cs4160.trustchain_android.Util.ByteArrayConverter;
 import nl.tudelft.cs4160.trustchain_android.crypto.DualSecret;
 import nl.tudelft.cs4160.trustchain_android.crypto.Key;
 import nl.tudelft.cs4160.trustchain_android.crypto.PublicKeyPair;
 import nl.tudelft.cs4160.trustchain_android.crypto.SigningKey;
-import nl.tudelft.cs4160.trustchain_android.database.TrustChainDBHelper;
 import nl.tudelft.cs4160.trustchain_android.message.MessageProto;
+import nl.tudelft.cs4160.trustchain_android.message.MessageProto.TrustChainBlock.Transaction;
+import nl.tudelft.cs4160.trustchain_android.storage.database.TrustChainDBHelper;
+import nl.tudelft.cs4160.trustchain_android.util.ByteArrayConverter;
 
-import static nl.tudelft.cs4160.trustchain_android.Util.Util.ellipsize;
+import static nl.tudelft.cs4160.trustchain_android.util.Util.ellipsize;
 
 public class TrustChainBlockHelper {
     public static final ByteString GENESIS_HASH = ByteString.copyFrom(new byte[] {0x00});
@@ -34,7 +35,7 @@ public class TrustChainBlockHelper {
      */
     public static MessageProto.TrustChainBlock createGenesisBlock(DualSecret kp) {
         MessageProto.TrustChainBlock block = MessageProto.TrustChainBlock.newBuilder()
-                .setTransaction(ByteString.EMPTY)
+                .setTransaction(Transaction.newBuilder().setUnformatted(ByteString.EMPTY).build())
                 .setPublicKey(ByteString.copyFrom(kp.getPublicKeyPair().toBytes()))
                 .setSequenceNumber(GENESIS_SEQ)
                 .setLinkPublicKey(EMPTY_PK)
@@ -66,7 +67,7 @@ public class TrustChainBlockHelper {
                     .setLinkPublicKey(linkedBlock.getPublicKey())
                     .setLinkSequenceNumber(linkedBlock.getSequenceNumber());
         } else {
-            builder.setTransaction(ByteString.copyFrom(transaction))
+            builder.setTransaction(Transaction.newBuilder().setUnformatted(ByteString.copyFrom(transaction)).build())
                     .setLinkPublicKey(ByteString.copyFrom(linkpubk))
                     .setLinkSequenceNumber(TrustChainBlockHelper.UNKNOWN_SEQ);
         }
@@ -103,7 +104,7 @@ public class TrustChainBlockHelper {
         byte[] blockBytes = rawBlock.toByteArray();
         byte[] hashOut = new byte[Sodium.crypto_hash_sha256_bytes()];
         Sodium.crypto_hash_sha256(hashOut, blockBytes, blockBytes.length);
-        return blockBytes;
+        return hashOut;
     }
 
 
@@ -363,7 +364,7 @@ public class TrustChainBlockHelper {
         res += "\tLink Sequence Number: " + block.getLinkSequenceNumber() + "\n";
         res += "\tPrevious Hash: " + ByteArrayConverter.bytesToHexString(block.getPreviousHash().toByteArray()) + "\n";
         res += "\tSignature: " + ByteArrayConverter.bytesToHexString(block.getSignature().toByteArray()) + "\n";
-        res += "\tTransaction: \n" + block.getTransaction().toStringUtf8() + "\n";
+        res += "\tTransaction: \n" + block.getTransaction().getUnformatted().toStringUtf8() + "\n";
         res += "}";
         return res;
     }
@@ -387,7 +388,7 @@ public class TrustChainBlockHelper {
     public static String transferDataToString(MessageProto.TrustChainBlock block){
         String res = "Trustchainblock: { ";
         try {
-            res += " data: " + block.getTransaction().toString("UTF-8") + "\n";
+            res += " data: " + block.getTransaction().getUnformatted().toString("UTF-8") + "\n";
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }

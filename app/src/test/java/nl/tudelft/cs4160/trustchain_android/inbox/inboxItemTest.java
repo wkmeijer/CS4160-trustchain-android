@@ -7,15 +7,14 @@ import org.junit.Test;
 
 import java.util.ArrayList;
 
-<<<<<<<HEAD
-        =======
-        >>>>>>>29aa341a74003f041d63668cec12d1f42177436b
+import nl.tudelft.cs4160.trustchain_android.crypto.DualSecret;
+import nl.tudelft.cs4160.trustchain_android.crypto.PublicKeyPair;
 
 public class inboxItemTest extends TestCase {
     String userName;
     ArrayList<Integer> halfBlockSequenceNumbers = new ArrayList<>();
     String address;
-    String publicKey;
+    PublicKeyPair publicKey;
     int port;
     InboxItem ii;
 
@@ -26,7 +25,7 @@ public class inboxItemTest extends TestCase {
         halfBlockSequenceNumbers.add(2);
         halfBlockSequenceNumbers.add(3);
         address = "address";
-        publicKey = "publicKey";
+        publicKey = new DualSecret().getPublicKeyPair();
         port = 123;
         ii = new InboxItem(userName, halfBlockSequenceNumbers, address, publicKey, port);
     }
@@ -48,7 +47,7 @@ public class inboxItemTest extends TestCase {
 
     @Test
     public void testConstructorPublicKey() {
-        assertEquals(ii.getPublicKey(), publicKey);
+        assertEquals(ii.getPublicKeyPair(), publicKey);
     }
 
     @Test
@@ -79,7 +78,7 @@ public class inboxItemTest extends TestCase {
 
     @Test
     public void testEqualsFalsePublicKey() {
-        InboxItem ii2 = new InboxItem(userName, halfBlockSequenceNumbers, address, publicKey + "r", port);
+        InboxItem ii2 = new InboxItem(userName, halfBlockSequenceNumbers, address, new PublicKeyPair(new byte[] {0x00,0x01,0x02}), port);
         assertFalse(ii.equals(ii2));
     }
 
@@ -112,9 +111,9 @@ public class inboxItemTest extends TestCase {
 
     @Test
     public void testSetPublicKey() {
-        String string = "testSetAddress";
-        ii.setPublicKey(string);
-        assertEquals(ii.getPublicKey(), string);
+        PublicKeyPair pubKeyPair = new DualSecret().getPublicKeyPair();
+        ii.setPublicKeyPair(pubKeyPair);
+        assertEquals(ii.getPublicKeyPair(), pubKeyPair);
     }
 
     @Test

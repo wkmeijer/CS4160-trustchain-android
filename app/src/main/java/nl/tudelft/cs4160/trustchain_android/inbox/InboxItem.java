@@ -3,14 +3,17 @@ package nl.tudelft.cs4160.trustchain_android.inbox;
 import java.io.Serializable;
 import java.net.InetSocketAddress;
 import java.util.ArrayList;
+import java.util.Arrays;
 
-import nl.tudelft.cs4160.trustchain_android.appToApp.PeerAppToApp;
+import nl.tudelft.cs4160.trustchain_android.crypto.PublicKeyPair;
+import nl.tudelft.cs4160.trustchain_android.network.peer.Peer;
 
 public class InboxItem implements Serializable {
     private String userName;
     private ArrayList<Integer> halfBlockSequenceNumbers;
     private String address;
-    private String publicKey;
+    // byte array because libsodium PublicKey is not serializable
+    private byte[] publicKeyPair;
     private int port;
 
     /**
@@ -18,14 +21,14 @@ public class InboxItem implements Serializable {
      * @param userName the username
      * @param halfBlockSequenceNumbers the list of the sequence numbers of the unread blocks
      * @param address ip address
-     * @param publicKey
+     * @param publicKeyPair
      * @param port
      */
-    public InboxItem(String userName, ArrayList<Integer> halfBlockSequenceNumbers, String address, String publicKey, int port) {
+    public InboxItem(String userName, ArrayList<Integer> halfBlockSequenceNumbers, String address, PublicKeyPair publicKeyPair, int port) {
         this.userName = userName;
         this.halfBlockSequenceNumbers = halfBlockSequenceNumbers;
         this.address = address;
-        this.publicKey = publicKey;
+        this.publicKeyPair = publicKeyPair.toBytes();
         this.port = port;
     }
 
@@ -65,12 +68,12 @@ public class InboxItem implements Serializable {
         this.address = address;
     }
 
-    public String getPublicKey() {
-        return publicKey;
+    public PublicKeyPair getPublicKeyPair() {
+        return new PublicKeyPair(publicKeyPair);
     }
 
-    public void setPublicKey(String publicKey) {
-        this.publicKey = publicKey;
+    public void setPublicKeyPair(PublicKeyPair publicKeyPair) {
+        this.publicKeyPair = publicKeyPair.toBytes();
     }
 
     /**
@@ -98,11 +101,11 @@ public class InboxItem implements Serializable {
             return false;
         if (address != null ? !address.equals(inboxItem.address) : inboxItem.address != null)
             return false;
-        return publicKey != null ? publicKey.equals(inboxItem.publicKey) : inboxItem.publicKey == null;
+        return publicKeyPair != null ? Arrays.equals(publicKeyPair, inboxItem.publicKeyPair) : inboxItem.publicKeyPair == null;
     }
 
-    public PeerAppToApp getPeerAppToApp(){
-       return new PeerAppToApp(userName, new InetSocketAddress(address,port));
+    public Peer getPeerAppToApp(){
+       return new Peer(userName, new InetSocketAddress(address,port));
     }
 
 }
