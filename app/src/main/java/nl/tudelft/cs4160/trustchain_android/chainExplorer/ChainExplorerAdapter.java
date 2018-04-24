@@ -3,7 +3,6 @@ package nl.tudelft.cs4160.trustchain_android.chainExplorer;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,16 +17,16 @@ import java.util.HashMap;
 import java.util.List;
 
 import nl.tudelft.cs4160.trustchain_android.R;
-import nl.tudelft.cs4160.trustchain_android.SharedPreferences.UserNameStorage;
-import nl.tudelft.cs4160.trustchain_android.Util.ByteArrayConverter;
 import nl.tudelft.cs4160.trustchain_android.block.TrustChainBlockHelper;
-import nl.tudelft.cs4160.trustchain_android.color.ChainColor;
+import nl.tudelft.cs4160.trustchain_android.crypto.PublicKeyPair;
 import nl.tudelft.cs4160.trustchain_android.message.MessageProto;
+import nl.tudelft.cs4160.trustchain_android.storage.sharedpreferences.UserNameStorage;
+import nl.tudelft.cs4160.trustchain_android.util.ByteArrayConverter;
 
 public class ChainExplorerAdapter extends BaseAdapter {
     static final String TAG = "ChainExplorerAdapter";
 
-    private final static String PEER_NAME_UNKNOWN = "unkown";
+    private final static String PEER_NAME_UNKNOWN = "unknown";
 
     private Context context;
     private List<MessageProto.TrustChainBlock> blocksList;
@@ -51,7 +50,7 @@ public class ChainExplorerAdapter extends BaseAdapter {
     }
 
     private String retrievePeerName(byte[] key) {
-        String name = UserNameStorage.getPeerByPublicKey(context, key);
+        String name = UserNameStorage.getPeerByPublicKey(context, new PublicKeyPair(key));
         if(name == null) {
             return PEER_NAME_UNKNOWN;
         }
@@ -123,7 +122,7 @@ public class ChainExplorerAdapter extends BaseAdapter {
         seqNum.setText(seqNumStr);
         linkPeer.setText(linkPeerAlias);
         linkSeqNum.setText(linkSeqNumStr);
-        transaction.setText(block.getTransaction().toStringUtf8());
+        transaction.setText(block.getTransaction().getUnformatted().toStringUtf8());
 
         // expanded view
         TextView pubKey = convertView.findViewById(R.id.pub_key);
@@ -139,7 +138,7 @@ public class ChainExplorerAdapter extends BaseAdapter {
         prevHash.setText(ByteArrayConverter.bytesToHexString(block.getPreviousHash().toByteArray()));
 
         signature.setText(ByteArrayConverter.bytesToHexString(block.getSignature().toByteArray()));
-        expTransaction.setText(block.getTransaction().toStringUtf8());
+        expTransaction.setText(block.getTransaction().getUnformatted().toStringUtf8());
 
         if (peerAlias.equals("me")) {
             ownChainIndicator.setBackgroundColor(ChainColor.getMyColor(context));
@@ -164,7 +163,7 @@ public class ChainExplorerAdapter extends BaseAdapter {
     }
 
     private String checkUserNameStorage(byte[] pubKey) {
-        String name = UserNameStorage.getPeerByPublicKey(context, pubKey);
+        String name = UserNameStorage.getPeerByPublicKey(context, new PublicKeyPair(pubKey));
         if(name == null) {
             return "peer " + (peerList.size()-1);
         }

@@ -60,16 +60,21 @@
 
             <TextView
                 android:id="@+id/peer_id"
-                android:hint="peer id"
-                android:layout_weight="1"
+                android:hint="@string/peer_id"
                 android:layout_width="0dp"
+                android:layout_weight="1"
                 android:textStyle="bold"
                 android:textColor="@android:color/black"/>
             <TextView
                 android:id="@+id/carrier"
+                android:hint="@string/carrier"
                 android:layout_width="0dp"
                 android:layout_weight="1"
-                android:hint="carrier"
+                android:textColor="@android:color/secondary_text_light"/>
+            <TextView
+                android:id="@+id/last_seen"
+                android:layout_width="0dp"
+                android:layout_weight="1"
                 android:textColor="@android:color/secondary_text_light"/>
 
         </TableRow>

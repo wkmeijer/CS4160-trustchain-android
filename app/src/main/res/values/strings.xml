@@ -13,6 +13,9 @@
     <string name="view_chain">View Chain</string>
     <string name="reset_database_button">Clear Database (closes app)</string>
     <string name="connection_info_text">Info</string>
+    <string name="last_seen">last seen</string>
+    <string name="carrier">carrier</string>
+    <string name="peer_id">peer id</string>
 
     <!-- Trustchain -->
     <string name="title_activity_key">Key management</string>
@@ -63,7 +66,6 @@
     <string name="pex_handshake_id">PEX handshake ID:</string>
     <string name="circle_symbol">●</string>
     <string name="indicator_symbol">▂</string>
-    <string name="peer_id">Peer ID</string>
     <string name="unknown">unknown</string>
     <string name="wan_address">WAN Address</string>
     <string name="ip">ip</string>

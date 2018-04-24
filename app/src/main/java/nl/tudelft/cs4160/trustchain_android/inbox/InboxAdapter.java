@@ -13,11 +13,11 @@ import android.widget.TextView;
 import java.util.ArrayList;
 
 import nl.tudelft.cs4160.trustchain_android.R;
-import nl.tudelft.cs4160.trustchain_android.appToApp.PeerAppToApp;
-import nl.tudelft.cs4160.trustchain_android.main.TrustChainActivity;
+import nl.tudelft.cs4160.trustchain_android.network.peer.Peer;
+import nl.tudelft.cs4160.trustchain_android.peersummary.PeerSummaryActivity;
 public class InboxAdapter extends RecyclerView.Adapter<InboxAdapter.ViewHolder> {
     private ArrayList<InboxItem> mDataset;
-    private ArrayList<PeerAppToApp> peerList;
+    private ArrayList<Peer> peerList;
 
     // Provide a reference to the views for each data item
     // Complex data items may need more than one view per item, and
@@ -91,6 +91,7 @@ public class InboxAdapter extends RecyclerView.Adapter<InboxAdapter.ViewHolder> 
     }
 
     // Replace the contents of a view (invoked by the layout manager)
+    // This updates the connection status color of each peer.
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         // - get element from your dataset at this position
@@ -111,8 +112,8 @@ public class InboxAdapter extends RecyclerView.Adapter<InboxAdapter.ViewHolder> 
                 h.mAddressTextView.setText(inboxItem.getAddress() + ":" + inboxItem.getPort());
 
                 h.mStatusTextView.setTextColor(h.mAddressTextView.getContext().getResources().getColor(R.color.colorStatusCantConnect));
-                for (PeerAppToApp curr : peerList) {
-                    String name = inboxItem.getUserName();
+                String name = inboxItem.getUserName();
+                for (Peer curr : peerList) {
                     if (curr != null && curr.getPeerId() != null && curr.getPeerId().equals(name)) {
                         if (curr.isAlive()) {
                             h.mStatusTextView.setTextColor(h.mAddressTextView.getContext().getResources().getColor(R.color.colorStatusConnected));
@@ -150,7 +151,7 @@ public class InboxAdapter extends RecyclerView.Adapter<InboxAdapter.ViewHolder> 
         View.OnClickListener mOnClickListener = new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(holder.mWrapperLinearLayout.getContext(), TrustChainActivity.class);
+                Intent intent = new Intent(holder.mWrapperLinearLayout.getContext(), PeerSummaryActivity.class);
                 InboxItem inboxItem = mDataset.get(position);
                 intent.putExtra("inboxItem", inboxItem);
                 holder.mWrapperLinearLayout.getContext().startActivity(intent);
@@ -159,7 +160,7 @@ public class InboxAdapter extends RecyclerView.Adapter<InboxAdapter.ViewHolder> 
         holder.mWrapperLinearLayout.setOnClickListener(mOnClickListener);
     }
 
-    public void setPeerList(ArrayList<PeerAppToApp> peerList) {
+    public void setPeerList(ArrayList<Peer> peerList) {
         this.peerList = peerList;
     }
 

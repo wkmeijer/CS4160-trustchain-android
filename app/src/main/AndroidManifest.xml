@@ -26,7 +26,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".main.TrustChainActivity"
+            android:name=".peersummary.PeerSummaryActivity"
             android:configChanges="orientation|screenLayout|screenSize"
             android:windowSoftInputMode="stateUnchanged" />
         <activity android:name=".chainExplorer.ChainExplorerActivity" />
@@ -47,11 +47,11 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".qr.ScanQRActivity" />
-        <activity android:name=".qr.ExportWalletQRActivity" />
+        <activity android:name=".funds.qr.ScanQRActivity" />
+        <activity android:name=".funds.qr.ExportWalletQRActivity" />
         <activity android:name=".funds.FundsActivity" />
         <activity
-            android:name=".main.ChainExplorerInfoActivity"
+            android:name=".chainExplorer.ChainExplorerInfoActivity"
             android:label="@string/title_activity_info_chain_explorer" />
         <activity
             android:name=".main.BootstrapActivity"
