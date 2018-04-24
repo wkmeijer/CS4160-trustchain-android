@@ -9,6 +9,8 @@ import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.util.concurrent.TimeUnit;
 
+import nl.tudelft.cs4160.trustchain_android.main.OverviewConnectionsActivity;
+
 public class PeerTest extends TestCase {
     String id1;
     String id2;
@@ -108,5 +110,11 @@ public class PeerTest extends TestCase {
     public void testHashCode() {
         Peer peer1 = new Peer("firstPEER", address);
         assertEquals(132867431, peer1.hashCode());
+    }
+
+    @Test
+    public void testIsBootstrap() {
+        Peer bootstrap = new Peer(null, new InetSocketAddress(OverviewConnectionsActivity.CONNECTABLE_ADDRESS,OverviewConnectionsActivity.DEFAULT_PORT));
+        assertTrue(bootstrap.isBootstrap());
     }
 }
