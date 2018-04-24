@@ -15,21 +15,20 @@ import java.util.ArrayList;
 import java.util.List;
 
 import nl.tudelft.cs4160.trustchain_android.R;
-import nl.tudelft.cs4160.trustchain_android.SharedPreferences.InboxItemStorage;
-import nl.tudelft.cs4160.trustchain_android.SharedPreferences.PubKeyAndAddressPairStorage;
-import nl.tudelft.cs4160.trustchain_android.SharedPreferences.UserNameStorage;
-import nl.tudelft.cs4160.trustchain_android.appToApp.PeerAppToApp;
+import nl.tudelft.cs4160.trustchain_android.crypto.PublicKeyPair;
 import nl.tudelft.cs4160.trustchain_android.inbox.InboxItem;
+import nl.tudelft.cs4160.trustchain_android.network.peer.Peer;
+import nl.tudelft.cs4160.trustchain_android.storage.sharedpreferences.InboxItemStorage;
+import nl.tudelft.cs4160.trustchain_android.storage.sharedpreferences.PubKeyAndAddressPairStorage;
+import nl.tudelft.cs4160.trustchain_android.storage.sharedpreferences.UserNameStorage;
 
-public class PeerListAdapter extends ArrayAdapter<PeerAppToApp> {
+public class PeerListAdapter extends ArrayAdapter<Peer> {
     private final Context context;
-    private boolean incoming;
     private CoordinatorLayout coordinatorLayout;
 
-    public PeerListAdapter(Context context, int resource, List<PeerAppToApp> peerConnectionList, boolean incoming, CoordinatorLayout coordinatorLayout) {
+    public PeerListAdapter(Context context, int resource, List<Peer> peerConnectionList, CoordinatorLayout coordinatorLayout) {
         super(context, resource, peerConnectionList);
         this.context = context;
-        this.incoming = incoming;
         this.coordinatorLayout = coordinatorLayout;
     }
 
@@ -54,7 +53,7 @@ public class PeerListAdapter extends ArrayAdapter<PeerAppToApp> {
             holder = (ViewHolder) convertView.getTag();
         }
 
-        PeerAppToApp peer = getItem(position);
+        Peer peer = getItem(position);
 
         holder.mPeerId.setText(peer.getPeerId() == null ? "" : peer.getPeerId());
         if (peer.getNetworkOperator() != null) {
@@ -62,7 +61,7 @@ public class PeerListAdapter extends ArrayAdapter<PeerAppToApp> {
                 holder.mCarrier.setText(peer.getNetworkOperator());
             } else {
 
-                if (peer.getExternalAddress().getHostAddress().toString().equals(OverviewConnectionsActivity.CONNECTABLE_ADDRESS)) {
+                if (OverviewConnectionsActivity.CONNECTABLE_ADDRESS.equals(peer.getExternalAddress().getHostAddress())) {
                     holder.mCarrier.setText("Server");
                 } else {
                     holder.mCarrier.setText(connectionTypeString(peer.getConnectionType()));
@@ -147,22 +146,22 @@ public class PeerListAdapter extends ArrayAdapter<PeerAppToApp> {
             @Override
             public void onClick(View v) {
                 int pos = (int) v.getTag();
-                PeerAppToApp peer = getItem(pos);
+                Peer peer = getItem(pos);
                 if(peer.isAlive() && peer.hasReceivedData()) {
-                    String pubKey = PubKeyAndAddressPairStorage.getPubKeyByAddress(context, peer.getAddress().toString().replace("/", ""));
-                    if(pubKey != null && !pubKey.equals("")) {
-                        InboxItem i = new InboxItem(peer.getPeerId(), new ArrayList<Integer>(), peer.getAddress().getHostString(), pubKey, peer.getPort());
-                        UserNameStorage.setNewPeerByPublicKey(context, peer.getPeerId(), pubKey);
+                    PublicKeyPair pubKeyPair = PubKeyAndAddressPairStorage.getPubKeyByAddress(context, peer.getAddress().toString().replace("/", ""));
+                    if(pubKeyPair != null) {
+                        InboxItem i = new InboxItem(peer.getPeerId(), new ArrayList<Integer>(), peer.getAddress().getHostString(), pubKeyPair, peer.getPort());
+                        UserNameStorage.setNewPeerByPublicKey(context, peer.getPeerId(), pubKeyPair);
                         InboxItemStorage.addInboxItem(context, i);
                         Snackbar mySnackbar = Snackbar.make(coordinatorLayout,
                                 peer.getPeerId() + " added to inbox", Snackbar.LENGTH_SHORT);
                         mySnackbar.show();
-                    }else{
+                    } else {
                         Snackbar mySnackbar = Snackbar.make(coordinatorLayout,
                                 "This peer didn't send a public key yet", Snackbar.LENGTH_SHORT);
                         mySnackbar.show();
                     }
-                }else{
+                } else {
                     Snackbar mySnackbar = Snackbar.make(coordinatorLayout,
                             "This peer is currently not active", Snackbar.LENGTH_SHORT);
                     mySnackbar.show();

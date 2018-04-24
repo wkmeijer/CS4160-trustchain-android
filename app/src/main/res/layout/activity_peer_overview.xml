@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="10dp"
+    android:id="@+id/myCoordinatorLayout"
+    tools:context="nl.tudelft.cs4160.trustchain_android.peersummary.PeerSummaryActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_marginTop="20dp"
+            android:layout_height="wrap_content">
+
+            <Button
+                android:id="@+id/view_chain_button"
+                style="@style/Widget.AppCompat.Button.Colored"
+                android:layout_width="120dp"
+                android:layout_height="35dp"
+                android:background="@color/colorPrimary"
+                android:onClick="onClickViewChain"
+                android:text="@string/view_chain" />
+
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_marginTop="30dp"
+            android:orientation="horizontal">
+
+            <EditText
+                android:id="@+id/message_edit_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="20dp"
+                android:layout_weight="1"
+                android:hint="Message Text"
+                android:textColor="@android:color/black"/>
+
+            <Button
+                android:id="@+id/send_button"
+                style="@style/Widget.AppCompat.Button.Colored"
+                android:layout_width="wrap_content"
+                android:layout_height="35dp"
+                android:layout_marginRight="20dp"
+                android:background="@color/colorPrimary"
+                android:onClick="onClickSend"
+                android:text="@string/send" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/bluetooth_connection_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/bluetooth_button"
+                android:visibility="gone" />
+
+        </LinearLayout>
+
+        <android.widget.ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+            android:layout_width="match_parent"
+            android:layout_marginTop="10dp"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            tools:context="nl.tudelft.cs4160.trustchain_android.chainExplorer.ChainExplorerActivity">
+
+            <TextView
+                android:id="@+id/status"
+                android:layout_width="match_parent"
+                android:visibility="gone"
+                android:layout_height="wrap_content" />
+        </android.widget.ScrollView>
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/mutualBlocksRecyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scrollbars="vertical"/>
+
+    </LinearLayout>
+</android.support.design.widget.CoordinatorLayout>

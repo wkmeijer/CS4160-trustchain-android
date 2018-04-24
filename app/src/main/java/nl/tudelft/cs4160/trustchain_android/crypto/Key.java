@@ -9,7 +9,7 @@ import org.libsodium.jni.Sodium;
 import org.libsodium.jni.keys.PrivateKey;
 import org.libsodium.jni.keys.VerifyKey;
 
-import nl.tudelft.cs4160.trustchain_android.Util.Util;
+import nl.tudelft.cs4160.trustchain_android.util.Util;
 
 /**
  * Manages key operations.
@@ -94,7 +94,6 @@ public class Key {
      */
     public static PrivateKey loadPrivateKey(Context context, String file) {
         String key = Util.readFile(context, file);
-        Log.i(TAG, "PRIVATE FROM FILE: " + key);
         return loadPrivateKey(key);
     }
 
@@ -115,7 +114,6 @@ public class Key {
 
     public static SigningKey loadSigningKey(Context context, String file) {
         String contents = Util.readFile(context, file);
-        Log.i(TAG, "SIGNING KEY FROM FILE: " + contents);
         return loadSigningKey(contents);
     }
 
