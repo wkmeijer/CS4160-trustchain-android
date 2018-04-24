@@ -8,6 +8,7 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
+import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 
 import nl.tudelft.cs4160.trustchain_android.main.OverviewConnectionsActivity;
@@ -192,8 +193,12 @@ public class Peer implements Serializable {
      * @return
      */
     public boolean isBootstrap() {
-        if(OverviewConnectionsActivity.CONNECTABLE_ADDRESS.equals(address.getAddress().toString())){
-            return true;
+        try {
+            if(InetAddress.getByName(OverviewConnectionsActivity.CONNECTABLE_ADDRESS).equals(address.getAddress())){
+                return true;
+            }
+        } catch (UnknownHostException e) {
+            e.printStackTrace();
         }
         return false;
     }

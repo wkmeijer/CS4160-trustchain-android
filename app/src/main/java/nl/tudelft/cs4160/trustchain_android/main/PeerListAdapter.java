@@ -26,6 +26,17 @@ public class PeerListAdapter extends ArrayAdapter<Peer> {
     private final Context context;
     private CoordinatorLayout coordinatorLayout;
 
+    static class ViewHolder {
+        TextView mPeerId;
+        TextView mCarrier;
+        TextView mLastSeen;
+        TextView mDestinationAddress;
+        TextView mStatusIndicator;
+        TextView mReceivedIndicator;
+        TextView mSentIndicator;
+        TableLayout mTableLayoutConnection;
+    }
+
     public PeerListAdapter(Context context, int resource, List<Peer> peerConnectionList, CoordinatorLayout coordinatorLayout) {
         super(context, resource, peerConnectionList);
         this.context = context;
@@ -44,6 +55,7 @@ public class PeerListAdapter extends ArrayAdapter<Peer> {
             holder.mStatusIndicator = convertView.findViewById(R.id.status_indicator);
             holder.mCarrier = convertView.findViewById(R.id.carrier);
             holder.mPeerId = convertView.findViewById(R.id.peer_id);
+            holder.mLastSeen = convertView.findViewById(R.id.last_seen);
             holder.mDestinationAddress = convertView.findViewById(R.id.destination_address);
             holder.mReceivedIndicator = convertView.findViewById(R.id.received_indicator);
             holder.mSentIndicator = convertView.findViewById(R.id.sent_indicator);
@@ -70,6 +82,7 @@ public class PeerListAdapter extends ArrayAdapter<Peer> {
         } else {
             holder.mCarrier.setText("");
         }
+
         if (peer.hasReceivedData()) {
             if (peer.isAlive()) {
                 holder.mStatusIndicator.setTextColor(context.getResources().getColor(R.color.colorStatusConnected));
@@ -96,6 +109,9 @@ public class PeerListAdapter extends ArrayAdapter<Peer> {
         }
         setOnClickListener(holder.mTableLayoutConnection, position);
 
+        if(peer.hasReceivedData()) {
+            holder.mLastSeen.setText(getLastSeen(System.currentTimeMillis() - peer.getLastReceiveTime()));
+        }
         return convertView;
     }
 
@@ -123,15 +139,36 @@ public class PeerListAdapter extends ArrayAdapter<Peer> {
         }
     }
 
-    static class ViewHolder {
-        TextView mPeerId;
-        TextView mCarrier;
-        TextView mDestinationAddress;
-        TextView mStatusIndicator;
-        TextView mReceivedIndicator;
-        TextView mSentIndicator;
-        TableLayout mTableLayoutConnection;
+    /**
+     * Returns a nice string representation indicating how long ago this peer was last seen.
+     * @param msSinceLastMessage
+     * @return a string representation of last seen
+     */
+    private String getLastSeen(long msSinceLastMessage) {
+        // less than 5 seconds
+        if(msSinceLastMessage < 5000) {
+            return "< 5s";
+        }
+
+        // less than 100 seconds
+        if(msSinceLastMessage < 100000) {
+            return "> " + msSinceLastMessage / 5000 * 5 + "s";
+        }
+
+        // less than 100 minutes
+        if(msSinceLastMessage < 6000000) {
+            return "> " + msSinceLastMessage / 60000 + "m";
+        }
+
+        // less than 1 day
+        if(msSinceLastMessage < 86400000) {
+            return "> " + msSinceLastMessage / 36000000 + "h";
+        }
+
+        // default: more than 1 day
+        return "> 1d";
     }
+
 
     /**
      * On click peer. If it's possible to add this peer

@@ -356,7 +356,7 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
         if (peerHandler.getWanVote().vote(socketAddress)) {
             wan = peerHandler.getWanVote().getAddress().toString();
         }
-        setWanvote(wan);
+        setWanvote(wan.replace("/",""));
     }
 
     /**
