@@ -6,9 +6,6 @@ import org.junit.Rule;
 
 import nl.tudelft.cs4160.trustchain_android.main.BootstrapActivity;
 
-<<<<<<<HEAD
-        =======
-        >>>>>>>29aa341a74003f041d63668cec12d1f42177436b
 
 /**
  * Created by Laurens on 12/18/2017.

@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="nl.tudelft.cs4160.trustchain_android.main.ChainExplorerInfoActivity">
+    tools:context="nl.tudelft.cs4160.trustchain_android.chainExplorer.ChainExplorerInfoActivity">
 
     <LinearLayout
         android:layout_width="match_parent"

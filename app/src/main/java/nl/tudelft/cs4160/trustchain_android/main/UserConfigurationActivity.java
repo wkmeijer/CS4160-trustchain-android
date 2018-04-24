@@ -12,7 +12,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import nl.tudelft.cs4160.trustchain_android.R;
-import nl.tudelft.cs4160.trustchain_android.SharedPreferences.UserNameStorage;
+import nl.tudelft.cs4160.trustchain_android.storage.sharedpreferences.UserNameStorage;
 
 /**
  * The user is able to set his/her own username in this class.
@@ -53,7 +53,7 @@ public class UserConfigurationActivity extends AppCompatActivity {
      * When clicking the confirm button check if the user name is not empty
      * if so then store the username and continue to the next activity.
      */
-    public void OnClickConfirm(View view) {
+    public void onClickConfirm(View view) {
         EditText userNameInput = findViewById(R.id.username);
         if (!userNameInput.getText().toString().matches("")) {
             Intent myIntent = new Intent(UserConfigurationActivity.this, OverviewConnectionsActivity.class);
