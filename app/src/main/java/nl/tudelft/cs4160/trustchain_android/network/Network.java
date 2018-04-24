@@ -440,7 +440,7 @@ public class Network {
             if (inetAddress != null) {
                 internalSourceAddress = new InetSocketAddress(inetAddress, OverviewConnectionsActivity.DEFAULT_PORT);
                 if (networkCommunicationListener != null) {
-                    networkCommunicationListener.updateInternalSourceAddress(internalSourceAddress.toString());
+                    networkCommunicationListener.updateInternalSourceAddress(internalSourceAddress.toString().replace("/",""));
                 }
             }
         }
