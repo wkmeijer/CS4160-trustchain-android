@@ -1,4 +1,4 @@
-package nl.tudelft.cs4160.trustchain_android.passport.ocr.util;
+package nl.tudelft.cs4160.trustchain_android.passport;
 
 import android.os.Parcel;
 import android.os.Parcelable;

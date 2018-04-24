@@ -37,10 +37,11 @@ import java.util.List;
 import java.util.concurrent.Semaphore;
 
 import nl.tudelft.cs4160.trustchain_android.R;
+import nl.tudelft.cs4160.trustchain_android.passport.DocumentData;
+import nl.tudelft.cs4160.trustchain_android.passport.nfc.PassportConActivity;
 import nl.tudelft.cs4160.trustchain_android.passport.ocr.ManualInputActivity;
 import nl.tudelft.cs4160.trustchain_android.passport.ocr.Mrz;
 import nl.tudelft.cs4160.trustchain_android.passport.ocr.TesseractOCR;
-import nl.tudelft.cs4160.trustchain_android.passport.ocr.util.DocumentData;
 
 public class CameraFragment extends Fragment {
     public static final int GET_DOC_INFO = 1; //TODO check for collisions
@@ -346,12 +347,15 @@ public class CameraFragment extends Fragment {
      */
     public synchronized void scanResultFound(final Mrz mrz) {
         if (!resultFound) {
-            Intent returnIntent = new Intent();
+            for (TesseractOCR thread : tesseractThreads) {
+                thread.stopping = true;
+            }
+            Intent returnIntent = new Intent(getActivity(), PassportConActivity.class);
             DocumentData data = mrz.getPrettyData();
             returnIntent.putExtra(DocumentData.identifier, data);
             getActivity().setResult(Activity.RESULT_OK, returnIntent);
             resultFound = true;
-            getActivity().finish();
+            startActivity(returnIntent);
         }
     }
 
