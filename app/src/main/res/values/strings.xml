@@ -98,4 +98,42 @@
     <string name="export_tokens">Export Tokens</string>
     <string name="funds">Funds</string>
     <string name="transactions">Transactions</string>
+
+    <!-- OCR Scanning -->
+    <string name="ocr_switch_to_manual">Manual Input</string>
+    <string name="ocr_camera_permission_explanation">Please provide camera permissions in order to scan a document.</string>
+    <string name="ocr_camera_error">This device doesn\'t support Camera2 API.</string>
+    <string name="ocr_help_text">Scan the text at the bottom of the passport or on the backside of the ID card.</string>
+    <string name="scan_passport">Scan Passport</string>
+
+    <!--Manual Input-->
+    <string-array name="months_array">
+        <item>January</item>
+        <item>February</item>
+        <item>March</item>
+        <item>April</item>
+        <item>May</item>
+        <item>June</item>
+        <item>July</item>
+        <item>August</item>
+        <item>September</item>
+        <item>October</item>
+        <item>November</item>
+        <item>December</item>
+    </string-array>
+    <string name="docNum">Document number</string>
+    <string name="expiryDate">Expiry date</string>
+    <string name="dateBirth">Date of birth</string>
+    <string name="hintDocNum">XXP100154</string>
+    <string name="hintExpiryDate">yymmdd</string>
+    <string name="hintDateBirth">yymmdd</string>
+    <string name="manInputSubmit">Submit</string>
+    <string name="errFormatDocNum">Input of document number is not correct, please recheck your input.</string>
+    <string name="errFormatExpiryDate">Please fill in the expiry date of the document in the yymmdd format.</string>
+    <string name="errFormatDateBirth">Please fill in the date of birth in the yymmdd format.</string>
+    <string name="errInputDocNum">Please fill in the document number.</string>
+    <string name="errInputExpiryDate">Please fill in the expiry date of the document.</string>
+    <string name="errInputDateBirth">Please fill in the date of birth.</string>
+
+
 </resources>
