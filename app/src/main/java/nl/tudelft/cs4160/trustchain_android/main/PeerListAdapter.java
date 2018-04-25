@@ -49,7 +49,7 @@ public class PeerListAdapter extends ArrayAdapter<Peer> {
         if (convertView == null) {
             LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
-            convertView = inflater.inflate(R.layout.peer_connection_list_item, parent, false);
+            convertView = inflater.inflate(R.layout.item_peer_connection_list, parent, false);
 
             holder = new ViewHolder();
             holder.mStatusIndicator = convertView.findViewById(R.id.status_indicator);

@@ -35,7 +35,7 @@ public class ConnectionExplanationActivity extends AppCompatActivity {
                 new ConnectionExplanationListAdapter
                         (
                             getApplicationContext(),
-                            R.layout.connection_explanation_list_item,
+                            R.layout.item_connection_explanation_list,
                             symbolList,
                             explanationText,
                             colorList

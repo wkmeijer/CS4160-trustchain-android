@@ -71,12 +71,12 @@ public class InboxAdapter extends RecyclerView.Adapter<InboxAdapter.ViewHolder> 
             case 0:
                 // create a new view
                 LinearLayout v0 = (LinearLayout) LayoutInflater.from(parent.getContext())
-                        .inflate(R.layout.inbox_item, parent, false);
+                        .inflate(R.layout.item_inbox, parent, false);
                 return new ViewHolderItem(v0);
             case 1:
                 // create a new view
                 LinearLayout v1 = (LinearLayout) LayoutInflater.from(parent.getContext())
-                        .inflate(R.layout.inbox_add_peer_item, parent, false);
+                        .inflate(R.layout.item_inbox_add_peer, parent, false);
                 return new ViewHolderAddPeer(v1);
         }
         return null;

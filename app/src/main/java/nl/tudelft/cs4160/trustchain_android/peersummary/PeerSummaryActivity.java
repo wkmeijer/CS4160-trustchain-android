@@ -87,7 +87,7 @@ public class PeerSummaryActivity extends AppCompatActivity implements CrawlReque
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.trustchain_menu, menu);
+        inflater.inflate(R.menu.menu_trustchain, menu);
         return true;
     }
 

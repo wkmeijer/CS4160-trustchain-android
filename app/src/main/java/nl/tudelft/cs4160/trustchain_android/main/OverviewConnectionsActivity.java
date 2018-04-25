@@ -8,7 +8,6 @@ import android.net.ConnectivityManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.HandlerThread;
 import android.os.Looper;
 import android.preference.PreferenceManager;
 import android.support.design.widget.CoordinatorLayout;
@@ -219,9 +218,9 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
         ListView incomingPeerConnectionListView = findViewById(R.id.incoming_peer_connection_list_view);
         ListView outgoingPeerConnectionListView = findViewById(R.id.outgoing_peer_connection_list_view);
         CoordinatorLayout content = findViewById(R.id.content);
-        incomingPeerAdapter = new PeerListAdapter(getApplicationContext(), R.layout.peer_connection_list_item, peerHandler.getIncomingList(), content);
+        incomingPeerAdapter = new PeerListAdapter(getApplicationContext(), R.layout.item_peer_connection_list, peerHandler.getIncomingList(), content);
         incomingPeerConnectionListView.setAdapter(incomingPeerAdapter);
-        outgoingPeerAdapter = new PeerListAdapter(getApplicationContext(), R.layout.peer_connection_list_item, peerHandler.getOutgoingList(), content);
+        outgoingPeerAdapter = new PeerListAdapter(getApplicationContext(), R.layout.item_peer_connection_list, peerHandler.getOutgoingList(), content);
         outgoingPeerConnectionListView.setAdapter(outgoingPeerAdapter);
     }
 
