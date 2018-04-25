@@ -26,6 +26,8 @@ import nl.tudelft.cs4160.trustchain_android.crypto.PublicKeyPair;
 import nl.tudelft.cs4160.trustchain_android.inbox.InboxItem;
 import nl.tudelft.cs4160.trustchain_android.main.OverviewConnectionsActivity;
 import nl.tudelft.cs4160.trustchain_android.message.MessageProto;
+import nl.tudelft.cs4160.trustchain_android.message.MessageProto.Message;
+import nl.tudelft.cs4160.trustchain_android.message.MessageProto.TrustChainBlock;
 import nl.tudelft.cs4160.trustchain_android.network.peer.Peer;
 import nl.tudelft.cs4160.trustchain_android.peersummary.PeerSummaryActivity;
 import nl.tudelft.cs4160.trustchain_android.storage.sharedpreferences.InboxItemStorage;
@@ -169,7 +171,7 @@ public class Network {
                 .setNetworkOperator(networkOperator)
                 .build();
 
-        MessageProto.Message.Builder messageBuilder = MessageProto.Message.newBuilder()
+        Message.Builder messageBuilder = Message.newBuilder()
                 .setSourcePeerId(hashId)
                 .setDestinationAddress(ByteString.copyFrom(peer.getAddress().getAddress().getAddress()))
                 .setDestinationPort(peer.getAddress().getPort())
@@ -186,8 +188,8 @@ public class Network {
      * @param block the data
      * @throws IOException
      */
-    public void sendBlockMessage(Peer peer, MessageProto.TrustChainBlock block) throws IOException {
-        MessageProto.Message message = MessageProto.Message.newBuilder()
+    public void sendBlockMessage(Peer peer, TrustChainBlock block) throws IOException {
+        Message message = Message.newBuilder()
                 .setSourcePeerId(hashId)
                 .setDestinationAddress(ByteString.copyFrom(peer.getAddress().getAddress().getAddress()))
                 .setDestinationPort(peer.getAddress().getPort())
@@ -206,7 +208,7 @@ public class Network {
      * @throws IOException
      */
     public void sendCrawlRequest(Peer peer, MessageProto.CrawlRequest request) throws IOException {
-        MessageProto.Message message = MessageProto.Message.newBuilder()
+        Message message = Message.newBuilder()
                 .setSourcePeerId(hashId)
                 .setDestinationAddress(ByteString.copyFrom(peer.getAddress().getAddress().getAddress()))
                 .setDestinationPort(peer.getAddress().getPort())
@@ -231,7 +233,7 @@ public class Network {
                 .setPuncturePeer(ByteString.copyFrom(Peer.serialize(puncturePeer)))
                 .build();
 
-        MessageProto.Message message = MessageProto.Message.newBuilder()
+        Message message = Message.newBuilder()
                 .setSourcePeerId(hashId)
                 .setDestinationAddress(ByteString.copyFrom(peer.getAddress().getAddress().getAddress()))
                 .setDestinationPort(peer.getAddress().getPort())
@@ -254,7 +256,7 @@ public class Network {
                 .setSourceSocket(internalSourceAddress.toString())
                 .build();
 
-        MessageProto.Message message = MessageProto.Message.newBuilder()
+        Message message = Message.newBuilder()
                 .setSourcePeerId(hashId)
                 .setDestinationAddress(ByteString.copyFrom(peer.getAddress().getAddress().getAddress()))
                 .setDestinationPort(peer.getAddress().getPort())
@@ -288,7 +290,7 @@ public class Network {
                 .addAllPex(pexPeers)
                 .build();
 
-        MessageProto.Message message = MessageProto.Message.newBuilder()
+        Message message = Message.newBuilder()
                 .setSourcePeerId(hashId)
                 .setDestinationAddress(ByteString.copyFrom(peer.getAddress().getAddress().getAddress()))
                 .setDestinationPort(peer.getAddress().getPort())
@@ -307,7 +309,7 @@ public class Network {
      * @param peer    the destination inboxItem.
      * @throws IOException
      */
-    private synchronized void sendMessage(MessageProto.Message message, Peer peer) throws IOException {
+    private synchronized void sendMessage(Message message, Peer peer) throws IOException {
         ByteBuffer outputBuffer = ByteBuffer.allocate(BUFFER_SIZE);
         channel.send(outputBuffer.wrap(message.toByteArray()), peer.getAddress());
         Log.i(TAG, "Sending " + message);
@@ -327,7 +329,10 @@ public class Network {
 
     /**
      * Handle incoming data.
-     *
+     *  - Tries to parse the bytes into a proto Message.
+     *  - Updates the external ip address according to where the message was sent.
+     *  - Add the new connection as a new peer or update an existing peer.
+     *  - Send the message along for further processing.
      * @param data    the data {@link ByteBuffer}.
      * @param address the incoming address.
      */
@@ -339,46 +344,20 @@ public class Network {
         }
 
         try {
-            MessageProto.Message message = MessageProto.Message.parseFrom(data);
+            Message message = Message.parseFrom(data);
             Log.i(TAG, "Received " + message.toString());
-            String peerId = message.getSourcePeerId();
 
             if (networkCommunicationListener != null) {
                 networkCommunicationListener.updateWan(message);
 
+                String peerId = message.getSourcePeerId();
                 Peer peer = networkCommunicationListener.getPeerHandler().getOrMakePeer(peerId, address);
-
-                PublicKeyPair pubKeyPair = new PublicKeyPair(message.getPublicKey().toByteArray());
-                String ip = address.getAddress().toString().replace("/", "") + ":" + address.getPort();
-                PubKeyAndAddressPairStorage.addPubkeyAndAddressPair(context, pubKeyPair, ip);
-                if (peer == null) return;
-                peer.received(data);
-                switch (message.getType()) {
-                    case INTRODUCTION_REQUEST_ID:
-                        networkCommunicationListener.handleIntroductionRequest(peer, message.getPayload().getIntroductionRequest());
-                        break;
-                    case INTRODUCTION_RESPONSE_ID:
-                        networkCommunicationListener.handleIntroductionResponse(peer, message.getPayload().getIntroductionResponse());
-                        break;
-                    case PUNCTURE_ID:
-                        networkCommunicationListener.handlePuncture(peer, message.getPayload().getPuncture());
-                        break;
-                    case PUNCTURE_REQUEST_ID:
-                        networkCommunicationListener.handlePunctureRequest(peer, message.getPayload().getPunctureRequest());
-                        break;
-                    case BLOCK_MESSAGE_ID:
-                        MessageProto.TrustChainBlock block = message.getPayload().getBlock();
-                        addPeerToInbox(pubKeyPair, address, context, peerId);
-                        addBlockToInbox(block, context);
-                        networkCommunicationListener.handleReceivedBlock(peer, block);
-                        if (mutualBlockListener != null) {
-                            mutualBlockListener.blockAdded(block);
-                        }
-                        break;
-                    case CRAWL_REQUEST_ID:
-                        networkCommunicationListener.handleCrawlRequest(peer, message.getPayload().getCrawlRequest());
-                        break;
+                if (peer == null) {
+                    return;
                 }
+
+                peer.received(data);
+                handleMessage(peer, message, address, context);
                 networkCommunicationListener.updatePeerLists();
             }
         } catch (Exception e) {
@@ -387,17 +366,59 @@ public class Network {
     }
 
     /**
+     * Checks which message type we've received and calls the appropriate functions to handle
+     * further processing of the message.
+     * @param peer the peer that sent this message
+     * @param message the message that was received
+     * @param address
+     * @param context
+     * @throws Exception
+     */
+    public void handleMessage(Peer peer, Message message, InetSocketAddress address, Context context) throws Exception {
+        switch (message.getType()) {
+            case INTRODUCTION_REQUEST_ID:
+                networkCommunicationListener.handleIntroductionRequest(peer, message.getPayload().getIntroductionRequest());
+                break;
+            case INTRODUCTION_RESPONSE_ID:
+                networkCommunicationListener.handleIntroductionResponse(peer, message.getPayload().getIntroductionResponse());
+                break;
+            case PUNCTURE_ID:
+                networkCommunicationListener.handlePuncture(peer, message.getPayload().getPuncture());
+                break;
+            case PUNCTURE_REQUEST_ID:
+                networkCommunicationListener.handlePunctureRequest(peer, message.getPayload().getPunctureRequest());
+                break;
+            case BLOCK_MESSAGE_ID:
+                TrustChainBlock block = message.getPayload().getBlock();
+                PublicKeyPair pubKeyPair = new PublicKeyPair(message.getPublicKey().toByteArray());
+
+                // update the inbox and the pubkey/address mapping
+                PubKeyAndAddressPairStorage.addPubkeyAndAddressPair(context, pubKeyPair, address);
+                addPeerToInbox(pubKeyPair, peer, context);
+                addBlockToInbox(block, context);
+
+                networkCommunicationListener.handleReceivedBlock(peer, block);
+                if (mutualBlockListener != null) {
+                    mutualBlockListener.blockAdded(block);
+                }
+                break;
+            case CRAWL_REQUEST_ID:
+                networkCommunicationListener.handleCrawlRequest(peer, message.getPayload().getCrawlRequest());
+                break;
+        }
+    }
+
+    /**
      * Add peer to inbox.
      * This means storing the InboxItem object in the local preferences.
-     * @param pubKeyPair
-     * @param address Socket address
+     * @param pubKeyPair keypair associated with this peer
+     * @param peer the peer that needs to be added
      * @param context needed for storage
-     * @param peerId
      */
-    private static void addPeerToInbox(PublicKeyPair pubKeyPair,InetSocketAddress address, Context context, String peerId) {
+    private static void addPeerToInbox(PublicKeyPair pubKeyPair, Peer peer, Context context) {
         if (pubKeyPair != null) {
-            String ip = address.getAddress().toString().replace("/", "");
-            InboxItem i = new InboxItem(peerId, new ArrayList<Integer>(), ip, pubKeyPair, address.getPort());
+            String ip = peer.getAddress().getAddress().toString().replace("/", "");
+            InboxItem i = new InboxItem(peer.getPeerId(), new ArrayList<Integer>(), ip, pubKeyPair, peer.getPort());
             InboxItemStorage.addInboxItem(context, i);
         }
     }
@@ -407,7 +428,7 @@ public class Network {
      * @param block the block of which the reference should be stored.
      * @param context needed for storage
      */
-    private static void addBlockToInbox(MessageProto.TrustChainBlock block, Context context) {
+    private static void addBlockToInbox(TrustChainBlock block, Context context) {
         InboxItemStorage.addHalfBlock(context, new PublicKeyPair(block.getPublicKey().toByteArray())
                 , block.getSequenceNumber());
     }

@@ -302,6 +302,7 @@ public class PeerSummaryActivity extends AppCompatActivity implements CrawlReque
                 }
             }
         }).start();
+
         // update the mutualblocks list
         initializeMutualBlockRecycleView();
     }

@@ -143,7 +143,11 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
      * Define what should be executed when one of the item in the menu is clicked.
      *
      * @param item the item in the menu.
-     * @return true if everything was executed.
+     * @return true if everything was executed.- [ ] No out-of-sleep feature on Android. dead overlay.
+- [ ] update on_packet() every second a screen refresh and update message-timeout values on screen.
+- [ ] design and implement a fault-resilient overlay. make flawless.
+- [ ] documented algorithm
+- [ ] Add last send message + got last response message
      */
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {

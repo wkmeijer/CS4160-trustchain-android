@@ -4,6 +4,8 @@ import android.content.Context;
 import android.util.Base64;
 import android.util.Log;
 
+import java.net.InetSocketAddress;
+
 import nl.tudelft.cs4160.trustchain_android.crypto.PublicKeyPair;
 
 /**
@@ -21,13 +23,14 @@ public class PubKeyAndAddressPairStorage {
      * @param pubKeyPair
      * @param address
      */
-    public static void addPubkeyAndAddressPair(Context context, PublicKeyPair pubKeyPair, String address) {
+    public static void addPubkeyAndAddressPair(Context context, PublicKeyPair pubKeyPair, InetSocketAddress address) {
         if(pubKeyPair == null || address == null) {
             return;
         }
-        Log.i(TAG, "add " + address + " - " + pubKeyPair.toString());
-        SharedPreferencesStorage.writeSharedPreferences(context, PUBKEY_KEY_PREFIX + Base64.encodeToString(pubKeyPair.toBytes(), Base64.DEFAULT), address);
-        SharedPreferencesStorage.writeSharedPreferences(context, ADDRESS_KEY_PREFIX + address, Base64.encodeToString(pubKeyPair.toBytes(), Base64.DEFAULT));
+        String ipAddress = address.getAddress().toString().replace("/", "") + ":" + address.getPort();
+        Log.i(TAG, "add " + ipAddress + " - " + pubKeyPair.toString());
+        SharedPreferencesStorage.writeSharedPreferences(context, PUBKEY_KEY_PREFIX + Base64.encodeToString(pubKeyPair.toBytes(), Base64.DEFAULT), ipAddress);
+        SharedPreferencesStorage.writeSharedPreferences(context, ADDRESS_KEY_PREFIX + ipAddress, Base64.encodeToString(pubKeyPair.toBytes(), Base64.DEFAULT));
     }
 
     /**
