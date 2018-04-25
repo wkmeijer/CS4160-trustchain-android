@@ -144,7 +144,6 @@ public class PeerHandler {
             public synchronized void run() {
                     peerList.add(peer);
                     splitPeerList();
-                    Log.i(TAG, "Added " + peer + " Peerlist now has size: " + peerList.size());
                 peerListener.updateIncomingPeers();
                 peerListener.updateOutgoingPeers();
             }

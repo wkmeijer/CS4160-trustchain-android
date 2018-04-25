@@ -32,6 +32,10 @@ android {
     packagingOptions {
         exclude '**/MessageProto.java'
     }
+    compileOptions {
+        targetCompatibility 1.8
+        sourceCompatibility 1.8
+    }
 }
 
 dependencies {

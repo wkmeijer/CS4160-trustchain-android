@@ -8,6 +8,7 @@ import android.net.ConnectivityManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.HandlerThread;
 import android.os.Looper;
 import android.preference.PreferenceManager;
 import android.support.design.widget.CoordinatorLayout;
@@ -72,6 +73,7 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
 
     /**
      * Initialize views, start send and receive threads if necessary.
+     * Start a thread that refreshes the peers every second.
      *
      * @param savedInstanceState saved instance state
      */
@@ -85,9 +87,18 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
         startListenThread();
         startSendThread();
         initPeerLists();
-        if (savedInstanceState != null) {
-            updatePeerLists();
-        }
+
+        Runnable refreshTask = () -> {
+            while(true) {
+                updatePeerLists();
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        };
+        new Thread(refreshTask).start();
     }
 
     /**
@@ -528,7 +539,6 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
      */
     @Override
     protected void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
         outState.putSerializable("peers", peerHandler.getPeerList());
         super.onSaveInstanceState(outState);
     }

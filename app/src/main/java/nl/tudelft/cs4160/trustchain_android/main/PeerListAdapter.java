@@ -144,25 +144,26 @@ public class PeerListAdapter extends ArrayAdapter<Peer> {
      * @param msSinceLastMessage
      * @return a string representation of last seen
      */
-    private String getLastSeen(long msSinceLastMessage) {
-        // less than 5 seconds
-        if(msSinceLastMessage < 5000) {
-            return "< 5s";
+    public String getLastSeen(long msSinceLastMessage) {
+        // display seconds
+        if(msSinceLastMessage < 59000) {
+            return "< " + ((int) Math.ceil(msSinceLastMessage / 1000.0)) + "s";
         }
 
-        // less than 100 seconds
-        if(msSinceLastMessage < 100000) {
-            return "> " + msSinceLastMessage / 5000 * 5 + "s";
+        // display minutes
+        if(msSinceLastMessage < 3540000) {
+            int seconds = ((int) Math.ceil((msSinceLastMessage / 1000.0)));
+            int minutes = ((int) Math.floor(seconds /60.0));
+            seconds = seconds % 60;
+            return "< " + minutes + "m" + seconds + "s";
         }
 
-        // less than 100 minutes
-        if(msSinceLastMessage < 6000000) {
-            return "> " + msSinceLastMessage / 60000 + "m";
-        }
-
-        // less than 1 day
+        // display hours
         if(msSinceLastMessage < 86400000) {
-            return "> " + msSinceLastMessage / 36000000 + "h";
+            int minutes = ((int) Math.ceil(msSinceLastMessage /60000.0));
+            int hours = ((int) Math.floor(minutes / 60.0));
+            minutes = minutes % 60;
+            return "< " + hours + "h" + minutes + "m";
         }
 
         // default: more than 1 day
