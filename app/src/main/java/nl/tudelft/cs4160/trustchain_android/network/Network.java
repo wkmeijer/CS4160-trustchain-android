@@ -357,7 +357,9 @@ public class Network {
                 }
 
                 peer.received(data);
-                handleMessage(peer, message, address, context);
+                PublicKeyPair pubKeyPair = new PublicKeyPair(message.getPublicKey().toByteArray());
+                PubKeyAndAddressPairStorage.addPubkeyAndAddressPair(context, pubKeyPair, address);
+                handleMessage(peer, message, pubKeyPair, context);
                 networkCommunicationListener.updatePeerLists();
             }
         } catch (Exception e) {
@@ -370,11 +372,11 @@ public class Network {
      * further processing of the message.
      * @param peer the peer that sent this message
      * @param message the message that was received
-     * @param address
-     * @param context
+     * @param pubKeyPair the publickeypair associated with the sender
+     * @param context context which is used to update the inbox
      * @throws Exception
      */
-    public void handleMessage(Peer peer, Message message, InetSocketAddress address, Context context) throws Exception {
+    public void handleMessage(Peer peer, Message message, PublicKeyPair pubKeyPair, Context context) throws Exception {
         switch (message.getType()) {
             case INTRODUCTION_REQUEST_ID:
                 networkCommunicationListener.handleIntroductionRequest(peer, message.getPayload().getIntroductionRequest());
@@ -390,10 +392,8 @@ public class Network {
                 break;
             case BLOCK_MESSAGE_ID:
                 TrustChainBlock block = message.getPayload().getBlock();
-                PublicKeyPair pubKeyPair = new PublicKeyPair(message.getPublicKey().toByteArray());
 
-                // update the inbox and the pubkey/address mapping
-                PubKeyAndAddressPairStorage.addPubkeyAndAddressPair(context, pubKeyPair, address);
+                // update the inbox
                 addPeerToInbox(pubKeyPair, peer, context);
                 addBlockToInbox(block, context);
 

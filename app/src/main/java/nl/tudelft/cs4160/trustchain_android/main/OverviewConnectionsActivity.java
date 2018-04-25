@@ -209,12 +209,7 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
      */
     private void initExitButton() {
         Button mExitButton = findViewById(R.id.exit_button);
-        mExitButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                finish();
-            }
-        });
+        mExitButton.setOnClickListener(view -> finish());
     }
 
     /**
@@ -223,9 +218,10 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
     private void initPeerLists() {
         ListView incomingPeerConnectionListView = findViewById(R.id.incoming_peer_connection_list_view);
         ListView outgoingPeerConnectionListView = findViewById(R.id.outgoing_peer_connection_list_view);
-        incomingPeerAdapter = new PeerListAdapter(getApplicationContext(), R.layout.peer_connection_list_item, peerHandler.getIncomingList(), (CoordinatorLayout) findViewById(R.id.myCoordinatorLayout));
+        CoordinatorLayout content = findViewById(R.id.content);
+        incomingPeerAdapter = new PeerListAdapter(getApplicationContext(), R.layout.peer_connection_list_item, peerHandler.getIncomingList(), content);
         incomingPeerConnectionListView.setAdapter(incomingPeerAdapter);
-        outgoingPeerAdapter = new PeerListAdapter(getApplicationContext(), R.layout.peer_connection_list_item, peerHandler.getOutgoingList(), (CoordinatorLayout) findViewById(R.id.myCoordinatorLayout));
+        outgoingPeerAdapter = new PeerListAdapter(getApplicationContext(), R.layout.peer_connection_list_item, peerHandler.getOutgoingList(), content);
         outgoingPeerConnectionListView.setAdapter(outgoingPeerAdapter);
     }
 
