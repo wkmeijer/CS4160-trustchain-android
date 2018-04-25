@@ -149,4 +149,10 @@
     <string name="wrong_document_details">Document details are not inserted correctly</string>
     <string name="check_input">Check input</string>
 
+    <!--PeerSummary-->
+    <string name="valid_block">Valid block</string>
+    <string name="seq_unknown">Unknown</string>
+    <string name="sequenceNum">seq: %1$d</string>
+    <string name="need_sign">Awaiting signing</string>
+    <string name="invalid_block">Invalid block</string>
 </resources>
