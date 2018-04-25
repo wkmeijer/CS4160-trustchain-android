@@ -1,0 +1,73 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <nl.tudelft.cs4160.trustchain_android.passport.ocr.camera.AutoFitTextureView
+        android:id="@+id/texture"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true" />
+
+    <nl.tudelft.cs4160.trustchain_android.passport.ocr.camera.Overlay
+        android:name="nl.tudelft.cs4160.trustchain_android.passport.ocr.camera.Overlay"
+        android:id="@+id/overlay"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <LinearLayout
+        android:id="@+id/control"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentStart="true"
+        android:background="@color/ocr_control_background">
+
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/info_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_toStartOf="@+id/toggle_torch_button"
+                android:layout_margin="@dimen/ocr_control_padding"
+                android:text="@string/ocr_help_text"
+                android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"
+                android:textColor="@color/govTextBlue" />
+
+            <android.support.design.widget.FloatingActionButton
+                xmlns:app="http://schemas.android.com/apk/res-auto"
+                android:id="@+id/toggle_torch_button"
+                android:layout_alignParentEnd="true"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/ocr_control_padding"
+                android:src="@drawable/ic_torch"
+                app:backgroundTint="@color/govDarkBlue" />
+        </RelativeLayout>
+
+        <Button
+            android:id="@+id/manual_input_button"
+            android:visibility="gone"
+            android:background="@drawable/blue_button_bottom"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="end"
+            android:textColor="@android:color/white"
+            android:text="@string/ocr_switch_to_manual" />
+    </LinearLayout>
+
+    <ImageView
+        android:id="@+id/scan_segment"
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        android:background="@drawable/white_border"
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true" />
+
+ </RelativeLayout>

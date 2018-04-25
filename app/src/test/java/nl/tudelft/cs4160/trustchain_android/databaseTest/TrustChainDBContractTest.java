@@ -2,7 +2,7 @@ package nl.tudelft.cs4160.trustchain_android.databaseTest;
 
 import org.junit.Test;
 
-import nl.tudelft.cs4160.trustchain_android.database.TrustChainDBContract;
+import nl.tudelft.cs4160.trustchain_android.storage.database.TrustChainDBContract;
 
 import static org.junit.Assert.assertEquals;
 

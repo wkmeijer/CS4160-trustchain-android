@@ -7,7 +7,6 @@ import java.util.HashMap;
 
 public class ChainExplorerAdapterTest {
     private static final ByteString PEER_2_PEER = ByteString.copyFromUtf8("peer2peer");
-    private ChainExplorerAdapter adapter = new ChainExplorerAdapter(null, null, new byte[0]);
 
 /*
     @Test

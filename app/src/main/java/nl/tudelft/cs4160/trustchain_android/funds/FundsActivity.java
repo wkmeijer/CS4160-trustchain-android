@@ -20,10 +20,10 @@ import java.util.List;
 import nl.tudelft.cs4160.trustchain_android.R;
 import nl.tudelft.cs4160.trustchain_android.crypto.DualSecret;
 import nl.tudelft.cs4160.trustchain_android.crypto.Key;
-import nl.tudelft.cs4160.trustchain_android.database.TrustChainDBHelper;
 import nl.tudelft.cs4160.trustchain_android.message.MessageProto;
+import nl.tudelft.cs4160.trustchain_android.storage.database.TrustChainDBHelper;
 
-import static nl.tudelft.cs4160.trustchain_android.Util.Util.readableSize;
+import static nl.tudelft.cs4160.trustchain_android.util.Util.readableSize;
 
 public class FundsActivity extends AppCompatActivity {
 
@@ -36,7 +36,7 @@ public class FundsActivity extends AppCompatActivity {
         TrustChainDBHelper helper = new TrustChainDBHelper(this);
 
         DualSecret ownKeyPair = Key.loadKeys(this);
-        byte[] myPublicKey = ownKeyPair.getPublicKeyPair().toBytes();
+        byte[] myPublicKey = ownKeyPair.getPublicKey().toBytes();
         transactionListView = findViewById(R.id.transaction_listview);
         FundsAdapter adapter = new FundsAdapter(this);
 
@@ -52,34 +52,34 @@ public class FundsActivity extends AppCompatActivity {
         try {
 
             MessageProto.TrustChainBlock latestBlock = helper.getLatestBlock(myPublicKey);
-            String transactionString = latestBlock.getTransaction().toStringUtf8();
+            String transactionString = latestBlock.getTransaction().getUnformatted().toStringUtf8();
             Log.i("FundsActivity", transactionString);
             JSONObject object = new JSONObject(transactionString); // TODO refactor to some kind of factory
             total_up = object.getLong("total_up");
             total_down = object.getLong("total_down");
         } catch (Exception e) {
-
+            e.printStackTrace();
         }
         long max = Math.max(total_down,total_up);
 
         float total_up_fraction = (float)total_up / max * 100;
         float total_down_fraction = (float) total_down /max * 100 ;
 
-        ProgressBar upload_bar = (ProgressBar) findViewById(R.id.upload_bar);
+        ProgressBar upload_bar = findViewById(R.id.upload_bar);
         ObjectAnimator animation = ObjectAnimator.ofInt (upload_bar, "progress", 0, (int)total_up_fraction); // see this max value coming back here, we animale towards that value
         animation.setDuration (1000); //in milliseconds
         animation.setInterpolator (new DecelerateInterpolator());
         animation.start ();
 
-        ProgressBar download_bar = (ProgressBar) findViewById(R.id.download_bar);
+        ProgressBar download_bar = findViewById(R.id.download_bar);
         ObjectAnimator download_bar_animation = ObjectAnimator.ofInt (download_bar, "progress", 0, (int)total_down_fraction); // see this max value coming back here, we animale towards that value
         download_bar_animation.setDuration (1000); //in milliseconds
         download_bar_animation.setInterpolator (new DecelerateInterpolator());
         download_bar_animation.start ();
 
         TextView upAmount = findViewById(R.id.up_and_down_label);
-        upAmount.setText("Up: "+readableSize((long)total_up)
-                        +"\nDown: "+readableSize((long)total_down));
+        upAmount.setText("Up: "+readableSize(total_up)
+                        +"\nDown: "+readableSize(total_down));
 
         RatingBar reputation_rating = findViewById(R.id.reputation_rating);
 
