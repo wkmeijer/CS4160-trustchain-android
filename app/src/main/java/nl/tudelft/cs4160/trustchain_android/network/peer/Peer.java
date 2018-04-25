@@ -167,7 +167,7 @@ public class Peer implements Serializable {
         return result;
     }
 
-    public long getLastSendTime() {
+    public long getLastSentTime() {
         return lastSendTime;
     }
 

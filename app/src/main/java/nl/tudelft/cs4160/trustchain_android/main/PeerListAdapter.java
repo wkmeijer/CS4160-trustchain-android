@@ -29,7 +29,8 @@ public class PeerListAdapter extends ArrayAdapter<Peer> {
     static class ViewHolder {
         TextView mPeerId;
         TextView mCarrier;
-        TextView mLastSeen;
+        TextView mLastSent;
+        TextView mLastReceived;
         TextView mDestinationAddress;
         TextView mStatusIndicator;
         TextView mReceivedIndicator;
@@ -55,7 +56,8 @@ public class PeerListAdapter extends ArrayAdapter<Peer> {
             holder.mStatusIndicator = convertView.findViewById(R.id.status_indicator);
             holder.mCarrier = convertView.findViewById(R.id.carrier);
             holder.mPeerId = convertView.findViewById(R.id.peer_id);
-            holder.mLastSeen = convertView.findViewById(R.id.last_seen);
+            holder.mLastSent = convertView.findViewById(R.id.last_sent);
+            holder.mLastReceived = convertView.findViewById(R.id.last_received);
             holder.mDestinationAddress = convertView.findViewById(R.id.destination_address);
             holder.mReceivedIndicator = convertView.findViewById(R.id.received_indicator);
             holder.mSentIndicator = convertView.findViewById(R.id.sent_indicator);
@@ -101,7 +103,7 @@ public class PeerListAdapter extends ArrayAdapter<Peer> {
             holder.mDestinationAddress.setText(String.format("%s:%d", peer.getExternalAddress().toString().substring(1), peer.getPort()));
         }
 
-        if (System.currentTimeMillis() - peer.getLastSendTime() < 200) {
+        if (System.currentTimeMillis() - peer.getLastSentTime() < 200) {
             animate(holder.mSentIndicator);
         }
         if (System.currentTimeMillis() - peer.getLastReceiveTime() < 200) {
@@ -110,8 +112,10 @@ public class PeerListAdapter extends ArrayAdapter<Peer> {
         setOnClickListener(holder.mTableLayoutConnection, position);
 
         if(peer.hasReceivedData()) {
-            holder.mLastSeen.setText(getLastSeen(System.currentTimeMillis() - peer.getLastReceiveTime()));
+            holder.mLastReceived.setText(timeToString(System.currentTimeMillis() - peer.getLastReceiveTime()));
         }
+        holder.mLastSent.setText(timeToString(System.currentTimeMillis() - peer.getLastSentTime()));
+
         return convertView;
     }
 
@@ -144,10 +148,10 @@ public class PeerListAdapter extends ArrayAdapter<Peer> {
      * @param msSinceLastMessage
      * @return a string representation of last seen
      */
-    public String getLastSeen(long msSinceLastMessage) {
+    public String timeToString(long msSinceLastMessage) {
         // display seconds
         if(msSinceLastMessage < 59000) {
-            return "< " + ((int) Math.ceil(msSinceLastMessage / 1000.0)) + "s";
+            return " <" + ((int) Math.ceil(msSinceLastMessage / 1000.0)) + "s";
         }
 
         // display minutes
@@ -155,7 +159,7 @@ public class PeerListAdapter extends ArrayAdapter<Peer> {
             int seconds = ((int) Math.ceil((msSinceLastMessage / 1000.0)));
             int minutes = ((int) Math.floor(seconds /60.0));
             seconds = seconds % 60;
-            return "< " + minutes + "m" + seconds + "s";
+            return " <" + minutes + "m" + seconds + "s";
         }
 
         // display hours
@@ -163,7 +167,7 @@ public class PeerListAdapter extends ArrayAdapter<Peer> {
             int minutes = ((int) Math.ceil(msSinceLastMessage /60000.0));
             int hours = ((int) Math.floor(minutes / 60.0));
             minutes = minutes % 60;
-            return "< " + hours + "h" + minutes + "m";
+            return " <" + hours + "h" + minutes + "m";
         }
 
         // default: more than 1 day

@@ -13,8 +13,8 @@
     <string name="view_chain">View Chain</string>
     <string name="reset_database_button">Clear Database (closes app)</string>
     <string name="connection_info_text">Info</string>
-    <string name="last_received">R</string>
-    <string name="last_sent">S</string>
+    <string name="last_received">Recv</string>
+    <string name="last_sent">Sent</string>
     <string name="carrier">carrier</string>
     <string name="peer_id">peer id</string>
 

@@ -30,79 +30,79 @@ public class PeerListAdapterTest {
     public MockitoRule mockitoRule = MockitoJUnit.rule();
 
     @Test
-    public void getLastSeenTestSeconds1() {
+    public void timeToStringTestSeconds1() {
         long time = 1000;
-        String expected = "< 1s";
-        assertEquals(expected, pla.getLastSeen(time));
+        String expected = " <1s";
+        assertEquals(expected, pla.timeToString(time));
     }
 
     @Test
-    public void getLastSeenTestSeconds2() {
+    public void timeToStringTestSeconds2() {
         long time = 2000;
-        String expected = "< 2s";
-        assertEquals(expected, pla.getLastSeen(time));
+        String expected = " <2s";
+        assertEquals(expected, pla.timeToString(time));
     }
 
     @Test
-    public void getLastSeenTestSeconds3() {
+    public void timeToStringTestSeconds3() {
         long time = 0;
-        String expected = "< 0s";
-        assertEquals(expected, pla.getLastSeen(time));
+        String expected = " <0s";
+        assertEquals(expected, pla.timeToString(time));
     }
 
     @Test
-    public void getLastSeenTestHours1() {
+    public void timeToStringTestHours1() {
         long time = 3600000;
-        String expected = "< 1h0m";
-        assertEquals(expected, pla.getLastSeen(time));
+        String expected = " <1h0m";
+        assertEquals(expected, pla.timeToString(time));
     }
 
     @Test
-    public void getLastSeenTestHours2() {
+    public void timeToStringTestHours2() {
         long time = 3800000;
-        String expected = "< 1h4m";
-        assertEquals(expected, pla.getLastSeen(time));
+        String expected = " <1h4m";
+        assertEquals(expected, pla.timeToString(time));
     }
 
     @Test
-    public void getLastSeenTestHours3() {
+    public void timeToStringTestHours3() {
         long time = 3599999;
-        String expected = "< 1h0m";
-        assertEquals(expected, pla.getLastSeen(time));
+        String expected = " <1h0m";
+        assertEquals(expected, pla.timeToString(time));
     }
 
     @Test
-    public void getLastSeenMinutes1() {
+    public void timeToStringMinutes1() {
         long time = 200000;
-        String expected = "< 3m20s";
-        assertEquals(expected, pla.getLastSeen(time));
+        String expected = " <3m20s";
+        assertEquals(expected, pla.timeToString(time));
     }
 
     @Test
-    public void getLastSeenMinutes2() {
+    public void timeToStringMinutes2() {
         long time = 60000;
-        String expected = "< 1m0s";
-        assertEquals(expected, pla.getLastSeen(time));
+        String expected = " <1m0s";
+        assertEquals(expected, pla.timeToString(time));
     }
 
     @Test
-    public void getLastSeenMinutes3() {
+    public void timeToStringMinutes3() {
         long time = 60001;
-        String expected = "< 1m1s";
-        assertEquals(expected, pla.getLastSeen(time));
+        String expected = " <1m1s";
+        assertEquals(expected, pla.timeToString(time));
     }
 
     @Test
-    public void getLastSeenMinutes4() {
+    public void timeToStringMinutes4() {
         long time = 59999;
-        String expected = "< 1m0s";
-        assertEquals(expected, pla.getLastSeen(time));
+        String expected = " <1m0s";
+        assertEquals(expected, pla.timeToString(time));
     }
 
     @Test
-    public void getLastSeenTestDays() {
+    public void timeToStringTestDays() {
         long time = 999999999;
-        String expected = "> 1d";
-        assertEquals(expected, pla.getLastSeen(time));
+        String expected = " >1d";
+        assertEquals(expected, pla.timeToString(time));
     }
 }
