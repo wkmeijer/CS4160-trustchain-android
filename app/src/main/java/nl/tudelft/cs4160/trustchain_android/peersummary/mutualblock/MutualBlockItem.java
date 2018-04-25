@@ -29,25 +29,6 @@ public class MutualBlockItem {
 
     }
 
-    /**
-     * Check if two MutualBlockItem objects are equal.
-     * @param o the other object.
-     * @return true if both objects are equal.
-     */
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof MutualBlockItem)) return false;
-
-        MutualBlockItem that = (MutualBlockItem) o;
-
-        if (getSeqNum() != that.getSeqNum()) return false;
-        if (getLinkSeqNum() != that.getLinkSeqNum()) return false;
-        if (!getPeerName().equals(that.getPeerName())) return false;
-        if(validationResult != that.validationResult) return false;
-        return getTransaction().equals(that.getTransaction());
-    }
-
 
     /**
      * Get the username of the peer that the user is communicating with.
