@@ -29,6 +29,7 @@ import java.security.PublicKey;
 import java.security.Security;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.UUID;
 
 import nl.tudelft.cs4160.trustchain_android.R;
 import nl.tudelft.cs4160.trustchain_android.passport.DocumentData;
@@ -69,6 +70,7 @@ public class PassportConActivity extends AppCompatActivity {
         TextView notice = (TextView) findViewById(R.id.notice);
         progressView = (ImageView) findViewById(R.id.progress_view);
         dataToSignField = (EditText) findViewById(R.id.data_to_sign);
+        dataToSignField.setText(UUID.randomUUID().toString().substring(0, MAX_SIGN_BYTES));
 
         dataToSignField.addTextChangedListener(new TextWatcher() {
             @Override

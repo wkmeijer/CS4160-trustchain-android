@@ -48,7 +48,7 @@ public class ManualInputActivity extends AppCompatActivity {
                     Intent returnIntent = new Intent();
                     returnIntent.putExtra(DocumentData.identifier, getData());
                     setResult(Activity.RESULT_OK, returnIntent);
-                    finish();
+                    startActivity(returnIntent);
                 }
             }
         });
