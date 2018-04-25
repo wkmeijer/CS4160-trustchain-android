@@ -12,6 +12,7 @@ import android.os.HandlerThread;
 import android.os.Looper;
 import android.preference.PreferenceManager;
 import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
@@ -29,6 +30,7 @@ import java.lang.ref.WeakReference;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
+import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 import java.nio.channels.DatagramChannel;
@@ -309,32 +311,39 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
      * Start the thread send thread responsible for sending a {@link IntroductionRequest} to a random inboxItem every 5 seconds.
      */
     private void startSendThread() {
-        Thread sendThread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                do {
-                    try {
-                        if (peerHandler.size() > 0) {
-                            Peer peer = peerHandler.getEligiblePeer(null);
-                            if (peer != null) {
-                                network.sendIntroductionRequest(peer);
-                                //  sendBlockMessage(peer);
-                            }
+        Thread sendThread = new Thread(() -> {
+            boolean networkUnreachable = false;
+            View view = findViewById(android.R.id.content);
+            Snackbar networkUnreachableSnackbar = Snackbar.make(view, "Network unavailable", Snackbar.LENGTH_INDEFINITE);
+
+            while(true) {
+                try {
+                    if (peerHandler.size() > 0) {
+                        Peer peer = peerHandler.getEligiblePeer(null);
+                        if (peer != null) {
+                            network.sendIntroductionRequest(peer);
+                            //  sendBlockMessage(peer);
                         }
-                    } catch (IOException e) {
-                        e.printStackTrace();
                     }
-                    try {
-                        Thread.sleep(5000);
-                    } catch (InterruptedException e) {
-                        break;
+                    // if the network is reachable again, remove the snackbar
+                    if(networkUnreachable) {
+                        networkUnreachableSnackbar.dismiss();
                     }
-                } while (!Thread.interrupted());
-                Log.d("App-To-App Log", "Send thread stopped");
+                } catch (SocketException e) {
+                    networkUnreachable = true;
+                    networkUnreachableSnackbar.show();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                try {
+                    Thread.sleep(5000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
             }
         });
         sendThread.start();
-        Log.d("App-To-App Log", "Send thread started");
+        Log.d(TAG, "Send thread started");
     }
 
     /**
@@ -344,25 +353,22 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
     private void startListenThread() {
         final Context context = this;
 
-        Thread listenThread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    ByteBuffer inputBuffer = ByteBuffer.allocate(BUFFER_SIZE);
-                    while (!Thread.interrupted()) {
-                        inputBuffer.clear();
-                        SocketAddress address = network.receive(inputBuffer);
-                        inputBuffer.flip();
-                        network.dataReceived(context, inputBuffer, (InetSocketAddress) address);
-                    }
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    Log.d("App-To-App Log", "Listen thread stopped");
+        Thread listenThread = new Thread(() -> {
+            try {
+                ByteBuffer inputBuffer = ByteBuffer.allocate(BUFFER_SIZE);
+                while (!Thread.interrupted()) {
+                    inputBuffer.clear();
+                    SocketAddress address = network.receive(inputBuffer);
+                    inputBuffer.flip();
+                    network.dataReceived(context, inputBuffer, (InetSocketAddress) address);
                 }
+            } catch (IOException e) {
+                e.printStackTrace();
+                Log.d(TAG, "Listen thread stopped");
             }
         });
         listenThread.start();
-        Log.d("App-To-App Log", "Listen thread started");
+        Log.d(TAG, "Listen thread started");
     }
 
     /**
