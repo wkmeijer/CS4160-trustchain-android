@@ -79,4 +79,4 @@ before_install:
 
 
 script:
-  - ./gradlew clean jacocoTestReport
+  - ./gradlew test
