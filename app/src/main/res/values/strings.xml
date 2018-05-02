@@ -148,5 +148,6 @@
 
     <string name="wrong_document_details">Document details are not inserted correctly</string>
     <string name="check_input">Check input</string>
+    <string name="enter_bytes">Enter 8 bytes to sign</string>
 
 </resources>

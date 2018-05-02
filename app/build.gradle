@@ -47,7 +47,7 @@ dependencies {
     implementation 'com.github.joshjdevl.libsodiumjni:libsodium-jni-aar:1.0.7'
     implementation 'com.android.support.constraint:constraint-layout:1.0.2'
     implementation 'com.google.code.gson:gson:2.8.2'
-    implementation 'com.rmtheis:tess-two:6.3.0'
+    implementation 'com.rmtheis:tess-two:9.0.0'
     implementation 'org.jmrtd:jmrtd:0.5.5'
     implementation 'com.madgag.spongycastle:core:1.54.0.0'
     implementation 'com.madgag.spongycastle:prov:1.54.0.0'

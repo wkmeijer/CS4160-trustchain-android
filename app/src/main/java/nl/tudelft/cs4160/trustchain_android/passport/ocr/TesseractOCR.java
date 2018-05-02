@@ -110,7 +110,9 @@ public class TesseractOCR {
      */
     public void stopScanner() {
         stopping = true;
-        baseApi.stop();
+        if (baseApi != null) {
+            baseApi.stop();
+        }
 
         HandlerThread ht = new HandlerThread("cleaner");
         ht.start();
