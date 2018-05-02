@@ -139,16 +139,6 @@ public class TrustChainBlockTest extends ActivityUnitTestCase<OverviewConnection
         assertTrue(Key.verify(pair.getVerifyKey(), message, signature));
     }
 
-    @Test
-    public void testVerifyBlock() throws Throwable {
-        when(dbHelper.getLatestBlock(pubKey)).thenReturn(genesisBlock);
-        System.out.println("Signing with " + Hex.HEX.encode(pubKey));
-        MessageProto.TrustChainBlock block = TrustChainBlockHelper.createBlock(transaction, dbHelper, pubKey, genesisBlock, linkKey);
-        System.out.println("From block: " + Hex.HEX.encode(block.getPublicKey().toByteArray()));
-        ValidationResult result = TrustChainBlockHelper.validate(block, dbHelper);
-        List<String> errors = result.getErrors();
-        assertEquals("Errors not empty.",new ArrayList(), errors);
-    }
 
     @After
     public void resetMocks() {

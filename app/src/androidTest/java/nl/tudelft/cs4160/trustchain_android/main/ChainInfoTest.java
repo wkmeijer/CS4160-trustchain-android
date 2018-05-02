@@ -13,11 +13,13 @@ import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeMatcher;
 import org.hamcrest.core.IsInstanceOf;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import nl.tudelft.cs4160.trustchain_android.R;
+import nl.tudelft.cs4160.trustchain_android.storage.sharedpreferences.UserNameStorage;
 
 import static android.support.test.InstrumentationRegistry.getInstrumentation;
 import static android.support.test.espresso.Espresso.onView;
@@ -36,42 +38,46 @@ import static org.hamcrest.Matchers.is;
 @RunWith(AndroidJUnit4.class)
 public class ChainInfoTest {
 
+
+    private boolean emptyUserNamePreferences(){
+        return UserNameStorage.getUserName(getInstrumentation().getTargetContext()) == null;
+    }
+
     @Rule
     public ActivityTestRule<UserConfigurationActivity> mActivityTestRule = new ActivityTestRule<>(UserConfigurationActivity.class);
 
     @Test
     public void chainInfoTest() throws InterruptedException {
-        //enter a username
-        ViewInteraction appCompatEditText = onView(
-                allOf(withId(R.id.username),
-                        childAtPosition(
-                                childAtPosition(
-                                        withClassName(is("android.widget.LinearLayout")),
-                                        0),
-                                1),
-                        isDisplayed()));
-        appCompatEditText.perform(replaceText("androidTest"), closeSoftKeyboard());
+        if(emptyUserNamePreferences()) {
+            //enter a username
+            ViewInteraction appCompatEditText = onView(
+                    allOf(withId(R.id.username),
+                            childAtPosition(
+                                    childAtPosition(
+                                            withClassName(is("android.widget.LinearLayout")),
+                                            0),
+                                    1),
+                            isDisplayed()));
+            appCompatEditText.perform(replaceText("testAndroid"), closeSoftKeyboard());
 
-        //confirm the username and wait
-        ViewInteraction appCompatButton = onView(
-                allOf(withId(R.id.confirm_button), withText("Confirm"),
-                        childAtPosition(
-                                childAtPosition(
-                                        withClassName(is("android.support.constraint.ConstraintLayout")),
-                                        0),
-                                3),
-                        isDisplayed()));
-        appCompatButton.perform(click());
+
+            //confirm the username and wait
+            ViewInteraction appCompatButton = onView(
+                    allOf(withId(R.id.confirm_button), withText("Confirm"),
+                            childAtPosition(
+                                    childAtPosition(
+                                            withClassName(is("android.support.constraint.ConstraintLayout")),
+                                            0),
+                                    3),
+                            isDisplayed()));
+            appCompatButton.perform(click());
+        }
         Thread.sleep(200);
-
         //open menu
         openActionBarOverflowOrOptionsMenu(getInstrumentation().getTargetContext());
 
-
-
-
         //click the my chain option
-        Thread.sleep(500);
+        Thread.sleep(200);
         onView(withText("My Chain")).perform(click());
     }
 
