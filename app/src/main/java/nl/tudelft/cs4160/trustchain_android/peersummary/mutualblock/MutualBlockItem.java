@@ -9,57 +9,24 @@ public class MutualBlockItem {
     private String peerName;
     private int seqNum;
     private int linkSeqNum;
-    private String blockStatus;
+    private int validationResult;
     private String transaction;
     private MessageProto.TrustChainBlock block;
 
     /**
      * Constructor.
      * @param peerName the username of the peer that the user is communicating with.
-     * @param blockStatus the status of the block.
-     * @param transaction the content(the message) of the block.
+     * @param block The block.
+     * @param validationResult result of the validation of this block.
      */
-    public MutualBlockItem(String peerName, int seqNum, int linkSeqNum, String blockStatus, String transaction, MessageProto.TrustChainBlock block) {
+    public MutualBlockItem(String peerName,  MessageProto.TrustChainBlock block, int validationResult) {
         this.peerName = peerName;
-        this.seqNum = seqNum;
-        this.linkSeqNum = linkSeqNum;
-        this.blockStatus = blockStatus;
-        this.transaction = transaction;
+        this.seqNum = block.getSequenceNumber();
+        this.linkSeqNum = block.getLinkSequenceNumber();
+        this.transaction = block.getTransaction().getUnformatted().toStringUtf8();
+        this.validationResult = validationResult;
         this.block = block;
 
-    }
-
-    /**
-     * Check if two MutualBlockItem objects are equal.
-     * @param o the other object.
-     * @return true if both objects are equal.
-     */
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof MutualBlockItem)) return false;
-
-        MutualBlockItem that = (MutualBlockItem) o;
-
-        if (getSeqNum() != that.getSeqNum()) return false;
-        if (getLinkSeqNum() != that.getLinkSeqNum()) return false;
-        if (!getPeerName().equals(that.getPeerName())) return false;
-        if (!getBlockStatus().equals(that.getBlockStatus())) return false;
-        return getTransaction().equals(that.getTransaction());
-    }
-
-    /**
-     * Generate hash code of a MutualBlockItem object.
-     * @return the hash code.
-     */
-    @Override
-    public int hashCode() {
-        int result = getPeerName().hashCode();
-        result = 31 * result + getSeqNum();
-        result = 31 * result + getLinkSeqNum();
-        result = 31 * result + getBlockStatus().hashCode();
-        result = 31 * result + getTransaction().hashCode();
-        return result;
     }
 
 
@@ -72,13 +39,11 @@ public class MutualBlockItem {
     }
 
     /**
-     * check whether the block is verified or not by both parties.
-     * If it is not verified by both parties, it is a halfblock.
-     * @return true if the block is verified by both parties.
+     * Get the validation result
+     * @return
      */
-    public String getBlockStatus() {
-        return blockStatus;
-    }
+    public int getValidationResult() { return validationResult; }
+
 
     /**
      * Get the content(the message) that is in the block.

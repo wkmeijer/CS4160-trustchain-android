@@ -10,12 +10,15 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import nl.tudelft.cs4160.trustchain_android.R;
+import nl.tudelft.cs4160.trustchain_android.block.ValidationResult;
 import nl.tudelft.cs4160.trustchain_android.chainExplorer.ChainColor;
 import nl.tudelft.cs4160.trustchain_android.crypto.DualSecret;
 import nl.tudelft.cs4160.trustchain_android.crypto.Key;
 import nl.tudelft.cs4160.trustchain_android.peersummary.PeerSummaryActivity;
+import nl.tudelft.cs4160.trustchain_android.storage.database.TrustChainDBHelper;
 import nl.tudelft.cs4160.trustchain_android.storage.sharedpreferences.UserNameStorage;
 import nl.tudelft.cs4160.trustchain_android.util.ByteArrayConverter;
 
@@ -23,6 +26,8 @@ public class MutualBlockAdapter extends RecyclerView.Adapter<MutualBlockAdapter.
 
     private ArrayList<MutualBlockItem> mutualBlocks;
     private Context context;
+    private DualSecret keyPair;
+    private TrustChainDBHelper dbHelper;
 
     /**
      * Constructor.
@@ -32,6 +37,8 @@ public class MutualBlockAdapter extends RecyclerView.Adapter<MutualBlockAdapter.
     public MutualBlockAdapter(Context context, ArrayList<MutualBlockItem> mutualBlocks) {
         this.mutualBlocks = mutualBlocks;
         this.context = context;
+        this.keyPair = Key.loadKeys(context);
+        this.dbHelper = new TrustChainDBHelper(context);
     }
 
     /**
@@ -57,52 +64,58 @@ public class MutualBlockAdapter extends RecyclerView.Adapter<MutualBlockAdapter.
      */
     @Override
     public void onBindViewHolder(MutualBlockAdapter.ViewHolder viewHolder, int position) {
-        MutualBlockItem mutualBlockItem = mutualBlocks.get(position);
-        if (mutualBlockItem != null) {
+        MutualBlockItem mutualBlock = mutualBlocks.get(position);
+        if (mutualBlock != null) {
             Button signButton = viewHolder.signButton;
-            String blockStatus = mutualBlockItem.getBlockStatus();
             TextView blockStatTv = viewHolder.blockStatTextView;
             setOnClickListenerSignBlock(viewHolder, position);
-            if (blockStatus.substring(blockStatus.lastIndexOf(':') + 1).equals(" Half block awaiting signing")) {
-                blockStatTv.setText(mutualBlockItem.getBlockStatus());
-            } else if (blockStatus.substring(blockStatus.lastIndexOf(':') + 1).equals(" Full block not yet connected in chain")) {
-                blockStatTv.setText(mutualBlockItem.getBlockStatus());
-                signButton.setVisibility(View.GONE);
-            } else if (blockStatus.substring(blockStatus.lastIndexOf(':') + 1).equals(" Valid block")) {
-                blockStatTv.setText(mutualBlockItem.getBlockStatus());
-                blockStatTv.setBackgroundColor(0xFF00FF00); // set background color green
-                signButton.setVisibility(View.GONE);
+
+            //if the linked public key is equal to ours, it means this block is addressed to us.
+            //So if we don't have a linked block, we know we still need to sign it.
+            if(Arrays.equals(mutualBlock.getBlock().getLinkPublicKey().toByteArray(), keyPair.getPublicKeyPair().toBytes()) &&
+                    dbHelper.getLinkedBlock(mutualBlock.getBlock()) == null) {
+                if(mutualBlock.getValidationResult() == ValidationResult.INVALID) {
+                    blockStatTv.setText(context.getResources().getString(R.string.invalid_block));
+                    signButton.setVisibility(View.GONE);
+                } else {
+                    blockStatTv.setText(context.getResources().getString(R.string.need_sign));
+                    signButton.setVisibility(View.VISIBLE);
+                }
             } else {
-                // Partial previous or invalid block IGNORE
-                // TODO should partial previous really be ignored?
+                blockStatTv.setText(context.getResources().getString(R.string.valid_block));
+                blockStatTv.setBackgroundColor(context.getResources().getColor(R.color.validBlock));
+                signButton.setVisibility(View.GONE);
             }
+
             viewHolder.userNameTextView.setText(UserNameStorage.getUserName(context));
-            viewHolder.peerNameTextView.setText(mutualBlockItem.getPeerName());
+            viewHolder.peerNameTextView.setText(mutualBlock.getPeerName());
 
-            if (mutualBlockItem.getSeqNum() == 0) {
-                viewHolder.seqNumTextView.setText("unknown");
+            if (mutualBlock.getSeqNum() == 0) {
+                viewHolder.seqNumTextView.setText(context.getResources().getString(R.string.seq_unknown));
             } else {
-                viewHolder.seqNumTextView.setText("seq: " + String.valueOf(mutualBlockItem.getSeqNum()));
+                viewHolder.seqNumTextView.setText(context.getResources().getString(R.string.sequenceNum,
+                        mutualBlock.getSeqNum()));
             }
 
-            if (mutualBlockItem.getLinkSeqNum() == 0) {
-                viewHolder.linkSeqNumTextView.setText("unknown");
+            if (mutualBlock.getLinkSeqNum() == 0) {
+                viewHolder.linkSeqNumTextView.setText(context.getResources().getString(R.string.seq_unknown));
             } else {
                 signButton.setVisibility(View.GONE);
-                viewHolder.linkSeqNumTextView.setText("seq: " + String.valueOf(mutualBlockItem.getLinkSeqNum()));
+                viewHolder.linkSeqNumTextView.setText(context.getResources().getString(R.string.sequenceNum,
+                        mutualBlock.getSeqNum()));
             }
 
             TextView transTv = viewHolder.transactionTextView;
-            transTv.setText(mutualBlockItem.getTransaction());
+            transTv.setText(mutualBlock.getTransaction());
 
 
-            DualSecret keyPair = Key.loadKeys(context);
+
             String myPublicKeyString = null;
             if (keyPair != null) {
                 myPublicKeyString = ByteArrayConverter.bytesToHexString(keyPair.getPublicKey().toBytes());
             }
-            String linkedKey = ByteArrayConverter.byteStringToString(mutualBlockItem.getBlock().getLinkPublicKey());
-            String normalKey = ByteArrayConverter.byteStringToString(mutualBlockItem.getBlock().getPublicKey());
+            String linkedKey = ByteArrayConverter.byteStringToString(mutualBlock.getBlock().getLinkPublicKey());
+            String normalKey = ByteArrayConverter.byteStringToString(mutualBlock.getBlock().getPublicKey());
 
             if (normalKey.equals(myPublicKeyString)) {
                 viewHolder.own_chain_indicator.setBackgroundColor(ChainColor.getMyColor(context));
