@@ -7,6 +7,9 @@ import org.junit.Test;
 
 import java.util.ArrayList;
 
+import nl.tudelft.cs4160.trustchain_android.block.ValidationResult;
+import nl.tudelft.cs4160.trustchain_android.message.MessageProto;
+
 public class MutualBlockAdapterTest extends TestCase {
 
 
@@ -17,12 +20,14 @@ public class MutualBlockAdapterTest extends TestCase {
         assertEquals(0, mbA.getItemCount());
     }
 
-//    @Test
-//    public void testSimpleInitializationWithOneItemInList() {
-//        ArrayList<MutualBlockItem> list = new ArrayList<>();
-//        list.add(new MutualBlockItem("peer", 0, 0, "test", "test2"));
-//        MutualBlockAdapter mbA = new MutualBlockAdapter(null, list);
-//        assertEquals(1, mbA.getItemCount());
-//    }
+    @Test
+    public void testSimpleInitializationWithOneItemInList() {
+        ArrayList<MutualBlockItem> list = new ArrayList<>();
+        list.add(new MutualBlockItem("peerTest",
+                MessageProto.TrustChainBlock.newBuilder().build(),
+                ValidationResult.INVALID));
+        MutualBlockAdapter mbA = new MutualBlockAdapter(null, list);
+        assertEquals(1, mbA.getItemCount());
+    }
 
 }
