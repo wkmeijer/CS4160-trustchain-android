@@ -42,6 +42,8 @@
     <color name="govTextBlue">#01689b</color>
     <color name="govLightGray">#f3f3f3</color>
 
+    <color name="validBlock">#396329</color>
+
     <color name="cardview_dark_background">#FF424242</color>
 
 </resources>

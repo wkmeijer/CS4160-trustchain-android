@@ -297,13 +297,14 @@ public class PeerSummaryActivity extends AppCompatActivity implements CrawlReque
             public void run() {
                 try {
                     network.sendBlockMessage(inboxItemOtherPeer.getPeerAppToApp(), signedBlock);
+
+                    // update the mutualblocks list
+                    initializeMutualBlockRecycleView();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
             }
         }).start();
-        // update the mutualblocks list
-        initializeMutualBlockRecycleView();
     }
 
     /**
@@ -352,44 +353,24 @@ public class PeerSummaryActivity extends AppCompatActivity implements CrawlReque
             if (activity == null) return null;
 
             ArrayList<MutualBlockItem> mutualBlocks = new ArrayList<>();
-            int validationResultStatus = ValidationResult.NO_INFO;
             DualSecret keyPair = Key.loadKeys(activity);
             byte[] myPublicKey = keyPair.getPublicKeyPair().toBytes();
             byte[] peerPublicKey = activity.inboxItemOtherPeer.getPublicKeyPair().toBytes();
+
 
             for (MessageProto.TrustChainBlock block : activity.DBHelper.getBlocks(keyPair.getPublicKeyPair().toBytes(), true)) {
                 byte[] linkedPublicKey = block.getLinkPublicKey().toByteArray();
                 byte[] publicKey = block.getPublicKey().toByteArray();
                 if (Arrays.equals(linkedPublicKey,myPublicKey) && Arrays.equals(publicKey,peerPublicKey)) {
-                    String blockStatus = "Status of Block: ";
+                    int validationResultStatus;
                     try {
                         validationResultStatus = TrustChainBlockHelper.validate(block, activity.DBHelper).getStatus();
                     } catch (Exception e) {
                         e.printStackTrace();
+                        continue;
                     }
-                    Log.d("Validation: ", "validation status is: " + validationResultStatus);
-                    if (validationResultStatus == ValidationResult.VALID) {
-                        blockStatus += "Valid block";
-                    } else if (validationResultStatus == ValidationResult.PARTIAL) {
-                        blockStatus += "Partial";
-                    } else if (validationResultStatus == ValidationResult.NO_INFO) {
-                        blockStatus += "No Info";
-                    } else if (validationResultStatus == ValidationResult.PARTIAL_NEXT) {
-                        if( block.getLinkSequenceNumber() == 0){
-                            blockStatus += "Half block awaiting signing";
-                        } else {
-                            blockStatus += "Full block not yet connected in chain";
-                        }
-
-                    } else if (validationResultStatus == ValidationResult.INVALID) {
-                        blockStatus += "Invalid";
-                    } else if (validationResultStatus == ValidationResult.PARTIAL_PREVIOUS) {
-                        blockStatus += "Partial previous";
-                    } else {
-                        blockStatus += "unknown status";
-                    }
-
-                    mutualBlocks.add(new MutualBlockItem(activity.inboxItemOtherPeer.getUserName(), block.getSequenceNumber(), block.getLinkSequenceNumber(), blockStatus, block.getTransaction().getUnformatted().toStringUtf8(), block));
+                    mutualBlocks.add(new MutualBlockItem(
+                            activity.inboxItemOtherPeer.getUserName(), block, validationResultStatus));
                 }
             }
             return mutualBlocks;

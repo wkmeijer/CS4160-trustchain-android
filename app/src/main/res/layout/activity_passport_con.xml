@@ -46,7 +46,16 @@
                 android:layout_marginTop="29dp"
                 android:ems="10"
                 android:inputType="textPersonName"
-                android:hint="Enter 8 bytes to sign" />
+                android:hint="@string/enter_bytes" />
+
+            <TextView
+                android:id="@+id/result_data"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/progress_view"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="20dp"
+                />
         </RelativeLayout>
     </LinearLayout>
 </android.support.design.widget.CoordinatorLayout>
