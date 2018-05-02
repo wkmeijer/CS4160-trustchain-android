@@ -60,14 +60,14 @@
 
             <TextView
                 android:id="@+id/peer_id"
-                android:text="@string/peer_id"
+                android:hint="@string/peer_id"
                 android:layout_width="0dp"
                 android:layout_weight="1"
                 android:textStyle="bold"
                 android:textColor="@android:color/black"/>
             <TextView
                 android:id="@+id/carrier"
-                android:text="@string/carrier"
+                android:hint="@string/carrier"
                 android:layout_width="0dp"
                 android:layout_weight="1"
                 android:textColor="@android:color/secondary_text_light"/>
@@ -82,7 +82,7 @@
                 android:id="@+id/destination_address"
                 android:layout_span="2"
                 android:layout_width="fill_parent"
-                android:hint="destination_address"
+                android:hint="@string/destination_address"
                 android:layout_weight="1"
                 android:textColor="@android:color/secondary_text_light"/>
         </TableRow>

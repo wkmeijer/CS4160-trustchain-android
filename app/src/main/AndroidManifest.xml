@@ -57,7 +57,7 @@
             android:name=".chainExplorer.ChainExplorerInfoActivity"
             android:label="@string/title_activity_info_chain_explorer" />
         <activity
-            android:name=".main.BootstrapActivity"
+            android:name=".main.ChangeBootstrapActivity"
             android:windowSoftInputMode="adjustResize" />
         <activity android:name=".inbox.InboxActivity"/>
         <activity android:name=".passport.ocr.camera.CameraActivity" />

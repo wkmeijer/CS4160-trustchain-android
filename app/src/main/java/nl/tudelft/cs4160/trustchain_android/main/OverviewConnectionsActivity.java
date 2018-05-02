@@ -181,7 +181,7 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
                 startActivity(new Intent(this, FundsActivity.class));
                 return true;
             case R.id.find_peer:
-                Intent bootstrapActivity = new Intent(this, BootstrapActivity.class);
+                Intent bootstrapActivity = new Intent(this, ChangeBootstrapActivity.class);
                 startActivityForResult(bootstrapActivity, 1);
                 return true;
             case R.id.passport_scan:
@@ -227,7 +227,7 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
 
     /**
      * This method is the callback when submitting the new bootstrap address.
-     * The method is called when leaving the BootstrapActivity.
+     * The method is called when leaving the ChangeBootstrapActivity.
      * The filled in ip address is passed on to this method.
      * When the callback of the bootstrap activity is successful
      * set this ip address as ConnectableAddress in the preferences.
