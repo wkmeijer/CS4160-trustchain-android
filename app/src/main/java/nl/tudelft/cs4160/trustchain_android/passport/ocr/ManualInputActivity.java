@@ -17,6 +17,7 @@ import java.util.List;
 
 import nl.tudelft.cs4160.trustchain_android.R;
 import nl.tudelft.cs4160.trustchain_android.passport.DocumentData;
+import nl.tudelft.cs4160.trustchain_android.passport.nfc.PassportConActivity;
 
 public class ManualInputActivity extends AppCompatActivity {
     private EditText docNumber;
@@ -41,11 +42,12 @@ public class ManualInputActivity extends AppCompatActivity {
         docNumber = (EditText) findViewById(R.id.doc_num);
 
         Button submitBut = (Button) findViewById(R.id.submit_button);
+        final Activity thisActivity = this;
         submitBut.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if(verifyInput()) {
-                    Intent returnIntent = new Intent();
+                    Intent returnIntent = new Intent(thisActivity, PassportConActivity.class);
                     returnIntent.putExtra(DocumentData.identifier, getData());
                     setResult(Activity.RESULT_OK, returnIntent);
                     startActivity(returnIntent);
