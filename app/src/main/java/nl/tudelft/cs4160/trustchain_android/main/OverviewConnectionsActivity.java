@@ -81,7 +81,7 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_overview);
+        setContentView(R.layout.activity_overview_connections);
         initVariables(savedInstanceState);
         initExitButton();
         addInitialPeer();
