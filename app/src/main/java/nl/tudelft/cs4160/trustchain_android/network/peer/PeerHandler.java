@@ -13,8 +13,8 @@ import nl.tudelft.cs4160.trustchain_android.network.WanVote;
 
 public class PeerHandler {
     private ArrayList<Peer> peerList;
-    private List<Peer> connectedPeersList = new ArrayList<>();
-    private List<Peer> incomingPeersList = new ArrayList<>();
+    private List<Peer> activePeersList = new ArrayList<>();
+    private List<Peer> newPeersList = new ArrayList<>();
     private PeerListener peerListener;
     public String hashId;
     private WanVote wanVote;
@@ -144,34 +144,34 @@ public class PeerHandler {
             public synchronized void run() {
                     peerList.add(peer);
                     splitPeerList();
-                peerListener.updateConnectedPeers();
-                peerListener.updateIncomingPeers();
+                peerListener.updateActivePeers();
+                peerListener.updateNewPeers();
             }
         });
         return peer;
     }
 
     /**
-     * Split the inboxItem list between incoming and outgoing peers.
+     * Split the inboxItem list between connected and incoming peers.
      * Synchronized is to make sure this happens thread safe.
      */
     public synchronized void splitPeerList() {
+        List<Peer> newConnected = new ArrayList<>();
         List<Peer> newIncoming = new ArrayList<>();
-        List<Peer> newOutgoing = new ArrayList<>();
         for (Peer peer : peerList) {
-            if (peer.hasReceivedData()) {
-                newIncoming.add(peer);
+            if (peer.isReceivedFrom()) {
+                newConnected.add(peer);
             } else {
-                newOutgoing.add(peer);
+                newIncoming.add(peer);
             }
         }
-        if (!newIncoming.equals(connectedPeersList)) {
-            connectedPeersList.clear();
-            connectedPeersList.addAll(newIncoming);
+        if (!newConnected.equals(activePeersList)) {
+            activePeersList.clear();
+            activePeersList.addAll(newConnected);
         }
-        if (!newOutgoing.equals(incomingPeersList)) {
-            incomingPeersList.clear();
-            incomingPeersList.addAll(newOutgoing);
+        if (!newIncoming.equals(newPeersList)) {
+            newPeersList.clear();
+            newPeersList.addAll(newIncoming);
         }
     }
 
@@ -235,12 +235,12 @@ public class PeerHandler {
         return wanVote;
     }
 
-    public List<Peer> getConnectedPeersList() {
-        return connectedPeersList;
+    public List<Peer> getactivePeersList() {
+        return activePeersList;
     }
 
-    public List<Peer> getIncomingPeersList() {
-        return incomingPeersList;
+    public List<Peer> getnewPeersList() {
+        return newPeersList;
     }
 
     /**

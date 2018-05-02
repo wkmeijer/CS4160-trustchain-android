@@ -64,8 +64,8 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
     public final static String CONNECTABLE_ADDRESS = "130.161.211.254";
     public final static int DEFAULT_PORT = 1873;
     private final static int BUFFER_SIZE = 65536;
-    private PeerListAdapter connectedPeersAdapter;
-    private PeerListAdapter incomingPeersAdapter;
+    private PeerListAdapter activePeersAdapter;
+    private PeerListAdapter newPeersAdapter;
     private TrustChainDBHelper dbHelper;
     private Network network;
     private PeerHandler peerHandler;
@@ -215,13 +215,13 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
      * Initialize the inboxItem lists.
      */
     private void initPeerLists() {
-        ListView incomingPeerConnectionListView = findViewById(R.id.connected_peers_list_view);
-        ListView outgoingPeerConnectionListView = findViewById(R.id.incoming_peers_list_view);
+        ListView connectedPeerConnectionListView = findViewById(R.id.active_peers_list_view);
+        ListView incomingPeerConnectionListView = findViewById(R.id.new_peers_list_view);
         CoordinatorLayout content = findViewById(R.id.content);
-        connectedPeersAdapter = new PeerListAdapter(getApplicationContext(), R.layout.item_peer_connection_list, peerHandler.getConnectedPeersList(), content);
-        incomingPeerConnectionListView.setAdapter(connectedPeersAdapter);
-        incomingPeersAdapter = new PeerListAdapter(getApplicationContext(), R.layout.item_peer_connection_list, peerHandler.getIncomingPeersList(), content);
-        outgoingPeerConnectionListView.setAdapter(incomingPeersAdapter);
+        activePeersAdapter = new PeerListAdapter(getApplicationContext(), R.layout.item_peer_connection_list, peerHandler.getactivePeersList(), content);
+        connectedPeerConnectionListView.setAdapter(activePeersAdapter);
+        newPeersAdapter = new PeerListAdapter(getApplicationContext(), R.layout.item_peer_connection_list, peerHandler.getnewPeersList(), content);
+        incomingPeerConnectionListView.setAdapter(newPeersAdapter);
     }
 
 
@@ -517,8 +517,8 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
                 synchronized (this) {
                     peerHandler.splitPeerList();
                     peerHandler.removeDeadPeers();
-                    connectedPeersAdapter.notifyDataSetChanged();
-                    incomingPeersAdapter.notifyDataSetChanged();
+                    activePeersAdapter.notifyDataSetChanged();
+                    newPeersAdapter.notifyDataSetChanged();
                 }
             }
         });
@@ -575,8 +575,8 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
      * Update the connected peer adapter by notifying that the data has changed.
      */
     @Override
-    public void updateConnectedPeers() {
-        connectedPeersAdapter.notifyDataSetChanged();
+    public void updateActivePeers() {
+        activePeersAdapter.notifyDataSetChanged();
     }
 
     /**
@@ -584,8 +584,8 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
      * peer has been found that we are not connected to yet.
      */
     @Override
-    public void updateIncomingPeers() {
-        incomingPeersAdapter.notifyDataSetChanged();
+    public void updateNewPeers() {
+        newPeersAdapter.notifyDataSetChanged();
     }
 
     /**

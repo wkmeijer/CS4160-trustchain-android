@@ -22,8 +22,8 @@ public class Peer implements Serializable {
     final private static int REMOVE_TIMEOUT = 25000;
     private InetSocketAddress address;
     private String peerId;
-    private boolean hasReceivedData = false;
-    private boolean hasSentData = false;
+    private boolean isReceivedFrom = false; // data was received from this peer
+    private boolean isSentTo = false;           // data was sent to this peer
     private int connectionType;
     private String networkOperator;
     private long lastSendTime;
@@ -72,8 +72,8 @@ public class Peer implements Serializable {
         this.peerId = peerId;
     }
 
-    public boolean hasReceivedData() {
-        return hasReceivedData;
+    public boolean isReceivedFrom() {
+        return isReceivedFrom;
     }
 
     public int getPort() {
@@ -99,17 +99,17 @@ public class Peer implements Serializable {
      * Method called when data is sent to this peer.
      */
     public void sentData() {
-        hasSentData = true;
+        isSentTo = true;
         lastSendTime = System.currentTimeMillis();
     }
 
     /**
-     * Method called when data is received.
+     * Method called when data is received from this peer.
      *
      * @param buffer the received data.
      */
     public void received(ByteBuffer buffer) {
-        hasReceivedData = true;
+        isReceivedFrom = true;
         lastReceiveTime = System.currentTimeMillis();
     }
 
@@ -120,7 +120,7 @@ public class Peer implements Serializable {
      * @return
      */
     public boolean isAlive() {
-        if (hasReceivedData) {
+        if (isReceivedFrom) {
             return System.currentTimeMillis() - lastReceiveTime < TIMEOUT;
         }
         return true;
@@ -128,12 +128,19 @@ public class Peer implements Serializable {
 
     /**
      * If a peer has sent data, but the last time it has sent is longer ago than the remove timeout, it can be removed.
+     * If we are trying to connect to a peer, but we haven't gotten a response within the given timeout, it can be removed.
      * Never remove the bootstrap peer.
      * @return
      */
     boolean canBeRemoved() {
-        if (hasSentData && !isBootstrap()) {
+        if(isBootstrap()) {
+            return false;
+        }
+        if (isReceivedFrom) {
             return System.currentTimeMillis() - lastReceiveTime > REMOVE_TIMEOUT;
+        }
+        if (isSentTo) {
+            return System.currentTimeMillis() - creationTime > REMOVE_TIMEOUT;
         }
         return false;
     }
@@ -143,7 +150,7 @@ public class Peer implements Serializable {
         return "Peer{" +
                 "address=" + address +
                 ", peerId='" + peerId + '\'' +
-                ", hasReceivedData=" + hasReceivedData +
+                ", isReceivedFrom=" + isReceivedFrom +
                 ", connectionType=" + connectionType +
                 '}';
     }

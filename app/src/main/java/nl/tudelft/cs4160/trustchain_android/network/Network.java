@@ -278,7 +278,7 @@ public class Network {
     public void sendIntroductionResponse(Peer peer, Peer invitee) throws IOException {
         List<ByteString> pexPeers = new ArrayList<>();
         for (Peer p : networkCommunicationListener.getPeerHandler().getPeerList()) {
-            if (p.hasReceivedData() && p.getPeerId() != null && p.isAlive())
+            if (p.isReceivedFrom() && p.getPeerId() != null && p.isAlive())
                 pexPeers.add(ByteString.copyFrom(Peer.serialize(p)));
         }
 

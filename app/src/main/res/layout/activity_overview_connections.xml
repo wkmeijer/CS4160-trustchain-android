@@ -95,13 +95,13 @@
             android:layout_weight="1">
 
             <ListView
-                android:id="@+id/connected_peers_list_view"
+                android:id="@+id/active_peers_list_view"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="5" />
 
             <ListView
-                android:id="@+id/incoming_peers_list_view"
+                android:id="@+id/new_peers_list_view"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="5" />

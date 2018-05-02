@@ -85,7 +85,7 @@ public class PeerListAdapter extends ArrayAdapter<Peer> {
             holder.mCarrier.setText("");
         }
 
-        if (peer.hasReceivedData()) {
+        if (peer.isReceivedFrom()) {
             if (peer.isAlive()) {
                 holder.mStatusIndicator.setTextColor(context.getResources().getColor(R.color.colorStatusConnected));
             } else {
@@ -111,7 +111,7 @@ public class PeerListAdapter extends ArrayAdapter<Peer> {
         }
         setOnClickListener(holder.mTableLayoutConnection, position);
 
-        if(peer.hasReceivedData()) {
+        if(peer.isReceivedFrom()) {
             holder.mLastReceived.setText(timeToString(System.currentTimeMillis() - peer.getLastReceiveTime()));
         }
         holder.mLastSent.setText(timeToString(System.currentTimeMillis() - peer.getLastSentTime()));
@@ -184,30 +184,27 @@ public class PeerListAdapter extends ArrayAdapter<Peer> {
      */
     private void setOnClickListener(TableLayout mTableLayoutConnection, int position) {
         mTableLayoutConnection.setTag(position);
-        View.OnClickListener onClickListener = new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                int pos = (int) v.getTag();
-                Peer peer = getItem(pos);
-                if(peer.isAlive() && peer.hasReceivedData()) {
-                    PublicKeyPair pubKeyPair = PubKeyAndAddressPairStorage.getPubKeyByAddress(context, peer.getAddress().toString().replace("/", ""));
-                    if(pubKeyPair != null) {
-                        InboxItem i = new InboxItem(peer.getPeerId(), new ArrayList<Integer>(), peer.getAddress().getHostString(), pubKeyPair, peer.getPort());
-                        UserNameStorage.setNewPeerByPublicKey(context, peer.getPeerId(), pubKeyPair);
-                        InboxItemStorage.addInboxItem(context, i);
-                        Snackbar mySnackbar = Snackbar.make(coordinatorLayout,
-                                peer.getPeerId() + " added to inbox", Snackbar.LENGTH_SHORT);
-                        mySnackbar.show();
-                    } else {
-                        Snackbar mySnackbar = Snackbar.make(coordinatorLayout,
-                                "This peer didn't send a public key yet", Snackbar.LENGTH_SHORT);
-                        mySnackbar.show();
-                    }
+        View.OnClickListener onClickListener = v -> {
+            int pos = (int) v.getTag();
+            Peer peer = getItem(pos);
+            if(peer.isAlive() && peer.isReceivedFrom()) {
+                PublicKeyPair pubKeyPair = PubKeyAndAddressPairStorage.getPubKeyByAddress(context, peer.getAddress().toString().replace("/", ""));
+                if(pubKeyPair != null) {
+                    InboxItem i = new InboxItem(peer.getPeerId(), new ArrayList<Integer>(), peer.getAddress().getHostString(), pubKeyPair, peer.getPort());
+                    UserNameStorage.setNewPeerByPublicKey(context, peer.getPeerId(), pubKeyPair);
+                    InboxItemStorage.addInboxItem(context, i);
+                    Snackbar mySnackbar = Snackbar.make(coordinatorLayout,
+                            peer.getPeerId() + " added to inbox", Snackbar.LENGTH_SHORT);
+                    mySnackbar.show();
                 } else {
                     Snackbar mySnackbar = Snackbar.make(coordinatorLayout,
-                            "This peer is currently not active", Snackbar.LENGTH_SHORT);
+                            "This peer didn't send a public key yet", Snackbar.LENGTH_SHORT);
                     mySnackbar.show();
                 }
+            } else {
+                Snackbar mySnackbar = Snackbar.make(coordinatorLayout,
+                        "This peer is currently not active", Snackbar.LENGTH_SHORT);
+                mySnackbar.show();
             }
         };
         mTableLayoutConnection.setOnClickListener(onClickListener);
