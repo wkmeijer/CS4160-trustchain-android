@@ -13,12 +13,12 @@ import nl.tudelft.cs4160.trustchain_android.network.WanVote;
 
 public class PeerHandler {
     private ArrayList<Peer> peerList;
-    private List<Peer> incomingList = new ArrayList<>();
-    private List<Peer> outgoingList = new ArrayList<>();
+    private List<Peer> connectedPeersList = new ArrayList<>();
+    private List<Peer> incomingPeersList = new ArrayList<>();
     private PeerListener peerListener;
     public String hashId;
     private WanVote wanVote;
-    final String TAG = this.getClass().toString();
+    private final String TAG = this.getClass().toString();
 
     /**
      * Peer handler constructor.
@@ -144,8 +144,8 @@ public class PeerHandler {
             public synchronized void run() {
                     peerList.add(peer);
                     splitPeerList();
+                peerListener.updateConnectedPeers();
                 peerListener.updateIncomingPeers();
-                peerListener.updateOutgoingPeers();
             }
         });
         return peer;
@@ -165,13 +165,13 @@ public class PeerHandler {
                 newOutgoing.add(peer);
             }
         }
-        if (!newIncoming.equals(incomingList)) {
-            incomingList.clear();
-            incomingList.addAll(newIncoming);
+        if (!newIncoming.equals(connectedPeersList)) {
+            connectedPeersList.clear();
+            connectedPeersList.addAll(newIncoming);
         }
-        if (!newOutgoing.equals(outgoingList)) {
-            outgoingList.clear();
-            outgoingList.addAll(newOutgoing);
+        if (!newOutgoing.equals(incomingPeersList)) {
+            incomingPeersList.clear();
+            incomingPeersList.addAll(newOutgoing);
         }
     }
 
@@ -235,12 +235,12 @@ public class PeerHandler {
         return wanVote;
     }
 
-    public List<Peer> getIncomingList() {
-        return incomingList;
+    public List<Peer> getConnectedPeersList() {
+        return connectedPeersList;
     }
 
-    public List<Peer> getOutgoingList() {
-        return outgoingList;
+    public List<Peer> getIncomingPeersList() {
+        return incomingPeersList;
     }
 
     /**

@@ -64,8 +64,8 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
     public final static String CONNECTABLE_ADDRESS = "130.161.211.254";
     public final static int DEFAULT_PORT = 1873;
     private final static int BUFFER_SIZE = 65536;
-    private PeerListAdapter incomingPeerAdapter;
-    private PeerListAdapter outgoingPeerAdapter;
+    private PeerListAdapter connectedPeersAdapter;
+    private PeerListAdapter incomingPeersAdapter;
     private TrustChainDBHelper dbHelper;
     private Network network;
     private PeerHandler peerHandler;
@@ -215,13 +215,13 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
      * Initialize the inboxItem lists.
      */
     private void initPeerLists() {
-        ListView incomingPeerConnectionListView = findViewById(R.id.incoming_peer_connection_list_view);
-        ListView outgoingPeerConnectionListView = findViewById(R.id.outgoing_peer_connection_list_view);
+        ListView incomingPeerConnectionListView = findViewById(R.id.connected_peers_list_view);
+        ListView outgoingPeerConnectionListView = findViewById(R.id.incoming_peers_list_view);
         CoordinatorLayout content = findViewById(R.id.content);
-        incomingPeerAdapter = new PeerListAdapter(getApplicationContext(), R.layout.item_peer_connection_list, peerHandler.getIncomingList(), content);
-        incomingPeerConnectionListView.setAdapter(incomingPeerAdapter);
-        outgoingPeerAdapter = new PeerListAdapter(getApplicationContext(), R.layout.item_peer_connection_list, peerHandler.getOutgoingList(), content);
-        outgoingPeerConnectionListView.setAdapter(outgoingPeerAdapter);
+        connectedPeersAdapter = new PeerListAdapter(getApplicationContext(), R.layout.item_peer_connection_list, peerHandler.getConnectedPeersList(), content);
+        incomingPeerConnectionListView.setAdapter(connectedPeersAdapter);
+        incomingPeersAdapter = new PeerListAdapter(getApplicationContext(), R.layout.item_peer_connection_list, peerHandler.getIncomingPeersList(), content);
+        outgoingPeerConnectionListView.setAdapter(incomingPeersAdapter);
     }
 
 
@@ -303,7 +303,7 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
     }
 
     /**
-     * Start the thread send thread responsible for sending a {@link IntroductionRequest} to a random inboxItem every 5 seconds.
+     * Start the thread send thread responsible for sending an introduction request to a random inboxItem every 5 seconds.
      */
     private void startSendThread() {
         Thread sendThread = new Thread(() -> {
@@ -517,8 +517,8 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
                 synchronized (this) {
                     peerHandler.splitPeerList();
                     peerHandler.removeDeadPeers();
-                    incomingPeerAdapter.notifyDataSetChanged();
-                    outgoingPeerAdapter.notifyDataSetChanged();
+                    connectedPeersAdapter.notifyDataSetChanged();
+                    incomingPeersAdapter.notifyDataSetChanged();
                 }
             }
         });
@@ -565,29 +565,27 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
     public void updateInternalSourceAddress(final String address) {
         Log.d("App-To-App Log", "Local ip: " + address);
 
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                TextView localIp = findViewById(R.id.local_ip_address_view);
-                localIp.setText(address);
-            }
+        runOnUiThread(() -> {
+            TextView localIp = findViewById(R.id.local_ip_address_view);
+            localIp.setText(address);
         });
     }
 
     /**
-     * Update the incoming peer adapter by notifying that the data has changed.
+     * Update the connected peer adapter by notifying that the data has changed.
      */
     @Override
-    public void updateIncomingPeers() {
-        incomingPeerAdapter.notifyDataSetChanged();
+    public void updateConnectedPeers() {
+        connectedPeersAdapter.notifyDataSetChanged();
     }
 
     /**
-     * Update the outgoing peer adapter by notifying that the data has changed.
+     * Update the incoming peer adapter by notifying that the data has changed. Usually when a new
+     * peer has been found that we are not connected to yet.
      */
     @Override
-    public void updateOutgoingPeers() {
-        outgoingPeerAdapter.notifyDataSetChanged();
+    public void updateIncomingPeers() {
+        incomingPeersAdapter.notifyDataSetChanged();
     }
 
     /**
