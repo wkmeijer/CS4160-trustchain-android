@@ -1,7 +1,5 @@
 package nl.tudelft.cs4160.trustchain_android.inbox;
 
-import junit.framework.TestCase;
-
 import org.junit.Before;
 import org.junit.Test;
 
@@ -10,7 +8,11 @@ import java.util.ArrayList;
 import nl.tudelft.cs4160.trustchain_android.crypto.DualSecret;
 import nl.tudelft.cs4160.trustchain_android.crypto.PublicKeyPair;
 
-public class inboxItemTest extends TestCase {
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+
+
+public class InboxItemTest  {
     String userName;
     ArrayList<Integer> halfBlockSequenceNumbers = new ArrayList<>();
     String address;
