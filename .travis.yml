@@ -80,5 +80,7 @@ before_script:
 
 
 script:
-- ./gradlew clean test build
+  - ./gradlew clean test build
+  - ./gradlew connectedAndroidTest
+
 
