@@ -419,9 +419,7 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
             Peer p = Peer.deserialize(pexPeer.toByteArray());
             Log.d(TAG, "From " + peer + " | found peer in pexList: " + p);
 
-            if (!getPeerHandler().hashId.equals(p.getPeerId())) {
-                getPeerHandler().getOrMakePeer(p.getPeerId(), p.getAddress());
-            }
+            getPeerHandler().getOrMakePeer(p.getPeerId(), p.getAddress());
         }
     }
 
