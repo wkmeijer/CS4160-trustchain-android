@@ -66,9 +66,10 @@ android:
   - tools # Running this twice get's the latest build tools (https://github.com/codepath/android_guides/wiki/Setting-up-Travis-CI)
   - platform-tools
   - android-${ANDROID_API}
+  - android-24
   - build-tools-${ANDROID_BUILD_TOOLS}
   - extra
-  - sys-img-armeabi-v7a-android-${ANDROID_API}
+  - sys-img-armeabi-v7a-android-24
 
 
 before_script:
