@@ -1,14 +1,20 @@
 package nl.tudelft.cs4160.trustchain_android.peersummary;
 
+import android.Manifest;
 import android.app.ActivityManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
+import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -26,6 +32,9 @@ import android.widget.Toast;
 
 import com.google.protobuf.ByteString;
 
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.lang.ref.WeakReference;
@@ -34,7 +43,6 @@ import java.util.Arrays;
 
 import nl.tudelft.cs4160.trustchain_android.R;
 import nl.tudelft.cs4160.trustchain_android.block.TrustChainBlockHelper;
-import nl.tudelft.cs4160.trustchain_android.block.ValidationResult;
 import nl.tudelft.cs4160.trustchain_android.chainExplorer.ChainExplorerActivity;
 import nl.tudelft.cs4160.trustchain_android.crypto.DualSecret;
 import nl.tudelft.cs4160.trustchain_android.crypto.Key;
@@ -46,6 +54,7 @@ import nl.tudelft.cs4160.trustchain_android.peersummary.mutualblock.MutualBlockA
 import nl.tudelft.cs4160.trustchain_android.peersummary.mutualblock.MutualBlockItem;
 import nl.tudelft.cs4160.trustchain_android.storage.database.TrustChainDBHelper;
 import nl.tudelft.cs4160.trustchain_android.storage.sharedpreferences.InboxItemStorage;
+import nl.tudelft.cs4160.trustchain_android.util.FileDialog;
 
 import static nl.tudelft.cs4160.trustchain_android.block.TrustChainBlockHelper.GENESIS_SEQ;
 import static nl.tudelft.cs4160.trustchain_android.block.TrustChainBlockHelper.createBlock;
@@ -53,6 +62,7 @@ import static nl.tudelft.cs4160.trustchain_android.block.TrustChainBlockHelper.s
 
 public class PeerSummaryActivity extends AppCompatActivity implements CrawlRequestListener {
     private final static String TAG = PeerSummaryActivity.class.toString();
+    private static final int REQUEST_STORAGE_PERMISSIONS = 1;
     private Context context;
     private RecyclerView mRecyclerView;
     private RecyclerView.Adapter mAdapter;
@@ -65,6 +75,9 @@ public class PeerSummaryActivity extends AppCompatActivity implements CrawlReque
     PeerSummaryActivity thisActivity;
     DualSecret kp;
     TrustChainDBHelper dbHelper;
+
+    private File transactionDocument;
+    private TextView selectedFilePath;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -127,10 +140,10 @@ public class PeerSummaryActivity extends AppCompatActivity implements CrawlReque
 
         messageEditText = findViewById(R.id.message_edit_text);
         mRecyclerView = findViewById(R.id.mutualBlocksRecyclerView);
+        selectedFilePath = findViewById(R.id.selected_path);
 
         dbHelper = new TrustChainDBHelper(this);
         network = Network.getInstance(getApplicationContext());
-
     }
 
     /**
@@ -215,8 +228,28 @@ public class PeerSummaryActivity extends AppCompatActivity implements CrawlReque
 
     public void onClickSend(View view) throws UnsupportedEncodingException {
         byte[] publicKey = Key.loadKeys(this).getPublicKeyPair().toBytes();
-        byte[] transactionData = messageEditText.getText().toString().getBytes("UTF-8");
-        final MessageProto.TrustChainBlock block = createBlock(transactionData, DBHelper, publicKey, null, inboxItemOtherPeer.getPublicKeyPair().toBytes());
+        byte[] transactionData;
+        String format = "";
+        if (transactionDocument != null) {
+            int size = (int) transactionDocument.length();
+            format = transactionDocument.getName().substring(transactionDocument.getName().lastIndexOf('.'));
+
+            transactionData = new byte[size];
+
+            BufferedInputStream inputstream;
+            try {
+                inputstream = new BufferedInputStream(new FileInputStream(transactionDocument));
+                inputstream.read(transactionData, 0, size);
+            } catch (IOException e) {
+                e.printStackTrace();
+                Snackbar.make(findViewById(R.id.myCoordinatorLayout), e.getMessage(), Snackbar.LENGTH_LONG).show();
+                return;
+            }
+        } else {
+            transactionData = messageEditText.getText().toString().getBytes("UTF-8");
+        }
+
+        final MessageProto.TrustChainBlock block = createBlock(transactionData, format, DBHelper, publicKey, null, inboxItemOtherPeer.getPublicKeyPair().toBytes());
         final MessageProto.TrustChainBlock signedBlock = TrustChainBlockHelper.sign(block, Key.loadKeys(getApplicationContext()).getSigningKey());
         messageEditText.setText("");
         messageEditText.clearFocus();
@@ -244,7 +277,7 @@ public class PeerSummaryActivity extends AppCompatActivity implements CrawlReque
      * This method signs the half block when agreed with the pop-up.
      * @param block
      */
-    public void requestPermission(final MessageProto.TrustChainBlock block) {
+    public void requestSignPermission(final MessageProto.TrustChainBlock block) {
         //just to be sure run it on the ui thread
         //this is not necessary when this function is called from a AsyncTask
         runOnUiThread(new Runnable() {
@@ -283,7 +316,7 @@ public class PeerSummaryActivity extends AppCompatActivity implements CrawlReque
      */
     public void signAndSendHalfBlock(MessageProto.TrustChainBlock linkedBlock) {
         DualSecret keyPair = Key.loadKeys(this);
-        MessageProto.TrustChainBlock block = createBlock(null, DBHelper,
+        MessageProto.TrustChainBlock block = createBlock(null, null, DBHelper,
                 keyPair.getPublicKeyPair().toBytes(),
                 linkedBlock, inboxItemOtherPeer.getPublicKeyPair().toBytes());
 
@@ -335,6 +368,56 @@ public class PeerSummaryActivity extends AppCompatActivity implements CrawlReque
             kp = Key.loadKeys(this);
         }
         return kp.getPublicKeyPair().toBytes();
+    }
+
+    public void onClickChooseFile(View view) {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED) {
+            requestStoragePermissions();
+            return;
+        }
+
+        File mPath = new File(Environment.getExternalStorageDirectory() + "//DIR//");
+        FileDialog fileDialog = new FileDialog(this, mPath);
+        fileDialog.addFileListener(new FileDialog.FileSelectedListener() {
+            public void fileSelected(File file) {
+                transactionDocument = file;
+                selectedFilePath.setText(file.getPath());
+
+            }
+        });
+        fileDialog.showDialog();
+    }
+
+    private void requestStoragePermissions() {
+        if (Build.VERSION.SDK_INT >= 23) {
+            // If API 23 or up onRequestPermissionsResult is handled by this fragment, otherwise this method will be called in the Activity
+            requestPermissions(new String[]{ Manifest.permission.READ_EXTERNAL_STORAGE }, REQUEST_STORAGE_PERMISSIONS);
+        } else {
+            ActivityCompat.requestPermissions(this, new String[]{ Manifest.permission.READ_EXTERNAL_STORAGE }, REQUEST_STORAGE_PERMISSIONS);
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if (requestCode == REQUEST_STORAGE_PERMISSIONS) {
+            for (int i = 0; i < permissions.length; i++) {
+                switch (permissions[i]) {
+                    case Manifest.permission.READ_EXTERNAL_STORAGE:
+                        if (grantResults[i] != PackageManager.PERMISSION_GRANTED) {
+                            finish();
+                        } else {
+                            onClickChooseFile(null);
+                        }
+                        break;
+                    default:
+                        Log.w(TAG, "Callback for unknown permission: " + permissions[i]);
+                        break;
+                }
+            }
+        } else {
+            super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        }
     }
 
     /**

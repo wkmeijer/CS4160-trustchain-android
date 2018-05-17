@@ -56,7 +56,7 @@ public class TrustChainBlockHelper {
      * @param linkpubk - The public key of the linked peer
      * @return a new half block
      */
-    public static MessageProto.TrustChainBlock createBlock(byte[] transaction, TrustChainDBHelper dbHelper,
+    public static MessageProto.TrustChainBlock createBlock(byte[] transaction, String format, TrustChainDBHelper dbHelper,
                                                          byte[] mypubk, MessageProto.TrustChainBlock linkedBlock,
                                                          byte[] linkpubk) {
         MessageProto.TrustChainBlock latestBlock = dbHelper.getLatestBlock(mypubk);
@@ -67,7 +67,11 @@ public class TrustChainBlockHelper {
                     .setLinkPublicKey(linkedBlock.getPublicKey())
                     .setLinkSequenceNumber(linkedBlock.getSequenceNumber());
         } else {
-            builder.setTransaction(Transaction.newBuilder().setUnformatted(ByteString.copyFrom(transaction)).build())
+            builder.setTransaction(
+                        Transaction.newBuilder()
+                                .setUnformatted(ByteString.copyFrom(transaction))
+                                .setFormat(format)
+                                .build())
                     .setLinkPublicKey(ByteString.copyFrom(linkpubk))
                     .setLinkSequenceNumber(TrustChainBlockHelper.UNKNOWN_SEQ);
         }
