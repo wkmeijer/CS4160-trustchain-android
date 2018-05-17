@@ -14,6 +14,7 @@ public class TrustChainDBContract {
     public static class BlockEntry implements BaseColumns {
         public static final String TABLE_NAME = "block";
         public static final String COLUMN_NAME_TX = "tx";
+        public static final String COLUMN_NAME_TX_FORMAT = "tx_format";
         public static final String COLUMN_NAME_PUBLIC_KEY = "public_key";
         public static final String COLUMN_NAME_SEQUENCE_NUMBER = "sequence_number";
         public static final String COLUMN_NAME_LINK_PUBLIC_KEY = "link_public_key";

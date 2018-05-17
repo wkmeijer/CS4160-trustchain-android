@@ -24,6 +24,7 @@ public class TrustChainDBHelper extends SQLiteOpenHelper {
     private static final String SQL_CREATE_ENTRIES =
             "CREATE TABLE IF NOT EXISTS " + TrustChainDBContract.BlockEntry.TABLE_NAME + " (" +
                     TrustChainDBContract.BlockEntry.COLUMN_NAME_TX + " TEXT NOT NULL," +
+                    TrustChainDBContract.BlockEntry.COLUMN_NAME_TX_FORMAT + " TEXT," +
                     TrustChainDBContract.BlockEntry.COLUMN_NAME_PUBLIC_KEY + " TEXT NOT NULL," +
                     TrustChainDBContract.BlockEntry.COLUMN_NAME_SEQUENCE_NUMBER + " INTEGER NOT NULL," +
                     TrustChainDBContract.BlockEntry.COLUMN_NAME_LINK_PUBLIC_KEY + " TEXT NOT NULL," +
@@ -79,6 +80,7 @@ public class TrustChainDBHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put(TrustChainDBContract.BlockEntry.COLUMN_NAME_TX, block.getTransaction().getUnformatted().toStringUtf8());
+        values.put(TrustChainDBContract.BlockEntry.COLUMN_NAME_TX_FORMAT, block.getTransaction().getFormat());
         values.put(TrustChainDBContract.BlockEntry.COLUMN_NAME_PUBLIC_KEY, Base64.encodeToString(block.getPublicKey().toByteArray(), Base64.DEFAULT));
         values.put(TrustChainDBContract.BlockEntry.COLUMN_NAME_SEQUENCE_NUMBER, block.getSequenceNumber());
         values.put(TrustChainDBContract.BlockEntry.COLUMN_NAME_LINK_PUBLIC_KEY, Base64.encodeToString(block.getLinkPublicKey().toByteArray(), Base64.DEFAULT));
@@ -102,6 +104,7 @@ public class TrustChainDBHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put(TrustChainDBContract.BlockEntry.COLUMN_NAME_TX, block.getTransaction().getUnformatted().toStringUtf8());
+        values.put(TrustChainDBContract.BlockEntry.COLUMN_NAME_TX_FORMAT, block.getTransaction().getFormat());
         values.put(TrustChainDBContract.BlockEntry.COLUMN_NAME_PUBLIC_KEY, Base64.encodeToString(block.getPublicKey().toByteArray(), Base64.DEFAULT));
         values.put(TrustChainDBContract.BlockEntry.COLUMN_NAME_SEQUENCE_NUMBER, block.getSequenceNumber());
         values.put(TrustChainDBContract.BlockEntry.COLUMN_NAME_LINK_PUBLIC_KEY, Base64.encodeToString(block.getLinkPublicKey().toByteArray(), Base64.DEFAULT));
@@ -396,8 +399,11 @@ public class TrustChainDBHelper extends SQLiteOpenHelper {
         MessageProto.TrustChainBlock.Builder builder = MessageProto.TrustChainBlock.newBuilder();
 
         while (cursor.moveToNext()) {
-            builder.setTransaction(Transaction.newBuilder().setUnformatted(ByteString.copyFromUtf8(cursor.getString(
-                    cursor.getColumnIndex(TrustChainDBContract.BlockEntry.COLUMN_NAME_TX)))).build())
+            builder.setTransaction(
+                        Transaction.newBuilder()
+                                .setUnformatted(ByteString.copyFromUtf8(cursor.getString(cursor.getColumnIndex(TrustChainDBContract.BlockEntry.COLUMN_NAME_TX))))
+                                .setFormat(cursor.getString(cursor.getColumnIndex(TrustChainDBContract.BlockEntry.COLUMN_NAME_TX_FORMAT)))
+                                .build())
                     .setPublicKey(ByteString.copyFrom(Base64.decode(cursor.getString(
                             cursor.getColumnIndex(TrustChainDBContract.BlockEntry.COLUMN_NAME_PUBLIC_KEY)), Base64.DEFAULT)))
                     .setSequenceNumber(cursor.getInt(

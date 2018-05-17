@@ -23,6 +23,8 @@ import nl.tudelft.cs4160.trustchain_android.message.MessageProto;
 import nl.tudelft.cs4160.trustchain_android.storage.sharedpreferences.UserNameStorage;
 import nl.tudelft.cs4160.trustchain_android.util.ByteArrayConverter;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 public class ChainExplorerAdapter extends BaseAdapter {
     static final String TAG = "ChainExplorerAdapter";
 
@@ -122,7 +124,14 @@ public class ChainExplorerAdapter extends BaseAdapter {
         seqNum.setText(seqNumStr);
         linkPeer.setText(linkPeerAlias);
         linkSeqNum.setText(linkSeqNumStr);
-        transaction.setText(block.getTransaction().getUnformatted().toStringUtf8());
+
+        if (block.getTransaction().getFormat() == null ||
+                block.getTransaction().getFormat().equals("") ||
+                block.getTransaction().getFormat().equals("txt")) {
+            transaction.setText(block.getTransaction().getUnformatted().toStringUtf8());
+        } else {
+            transaction.setText("contains " + block.getTransaction().getFormat() + " file");
+        }
 
         // expanded view
         TextView pubKey = convertView.findViewById(R.id.pub_key);

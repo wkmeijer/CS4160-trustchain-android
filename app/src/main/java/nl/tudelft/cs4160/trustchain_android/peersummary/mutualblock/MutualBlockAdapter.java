@@ -22,6 +22,8 @@ import nl.tudelft.cs4160.trustchain_android.storage.database.TrustChainDBHelper;
 import nl.tudelft.cs4160.trustchain_android.storage.sharedpreferences.UserNameStorage;
 import nl.tudelft.cs4160.trustchain_android.util.ByteArrayConverter;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 public class MutualBlockAdapter extends RecyclerView.Adapter<MutualBlockAdapter.ViewHolder> {
 
     private ArrayList<MutualBlockItem> mutualBlocks;
@@ -106,9 +108,15 @@ public class MutualBlockAdapter extends RecyclerView.Adapter<MutualBlockAdapter.
             }
 
             TextView transTv = viewHolder.transactionTextView;
-            transTv.setText(mutualBlock.getTransaction());
 
+            if (mutualBlock.getTransactionFormat() == null ||
+                mutualBlock.getTransactionFormat().equals("") ||
+                mutualBlock.getTransactionFormat().equals("txt")) {
 
+                transTv.setText(new String(mutualBlock.getTransaction(), UTF_8));
+            } else {
+                transTv.setText(mutualBlock.getTransactionFormat() + " file");
+            }
 
             String myPublicKeyString = null;
             if (keyPair != null) {
