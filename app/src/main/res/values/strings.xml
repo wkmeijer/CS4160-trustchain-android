@@ -156,4 +156,5 @@
     <string name="sequenceNum">seq: %1$d</string>
     <string name="need_sign">Awaiting signing</string>
     <string name="invalid_block">Invalid block</string>
+    <string name="no_file_selected">No file selected</string>
 </resources>

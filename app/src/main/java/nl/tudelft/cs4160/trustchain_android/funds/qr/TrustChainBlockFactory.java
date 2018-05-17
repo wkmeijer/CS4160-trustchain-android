@@ -54,7 +54,7 @@ public class TrustChainBlockFactory {
 
         MessageProto.TrustChainBlock identityHalfBlock = reconstructTemporaryIdentityHalfBlock(wallet);
 
-        MessageProto.TrustChainBlock block = TrustChainBlockHelper.createBlock(transactionString.getBytes(), helper, myPublicKey, identityHalfBlock, walletKeyPair.getPublicKeyPair().toBytes());
+        MessageProto.TrustChainBlock block = TrustChainBlockHelper.createBlock(transactionString.getBytes(), null, helper, myPublicKey, identityHalfBlock, walletKeyPair.getPublicKeyPair().toBytes());
 
         block = TrustChainBlockHelper.sign(block, ownKeyPair.getSigningKey());
 

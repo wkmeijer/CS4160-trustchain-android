@@ -113,6 +113,7 @@ public class ExportWalletQRActivity extends AppCompatActivity {
             MessageProto.TrustChainBlock blockAtoC =
                     TrustChainBlockHelper.createBlock(
                             transactionAdapter.toJson(transaction).getBytes(),
+                            null,
                             dbHelper,
                             keyPairOfA.getPublicKeyPair().toBytes(),
                             null,
@@ -123,6 +124,7 @@ public class ExportWalletQRActivity extends AppCompatActivity {
             MessageProto.TrustChainBlock blockCtoA =
                     TrustChainBlockHelper.createBlock(
                             transactionAdapter.toJson(transaction).getBytes(),
+                            null,
                             dbHelper,
                             keyPairOfC.getPublicKeyPair().toBytes(),
                             blockAtoC,

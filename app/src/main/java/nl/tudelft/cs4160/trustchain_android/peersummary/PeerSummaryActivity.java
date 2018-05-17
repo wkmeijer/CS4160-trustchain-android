@@ -26,6 +26,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -55,6 +56,7 @@ import nl.tudelft.cs4160.trustchain_android.peersummary.mutualblock.MutualBlockI
 import nl.tudelft.cs4160.trustchain_android.storage.database.TrustChainDBHelper;
 import nl.tudelft.cs4160.trustchain_android.storage.sharedpreferences.InboxItemStorage;
 import nl.tudelft.cs4160.trustchain_android.util.FileDialog;
+import nl.tudelft.cs4160.trustchain_android.util.Util;
 
 import static nl.tudelft.cs4160.trustchain_android.block.TrustChainBlockHelper.GENESIS_SEQ;
 import static nl.tudelft.cs4160.trustchain_android.block.TrustChainBlockHelper.createBlock;
@@ -63,6 +65,7 @@ import static nl.tudelft.cs4160.trustchain_android.block.TrustChainBlockHelper.s
 public class PeerSummaryActivity extends AppCompatActivity implements CrawlRequestListener {
     private final static String TAG = PeerSummaryActivity.class.toString();
     private static final int REQUEST_STORAGE_PERMISSIONS = 1;
+    private static final int MAX_ATTACHMENT_SIZE = 61440; //Max file attachment size in bytes, set to 60bytes leaving 5kb for other block data, as the max message size in UDP is 64KB
     private Context context;
     private RecyclerView mRecyclerView;
     private RecyclerView.Adapter mAdapter;
@@ -78,6 +81,7 @@ public class PeerSummaryActivity extends AppCompatActivity implements CrawlReque
 
     private File transactionDocument;
     private TextView selectedFilePath;
+    private Button sendButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -141,6 +145,7 @@ public class PeerSummaryActivity extends AppCompatActivity implements CrawlReque
         messageEditText = findViewById(R.id.message_edit_text);
         mRecyclerView = findViewById(R.id.mutualBlocksRecyclerView);
         selectedFilePath = findViewById(R.id.selected_path);
+        sendButton = findViewById(R.id.send_button);
 
         dbHelper = new TrustChainDBHelper(this);
         network = Network.getInstance(getApplicationContext());
@@ -232,7 +237,7 @@ public class PeerSummaryActivity extends AppCompatActivity implements CrawlReque
         String format = "";
         if (transactionDocument != null) {
             int size = (int) transactionDocument.length();
-            format = transactionDocument.getName().substring(transactionDocument.getName().lastIndexOf('.'));
+            format = transactionDocument.getName().substring(transactionDocument.getName().lastIndexOf('.') + 1);
 
             transactionData = new byte[size];
 
@@ -251,12 +256,14 @@ public class PeerSummaryActivity extends AppCompatActivity implements CrawlReque
 
         final MessageProto.TrustChainBlock block = createBlock(transactionData, format, DBHelper, publicKey, null, inboxItemOtherPeer.getPublicKeyPair().toBytes());
         final MessageProto.TrustChainBlock signedBlock = TrustChainBlockHelper.sign(block, Key.loadKeys(getApplicationContext()).getSigningKey());
+        Log.d(TAG, "Signed block is " + signedBlock.toByteArray().length + " bytes");
         messageEditText.setText("");
         messageEditText.clearFocus();
         InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
         // insert the half block in your own chain
         new TrustChainDBHelper(this).insertInDB(signedBlock);
+
 
         new Thread(new Runnable() {
             @Override
@@ -267,6 +274,7 @@ public class PeerSummaryActivity extends AppCompatActivity implements CrawlReque
                     mySnackbar.show();
                 } catch (IOException e) {
                     e.printStackTrace();
+                    Snackbar.make(findViewById(R.id.myCoordinatorLayout),e.getMessage(), Snackbar.LENGTH_LONG);
                 }
             }
         }).start();
@@ -383,7 +391,11 @@ public class PeerSummaryActivity extends AppCompatActivity implements CrawlReque
             public void fileSelected(File file) {
                 transactionDocument = file;
                 selectedFilePath.setText(file.getPath());
-
+                if (file.length() > MAX_ATTACHMENT_SIZE) {
+                    selectedFilePath.requestFocus();
+                    selectedFilePath.setError("Too big (" + Util.readableSize(file.length()) + ")");
+                    sendButton.setEnabled(false);
+                }
             }
         });
         fileDialog.showDialog();
@@ -391,7 +403,6 @@ public class PeerSummaryActivity extends AppCompatActivity implements CrawlReque
 
     private void requestStoragePermissions() {
         if (Build.VERSION.SDK_INT >= 23) {
-            // If API 23 or up onRequestPermissionsResult is handled by this fragment, otherwise this method will be called in the Activity
             requestPermissions(new String[]{ Manifest.permission.READ_EXTERNAL_STORAGE }, REQUEST_STORAGE_PERMISSIONS);
         } else {
             ActivityCompat.requestPermissions(this, new String[]{ Manifest.permission.READ_EXTERNAL_STORAGE }, REQUEST_STORAGE_PERMISSIONS);

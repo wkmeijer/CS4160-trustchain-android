@@ -66,10 +66,14 @@ public class FileDialog {
                 String fileChosen = fileList[which];
                 File chosenFile = getChosenFile(fileChosen);
                 if (chosenFile.isDirectory()) {
-                    loadFileList(chosenFile);
-                    dialog.cancel();
-                    dialog.dismiss();
-                    showDialog();
+                    try {
+                        loadFileList(chosenFile);
+                        dialog.cancel();
+                        dialog.dismiss();
+                        showDialog();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                 } else fireFileSelectedEvent(chosenFile);
             }
         });
