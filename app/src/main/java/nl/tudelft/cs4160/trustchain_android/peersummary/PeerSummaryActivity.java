@@ -395,6 +395,9 @@ public class PeerSummaryActivity extends AppCompatActivity implements CrawlReque
                     selectedFilePath.requestFocus();
                     selectedFilePath.setError("Too big (" + Util.readableSize(file.length()) + ")");
                     sendButton.setEnabled(false);
+                } else {
+                    selectedFilePath.setError(null);
+                    sendButton.setEnabled(true);
                 }
             }
         });
