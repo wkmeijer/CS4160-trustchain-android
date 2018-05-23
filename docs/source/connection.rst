@@ -39,10 +39,8 @@ Status light
 Username
 The username the peer chose when first starting the app
 
-Server indicator 
-In case the peer is set as a boostrap server next to the username the word "Server" is displayed
-
-/////////////////Information about the type of connection, WiFi or network operator information. In case of the bootstrap server this states "server". Note that this field is obtained from the android OS and might not always be correct. It might display a mobile connection
+Connection indicator 
+Information about the type of connection, e.g. WiFi or mobile. In case the peer is set as a bootstrap server next to the username the word "Server" is displayed
 
 Ip address
 The public ip address of the peer, plus the port of the connection
