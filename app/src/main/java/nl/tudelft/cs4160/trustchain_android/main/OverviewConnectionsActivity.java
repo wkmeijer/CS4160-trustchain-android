@@ -406,7 +406,6 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
     @Override
     public void handleIntroductionRequest(Peer peer, MessageProto.IntroductionRequest request) throws IOException {
         peer.setConnectionType((int) request.getConnectionType());
-        peer.setNetworkOperator(request.getNetworkOperator());
         if (getPeerHandler().size() > 1) {
             Peer invitee = getPeerHandler().getEligiblePeer(peer);
             if (invitee != null) {
@@ -429,7 +428,6 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
     @Override
     public void handleIntroductionResponse(Peer peer, MessageProto.IntroductionResponse response) throws Exception {
         peer.setConnectionType((int) response.getConnectionType());
-        peer.setNetworkOperator(response.getNetworkOperator());
         List<ByteString> pex = response.getPexList();
         for (ByteString pexPeer : pex) {
             Peer p = Peer.deserialize(pexPeer.toByteArray());

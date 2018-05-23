@@ -50,20 +50,15 @@ public class PeerTest extends TestCase {
         assertTrue(peer1.getCreationTime() < System.currentTimeMillis());
     }
 
-    @Test
-    public void testNetworkOperator(){
-        Peer peer1 = new Peer(id1, address);
-        peer1.setNetworkOperator("NoVODAFONE");
-        assertTrue(peer1.getNetworkOperator().equals("NoVODAFONE"));
-    }
+
 
     @Test
     public void testHasReceivedData(){
         Peer peer1 = new Peer("firstPEER", address);
         ByteBuffer buf = ByteBuffer.allocate(100);
-        assertFalse(peer1.hasReceivedData());
+        assertFalse(peer1.isReceivedFrom());
         peer1.received(buf);
-        assertTrue(peer1.hasReceivedData());
+        assertTrue(peer1.isReceivedFrom());
     }
 
     @Test
@@ -91,9 +86,9 @@ public class PeerTest extends TestCase {
     public void testSendData(){
         Peer peer1 = new Peer("firstPEER", address);
         assertTrue(peer1.isAlive());
-        long lastSendTime = peer1.getLastSendTime();
+        long lastSendTime = peer1.getLastSentTime();
         peer1.sentData();
-        assertNotSame(lastSendTime, peer1.getLastSendTime());
+        assertNotSame(lastSendTime, peer1.getLastSentTime());
         assertTrue(peer1.isAlive());
     }
 
@@ -101,9 +96,9 @@ public class PeerTest extends TestCase {
     public void testReceiveData(){
         Peer peer1 = new Peer("firstPEER", address);
         ByteBuffer buf = ByteBuffer.allocate(100);
-        long lastReceivedTime = peer1.getLastReceiveTime();
+        long lastReceivedTime = peer1.getLastReceivedTime();
         peer1.received(buf);
-        assertNotSame(lastReceivedTime, peer1.getLastReceiveTime());
+        assertNotSame(lastReceivedTime, peer1.getLastReceivedTime());
     }
 
     @Test

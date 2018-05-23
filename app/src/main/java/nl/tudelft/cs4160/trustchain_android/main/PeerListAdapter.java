@@ -28,7 +28,7 @@ public class PeerListAdapter extends ArrayAdapter<Peer> {
 
     static class ViewHolder {
         TextView mPeerId;
-        TextView mCarrier;
+        TextView mConnection;
         TextView mLastSent;
         TextView mLastReceived;
         TextView mDestinationAddress;
@@ -54,7 +54,7 @@ public class PeerListAdapter extends ArrayAdapter<Peer> {
 
             holder = new ViewHolder();
             holder.mStatusIndicator = convertView.findViewById(R.id.status_indicator);
-            holder.mCarrier = convertView.findViewById(R.id.carrier);
+            holder.mConnection = convertView.findViewById(R.id.connection);
             holder.mPeerId = convertView.findViewById(R.id.peer_id);
             holder.mLastSent = convertView.findViewById(R.id.last_sent);
             holder.mLastReceived = convertView.findViewById(R.id.last_received);
@@ -70,19 +70,18 @@ public class PeerListAdapter extends ArrayAdapter<Peer> {
         Peer peer = getItem(position);
 
         holder.mPeerId.setText(peer.getPeerId() == null ? "" : peer.getPeerId());
-        if (peer.getNetworkOperator() != null) {
-            if (peer.getConnectionType() == ConnectivityManager.TYPE_MOBILE) {
-                holder.mCarrier.setText(peer.getNetworkOperator());
+        if (peer.getConnectionType() != -1) {
+            if (OverviewConnectionsActivity.CONNECTABLE_ADDRESS.equals(peer.getExternalAddress().getHostAddress())) {
+                holder.mConnection.setText("Server");
             } else {
-
-                if (OverviewConnectionsActivity.CONNECTABLE_ADDRESS.equals(peer.getExternalAddress().getHostAddress())) {
-                    holder.mCarrier.setText("Server");
-                } else {
-                    holder.mCarrier.setText(connectionTypeString(peer.getConnectionType()));
-                }
+                holder.mConnection.setText(connectionTypeString(peer.getConnectionType()));
             }
         } else {
-            holder.mCarrier.setText("");
+            if(peer.isReceivedFrom()) {
+                holder.mConnection.setText("unknown");
+            } else {
+                holder.mConnection.setText("");
+            }
         }
 
         if (peer.isReceivedFrom()) {
@@ -127,7 +126,7 @@ public class PeerListAdapter extends ArrayAdapter<Peer> {
     private String connectionTypeString(int connectionType) {
         switch (connectionType) {
             case ConnectivityManager.TYPE_WIFI:
-                return "Wifi";
+                return "WiFi";
             case ConnectivityManager.TYPE_BLUETOOTH:
                 return "Bluetooth";
             case ConnectivityManager.TYPE_ETHERNET:
@@ -151,7 +150,7 @@ public class PeerListAdapter extends ArrayAdapter<Peer> {
     public String timeToString(long msSinceLastMessage) {
         // display seconds
         if(msSinceLastMessage < 59000) {
-            return ((int) Math.ceil(msSinceLastMessage / 1000.0)) + "s";
+            return " <" + ((int) Math.ceil(msSinceLastMessage / 1000.0)) + "s";
         }
 
         // display minutes
@@ -171,7 +170,7 @@ public class PeerListAdapter extends ArrayAdapter<Peer> {
         }
 
         // default: more than 1 day
-        return "1d";
+        return " >1d";
     }
 
 

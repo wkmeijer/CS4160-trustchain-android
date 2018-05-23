@@ -14,7 +14,6 @@
     <string name="reset_database_button">Clear Database (closes app)</string>
     <string name="last_received">Received: </string>
     <string name="last_sent">Sent: </string>
-    <string name="carrier">carrier</string>
     <string name="peer_id">peer id</string>
 
     <!-- Trustchain -->

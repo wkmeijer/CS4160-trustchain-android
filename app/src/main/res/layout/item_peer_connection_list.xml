@@ -66,8 +66,8 @@
                 android:textStyle="bold"
                 android:textColor="@android:color/black"/>
             <TextView
-                android:id="@+id/carrier"
-                android:hint="@string/carrier"
+                android:id="@+id/connection"
+                android:hint="@string/connection"
                 android:layout_width="0dp"
                 android:layout_weight="1"
                 android:textColor="@android:color/secondary_text_light"/>

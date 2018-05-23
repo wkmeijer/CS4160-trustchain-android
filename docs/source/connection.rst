@@ -27,7 +27,7 @@ Connections overview
 ====================
 After starting the app and choosing a username a screen is shown with an overview of all current connections. The screens is divided into two columns. The left column shows peers which are actively connected with you. The right screen shows peers, which you have heard about, but have yet to respond to you. They have been introduced to you through the IntroductionRequest message.
 
-In order to prevent sending messages indefinitely to peers who aren't responding peers can time-out, the boostrap server will never time-out. Every five seconds a message is send to peers in either list, as a sort of heartbeat timer, to keep the connection open, or to have another attempt at connecting. If no messages were received in response for 25 seconds the connection is deemed to be lost and the peer will be removed from the list. A new introduction would have to take place to reconnect to the peer.
+In order to prevent sending messages indefinitely to peers who aren't responding peers can time-out, the boostrap server will never time-out. Every five seconds a message is send to a random peer in either list asking for more peers. If no messages were received from a peer for 25 seconds the connection is deemed to be lost and the peer will be removed from the list. A new introduction would have to take place to reconnect to the peer.
 
 For each peer the following information is displayed and updated every second:
 
@@ -74,8 +74,6 @@ This way a host keeps track of all peers that ever interacted with them and keep
 For each peer the following information is stored:
  - address - the InetSocketAddress where this peer can be reached
  - peerId - the identifier of this peer
- - isReceivedFrom - indictor whetherdata was received from this peer
- - isSentTo - indictor whether data was sent to this peer
 // -  int connectionType;
 // -  String networkOperator;
  - lastSendTime - the last time a message was send to this peer

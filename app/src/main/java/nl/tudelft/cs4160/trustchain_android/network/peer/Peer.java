@@ -24,12 +24,12 @@ public class Peer implements Serializable {
     private String peerId;
     private boolean hasReceivedData; // still here for backwards compatibility
     private boolean hasSentData; // still here for backwards compatibility
-    private int connectionType;
-    private String networkOperator;
+    private int connectionType = -1;
+    private String networkOperator = ""; // still here for backwards compatibility
     private long lastSendTime = -1;
     private long lastReceiveTime = -1;
     private long creationTime;
-    static final long serialVersionUID = 3246968294284429472L;
+    static final long serialVersionUID = 3246968294284429472L; // for backwards compatibility, note that this will cause crashes in the deserialization function if not properly updated on changes
 
     /**
      * Create a peer.
@@ -45,14 +45,6 @@ public class Peer implements Serializable {
 
     public long getCreationTime() {
         return creationTime;
-    }
-
-    public String getNetworkOperator() {
-        return networkOperator;
-    }
-
-    public void setNetworkOperator(String networkOperator) {
-        this.networkOperator = networkOperator;
     }
 
     public int getConnectionType() {
