@@ -1,8 +1,4 @@
-package nl.tudelft.cs4160.trustchain_android.network.peer;canBeRemoved
-
-/**
- * Created by timbu on 15/01/2018.
- */
+package nl.tudelft.cs4160.trustchain_android.network.peer;
 
 public interface PeerListener {
 
