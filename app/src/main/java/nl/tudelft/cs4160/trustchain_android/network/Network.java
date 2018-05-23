@@ -104,7 +104,7 @@ public class Network {
     }
 
     /**
-     * Oopen the network channel on the default port.
+     * Open the network channel on the default port.
      */
     private void openChannel() {
         try {
