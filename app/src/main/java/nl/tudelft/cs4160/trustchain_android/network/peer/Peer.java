@@ -22,12 +22,14 @@ public class Peer implements Serializable {
     final private static int REMOVE_TIMEOUT = 25000;
     private InetSocketAddress address;
     private String peerId;
+    private boolean hasReceivedData; // still here for backwards compatibility
+    private boolean hasSentData; // still here for backwards compatibility
     private int connectionType;
     private String networkOperator;
-    private long lastSentTime = -1;
-    private long lastReceivedTime = -1;
+    private long lastSendTime = -1;
+    private long lastReceiveTime = -1;
     private long creationTime;
-
+    static final long serialVersionUID = 3246968294284429472L;
 
     /**
      * Create a peer.
@@ -74,7 +76,7 @@ public class Peer implements Serializable {
      * @return
      */
     public boolean isReceivedFrom() {
-        return lastReceivedTime != -1;
+        return lastReceiveTime != -1;
     }
 
     /**
@@ -82,7 +84,7 @@ public class Peer implements Serializable {
      * @return
      */
     public boolean isSentTo() {
-        return lastSentTime != -1;
+        return lastSendTime != -1;
     }
 
     public int getPort() {
@@ -108,7 +110,7 @@ public class Peer implements Serializable {
      * Method called when data is sent to this peer.
      */
     public void sentData() {
-        lastSentTime = System.currentTimeMillis();
+        lastSendTime = System.currentTimeMillis();
     }
 
     /**
@@ -117,7 +119,7 @@ public class Peer implements Serializable {
      * @param buffer the received data.
      */
     public void received(ByteBuffer buffer) {
-        lastReceivedTime = System.currentTimeMillis();
+        lastReceiveTime = System.currentTimeMillis();
     }
 
     /**
@@ -128,7 +130,7 @@ public class Peer implements Serializable {
      */
     public boolean isAlive() {
         if (isReceivedFrom()) {
-            return System.currentTimeMillis() - lastReceivedTime < TIMEOUT;
+            return System.currentTimeMillis() - lastReceiveTime < TIMEOUT;
         }
         return true;
     }
@@ -144,7 +146,7 @@ public class Peer implements Serializable {
             return false;
         }
         if (isReceivedFrom()) {
-            return System.currentTimeMillis() - lastReceivedTime > REMOVE_TIMEOUT;
+            return System.currentTimeMillis() - lastReceiveTime > REMOVE_TIMEOUT;
         }
         if (isSentTo()) {
             return System.currentTimeMillis() - creationTime > REMOVE_TIMEOUT;
@@ -182,11 +184,11 @@ public class Peer implements Serializable {
     }
 
     public long getLastSentTime() {
-        return lastSentTime;
+        return lastSendTime;
     }
 
     public long getLastReceivedTime() {
-        return lastReceivedTime;
+        return lastReceiveTime;
     }
 
     public static byte[] serialize(Object obj) throws IOException {
