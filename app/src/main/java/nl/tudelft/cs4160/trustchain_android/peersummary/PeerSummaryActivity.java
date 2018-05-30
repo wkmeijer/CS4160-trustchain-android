@@ -44,6 +44,7 @@ import java.util.Arrays;
 
 import nl.tudelft.cs4160.trustchain_android.R;
 import nl.tudelft.cs4160.trustchain_android.block.TrustChainBlockHelper;
+import nl.tudelft.cs4160.trustchain_android.block.ValidationResult;
 import nl.tudelft.cs4160.trustchain_android.chainExplorer.ChainExplorerActivity;
 import nl.tudelft.cs4160.trustchain_android.crypto.DualSecret;
 import nl.tudelft.cs4160.trustchain_android.crypto.Key;
@@ -58,6 +59,7 @@ import nl.tudelft.cs4160.trustchain_android.storage.sharedpreferences.InboxItemS
 import nl.tudelft.cs4160.trustchain_android.util.FileDialog;
 import nl.tudelft.cs4160.trustchain_android.util.Util;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static nl.tudelft.cs4160.trustchain_android.block.TrustChainBlockHelper.GENESIS_SEQ;
 import static nl.tudelft.cs4160.trustchain_android.block.TrustChainBlockHelper.createBlock;
 import static nl.tudelft.cs4160.trustchain_android.block.TrustChainBlockHelper.sign;
@@ -231,7 +233,7 @@ public class PeerSummaryActivity extends AppCompatActivity implements CrawlReque
      * the network is not compromised due to not using dispersy.
      */
 
-    public void onClickSend(View view) throws UnsupportedEncodingException {
+    public void onClickSend(View view) {
         byte[] publicKey = Key.loadKeys(this).getPublicKeyPair().toBytes();
         byte[] transactionData;
         String format = "";
@@ -251,7 +253,7 @@ public class PeerSummaryActivity extends AppCompatActivity implements CrawlReque
                 return;
             }
         } else {
-            transactionData = messageEditText.getText().toString().getBytes("UTF-8");
+            transactionData = messageEditText.getText().toString().getBytes(UTF_8);
         }
 
         final MessageProto.TrustChainBlock block = createBlock(transactionData, format, DBHelper, publicKey, null, inboxItemOtherPeer.getPublicKeyPair().toBytes());

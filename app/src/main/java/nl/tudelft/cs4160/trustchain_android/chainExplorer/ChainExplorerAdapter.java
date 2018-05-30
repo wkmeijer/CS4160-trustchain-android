@@ -3,6 +3,7 @@ package nl.tudelft.cs4160.trustchain_android.chainExplorer;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,6 +13,10 @@ import android.widget.Toast;
 
 import com.google.protobuf.ByteString;
 
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.OutputStream;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -84,7 +89,7 @@ public class ChainExplorerAdapter extends BaseAdapter {
      */
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        MessageProto.TrustChainBlock block = (MessageProto.TrustChainBlock) getItem(position);
+        final MessageProto.TrustChainBlock block = (MessageProto.TrustChainBlock) getItem(position);
         if (convertView == null) {
             convertView = LayoutInflater.from(context).inflate(R.layout.item_trustchainblock,
                     parent, false);
@@ -131,6 +136,39 @@ public class ChainExplorerAdapter extends BaseAdapter {
             transaction.setText(block.getTransaction().getUnformatted().toStringUtf8());
         } else {
             transaction.setText("contains " + block.getTransaction().getFormat() + " file");
+
+            transaction.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    File file = new File(android.os.Environment.getExternalStorageDirectory() + "/TrustChain/myfile." + block.getTransaction().getFormat());
+                    if (!file.getParentFile().exists()) file.getParentFile().mkdirs();
+
+                    try {
+                        ByteArrayInputStream is = new ByteArrayInputStream(block.getTransaction().toByteArray());
+                        OutputStream os = new FileOutputStream(file, true);
+
+                        final int buffer_size = 1024 * 1024;
+                        byte[] bytes = new byte[buffer_size];
+                        for (; ; ) {
+                            int count = is.read(bytes, 0, buffer_size);
+                            if (count == -1)
+                                break;
+                            os.write(bytes, 0, count);
+                        }
+                        is.close();
+                        os.close();
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                    }
+
+                    Intent i = new Intent();
+                    String extension = android.webkit.MimeTypeMap.getFileExtensionFromUrl(Uri.fromFile(file).toString());
+                    String mimetype = android.webkit.MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension);
+                    if (mimetype == null) mimetype = "text/plain";
+                    i.setDataAndType(Uri.fromFile(file), mimetype);
+                    context.startActivity(i);
+                }
+            });
         }
 
         // expanded view
