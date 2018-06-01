@@ -299,23 +299,19 @@ public class PeerSummaryActivity extends AppCompatActivity implements CrawlReque
                 } else {
                     builder = new AlertDialog.Builder(context);
                 }
-                try {
-                    builder.setMessage("Do you want to sign Block[ " + block.getTransaction().getUnformatted().toString("UTF-8") + " ] from " + inboxItemOtherPeer.getUserName() + "?")
-                            .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int id) {
-                                    signAndSendHalfBlock(block);
-                                }
-                            })
-                            .setNegativeButton("DELETE", new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int id) {
-                                    // do nothing?
-                                }
-                            });
-                    builder.create();
-                    builder.show();
-                } catch (UnsupportedEncodingException e) {
-                    e.printStackTrace();
-                }
+                builder.setMessage("Do you want to sign Block[ " + block.getTransaction().getUnformatted().toString(UTF_8) + " ] from " + inboxItemOtherPeer.getUserName() + "?")
+                        .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                signAndSendHalfBlock(block);
+                            }
+                        })
+                        .setNegativeButton("DELETE", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                // do nothing?
+                            }
+                        });
+                builder.create();
+                builder.show();
             }
         });
     }

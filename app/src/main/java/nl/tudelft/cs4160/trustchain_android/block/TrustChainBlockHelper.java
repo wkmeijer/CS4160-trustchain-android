@@ -415,4 +415,16 @@ public class TrustChainBlockHelper {
         return res;
     }
 
+    /**
+     * Returns wether the given block contains a binary file in the transaction field.
+     * If the format field contains anything besides null, empty string or txt, assume the attached
+     * file is binary and allow opening using an external application.
+     * @param block
+     * @return
+     */
+    public static boolean containsBinaryFile(MessageProto.TrustChainBlock block) {
+        return ! (block.getTransaction().getFormat() == null ||
+                block.getTransaction().getFormat().equals("") ||
+                block.getTransaction().getFormat().equals("txt"));
+    }
 }

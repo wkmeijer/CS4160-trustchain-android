@@ -130,45 +130,12 @@ public class ChainExplorerAdapter extends BaseAdapter {
         linkPeer.setText(linkPeerAlias);
         linkSeqNum.setText(linkSeqNumStr);
 
-        if (block.getTransaction().getFormat() == null ||
-                block.getTransaction().getFormat().equals("") ||
-                block.getTransaction().getFormat().equals("txt")) {
-            transaction.setText(block.getTransaction().getUnformatted().toStringUtf8());
+        if (TrustChainBlockHelper.containsBinaryFile(block)) {
+            transaction.setText(block.getTransaction().getFormat() + " file\n" +
+                    "Click to open");
+            setOpenFileClickListener(transaction, block);
         } else {
-            transaction.setText("contains " + block.getTransaction().getFormat() + " file");
-
-            transaction.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    File file = new File(android.os.Environment.getExternalStorageDirectory() + "/TrustChain/myfile." + block.getTransaction().getFormat());
-                    if (!file.getParentFile().exists()) file.getParentFile().mkdirs();
-
-                    try {
-                        ByteArrayInputStream is = new ByteArrayInputStream(block.getTransaction().toByteArray());
-                        OutputStream os = new FileOutputStream(file, true);
-
-                        final int buffer_size = 1024 * 1024;
-                        byte[] bytes = new byte[buffer_size];
-                        for (; ; ) {
-                            int count = is.read(bytes, 0, buffer_size);
-                            if (count == -1)
-                                break;
-                            os.write(bytes, 0, count);
-                        }
-                        is.close();
-                        os.close();
-                    } catch (Exception ex) {
-                        ex.printStackTrace();
-                    }
-
-                    Intent i = new Intent();
-                    String extension = android.webkit.MimeTypeMap.getFileExtensionFromUrl(Uri.fromFile(file).toString());
-                    String mimetype = android.webkit.MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension);
-                    if (mimetype == null) mimetype = "text/plain";
-                    i.setDataAndType(Uri.fromFile(file), mimetype);
-                    context.startActivity(i);
-                }
-            });
+            transaction.setText(block.getTransaction().getUnformatted().toStringUtf8());
         }
 
         // expanded view
@@ -185,7 +152,13 @@ public class ChainExplorerAdapter extends BaseAdapter {
         prevHash.setText(ByteArrayConverter.bytesToHexString(block.getPreviousHash().toByteArray()));
 
         signature.setText(ByteArrayConverter.bytesToHexString(block.getSignature().toByteArray()));
-        expTransaction.setText(block.getTransaction().getUnformatted().toStringUtf8());
+        if (TrustChainBlockHelper.containsBinaryFile(block)) {
+            expTransaction.setText(block.getTransaction().getFormat() + " file\n" +
+                    "Click to open");
+            setOpenFileClickListener(expTransaction, block);
+        } else {
+            expTransaction.setText(block.getTransaction().getUnformatted().toStringUtf8());
+        }
 
         if (peerAlias.equals("me")) {
             ownChainIndicator.setBackgroundColor(ChainColor.getMyColor(context));
@@ -198,6 +171,41 @@ public class ChainExplorerAdapter extends BaseAdapter {
             linkChainIndicator.setBackgroundColor(ChainColor.getColor(context,ByteArrayConverter.bytesToHexString(pubKeyByteStr.toByteArray())));
         }
         return convertView;
+    }
+
+    private void setOpenFileClickListener(View view, final MessageProto.TrustChainBlock block) {
+        view.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                File file = new File(android.os.Environment.getExternalStorageDirectory() + "/TrustChain/" + block.getSignature() + "." + block.getTransaction().getFormat());
+                if (!file.getParentFile().exists()) file.getParentFile().mkdirs();
+
+                try {
+                    ByteArrayInputStream is = new ByteArrayInputStream(block.getTransaction().toByteArray());
+                    OutputStream os = new FileOutputStream(file, true);
+
+                    final int buffer_size = 1024 * 1024;
+                    byte[] bytes = new byte[buffer_size];
+                    for (; ; ) {
+                        int count = is.read(bytes, 0, buffer_size);
+                        if (count == -1)
+                            break;
+                        os.write(bytes, 0, count);
+                    }
+                    is.close();
+                    os.close();
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+
+                Intent i = new Intent();
+                String extension = android.webkit.MimeTypeMap.getFileExtensionFromUrl(Uri.fromFile(file).toString());
+                String mimetype = android.webkit.MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension);
+                if (mimetype == null) mimetype = "text/plain";
+                i.setDataAndType(Uri.fromFile(file), mimetype);
+                context.startActivity(i);
+            }
+        });
     }
 
     private String getPeerAlias(ByteString key) {
