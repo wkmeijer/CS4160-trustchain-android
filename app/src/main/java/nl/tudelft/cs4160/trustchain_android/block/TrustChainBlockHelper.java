@@ -423,8 +423,8 @@ public class TrustChainBlockHelper {
      * @return
      */
     public static boolean containsBinaryFile(MessageProto.TrustChainBlock block) {
-        return ! (block.getTransaction().getFormat() == null ||
-                block.getTransaction().getFormat().equals("") ||
-                block.getTransaction().getFormat().equals("txt"));
+        return block.getTransaction().getFormat() != null
+                && !block.getTransaction().getFormat().equals("");
+//              && !block.getTransaction().getFormat().equals("txt"));
     }
 }
