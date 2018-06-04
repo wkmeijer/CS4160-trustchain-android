@@ -180,7 +180,7 @@ public class PeerHandler {
      * Pick a random eligible inboxItem/invitee for sending an introduction request to.
      * The bootstrap is always an eligible peer, even it is is timed out.
      * Synchronized is to make sure this happens thread safe.
-     * @param excludePeer inboxItem to which the invitee is sent.
+     * @param excludePeers a list of peers to exclude, can be null
      * @return the eligible inboxItem if any, else null.
      */
     public synchronized Peer getEligiblePeer(Peer excludePeer) {
