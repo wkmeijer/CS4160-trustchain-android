@@ -224,7 +224,7 @@ public class Network {
      * Send a puncture request.
      *
      * @param peer         the destination.
-     * @param puncturePeer the inboxItem to puncture.
+     * @param puncturePeer the Peer to puncture.
      * @throws IOException
      */
     public void sendPunctureRequest(Peer peer, Peer puncturePeer) throws IOException {

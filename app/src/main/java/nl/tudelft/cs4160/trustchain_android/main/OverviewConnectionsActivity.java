@@ -303,7 +303,7 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
     }
 
     /**
-     * Start the thread send thread responsible for sending an introduction request to each connected peer every 5 seconds as a heartbeat timer.
+     * Start the thread send thread responsible for sending an introduction request to every peer every 5 seconds as a heartbeat timer.
      */
     private void startSendThread() {
         Thread sendThread = new Thread(() -> {
@@ -314,7 +314,7 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
             while(true) {
                 try {
                     if (peerHandler.size() > 0) {
-                        for(Peer peer : peerHandler.getactivePeersList()){
+                        for(Peer peer : peerHandler.getPeerList()){
                             network.sendIntroductionRequest(peer);
                         }
                     }
