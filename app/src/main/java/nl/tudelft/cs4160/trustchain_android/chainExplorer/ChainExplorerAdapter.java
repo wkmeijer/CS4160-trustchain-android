@@ -177,11 +177,20 @@ public class ChainExplorerAdapter extends BaseAdapter {
         view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                File file = new File(android.os.Environment.getExternalStorageDirectory() + "/TrustChain/" + block.getSignature() + "." + block.getTransaction().getFormat());
+                File file = new File(android.os.Environment.getExternalStorageDirectory() + "/TrustChain/" + Util.byteArrayToHexString(block.getSignature().toByteArray()) + "." + block.getTransaction().getFormat());
                 if (!file.getParentFile().exists()) file.getParentFile().mkdirs();
+                if (file.exists()) file.delete();
 
+//                try {
+//                    OutputStream os = context.openFileOutput(file.getAbsolutePath(), Context.MODE_PRIVATE);
+//                    os.write(block.getTransaction().toByteArray());
+//                    os.close();
+//                } catch (Exception e) {
+//                    e.printStackTrace();
+//                }
                 try {
-                    ByteArrayInputStream is = new ByteArrayInputStream(block.getTransaction().toByteArray());
+                    byte[] array = block.getTransaction().getUnformatted().toByteArray();
+                    ByteArrayInputStream is = new ByteArrayInputStream(Arrays.copyOfRange(array, 0, array.length));
                     OutputStream os = new FileOutputStream(file, true);
 
                     final int buffer_size = 1024 * 1024;
