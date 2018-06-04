@@ -77,8 +77,8 @@ public class Util {
      * @return boolean indicating a successful copy or not
      */
     public static boolean copyFile(InputStream is, File f) throws IOException {
-        if (!f.exists()) {
-            if (!f.getParentFile().mkdirs()) { //getParent because otherwise it creates a folder with that filename, we just need the dirs
+        if (!f.exists() && !f.getParentFile().exists()) {
+            if (!f.getParentFile().mkdirs()) { // create folder to contain the file
                 Log.e("Util", "Cannot create path!");
                 return false;
             }

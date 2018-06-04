@@ -1,9 +1,15 @@
 package nl.tudelft.cs4160.trustchain_android.chainExplorer;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.os.Build;
+import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,6 +23,7 @@ import com.google.protobuf.ByteString;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -36,6 +43,7 @@ public class ChainExplorerAdapter extends BaseAdapter {
     static final String TAG = "ChainExplorerAdapter";
 
     private final static String PEER_NAME_UNKNOWN = "unknown";
+    private static final int REQUEST_STORAGE_PERMISSIONS = 1;
 
     private Context context;
     private List<MessageProto.TrustChainBlock> blocksList;
@@ -179,44 +187,42 @@ public class ChainExplorerAdapter extends BaseAdapter {
         view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                File file = new File(android.os.Environment.getExternalStorageDirectory() + "/TrustChain/" + Util.byteArrayToHexString(block.getSignature().toByteArray()) + "." + block.getTransaction().getFormat());
-                if (!file.getParentFile().exists()) file.getParentFile().mkdirs();
-                if (file.exists()) file.delete();
-
-//                try {
-//                    OutputStream os = context.openFileOutput(file.getAbsolutePath(), Context.MODE_PRIVATE);
-//                    os.write(block.getTransaction().toByteArray());
-//                    os.close();
-//                } catch (Exception e) {
-//                    e.printStackTrace();
-//                }
-                try {
-                    byte[] array = block.getTransaction().getUnformatted().toByteArray();
-                    ByteArrayInputStream is = new ByteArrayInputStream(Arrays.copyOfRange(array, 0, array.length));
-                    OutputStream os = new FileOutputStream(file, true);
-
-                    final int buffer_size = 1024 * 1024;
-                    byte[] bytes = new byte[buffer_size];
-                    for (; ; ) {
-                        int count = is.read(bytes, 0, buffer_size);
-                        if (count == -1)
-                            break;
-                        os.write(bytes, 0, count);
-                    }
-                    is.close();
-                    os.close();
-                } catch (Exception ex) {
-                    ex.printStackTrace();
+                if (ContextCompat.checkSelfPermission(context, Manifest.permission.READ_EXTERNAL_STORAGE)
+                        != PackageManager.PERMISSION_GRANTED) {
+                    requestStoragePermissions();
+                    return;
                 }
 
-                Intent i = new Intent();
+                File file = new File(android.os.Environment.getExternalStorageDirectory() + "/TrustChain/" + Util.byteArrayToHexString(block.getSignature().toByteArray()) + "." + block.getTransaction().getFormat());
+                if (file.exists()) file.delete();
+
+                byte[] bytes = block.getTransaction().getUnformatted().toByteArray();
+                ByteArrayInputStream is = new ByteArrayInputStream(bytes);
+
+                try {
+                    if (!Util.copyFile(is, file)) {
+                        Snackbar.make(view, "Copying file to filesystem failed.", Snackbar.LENGTH_LONG).show();
+                        return;
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    Snackbar.make(view, "Copying file to filesystem failed.", Snackbar.LENGTH_LONG).show();
+                    return;
+                }
+
                 String extension = android.webkit.MimeTypeMap.getFileExtensionFromUrl(Uri.fromFile(file).toString());
                 String mimetype = android.webkit.MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension);
                 if (mimetype == null) mimetype = "text/plain";
+
+                Intent i = new Intent();
                 i.setDataAndType(Uri.fromFile(file), mimetype);
                 context.startActivity(i);
             }
         });
+    }
+
+    private void requestStoragePermissions() {
+        ActivityCompat.requestPermissions((Activity)context, new String[]{ Manifest.permission.WRITE_EXTERNAL_STORAGE }, REQUEST_STORAGE_PERMISSIONS);
     }
 
     private String getPeerAlias(ByteString key) {
