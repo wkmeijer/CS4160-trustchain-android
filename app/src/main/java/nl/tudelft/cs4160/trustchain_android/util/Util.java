@@ -1,6 +1,7 @@
 package nl.tudelft.cs4160.trustchain_android.util;
 
 import android.content.Context;
+import android.util.Log;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
@@ -8,7 +9,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.text.DecimalFormat;
 
 public class Util {
@@ -64,6 +67,42 @@ public class Util {
         return false;
     }
 
+
+    /**
+     * Copies an InputStream into a File in the FileSystem.
+     * Creates any non-existant parent folders to f.
+     *
+     * @param is InputStream to be copied.
+     * @param f  File to copy data to.
+     * @return boolean indicating a successful copy or not
+     */
+    public static boolean copyFile(InputStream is, File f) throws IOException {
+        if (!f.exists()) {
+            if (!f.getParentFile().mkdirs()) { //getParent because otherwise it creates a folder with that filename, we just need the dirs
+                Log.e("Util", "Cannot create path!");
+                return false;
+            }
+        }
+        OutputStream os = new FileOutputStream(f, true);
+
+        final int buffer_size = 1024 * 1024;
+        try {
+            byte[] bytes = new byte[buffer_size];
+            for (; ; ) {
+                int count = is.read(bytes, 0, buffer_size);
+                if (count == -1)
+                    break;
+                os.write(bytes, 0, count);
+            }
+            is.close();
+            os.close();
+            return true;
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return false;
+        }
+    }
+
     /**
      * Create a ellipsized string
      * @param input - the string to be ellipsized
@@ -89,5 +128,24 @@ public class Util {
         final String[] units = new String[] { "B", "kB", "MB", "GB", "TB" };
         int digitGroups = (int) (Math.log10(size)/Math.log10(1024));
         return new DecimalFormat("#,##0.#").format(size/Math.pow(1024, digitGroups)) + " " + units[digitGroups];
+    }
+
+    /**
+     * Method for converting a byte array to a hexString.
+     * This method is used for converting a signed 8-byte array back to a hashString in order to
+     * display it readable.
+     */
+    public static String byteArrayToHexString(byte[] bArray) {
+        if (bArray != null) {
+            final char[] hexArray = "0123456789ABCDEF".toCharArray();
+            char[] hexChars = new char[bArray.length * 2];
+            for (int j = 0; j < bArray.length; j++) {
+                int v = bArray[j] & 0xFF;
+                hexChars[j * 2] = hexArray[v >>> 4];
+                hexChars[j * 2 + 1] = hexArray[v & 0x0F];
+            }
+            return new String(hexChars);
+        }
+        return "";
     }
 }

@@ -13,14 +13,11 @@ import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import com.google.gson.Gson;
 
 import org.jmrtd.PassportService;
 
@@ -35,7 +32,7 @@ import nl.tudelft.cs4160.trustchain_android.R;
 import nl.tudelft.cs4160.trustchain_android.passport.DocumentData;
 import nl.tudelft.cs4160.trustchain_android.passport.PassportHolder;
 import nl.tudelft.cs4160.trustchain_android.passport.ocr.ManualInputActivity;
-import nl.tudelft.cs4160.trustchain_android.passport.ocr.util.Util;
+import nl.tudelft.cs4160.trustchain_android.util.Util;
 
 public class PassportConActivity extends AppCompatActivity {
 
