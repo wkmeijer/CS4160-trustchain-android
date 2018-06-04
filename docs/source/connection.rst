@@ -27,7 +27,7 @@ Connections overview
 ====================
 After starting the app and choosing a username a screen is shown with an overview of all current connections. The screens is divided into two columns. The left column shows peers which are actively connected with you. The right screen shows peers, which you have heard about, but have yet to respond to you. They have been introduced to you through the IntroductionRequest message.
 
-In order to prevent sending messages indefinitely to peers who aren't responding peers can time-out, the bootstrap server will never time-out. Every five seconds a message is send to all peers asking for an introduction to more peers. This also acts as a heartbeat timer keeping track of which peers are still alive. If no messages were received from a peer for 25 seconds the connection is deemed to be lost and the peer will be removed from the list. A new introduction would have to take place to reconnect to the peer.
+In order to prevent sending messages indefinitely to peers who aren't responding peers can time-out, the bootstrap server will never time-out. Every five seconds a message is send to 10 random peers asking for an introduction to more peers. This is limited to 10, because otherwise a large network will be sending a lot of traffic. (imagine 100 peers sending about 1kb size messagse to 100 other peers every 5 seconds for an hour) These introduction requests also act as a heartbeat timer keeping track of which peers are still alive. If no messages were received from a peer for 25 seconds the connection is deemed to be lost and the peer will be removed from the list. A new introduction would have to take place to reconnect to the peer.
 
 For each peer the following information is displayed and updated every second:
 

@@ -35,6 +35,8 @@ import java.nio.ByteBuffer;
 import java.nio.channels.DatagramChannel;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import nl.tudelft.cs4160.trustchain_android.R;
 import nl.tudelft.cs4160.trustchain_android.block.TrustChainBlockHelper;
@@ -303,7 +305,8 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
     }
 
     /**
-     * Start the thread send thread responsible for sending an introduction request to every peer every 5 seconds as a heartbeat timer.
+     * Start the thread send thread responsible for sending an introduction request to 10 random peers every 5 seconds as a heartbeat timer.
+     * This number is chosen arbitrarily to avoid the app sending too much packets and using too much data keeping connections open with many peers.
      */
     private void startSendThread() {
         Thread sendThread = new Thread(() -> {
@@ -314,8 +317,23 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
             while(true) {
                 try {
                     if (peerHandler.size() > 0) {
-                        for(Peer peer : peerHandler.getPeerList()){
-                            network.sendIntroductionRequest(peer);
+                        // select 10 random peers to send an introduction request to
+                        int limit = 10;
+                        ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
+                        lock.readLock().lock();
+                        List<Peer> connectedPeers = new ArrayList<>(peerHandler.getPeerList());
+                        lock.readLock().unlock();
+                        if(connectedPeers.size() <= limit) {
+                            for(Peer peer : connectedPeers){
+                                network.sendIntroductionRequest(peer);
+                            }
+                        } else {
+                            Random rand = new Random();
+                            for (int i = 0; i < limit; i++) {
+                                int index = rand.nextInt(connectedPeers.size());
+                                network.sendIntroductionRequest(connectedPeers.get(index));
+                                connectedPeers.remove(index);
+                            }
                         }
                     }
                     // if the network is reachable again, remove the snackbar

@@ -12,8 +12,8 @@ import nl.tudelft.cs4160.trustchain_android.R;
 public class ConnectionExplanationActivity extends AppCompatActivity {
 
     private ArrayList<String> symbolList;
-    private String[] explanationText = {"Connected with peer", "Connecting with peer", "Cannot connect with peer", "Received a packet from peer", "Sent a packet to peer"};
-    private int[] colorList = {R.color.colorStatusConnected, R.color.colorStatusConnecting, R.color.colorStatusCantConnect, R.color.colorReceived, R.color.colorSent};
+    private String[] explanationText = {"Connected with peer", "Connecting with peer", "Cannot connect with peer", "Received a packet from peer", "Sent a packet to peer", "Time since last received message", "Time since last message sent"};
+    private int[] colorList = {R.color.colorStatusConnected, R.color.colorStatusConnecting, R.color.colorStatusCantConnect, R.color.colorReceived, R.color.colorSent, 0, 0};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,5 +58,8 @@ public class ConnectionExplanationActivity extends AppCompatActivity {
             String symbol = this.getString(R.string.indicator_symbol);
             symbolList.add(symbol);
         }
+
+        symbolList.add(getString(R.string.last_received));
+        symbolList.add(getString(R.string.last_sent));
     }
 }
