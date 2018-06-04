@@ -310,7 +310,7 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
      */
     private void startSendThread() {
         Thread sendThread = new Thread(() -> {
-            boolean networkUnreachable = false;
+            boolean snackbarVisible = false;
             View view = findViewById(android.R.id.content);
             Snackbar networkUnreachableSnackbar = Snackbar.make(view, "Network unavailable", Snackbar.LENGTH_INDEFINITE);
 
@@ -337,12 +337,17 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
                         }
                     }
                     // if the network is reachable again, remove the snackbar
-                    if(networkUnreachable) {
+                    if(snackbarVisible) {
                         networkUnreachableSnackbar.dismiss();
+                        snackbarVisible = false;
+                        Log.i(TAG, "Network reachable again");
                     }
                 } catch (SocketException e) {
-                    networkUnreachable = true;
-                    networkUnreachableSnackbar.show();
+                    Log.i(TAG, "network unreachable");
+                    if(!snackbarVisible) {
+                        networkUnreachableSnackbar.show();
+                        snackbarVisible = true;
+                    }
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
