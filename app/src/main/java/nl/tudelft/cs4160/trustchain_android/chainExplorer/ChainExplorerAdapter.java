@@ -140,14 +140,6 @@ public class ChainExplorerAdapter extends BaseAdapter {
         linkPeer.setText(linkPeerAlias);
         linkSeqNum.setText(linkSeqNumStr);
 
-        if (TrustChainBlockHelper.containsBinaryFile(block)) {
-            transaction.setText(block.getTransaction().getFormat() + " file\n" +
-                    "Click to open");
-            setOpenFileClickListener(transaction, block);
-        } else {
-            transaction.setText(block.getTransaction().getUnformatted().toStringUtf8());
-        }
-
         // expanded view
         TextView pubKey = convertView.findViewById(R.id.pub_key);
         setOnClickListener(pubKey);
@@ -162,11 +154,18 @@ public class ChainExplorerAdapter extends BaseAdapter {
         prevHash.setText(ByteArrayConverter.bytesToHexString(block.getPreviousHash().toByteArray()));
 
         signature.setText(ByteArrayConverter.bytesToHexString(block.getSignature().toByteArray()));
+
         if (TrustChainBlockHelper.containsBinaryFile(block)) {
+            // If the block contains a file show the 'click to open' text
+            transaction.setText(block.getTransaction().getFormat() + " file\n" +
+                    context.getString(R.string.click_to_open));
+            setOpenFileClickListener(transaction, block);
+
             expTransaction.setText(block.getTransaction().getFormat() + " file\n" +
-                    "Click to open");
+                    context.getString(R.string.click_to_open));
             setOpenFileClickListener(expTransaction, block);
         } else {
+            transaction.setText(block.getTransaction().getUnformatted().toStringUtf8());
             expTransaction.setText(block.getTransaction().getUnformatted().toStringUtf8());
         }
 
@@ -183,11 +182,17 @@ public class ChainExplorerAdapter extends BaseAdapter {
         return convertView;
     }
 
+    /**
+     * Takes a view and a TrustChainBlock, attaches a click listener to the view that extracts the
+     * file from the given block and opens it using an intent.
+     * @param view View to attach the listener to
+     * @param block TrustChainBlock that contains a file
+     */
     private void setOpenFileClickListener(View view, final MessageProto.TrustChainBlock block) {
         view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (ContextCompat.checkSelfPermission(context, Manifest.permission.READ_EXTERNAL_STORAGE)
+                if (ContextCompat.checkSelfPermission(context, Manifest.permission.WRITE_EXTERNAL_STORAGE)
                         != PackageManager.PERMISSION_GRANTED) {
                     requestStoragePermissions();
                     return;
@@ -212,7 +217,7 @@ public class ChainExplorerAdapter extends BaseAdapter {
 
                 String extension = android.webkit.MimeTypeMap.getFileExtensionFromUrl(Uri.fromFile(file).toString());
                 String mimetype = android.webkit.MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension);
-                if (mimetype == null) mimetype = "text/plain";
+                if (mimetype == null) mimetype = "text/plain"; // If no mime type is found, try to open as plain text
 
                 Intent i = new Intent();
                 i.setDataAndType(Uri.fromFile(file), mimetype);

@@ -376,6 +376,11 @@ public class PeerSummaryActivity extends AppCompatActivity implements CrawlReque
         return kp.getPublicKeyPair().toBytes();
     }
 
+    /**
+     * Called when the user presses the 'send document' button.
+     * Opens a FileDialog to let the user select a file to send.
+     * @param view
+     */
     public void onClickChooseFile(View view) {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
                 != PackageManager.PERMISSION_GRANTED) {
@@ -417,7 +422,7 @@ public class PeerSummaryActivity extends AppCompatActivity implements CrawlReque
                 switch (permissions[i]) {
                     case Manifest.permission.READ_EXTERNAL_STORAGE:
                         if (grantResults[i] != PackageManager.PERMISSION_GRANTED) {
-                            finish();
+                            // Permissions are denied, do nothing.
                         } else {
                             onClickChooseFile(null);
                         }
