@@ -1,6 +1,14 @@
 package nl.tudelft.cs4160.trustchain_android.peersummary.mutualblock;
 
+import android.Manifest;
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.net.Uri;
+import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,23 +17,30 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 
 import nl.tudelft.cs4160.trustchain_android.R;
+import nl.tudelft.cs4160.trustchain_android.block.TrustChainBlockHelper;
 import nl.tudelft.cs4160.trustchain_android.block.ValidationResult;
 import nl.tudelft.cs4160.trustchain_android.chainExplorer.ChainColor;
 import nl.tudelft.cs4160.trustchain_android.crypto.DualSecret;
 import nl.tudelft.cs4160.trustchain_android.crypto.Key;
+import nl.tudelft.cs4160.trustchain_android.message.MessageProto;
 import nl.tudelft.cs4160.trustchain_android.peersummary.PeerSummaryActivity;
 import nl.tudelft.cs4160.trustchain_android.storage.database.TrustChainDBHelper;
 import nl.tudelft.cs4160.trustchain_android.storage.sharedpreferences.UserNameStorage;
 import nl.tudelft.cs4160.trustchain_android.util.ByteArrayConverter;
+import nl.tudelft.cs4160.trustchain_android.util.Util;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 public class MutualBlockAdapter extends RecyclerView.Adapter<MutualBlockAdapter.ViewHolder> {
 
+    private static final int REQUEST_STORAGE_PERMISSIONS = 1;
     private ArrayList<MutualBlockItem> mutualBlocks;
     private Context context;
     private DualSecret keyPair;
@@ -109,13 +124,14 @@ public class MutualBlockAdapter extends RecyclerView.Adapter<MutualBlockAdapter.
 
             TextView transTv = viewHolder.transactionTextView;
 
-            if (mutualBlock.getTransactionFormat() == null ||
-                mutualBlock.getTransactionFormat().equals("") ||
-                mutualBlock.getTransactionFormat().equals("txt")) {
+            if (TrustChainBlockHelper.containsBinaryFile(mutualBlock)) {
+                // If the block contains a file show the 'click to open' text
 
-                transTv.setText(new String(mutualBlock.getTransaction(), UTF_8));
+                transTv.setText(mutualBlock.getTransactionFormat() + " file\n" +
+                                context.getString(R.string.click_to_open));
+                setOpenFileClickListener(transTv, mutualBlock.getBlock());
             } else {
-                transTv.setText(mutualBlock.getTransactionFormat() + " file");
+                transTv.setText(new String(mutualBlock.getTransaction(), UTF_8));
             }
 
             String myPublicKeyString = null;
@@ -136,6 +152,54 @@ public class MutualBlockAdapter extends RecyclerView.Adapter<MutualBlockAdapter.
                 viewHolder.link_chain_indicator_mutualBlock.setBackgroundColor(ChainColor.getColor(context, linkedKey));
             }
         }
+    }
+
+    /**
+     * Takes a view and a TrustChainBlock, attaches a click listener to the view that extracts the
+     * file from the given block and opens it using an intent.
+     * @param view View to attach the listener to
+     * @param block TrustChainBlock that contains a file
+     */
+    private void setOpenFileClickListener(View view, final MessageProto.TrustChainBlock block) {
+        view.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (ContextCompat.checkSelfPermission(context, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                        != PackageManager.PERMISSION_GRANTED) {
+                    requestStoragePermissions();
+                    return;
+                }
+
+                File file = new File(android.os.Environment.getExternalStorageDirectory() + "/TrustChain/" + Util.byteArrayToHexString(block.getSignature().toByteArray()) + "." + block.getTransaction().getFormat());
+                if (file.exists()) file.delete();
+
+                byte[] bytes = block.getTransaction().getUnformatted().toByteArray();
+                ByteArrayInputStream is = new ByteArrayInputStream(bytes);
+
+                try {
+                    if (!Util.copyFile(is, file)) {
+                        Snackbar.make(view, "Copying file to filesystem failed.", Snackbar.LENGTH_LONG).show();
+                        return;
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    Snackbar.make(view, "Copying file to filesystem failed.", Snackbar.LENGTH_LONG).show();
+                    return;
+                }
+
+                String extension = android.webkit.MimeTypeMap.getFileExtensionFromUrl(Uri.fromFile(file).toString());
+                String mimetype = android.webkit.MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension);
+                if (mimetype == null) mimetype = "text/plain"; // If no mime type is found, try to open as plain text
+
+                Intent i = new Intent();
+                i.setDataAndType(Uri.fromFile(file), mimetype);
+                context.startActivity(i);
+            }
+        });
+    }
+
+    private void requestStoragePermissions() {
+        ActivityCompat.requestPermissions((Activity)context, new String[]{ Manifest.permission.WRITE_EXTERNAL_STORAGE }, REQUEST_STORAGE_PERMISSIONS);
     }
 
     /**
