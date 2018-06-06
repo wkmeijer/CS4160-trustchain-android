@@ -313,6 +313,17 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
             View view = findViewById(android.R.id.content);
             Snackbar networkUnreachableSnackbar = Snackbar.make(view, "Network unavailable", Snackbar.LENGTH_INDEFINITE);
 
+            // wait max one second for the CreateInetSocketAddressTask to finish, indicated by that the bootstrap is added to the
+            int t = 0;
+            while(peerHandler.size() == 0 && t < 100) {
+                try {
+                    Thread.sleep(10);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                t++;
+            }
+
             while(true) {
                 try {
                     if (peerHandler.size() > 0) {
