@@ -72,10 +72,8 @@ This way a host keeps track of all peers that ever interacted with them and keep
 For each peer the following information is stored:
  - address - the InetSocketAddress where this peer can be reached
  - peerId - the identifier of this peer
-// -  int connectionType;
-// -  String networkOperator;
  - lastSendTime - the last time a message was send to this peer
- - the - lastReceiveTime last time a message was received from this peer
+ - lastReceiveTime - the last time a message was received from this peer
  - long creationTime - the time this peer was first introduced to this host
 
 Every second the peer list is checked for dead peers. Dead peers are peers from which no message was received in the last 25 seconds. These dead peers are removed from the peerlist.
