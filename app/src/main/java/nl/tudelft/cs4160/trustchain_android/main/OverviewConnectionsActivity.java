@@ -123,8 +123,8 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
         if (kp == null) {
             kp = Key.createAndSaveKeys(getApplicationContext());
         }
-        int blocks = dbHelper.getMaxSeqNum(kp.getPublicKey().toBytes());
-        if (blocks == 0) {
+        int blockCount = dbHelper.getBlockCount();
+        if (blockCount < 1) {
             MessageProto.TrustChainBlock block = TrustChainBlockHelper.createGenesisBlock(kp);
             dbHelper.insertInDB(block);
         }

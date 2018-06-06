@@ -311,6 +311,30 @@ public class TrustChainDBHelper extends SQLiteOpenHelper {
         return res;
     }
 
+    public int getBlockCount() {
+        SQLiteDatabase dbReadable = getReadableDatabase();
+        int res = -1;
+        String[] projection = new String[]{"count(" +
+                TrustChainDBContract.BlockEntry.COLUMN_NAME_SEQUENCE_NUMBER + ")"};
+
+        Cursor cursor = dbReadable.query(
+                TrustChainDBContract.BlockEntry.TABLE_NAME,
+                projection,
+                null,
+                null,
+                null,
+                null,
+                null
+        );
+        if (cursor.getCount() == 1) {
+            cursor.moveToFirst();
+            res = cursor.getInt(cursor.getColumnIndex(
+                    "count(" + TrustChainDBContract.BlockEntry.COLUMN_NAME_SEQUENCE_NUMBER + ")"));
+        }
+        cursor.close();
+        return res;
+    }
+
     /**
      * Retrieves all the blocks inserted in the database.
      *
