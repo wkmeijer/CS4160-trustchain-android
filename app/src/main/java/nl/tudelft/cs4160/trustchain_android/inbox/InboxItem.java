@@ -16,6 +16,7 @@ import nl.tudelft.cs4160.trustchain_android.network.peer.Peer;
 public class InboxItem implements Serializable {
     private Peer peer;
     private ArrayList<Integer> halfBlockSequenceNumbers;
+    long serialVersionUID = -5061379998789838600L;
 
     /**
      * Inbox item constructor
@@ -27,21 +28,6 @@ public class InboxItem implements Serializable {
         this.halfBlockSequenceNumbers = halfBlockSequenceNumbers;
     }
 
-//    public String getUserName() {
-//        return userName;
-//    }
-//
-//    public int getPort() {
-//        return port;
-//    }
-//
-//    public void setPort(int port) {
-//        this.port = port;
-//    }
-//
-//    public void setUserName(String userName) {
-//        this.userName = userName;
-//    }
 
     public ArrayList<Integer> getHalfBlocks() {
         return halfBlockSequenceNumbers;
@@ -54,22 +40,6 @@ public class InboxItem implements Serializable {
     public void setHalfBlocks(ArrayList<Integer> halfBlocks) {
         this.halfBlockSequenceNumbers = halfBlocks;
     }
-//
-//    public String getAddress() {
-//        return address;
-//    }
-//
-//    public void setAddress(String address) {
-//        this.address = address;
-//    }
-//
-//    public PublicKeyPair getPublicKeyPair() {
-//        return new PublicKeyPair(publicKeyPair);
-//    }
-//
-//    public void setPublicKeyPair(PublicKeyPair publicKeyPair) {
-//        this.publicKeyPair = publicKeyPair.toBytes();
-//    }
 
     /**
      * return the amount of unread blocks

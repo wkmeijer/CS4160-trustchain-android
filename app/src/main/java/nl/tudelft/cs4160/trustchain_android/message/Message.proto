@@ -56,15 +56,13 @@ message CrawlRequest {
 
 message IntroductionRequest {
     int64 connection_type = 1;
-    string network_operator = 2;
 }
 
 message IntroductionResponse {
     int64 connection_type = 1;
-    string network_operator = 2;
-    string internal_source_socket = 3;
-    Peer invitee = 4;
-    repeated Peer peers = 5;
+    string internal_source_socket = 2;
+    Peer invitee = 3;
+    repeated Peer peers = 4;
 }
 
 message Puncture {

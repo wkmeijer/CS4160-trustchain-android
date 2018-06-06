@@ -25,16 +25,10 @@ public class Peer implements Serializable {
     final private static int TIMEOUT = 15000;
     final private static int REMOVE_TIMEOUT = 25000;
     private MessageProto.Peer protoPeer;
-//    private InetSocketAddress address;
-//    private String peerId;
-//    private boolean hasReceivedData; // still here for backwards compatibility
-//    private boolean hasSentData; // still here for backwards compatibility
-//    private int connectionType = -1;
-//    private String networkOperator = ""; // still here for backwards compatibility
     private long lastSentTime = -1;
     private long lastReceiveTime = -1;
     private long creationTime;
-//    static final long serialVersionUID = 3246968294284429472L; // for backwards compatibility, note that this will cause crashes in the deserialization function if not properly updated on changes
+    long serialVersionUID = -8872742022617111380L;
 
     /**
      * Create a peer, for consistency protocolbuffers is used for this too, instead of simply serializing this.
@@ -246,18 +240,5 @@ public class Peer implements Serializable {
         int result = getAddress() != null ? getAddress().hashCode() : 0;
         result = 31 * result + (getPublicKeyPair() != null ? getPublicKeyPair().hashCode() : 0);
         return result;
-    }
-
-    public static byte[] serialize(Object obj) throws IOException {
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        ObjectOutputStream os = new ObjectOutputStream(out);
-        os.writeObject(obj);
-        return out.toByteArray();
-    }
-
-    public static Peer deserialize(byte[] data) throws IOException, ClassNotFoundException {
-        ByteArrayInputStream in = new ByteArrayInputStream(data);
-        ObjectInputStream is = new ObjectInputStream(in);
-        return (Peer) is.readObject();
     }
 }

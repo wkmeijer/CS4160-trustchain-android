@@ -43,7 +43,6 @@ public class Network {
     private String name;
     private int connectionType;
     private static InetSocketAddress internalSourceAddress;
-    private String networkOperator;
     private static Network network;
     private PublicKeyPair publicKey;
     private MessageHandler messageHandler;
@@ -82,8 +81,6 @@ public class Network {
      * @param context is for retrieving from storage.
      */
     private void initVariables(Context context) {
-        TelephonyManager telephonyManager = ((TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE));
-        networkOperator = telephonyManager.getNetworkOperatorName();
         publicKey = Key.loadKeys(context).getPublicKeyPair();
         messageHandler = new MessageHandler(network, new TrustChainDBHelper(context),
                 new PeerHandler(publicKey,UserNameStorage.getUserName(context)));
@@ -173,7 +170,6 @@ public class Network {
     public void sendIntroductionRequest(Peer peer) throws IOException {
         MessageProto.IntroductionRequest request = MessageProto.IntroductionRequest.newBuilder()
                 .setConnectionType(connectionType)
-                .setNetworkOperator(networkOperator)
                 .build();
 
         Message.Builder messageBuilder = Message.newBuilder()
@@ -289,7 +285,6 @@ public class Network {
 
         MessageProto.IntroductionResponse response = MessageProto.IntroductionResponse.newBuilder()
                 .setConnectionType(connectionType)
-                .setNetworkOperator(networkOperator)
                 .setInternalSourceSocket(internalSourceAddress.toString())
                 .setInvitee(invitee.getProtoPeer())
                 .addAllPeers(peers)

@@ -5722,16 +5722,6 @@ public final class MessageProto {
      * <code>int64 connection_type = 1;</code>
      */
     long getConnectionType();
-
-    /**
-     * <code>string network_operator = 2;</code>
-     */
-    java.lang.String getNetworkOperator();
-    /**
-     * <code>string network_operator = 2;</code>
-     */
-    com.google.protobuf.ByteString
-        getNetworkOperatorBytes();
   }
   /**
    * Protobuf type {@code message.IntroductionRequest}
@@ -5747,7 +5737,6 @@ public final class MessageProto {
     }
     private IntroductionRequest() {
       connectionType_ = 0L;
-      networkOperator_ = "";
     }
 
     @java.lang.Override
@@ -5786,12 +5775,6 @@ public final class MessageProto {
               connectionType_ = input.readInt64();
               break;
             }
-            case 18: {
-              java.lang.String s = input.readStringRequireUtf8();
-
-              networkOperator_ = s;
-              break;
-            }
           }
         }
       } catch (com.google.protobuf.InvalidProtocolBufferException e) {
@@ -5825,40 +5808,6 @@ public final class MessageProto {
       return connectionType_;
     }
 
-    public static final int NETWORK_OPERATOR_FIELD_NUMBER = 2;
-    private volatile java.lang.Object networkOperator_;
-    /**
-     * <code>string network_operator = 2;</code>
-     */
-    public java.lang.String getNetworkOperator() {
-      java.lang.Object ref = networkOperator_;
-      if (ref instanceof java.lang.String) {
-        return (java.lang.String) ref;
-      } else {
-        com.google.protobuf.ByteString bs = 
-            (com.google.protobuf.ByteString) ref;
-        java.lang.String s = bs.toStringUtf8();
-        networkOperator_ = s;
-        return s;
-      }
-    }
-    /**
-     * <code>string network_operator = 2;</code>
-     */
-    public com.google.protobuf.ByteString
-        getNetworkOperatorBytes() {
-      java.lang.Object ref = networkOperator_;
-      if (ref instanceof java.lang.String) {
-        com.google.protobuf.ByteString b = 
-            com.google.protobuf.ByteString.copyFromUtf8(
-                (java.lang.String) ref);
-        networkOperator_ = b;
-        return b;
-      } else {
-        return (com.google.protobuf.ByteString) ref;
-      }
-    }
-
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
       byte isInitialized = memoizedIsInitialized;
@@ -5874,9 +5823,6 @@ public final class MessageProto {
       if (connectionType_ != 0L) {
         output.writeInt64(1, connectionType_);
       }
-      if (!getNetworkOperatorBytes().isEmpty()) {
-        com.google.protobuf.GeneratedMessageV3.writeString(output, 2, networkOperator_);
-      }
       unknownFields.writeTo(output);
     }
 
@@ -5888,9 +5834,6 @@ public final class MessageProto {
       if (connectionType_ != 0L) {
         size += com.google.protobuf.CodedOutputStream
           .computeInt64Size(1, connectionType_);
-      }
-      if (!getNetworkOperatorBytes().isEmpty()) {
-        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(2, networkOperator_);
       }
       size += unknownFields.getSerializedSize();
       memoizedSize = size;
@@ -5910,8 +5853,6 @@ public final class MessageProto {
       boolean result = true;
       result = result && (getConnectionType()
           == other.getConnectionType());
-      result = result && getNetworkOperator()
-          .equals(other.getNetworkOperator());
       result = result && unknownFields.equals(other.unknownFields);
       return result;
     }
@@ -5926,8 +5867,6 @@ public final class MessageProto {
       hash = (37 * hash) + CONNECTION_TYPE_FIELD_NUMBER;
       hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
           getConnectionType());
-      hash = (37 * hash) + NETWORK_OPERATOR_FIELD_NUMBER;
-      hash = (53 * hash) + getNetworkOperator().hashCode();
       hash = (29 * hash) + unknownFields.hashCode();
       memoizedHashCode = hash;
       return hash;
@@ -6059,8 +5998,6 @@ public final class MessageProto {
         super.clear();
         connectionType_ = 0L;
 
-        networkOperator_ = "";
-
         return this;
       }
 
@@ -6084,7 +6021,6 @@ public final class MessageProto {
       public nl.tudelft.cs4160.trustchain_android.message.MessageProto.IntroductionRequest buildPartial() {
         nl.tudelft.cs4160.trustchain_android.message.MessageProto.IntroductionRequest result = new nl.tudelft.cs4160.trustchain_android.message.MessageProto.IntroductionRequest(this);
         result.connectionType_ = connectionType_;
-        result.networkOperator_ = networkOperator_;
         onBuilt();
         return result;
       }
@@ -6128,10 +6064,6 @@ public final class MessageProto {
         if (other == nl.tudelft.cs4160.trustchain_android.message.MessageProto.IntroductionRequest.getDefaultInstance()) return this;
         if (other.getConnectionType() != 0L) {
           setConnectionType(other.getConnectionType());
-        }
-        if (!other.getNetworkOperator().isEmpty()) {
-          networkOperator_ = other.networkOperator_;
-          onChanged();
         }
         this.mergeUnknownFields(other.unknownFields);
         onChanged();
@@ -6182,75 +6114,6 @@ public final class MessageProto {
       public Builder clearConnectionType() {
         
         connectionType_ = 0L;
-        onChanged();
-        return this;
-      }
-
-      private java.lang.Object networkOperator_ = "";
-      /**
-       * <code>string network_operator = 2;</code>
-       */
-      public java.lang.String getNetworkOperator() {
-        java.lang.Object ref = networkOperator_;
-        if (!(ref instanceof java.lang.String)) {
-          com.google.protobuf.ByteString bs =
-              (com.google.protobuf.ByteString) ref;
-          java.lang.String s = bs.toStringUtf8();
-          networkOperator_ = s;
-          return s;
-        } else {
-          return (java.lang.String) ref;
-        }
-      }
-      /**
-       * <code>string network_operator = 2;</code>
-       */
-      public com.google.protobuf.ByteString
-          getNetworkOperatorBytes() {
-        java.lang.Object ref = networkOperator_;
-        if (ref instanceof String) {
-          com.google.protobuf.ByteString b = 
-              com.google.protobuf.ByteString.copyFromUtf8(
-                  (java.lang.String) ref);
-          networkOperator_ = b;
-          return b;
-        } else {
-          return (com.google.protobuf.ByteString) ref;
-        }
-      }
-      /**
-       * <code>string network_operator = 2;</code>
-       */
-      public Builder setNetworkOperator(
-          java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  
-        networkOperator_ = value;
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>string network_operator = 2;</code>
-       */
-      public Builder clearNetworkOperator() {
-        
-        networkOperator_ = getDefaultInstance().getNetworkOperator();
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>string network_operator = 2;</code>
-       */
-      public Builder setNetworkOperatorBytes(
-          com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
-        
-        networkOperator_ = value;
         onChanged();
         return this;
       }
@@ -6313,58 +6176,48 @@ public final class MessageProto {
     long getConnectionType();
 
     /**
-     * <code>string network_operator = 2;</code>
-     */
-    java.lang.String getNetworkOperator();
-    /**
-     * <code>string network_operator = 2;</code>
-     */
-    com.google.protobuf.ByteString
-        getNetworkOperatorBytes();
-
-    /**
-     * <code>string internal_source_socket = 3;</code>
+     * <code>string internal_source_socket = 2;</code>
      */
     java.lang.String getInternalSourceSocket();
     /**
-     * <code>string internal_source_socket = 3;</code>
+     * <code>string internal_source_socket = 2;</code>
      */
     com.google.protobuf.ByteString
         getInternalSourceSocketBytes();
 
     /**
-     * <code>.message.Peer invitee = 4;</code>
+     * <code>.message.Peer invitee = 3;</code>
      */
     boolean hasInvitee();
     /**
-     * <code>.message.Peer invitee = 4;</code>
+     * <code>.message.Peer invitee = 3;</code>
      */
     nl.tudelft.cs4160.trustchain_android.message.MessageProto.Peer getInvitee();
     /**
-     * <code>.message.Peer invitee = 4;</code>
+     * <code>.message.Peer invitee = 3;</code>
      */
     nl.tudelft.cs4160.trustchain_android.message.MessageProto.PeerOrBuilder getInviteeOrBuilder();
 
     /**
-     * <code>repeated .message.Peer peers = 5;</code>
+     * <code>repeated .message.Peer peers = 4;</code>
      */
     java.util.List<nl.tudelft.cs4160.trustchain_android.message.MessageProto.Peer> 
         getPeersList();
     /**
-     * <code>repeated .message.Peer peers = 5;</code>
+     * <code>repeated .message.Peer peers = 4;</code>
      */
     nl.tudelft.cs4160.trustchain_android.message.MessageProto.Peer getPeers(int index);
     /**
-     * <code>repeated .message.Peer peers = 5;</code>
+     * <code>repeated .message.Peer peers = 4;</code>
      */
     int getPeersCount();
     /**
-     * <code>repeated .message.Peer peers = 5;</code>
+     * <code>repeated .message.Peer peers = 4;</code>
      */
     java.util.List<? extends nl.tudelft.cs4160.trustchain_android.message.MessageProto.PeerOrBuilder> 
         getPeersOrBuilderList();
     /**
-     * <code>repeated .message.Peer peers = 5;</code>
+     * <code>repeated .message.Peer peers = 4;</code>
      */
     nl.tudelft.cs4160.trustchain_android.message.MessageProto.PeerOrBuilder getPeersOrBuilder(
         int index);
@@ -6383,7 +6236,6 @@ public final class MessageProto {
     }
     private IntroductionResponse() {
       connectionType_ = 0L;
-      networkOperator_ = "";
       internalSourceSocket_ = "";
       peers_ = java.util.Collections.emptyList();
     }
@@ -6427,16 +6279,10 @@ public final class MessageProto {
             case 18: {
               java.lang.String s = input.readStringRequireUtf8();
 
-              networkOperator_ = s;
-              break;
-            }
-            case 26: {
-              java.lang.String s = input.readStringRequireUtf8();
-
               internalSourceSocket_ = s;
               break;
             }
-            case 34: {
+            case 26: {
               nl.tudelft.cs4160.trustchain_android.message.MessageProto.Peer.Builder subBuilder = null;
               if (invitee_ != null) {
                 subBuilder = invitee_.toBuilder();
@@ -6449,10 +6295,10 @@ public final class MessageProto {
 
               break;
             }
-            case 42: {
-              if (!((mutable_bitField0_ & 0x00000010) == 0x00000010)) {
+            case 34: {
+              if (!((mutable_bitField0_ & 0x00000008) == 0x00000008)) {
                 peers_ = new java.util.ArrayList<nl.tudelft.cs4160.trustchain_android.message.MessageProto.Peer>();
-                mutable_bitField0_ |= 0x00000010;
+                mutable_bitField0_ |= 0x00000008;
               }
               peers_.add(
                   input.readMessage(nl.tudelft.cs4160.trustchain_android.message.MessageProto.Peer.parser(), extensionRegistry));
@@ -6466,7 +6312,7 @@ public final class MessageProto {
         throw new com.google.protobuf.InvalidProtocolBufferException(
             e).setUnfinishedMessage(this);
       } finally {
-        if (((mutable_bitField0_ & 0x00000010) == 0x00000010)) {
+        if (((mutable_bitField0_ & 0x00000008) == 0x00000008)) {
           peers_ = java.util.Collections.unmodifiableList(peers_);
         }
         this.unknownFields = unknownFields.build();
@@ -6495,44 +6341,10 @@ public final class MessageProto {
       return connectionType_;
     }
 
-    public static final int NETWORK_OPERATOR_FIELD_NUMBER = 2;
-    private volatile java.lang.Object networkOperator_;
-    /**
-     * <code>string network_operator = 2;</code>
-     */
-    public java.lang.String getNetworkOperator() {
-      java.lang.Object ref = networkOperator_;
-      if (ref instanceof java.lang.String) {
-        return (java.lang.String) ref;
-      } else {
-        com.google.protobuf.ByteString bs = 
-            (com.google.protobuf.ByteString) ref;
-        java.lang.String s = bs.toStringUtf8();
-        networkOperator_ = s;
-        return s;
-      }
-    }
-    /**
-     * <code>string network_operator = 2;</code>
-     */
-    public com.google.protobuf.ByteString
-        getNetworkOperatorBytes() {
-      java.lang.Object ref = networkOperator_;
-      if (ref instanceof java.lang.String) {
-        com.google.protobuf.ByteString b = 
-            com.google.protobuf.ByteString.copyFromUtf8(
-                (java.lang.String) ref);
-        networkOperator_ = b;
-        return b;
-      } else {
-        return (com.google.protobuf.ByteString) ref;
-      }
-    }
-
-    public static final int INTERNAL_SOURCE_SOCKET_FIELD_NUMBER = 3;
+    public static final int INTERNAL_SOURCE_SOCKET_FIELD_NUMBER = 2;
     private volatile java.lang.Object internalSourceSocket_;
     /**
-     * <code>string internal_source_socket = 3;</code>
+     * <code>string internal_source_socket = 2;</code>
      */
     public java.lang.String getInternalSourceSocket() {
       java.lang.Object ref = internalSourceSocket_;
@@ -6547,7 +6359,7 @@ public final class MessageProto {
       }
     }
     /**
-     * <code>string internal_source_socket = 3;</code>
+     * <code>string internal_source_socket = 2;</code>
      */
     public com.google.protobuf.ByteString
         getInternalSourceSocketBytes() {
@@ -6563,56 +6375,56 @@ public final class MessageProto {
       }
     }
 
-    public static final int INVITEE_FIELD_NUMBER = 4;
+    public static final int INVITEE_FIELD_NUMBER = 3;
     private nl.tudelft.cs4160.trustchain_android.message.MessageProto.Peer invitee_;
     /**
-     * <code>.message.Peer invitee = 4;</code>
+     * <code>.message.Peer invitee = 3;</code>
      */
     public boolean hasInvitee() {
       return invitee_ != null;
     }
     /**
-     * <code>.message.Peer invitee = 4;</code>
+     * <code>.message.Peer invitee = 3;</code>
      */
     public nl.tudelft.cs4160.trustchain_android.message.MessageProto.Peer getInvitee() {
       return invitee_ == null ? nl.tudelft.cs4160.trustchain_android.message.MessageProto.Peer.getDefaultInstance() : invitee_;
     }
     /**
-     * <code>.message.Peer invitee = 4;</code>
+     * <code>.message.Peer invitee = 3;</code>
      */
     public nl.tudelft.cs4160.trustchain_android.message.MessageProto.PeerOrBuilder getInviteeOrBuilder() {
       return getInvitee();
     }
 
-    public static final int PEERS_FIELD_NUMBER = 5;
+    public static final int PEERS_FIELD_NUMBER = 4;
     private java.util.List<nl.tudelft.cs4160.trustchain_android.message.MessageProto.Peer> peers_;
     /**
-     * <code>repeated .message.Peer peers = 5;</code>
+     * <code>repeated .message.Peer peers = 4;</code>
      */
     public java.util.List<nl.tudelft.cs4160.trustchain_android.message.MessageProto.Peer> getPeersList() {
       return peers_;
     }
     /**
-     * <code>repeated .message.Peer peers = 5;</code>
+     * <code>repeated .message.Peer peers = 4;</code>
      */
     public java.util.List<? extends nl.tudelft.cs4160.trustchain_android.message.MessageProto.PeerOrBuilder> 
         getPeersOrBuilderList() {
       return peers_;
     }
     /**
-     * <code>repeated .message.Peer peers = 5;</code>
+     * <code>repeated .message.Peer peers = 4;</code>
      */
     public int getPeersCount() {
       return peers_.size();
     }
     /**
-     * <code>repeated .message.Peer peers = 5;</code>
+     * <code>repeated .message.Peer peers = 4;</code>
      */
     public nl.tudelft.cs4160.trustchain_android.message.MessageProto.Peer getPeers(int index) {
       return peers_.get(index);
     }
     /**
-     * <code>repeated .message.Peer peers = 5;</code>
+     * <code>repeated .message.Peer peers = 4;</code>
      */
     public nl.tudelft.cs4160.trustchain_android.message.MessageProto.PeerOrBuilder getPeersOrBuilder(
         int index) {
@@ -6634,17 +6446,14 @@ public final class MessageProto {
       if (connectionType_ != 0L) {
         output.writeInt64(1, connectionType_);
       }
-      if (!getNetworkOperatorBytes().isEmpty()) {
-        com.google.protobuf.GeneratedMessageV3.writeString(output, 2, networkOperator_);
-      }
       if (!getInternalSourceSocketBytes().isEmpty()) {
-        com.google.protobuf.GeneratedMessageV3.writeString(output, 3, internalSourceSocket_);
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 2, internalSourceSocket_);
       }
       if (invitee_ != null) {
-        output.writeMessage(4, getInvitee());
+        output.writeMessage(3, getInvitee());
       }
       for (int i = 0; i < peers_.size(); i++) {
-        output.writeMessage(5, peers_.get(i));
+        output.writeMessage(4, peers_.get(i));
       }
       unknownFields.writeTo(output);
     }
@@ -6658,19 +6467,16 @@ public final class MessageProto {
         size += com.google.protobuf.CodedOutputStream
           .computeInt64Size(1, connectionType_);
       }
-      if (!getNetworkOperatorBytes().isEmpty()) {
-        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(2, networkOperator_);
-      }
       if (!getInternalSourceSocketBytes().isEmpty()) {
-        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(3, internalSourceSocket_);
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(2, internalSourceSocket_);
       }
       if (invitee_ != null) {
         size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(4, getInvitee());
+          .computeMessageSize(3, getInvitee());
       }
       for (int i = 0; i < peers_.size(); i++) {
         size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(5, peers_.get(i));
+          .computeMessageSize(4, peers_.get(i));
       }
       size += unknownFields.getSerializedSize();
       memoizedSize = size;
@@ -6690,8 +6496,6 @@ public final class MessageProto {
       boolean result = true;
       result = result && (getConnectionType()
           == other.getConnectionType());
-      result = result && getNetworkOperator()
-          .equals(other.getNetworkOperator());
       result = result && getInternalSourceSocket()
           .equals(other.getInternalSourceSocket());
       result = result && (hasInvitee() == other.hasInvitee());
@@ -6715,8 +6519,6 @@ public final class MessageProto {
       hash = (37 * hash) + CONNECTION_TYPE_FIELD_NUMBER;
       hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
           getConnectionType());
-      hash = (37 * hash) + NETWORK_OPERATOR_FIELD_NUMBER;
-      hash = (53 * hash) + getNetworkOperator().hashCode();
       hash = (37 * hash) + INTERNAL_SOURCE_SOCKET_FIELD_NUMBER;
       hash = (53 * hash) + getInternalSourceSocket().hashCode();
       if (hasInvitee()) {
@@ -6859,8 +6661,6 @@ public final class MessageProto {
         super.clear();
         connectionType_ = 0L;
 
-        networkOperator_ = "";
-
         internalSourceSocket_ = "";
 
         if (inviteeBuilder_ == null) {
@@ -6871,7 +6671,7 @@ public final class MessageProto {
         }
         if (peersBuilder_ == null) {
           peers_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000010);
+          bitField0_ = (bitField0_ & ~0x00000008);
         } else {
           peersBuilder_.clear();
         }
@@ -6900,7 +6700,6 @@ public final class MessageProto {
         int from_bitField0_ = bitField0_;
         int to_bitField0_ = 0;
         result.connectionType_ = connectionType_;
-        result.networkOperator_ = networkOperator_;
         result.internalSourceSocket_ = internalSourceSocket_;
         if (inviteeBuilder_ == null) {
           result.invitee_ = invitee_;
@@ -6908,9 +6707,9 @@ public final class MessageProto {
           result.invitee_ = inviteeBuilder_.build();
         }
         if (peersBuilder_ == null) {
-          if (((bitField0_ & 0x00000010) == 0x00000010)) {
+          if (((bitField0_ & 0x00000008) == 0x00000008)) {
             peers_ = java.util.Collections.unmodifiableList(peers_);
-            bitField0_ = (bitField0_ & ~0x00000010);
+            bitField0_ = (bitField0_ & ~0x00000008);
           }
           result.peers_ = peers_;
         } else {
@@ -6961,10 +6760,6 @@ public final class MessageProto {
         if (other.getConnectionType() != 0L) {
           setConnectionType(other.getConnectionType());
         }
-        if (!other.getNetworkOperator().isEmpty()) {
-          networkOperator_ = other.networkOperator_;
-          onChanged();
-        }
         if (!other.getInternalSourceSocket().isEmpty()) {
           internalSourceSocket_ = other.internalSourceSocket_;
           onChanged();
@@ -6976,7 +6771,7 @@ public final class MessageProto {
           if (!other.peers_.isEmpty()) {
             if (peers_.isEmpty()) {
               peers_ = other.peers_;
-              bitField0_ = (bitField0_ & ~0x00000010);
+              bitField0_ = (bitField0_ & ~0x00000008);
             } else {
               ensurePeersIsMutable();
               peers_.addAll(other.peers_);
@@ -6989,7 +6784,7 @@ public final class MessageProto {
               peersBuilder_.dispose();
               peersBuilder_ = null;
               peers_ = other.peers_;
-              bitField0_ = (bitField0_ & ~0x00000010);
+              bitField0_ = (bitField0_ & ~0x00000008);
               peersBuilder_ = 
                 com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
                    getPeersFieldBuilder() : null;
@@ -7052,78 +6847,9 @@ public final class MessageProto {
         return this;
       }
 
-      private java.lang.Object networkOperator_ = "";
-      /**
-       * <code>string network_operator = 2;</code>
-       */
-      public java.lang.String getNetworkOperator() {
-        java.lang.Object ref = networkOperator_;
-        if (!(ref instanceof java.lang.String)) {
-          com.google.protobuf.ByteString bs =
-              (com.google.protobuf.ByteString) ref;
-          java.lang.String s = bs.toStringUtf8();
-          networkOperator_ = s;
-          return s;
-        } else {
-          return (java.lang.String) ref;
-        }
-      }
-      /**
-       * <code>string network_operator = 2;</code>
-       */
-      public com.google.protobuf.ByteString
-          getNetworkOperatorBytes() {
-        java.lang.Object ref = networkOperator_;
-        if (ref instanceof String) {
-          com.google.protobuf.ByteString b = 
-              com.google.protobuf.ByteString.copyFromUtf8(
-                  (java.lang.String) ref);
-          networkOperator_ = b;
-          return b;
-        } else {
-          return (com.google.protobuf.ByteString) ref;
-        }
-      }
-      /**
-       * <code>string network_operator = 2;</code>
-       */
-      public Builder setNetworkOperator(
-          java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  
-        networkOperator_ = value;
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>string network_operator = 2;</code>
-       */
-      public Builder clearNetworkOperator() {
-        
-        networkOperator_ = getDefaultInstance().getNetworkOperator();
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>string network_operator = 2;</code>
-       */
-      public Builder setNetworkOperatorBytes(
-          com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
-        
-        networkOperator_ = value;
-        onChanged();
-        return this;
-      }
-
       private java.lang.Object internalSourceSocket_ = "";
       /**
-       * <code>string internal_source_socket = 3;</code>
+       * <code>string internal_source_socket = 2;</code>
        */
       public java.lang.String getInternalSourceSocket() {
         java.lang.Object ref = internalSourceSocket_;
@@ -7138,7 +6864,7 @@ public final class MessageProto {
         }
       }
       /**
-       * <code>string internal_source_socket = 3;</code>
+       * <code>string internal_source_socket = 2;</code>
        */
       public com.google.protobuf.ByteString
           getInternalSourceSocketBytes() {
@@ -7154,7 +6880,7 @@ public final class MessageProto {
         }
       }
       /**
-       * <code>string internal_source_socket = 3;</code>
+       * <code>string internal_source_socket = 2;</code>
        */
       public Builder setInternalSourceSocket(
           java.lang.String value) {
@@ -7167,7 +6893,7 @@ public final class MessageProto {
         return this;
       }
       /**
-       * <code>string internal_source_socket = 3;</code>
+       * <code>string internal_source_socket = 2;</code>
        */
       public Builder clearInternalSourceSocket() {
         
@@ -7176,7 +6902,7 @@ public final class MessageProto {
         return this;
       }
       /**
-       * <code>string internal_source_socket = 3;</code>
+       * <code>string internal_source_socket = 2;</code>
        */
       public Builder setInternalSourceSocketBytes(
           com.google.protobuf.ByteString value) {
@@ -7194,13 +6920,13 @@ public final class MessageProto {
       private com.google.protobuf.SingleFieldBuilderV3<
           nl.tudelft.cs4160.trustchain_android.message.MessageProto.Peer, nl.tudelft.cs4160.trustchain_android.message.MessageProto.Peer.Builder, nl.tudelft.cs4160.trustchain_android.message.MessageProto.PeerOrBuilder> inviteeBuilder_;
       /**
-       * <code>.message.Peer invitee = 4;</code>
+       * <code>.message.Peer invitee = 3;</code>
        */
       public boolean hasInvitee() {
         return inviteeBuilder_ != null || invitee_ != null;
       }
       /**
-       * <code>.message.Peer invitee = 4;</code>
+       * <code>.message.Peer invitee = 3;</code>
        */
       public nl.tudelft.cs4160.trustchain_android.message.MessageProto.Peer getInvitee() {
         if (inviteeBuilder_ == null) {
@@ -7210,7 +6936,7 @@ public final class MessageProto {
         }
       }
       /**
-       * <code>.message.Peer invitee = 4;</code>
+       * <code>.message.Peer invitee = 3;</code>
        */
       public Builder setInvitee(nl.tudelft.cs4160.trustchain_android.message.MessageProto.Peer value) {
         if (inviteeBuilder_ == null) {
@@ -7226,7 +6952,7 @@ public final class MessageProto {
         return this;
       }
       /**
-       * <code>.message.Peer invitee = 4;</code>
+       * <code>.message.Peer invitee = 3;</code>
        */
       public Builder setInvitee(
           nl.tudelft.cs4160.trustchain_android.message.MessageProto.Peer.Builder builderForValue) {
@@ -7240,7 +6966,7 @@ public final class MessageProto {
         return this;
       }
       /**
-       * <code>.message.Peer invitee = 4;</code>
+       * <code>.message.Peer invitee = 3;</code>
        */
       public Builder mergeInvitee(nl.tudelft.cs4160.trustchain_android.message.MessageProto.Peer value) {
         if (inviteeBuilder_ == null) {
@@ -7258,7 +6984,7 @@ public final class MessageProto {
         return this;
       }
       /**
-       * <code>.message.Peer invitee = 4;</code>
+       * <code>.message.Peer invitee = 3;</code>
        */
       public Builder clearInvitee() {
         if (inviteeBuilder_ == null) {
@@ -7272,7 +6998,7 @@ public final class MessageProto {
         return this;
       }
       /**
-       * <code>.message.Peer invitee = 4;</code>
+       * <code>.message.Peer invitee = 3;</code>
        */
       public nl.tudelft.cs4160.trustchain_android.message.MessageProto.Peer.Builder getInviteeBuilder() {
         
@@ -7280,7 +7006,7 @@ public final class MessageProto {
         return getInviteeFieldBuilder().getBuilder();
       }
       /**
-       * <code>.message.Peer invitee = 4;</code>
+       * <code>.message.Peer invitee = 3;</code>
        */
       public nl.tudelft.cs4160.trustchain_android.message.MessageProto.PeerOrBuilder getInviteeOrBuilder() {
         if (inviteeBuilder_ != null) {
@@ -7291,7 +7017,7 @@ public final class MessageProto {
         }
       }
       /**
-       * <code>.message.Peer invitee = 4;</code>
+       * <code>.message.Peer invitee = 3;</code>
        */
       private com.google.protobuf.SingleFieldBuilderV3<
           nl.tudelft.cs4160.trustchain_android.message.MessageProto.Peer, nl.tudelft.cs4160.trustchain_android.message.MessageProto.Peer.Builder, nl.tudelft.cs4160.trustchain_android.message.MessageProto.PeerOrBuilder> 
@@ -7310,9 +7036,9 @@ public final class MessageProto {
       private java.util.List<nl.tudelft.cs4160.trustchain_android.message.MessageProto.Peer> peers_ =
         java.util.Collections.emptyList();
       private void ensurePeersIsMutable() {
-        if (!((bitField0_ & 0x00000010) == 0x00000010)) {
+        if (!((bitField0_ & 0x00000008) == 0x00000008)) {
           peers_ = new java.util.ArrayList<nl.tudelft.cs4160.trustchain_android.message.MessageProto.Peer>(peers_);
-          bitField0_ |= 0x00000010;
+          bitField0_ |= 0x00000008;
          }
       }
 
@@ -7320,7 +7046,7 @@ public final class MessageProto {
           nl.tudelft.cs4160.trustchain_android.message.MessageProto.Peer, nl.tudelft.cs4160.trustchain_android.message.MessageProto.Peer.Builder, nl.tudelft.cs4160.trustchain_android.message.MessageProto.PeerOrBuilder> peersBuilder_;
 
       /**
-       * <code>repeated .message.Peer peers = 5;</code>
+       * <code>repeated .message.Peer peers = 4;</code>
        */
       public java.util.List<nl.tudelft.cs4160.trustchain_android.message.MessageProto.Peer> getPeersList() {
         if (peersBuilder_ == null) {
@@ -7330,7 +7056,7 @@ public final class MessageProto {
         }
       }
       /**
-       * <code>repeated .message.Peer peers = 5;</code>
+       * <code>repeated .message.Peer peers = 4;</code>
        */
       public int getPeersCount() {
         if (peersBuilder_ == null) {
@@ -7340,7 +7066,7 @@ public final class MessageProto {
         }
       }
       /**
-       * <code>repeated .message.Peer peers = 5;</code>
+       * <code>repeated .message.Peer peers = 4;</code>
        */
       public nl.tudelft.cs4160.trustchain_android.message.MessageProto.Peer getPeers(int index) {
         if (peersBuilder_ == null) {
@@ -7350,7 +7076,7 @@ public final class MessageProto {
         }
       }
       /**
-       * <code>repeated .message.Peer peers = 5;</code>
+       * <code>repeated .message.Peer peers = 4;</code>
        */
       public Builder setPeers(
           int index, nl.tudelft.cs4160.trustchain_android.message.MessageProto.Peer value) {
@@ -7367,7 +7093,7 @@ public final class MessageProto {
         return this;
       }
       /**
-       * <code>repeated .message.Peer peers = 5;</code>
+       * <code>repeated .message.Peer peers = 4;</code>
        */
       public Builder setPeers(
           int index, nl.tudelft.cs4160.trustchain_android.message.MessageProto.Peer.Builder builderForValue) {
@@ -7381,7 +7107,7 @@ public final class MessageProto {
         return this;
       }
       /**
-       * <code>repeated .message.Peer peers = 5;</code>
+       * <code>repeated .message.Peer peers = 4;</code>
        */
       public Builder addPeers(nl.tudelft.cs4160.trustchain_android.message.MessageProto.Peer value) {
         if (peersBuilder_ == null) {
@@ -7397,7 +7123,7 @@ public final class MessageProto {
         return this;
       }
       /**
-       * <code>repeated .message.Peer peers = 5;</code>
+       * <code>repeated .message.Peer peers = 4;</code>
        */
       public Builder addPeers(
           int index, nl.tudelft.cs4160.trustchain_android.message.MessageProto.Peer value) {
@@ -7414,7 +7140,7 @@ public final class MessageProto {
         return this;
       }
       /**
-       * <code>repeated .message.Peer peers = 5;</code>
+       * <code>repeated .message.Peer peers = 4;</code>
        */
       public Builder addPeers(
           nl.tudelft.cs4160.trustchain_android.message.MessageProto.Peer.Builder builderForValue) {
@@ -7428,7 +7154,7 @@ public final class MessageProto {
         return this;
       }
       /**
-       * <code>repeated .message.Peer peers = 5;</code>
+       * <code>repeated .message.Peer peers = 4;</code>
        */
       public Builder addPeers(
           int index, nl.tudelft.cs4160.trustchain_android.message.MessageProto.Peer.Builder builderForValue) {
@@ -7442,7 +7168,7 @@ public final class MessageProto {
         return this;
       }
       /**
-       * <code>repeated .message.Peer peers = 5;</code>
+       * <code>repeated .message.Peer peers = 4;</code>
        */
       public Builder addAllPeers(
           java.lang.Iterable<? extends nl.tudelft.cs4160.trustchain_android.message.MessageProto.Peer> values) {
@@ -7457,12 +7183,12 @@ public final class MessageProto {
         return this;
       }
       /**
-       * <code>repeated .message.Peer peers = 5;</code>
+       * <code>repeated .message.Peer peers = 4;</code>
        */
       public Builder clearPeers() {
         if (peersBuilder_ == null) {
           peers_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000010);
+          bitField0_ = (bitField0_ & ~0x00000008);
           onChanged();
         } else {
           peersBuilder_.clear();
@@ -7470,7 +7196,7 @@ public final class MessageProto {
         return this;
       }
       /**
-       * <code>repeated .message.Peer peers = 5;</code>
+       * <code>repeated .message.Peer peers = 4;</code>
        */
       public Builder removePeers(int index) {
         if (peersBuilder_ == null) {
@@ -7483,14 +7209,14 @@ public final class MessageProto {
         return this;
       }
       /**
-       * <code>repeated .message.Peer peers = 5;</code>
+       * <code>repeated .message.Peer peers = 4;</code>
        */
       public nl.tudelft.cs4160.trustchain_android.message.MessageProto.Peer.Builder getPeersBuilder(
           int index) {
         return getPeersFieldBuilder().getBuilder(index);
       }
       /**
-       * <code>repeated .message.Peer peers = 5;</code>
+       * <code>repeated .message.Peer peers = 4;</code>
        */
       public nl.tudelft.cs4160.trustchain_android.message.MessageProto.PeerOrBuilder getPeersOrBuilder(
           int index) {
@@ -7500,7 +7226,7 @@ public final class MessageProto {
         }
       }
       /**
-       * <code>repeated .message.Peer peers = 5;</code>
+       * <code>repeated .message.Peer peers = 4;</code>
        */
       public java.util.List<? extends nl.tudelft.cs4160.trustchain_android.message.MessageProto.PeerOrBuilder> 
            getPeersOrBuilderList() {
@@ -7511,14 +7237,14 @@ public final class MessageProto {
         }
       }
       /**
-       * <code>repeated .message.Peer peers = 5;</code>
+       * <code>repeated .message.Peer peers = 4;</code>
        */
       public nl.tudelft.cs4160.trustchain_android.message.MessageProto.Peer.Builder addPeersBuilder() {
         return getPeersFieldBuilder().addBuilder(
             nl.tudelft.cs4160.trustchain_android.message.MessageProto.Peer.getDefaultInstance());
       }
       /**
-       * <code>repeated .message.Peer peers = 5;</code>
+       * <code>repeated .message.Peer peers = 4;</code>
        */
       public nl.tudelft.cs4160.trustchain_android.message.MessageProto.Peer.Builder addPeersBuilder(
           int index) {
@@ -7526,7 +7252,7 @@ public final class MessageProto {
             index, nl.tudelft.cs4160.trustchain_android.message.MessageProto.Peer.getDefaultInstance());
       }
       /**
-       * <code>repeated .message.Peer peers = 5;</code>
+       * <code>repeated .message.Peer peers = 4;</code>
        */
       public java.util.List<nl.tudelft.cs4160.trustchain_android.message.MessageProto.Peer.Builder> 
            getPeersBuilderList() {
@@ -7539,7 +7265,7 @@ public final class MessageProto {
           peersBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
               nl.tudelft.cs4160.trustchain_android.message.MessageProto.Peer, nl.tudelft.cs4160.trustchain_android.message.MessageProto.Peer.Builder, nl.tudelft.cs4160.trustchain_android.message.MessageProto.PeerOrBuilder>(
                   peers_,
-                  ((bitField0_ & 0x00000010) == 0x00000010),
+                  ((bitField0_ & 0x00000008) == 0x00000008),
                   getParentForChildren(),
                   isClean());
           peers_ = null;
@@ -9713,20 +9439,18 @@ public final class MessageProto {
       "ty_term\030\003 \001(\005\022\024\n\014proof_format\030\004 \001(\014\"T\n\014C" +
       "rawlRequest\022\022\n\npublic_key\030\001 \001(\014\022!\n\031reque" +
       "sted_sequence_number\030\002 \001(\005\022\r\n\005limit\030\003 \001(" +
-      "\005\"H\n\023IntroductionRequest\022\027\n\017connection_t" +
-      "ype\030\001 \001(\003\022\030\n\020network_operator\030\002 \001(\t\"\247\001\n\024" +
-      "IntroductionResponse\022\027\n\017connection_type\030" +
-      "\001 \001(\003\022\030\n\020network_operator\030\002 \001(\t\022\036\n\026inter" +
-      "nal_source_socket\030\003 \001(\t\022\036\n\007invitee\030\004 \001(\013" +
-      "2\r.message.Peer\022\034\n\005peers\030\005 \003(\0132\r.message" +
-      ".Peer\" \n\010Puncture\022\024\n\014sourceSocket\030\001 \001(\t\"" +
-      "N\n\017PunctureRequest\022\025\n\rsource_socket\030\001 \001(" +
-      "\t\022$\n\rpuncture_peer\030\002 \001(\0132\r.message.Peer\"" +
-      "_\n\004Peer\022\017\n\007address\030\001 \001(\014\022\014\n\004port\030\002 \001(\005\022\022" +
-      "\n\npublic_key\030\003 \001(\014\022\014\n\004name\030\004 \001(\t\022\026\n\016conn" +
-      "ectionType\030\005 \001(\005B<\n,nl.tudelft.cs4160.tr" +
-      "ustchain_android.messageB\014MessageProtob\006" +
-      "proto3"
+      "\005\".\n\023IntroductionRequest\022\027\n\017connection_t" +
+      "ype\030\001 \001(\003\"\215\001\n\024IntroductionResponse\022\027\n\017co" +
+      "nnection_type\030\001 \001(\003\022\036\n\026internal_source_s" +
+      "ocket\030\002 \001(\t\022\036\n\007invitee\030\003 \001(\0132\r.message.P" +
+      "eer\022\034\n\005peers\030\004 \003(\0132\r.message.Peer\" \n\010Pun" +
+      "cture\022\024\n\014sourceSocket\030\001 \001(\t\"N\n\017PunctureR" +
+      "equest\022\025\n\rsource_socket\030\001 \001(\t\022$\n\rpunctur" +
+      "e_peer\030\002 \001(\0132\r.message.Peer\"_\n\004Peer\022\017\n\007a" +
+      "ddress\030\001 \001(\014\022\014\n\004port\030\002 \001(\005\022\022\n\npublic_key" +
+      "\030\003 \001(\014\022\014\n\004name\030\004 \001(\t\022\026\n\016connectionType\030\005" +
+      " \001(\005B<\n,nl.tudelft.cs4160.trustchain_and" +
+      "roid.messageB\014MessageProtob\006proto3"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
@@ -9782,13 +9506,13 @@ public final class MessageProto {
     internal_static_message_IntroductionRequest_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_message_IntroductionRequest_descriptor,
-        new java.lang.String[] { "ConnectionType", "NetworkOperator", });
+        new java.lang.String[] { "ConnectionType", });
     internal_static_message_IntroductionResponse_descriptor =
       getDescriptor().getMessageTypes().get(5);
     internal_static_message_IntroductionResponse_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_message_IntroductionResponse_descriptor,
-        new java.lang.String[] { "ConnectionType", "NetworkOperator", "InternalSourceSocket", "Invitee", "Peers", });
+        new java.lang.String[] { "ConnectionType", "InternalSourceSocket", "Invitee", "Peers", });
     internal_static_message_Puncture_descriptor =
       getDescriptor().getMessageTypes().get(6);
     internal_static_message_Puncture_fieldAccessorTable = new
