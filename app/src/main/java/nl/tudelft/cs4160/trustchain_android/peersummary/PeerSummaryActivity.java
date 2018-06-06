@@ -299,7 +299,7 @@ public class PeerSummaryActivity extends AppCompatActivity implements CrawlReque
                 String txString = containsBinaryFile(block) ?
                         block.getTransaction().getFormat() + " file" :
                         block.getTransaction().getUnformatted().toString(UTF_8);
-                builder.setMessage("Do you want to sign Block[ " + txString + " ] from " + 'a' + "?")
+                builder.setMessage("Do you want to sign Block[ " + txString + " ] from " + inboxItemOtherPeer.getUserName() + "?")
                         .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int id) {
                                 signAndSendHalfBlock(block);
@@ -321,7 +321,6 @@ public class PeerSummaryActivity extends AppCompatActivity implements CrawlReque
      * @param linkedBlock
      */
     public void signAndSendHalfBlock(final MessageProto.TrustChainBlock linkedBlock) {
-        Log.e("AAAAAA", "signing half block");
         DualSecret keyPair = Key.loadKeys(this);
         MessageProto.TrustChainBlock block = createBlock(null, null, //Setting format and transaction not needed, they are already contained in linkedblock
                 DBHelper, keyPair.getPublicKeyPair().toBytes(),
@@ -422,14 +421,6 @@ public class PeerSummaryActivity extends AppCompatActivity implements CrawlReque
         });
         fileDialog.showDialog();
     }
-
-//    private void requestStoragePermissions() {
-//        if (Build.VERSION.SDK_INT >= 23) {
-//            requestPermissions(new String[]{ Manifest.permission.READ_EXTERNAL_STORAGE }, REQUEST_STORAGE_PERMISSIONS);
-//        } else {
-//            ActivityCompat.requestPermissions(this, new String[]{ Manifest.permission.READ_EXTERNAL_STORAGE }, REQUEST_STORAGE_PERMISSIONS);
-//        }
-//    }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
