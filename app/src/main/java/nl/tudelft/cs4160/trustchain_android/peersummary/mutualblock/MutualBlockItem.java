@@ -10,7 +10,8 @@ public class MutualBlockItem {
     private int seqNum;
     private int linkSeqNum;
     private int validationResult;
-    private String transaction;
+    private byte[] transaction;
+    private String transactionFormat;
     private MessageProto.TrustChainBlock block;
 
     /**
@@ -23,10 +24,10 @@ public class MutualBlockItem {
         this.peerName = peerName;
         this.seqNum = block.getSequenceNumber();
         this.linkSeqNum = block.getLinkSequenceNumber();
-        this.transaction = block.getTransaction().getUnformatted().toStringUtf8();
+        this.transaction = block.getTransaction().getUnformatted().toByteArray();
+        this.transactionFormat = block.getTransaction().getFormat();
         this.validationResult = validationResult;
         this.block = block;
-
     }
 
 
@@ -46,11 +47,20 @@ public class MutualBlockItem {
 
 
     /**
-     * Get the content(the message) that is in the block.
+     * Get the content (the message or file bytes) that is in the block.
      * @return the content that is in the block.
      */
-    public String getTransaction() {
+    public byte[] getTransaction() {
         return transaction;
+    }
+
+    /**
+     * Get the format of the transaction in the block,
+     * i.e., whether a file is enclosed and what its format is.
+     * @return the format of the transaction bytes.
+     */
+    public String getTransactionFormat() {
+        return transactionFormat;
     }
 
     /**

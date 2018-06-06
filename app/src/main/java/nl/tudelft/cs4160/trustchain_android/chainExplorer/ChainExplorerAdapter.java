@@ -1,8 +1,16 @@
 package nl.tudelft.cs4160.trustchain_android.chainExplorer;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.net.Uri;
+import android.os.Build;
+import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,21 +20,30 @@ import android.widget.Toast;
 
 import com.google.protobuf.ByteString;
 
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
 import nl.tudelft.cs4160.trustchain_android.R;
 import nl.tudelft.cs4160.trustchain_android.block.TrustChainBlockHelper;
+import nl.tudelft.cs4160.trustchain_android.block.ValidationResult;
 import nl.tudelft.cs4160.trustchain_android.crypto.PublicKeyPair;
 import nl.tudelft.cs4160.trustchain_android.message.MessageProto;
+import nl.tudelft.cs4160.trustchain_android.storage.database.TrustChainDBHelper;
 import nl.tudelft.cs4160.trustchain_android.storage.sharedpreferences.UserNameStorage;
 import nl.tudelft.cs4160.trustchain_android.util.ByteArrayConverter;
+import nl.tudelft.cs4160.trustchain_android.util.Util;
 
 public class ChainExplorerAdapter extends BaseAdapter {
     static final String TAG = "ChainExplorerAdapter";
 
     private final static String PEER_NAME_UNKNOWN = "unknown";
+    private static final int REQUEST_STORAGE_PERMISSIONS = 1;
 
     private Context context;
     private List<MessageProto.TrustChainBlock> blocksList;
@@ -82,7 +99,7 @@ public class ChainExplorerAdapter extends BaseAdapter {
      */
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        MessageProto.TrustChainBlock block = (MessageProto.TrustChainBlock) getItem(position);
+        final MessageProto.TrustChainBlock block = (MessageProto.TrustChainBlock) getItem(position);
         if (convertView == null) {
             convertView = LayoutInflater.from(context).inflate(R.layout.item_trustchainblock,
                     parent, false);
@@ -122,7 +139,6 @@ public class ChainExplorerAdapter extends BaseAdapter {
         seqNum.setText(seqNumStr);
         linkPeer.setText(linkPeerAlias);
         linkSeqNum.setText(linkSeqNumStr);
-        transaction.setText(block.getTransaction().getUnformatted().toStringUtf8());
 
         // expanded view
         TextView pubKey = convertView.findViewById(R.id.pub_key);
@@ -138,7 +154,18 @@ public class ChainExplorerAdapter extends BaseAdapter {
         prevHash.setText(ByteArrayConverter.bytesToHexString(block.getPreviousHash().toByteArray()));
 
         signature.setText(ByteArrayConverter.bytesToHexString(block.getSignature().toByteArray()));
-        expTransaction.setText(block.getTransaction().getUnformatted().toStringUtf8());
+
+        if (TrustChainBlockHelper.containsBinaryFile(block)) {
+            // If the block contains a file show the 'click to open' text
+            transaction.setText(context.getString(R.string.click_to_open_file, block.getTransaction().getFormat()));
+            setOpenFileClickListener(transaction, block);
+
+            expTransaction.setText(context.getString(R.string.click_to_open_file, block.getTransaction().getFormat()));
+            setOpenFileClickListener(expTransaction, block);
+        } else {
+            transaction.setText(block.getTransaction().getUnformatted().toStringUtf8());
+            expTransaction.setText(block.getTransaction().getUnformatted().toStringUtf8());
+        }
 
         if (peerAlias.equals("me")) {
             ownChainIndicator.setBackgroundColor(ChainColor.getMyColor(context));
@@ -151,6 +178,54 @@ public class ChainExplorerAdapter extends BaseAdapter {
             linkChainIndicator.setBackgroundColor(ChainColor.getColor(context,ByteArrayConverter.bytesToHexString(pubKeyByteStr.toByteArray())));
         }
         return convertView;
+    }
+
+    /**
+     * Takes a view and a TrustChainBlock, attaches a click listener to the view that extracts the
+     * file from the given block and opens it using an intent.
+     * @param view View to attach the listener to
+     * @param block TrustChainBlock that contains a file
+     */
+    private void setOpenFileClickListener(View view, final MessageProto.TrustChainBlock block) {
+        view.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (ContextCompat.checkSelfPermission(context, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                        != PackageManager.PERMISSION_GRANTED) {
+                    requestStoragePermissions();
+                    return;
+                }
+
+                File file = new File(android.os.Environment.getExternalStorageDirectory() + "/TrustChain/" + ByteArrayConverter.bytesToHexString(block.getSignature().toByteArray()) + "." + block.getTransaction().getFormat());
+                if (file.exists()) file.delete();
+
+                byte[] bytes = block.getTransaction().getUnformatted().toByteArray();
+                ByteArrayInputStream is = new ByteArrayInputStream(bytes);
+
+                try {
+                    if (!Util.copyFile(is, file)) {
+                        Snackbar.make(view, "Copying file to filesystem failed.", Snackbar.LENGTH_LONG).show();
+                        return;
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    Snackbar.make(view, "Copying file to filesystem failed.", Snackbar.LENGTH_LONG).show();
+                    return;
+                }
+
+                String extension = android.webkit.MimeTypeMap.getFileExtensionFromUrl(Uri.fromFile(file).toString());
+                String mimetype = android.webkit.MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension);
+                if (mimetype == null) mimetype = "text/plain"; // If no mime type is found, try to open as plain text
+
+                Intent i = new Intent();
+                i.setDataAndType(Uri.fromFile(file), mimetype);
+                context.startActivity(i);
+            }
+        });
+    }
+
+    private void requestStoragePermissions() {
+        ActivityCompat.requestPermissions((Activity)context, new String[]{ Manifest.permission.WRITE_EXTERNAL_STORAGE }, REQUEST_STORAGE_PERMISSIONS);
     }
 
     private String getPeerAlias(ByteString key) {

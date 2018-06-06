@@ -16,6 +16,7 @@ public class TrustChainDBContractTest {
     public void testBlockEntries() {
         assertEquals(TrustChainDBContract.BlockEntry.TABLE_NAME, "block");
         assertEquals(TrustChainDBContract.BlockEntry.COLUMN_NAME_TX, "tx");
+        assertEquals(TrustChainDBContract.BlockEntry.COLUMN_NAME_TX_FORMAT, "tx_format");
         assertEquals(TrustChainDBContract.BlockEntry.COLUMN_NAME_PUBLIC_KEY, "public_key");
         assertEquals(TrustChainDBContract.BlockEntry.COLUMN_NAME_SEQUENCE_NUMBER, "sequence_number");
         assertEquals(TrustChainDBContract.BlockEntry.COLUMN_NAME_LINK_PUBLIC_KEY, "link_public_key");

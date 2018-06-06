@@ -17,7 +17,7 @@ import java.util.Collections;
 import java.util.concurrent.Semaphore;
 
 import nl.tudelft.cs4160.trustchain_android.passport.ocr.camera.CameraFragment;
-import nl.tudelft.cs4160.trustchain_android.passport.ocr.util.Util;
+import nl.tudelft.cs4160.trustchain_android.util.Util;
 
 public class TesseractOCR {
     private static final String TAG = "TesseractOCR";
@@ -28,6 +28,7 @@ public class TesseractOCR {
     private static final String trainedData = "ocrb.traineddata";
 
     private static final String FOLDER_TESSERACT_DATA = "tessdata";
+    private static final String FOLDER_TRAINED_DATA = "TesseractData";
     private static final String TRAINED_DATA_EXTENSION = ".traineddata";
 
 
@@ -151,14 +152,14 @@ public class TesseractOCR {
     public void init() {
         baseApi = new TessBaseAPI();
         baseApi.setDebug(true);
-        String path = Environment.getExternalStorageDirectory() + "/" + Util.FOLDER_DIGITAL_VOTING_PASS + "/";
+        String path = Environment.getExternalStorageDirectory() + "/" + TesseractOCR.FOLDER_TRAINED_DATA + "/";
         File trainedDataFile = new File(path, TesseractOCR.FOLDER_TESSERACT_DATA + "/" + trainedData);
         try {
             mDeviceStorageAccessLock.acquire();
             // Copy trained data in a synchronized block, as this only needs to happen once but is executed by multiple threads
             if (!trainedDataFile.exists()) {
                 Log.i(TAG, "No existing trained data found, copying from assets..");
-                Util.copyAssetsFile(assetManager.open(trainedData), trainedDataFile);
+                Util.copyFile(assetManager.open(trainedData), trainedDataFile);
             } else {
                 Log.i(TAG, "Existing trained data found");
             }
