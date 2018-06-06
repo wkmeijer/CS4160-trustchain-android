@@ -85,6 +85,7 @@
     <string name="title_activity_detail">DetailActivity</string>
     <string name="title_activity_user">UserActivity</string>
     <string name="title_activity_info_chain_explorer">UserActivity</string>
+    <string name="version">version %s</string>
 
     <!-- Connection explanation view -->
     <string name="symbolMeaningText">Meaning:</string>

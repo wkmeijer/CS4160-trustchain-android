@@ -12,6 +12,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.preference.PreferenceManager;
+import android.speech.tts.TextToSpeech;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
@@ -167,6 +168,7 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
         // The way inboxitems are stored was changed, so this storage needs to be cleared
         if(storedVersion < 10) {
             InboxItemStorage.deleteAll(this);
+            Log.i(TAG, "Old version detected, cleared inbox for compatibility purposes");
         }
 
         try {
@@ -174,6 +176,7 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
         } catch (IOException e) {
             e.printStackTrace();
         }
+        ((TextView )findViewById(R.id.version)).setText(getString(R.string.version, pInfo.versionName));
     }
 
     /**
