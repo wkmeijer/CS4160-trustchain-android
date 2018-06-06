@@ -191,8 +191,7 @@ public class MutualBlockAdapter extends RecyclerView.Adapter<MutualBlockAdapter.
 
             if (TrustChainBlockHelper.containsBinaryFile(mutualBlock)) {
                 // If the block contains a file show the 'click to open' text
-                transTv.setText(mutualBlock.getTransaction().getFormat() + " file\n" +
-                                context.getString(R.string.click_to_open));
+                transTv.setText(context.getString(R.string.click_to_open_file, mutualBlock.getTransaction().getFormat()));
                 setOpenFileClickListener(transTv, mutualBlock);
             } else {
                 transTv.setText(new String(mutualBlock.getTransaction().getUnformatted().toByteArray(), UTF_8));
