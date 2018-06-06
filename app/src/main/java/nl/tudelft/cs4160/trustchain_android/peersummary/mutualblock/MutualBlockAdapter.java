@@ -126,9 +126,7 @@ public class MutualBlockAdapter extends RecyclerView.Adapter<MutualBlockAdapter.
 
             if (TrustChainBlockHelper.containsBinaryFile(mutualBlock)) {
                 // If the block contains a file show the 'click to open' text
-
-                transTv.setText(mutualBlock.getTransactionFormat() + " file\n" +
-                                context.getString(R.string.click_to_open));
+                transTv.setText(context.getString(R.string.click_to_open_file, mutualBlock.getTransactionFormat()));
                 setOpenFileClickListener(transTv, mutualBlock.getBlock());
             } else {
                 transTv.setText(new String(mutualBlock.getTransaction(), UTF_8));
@@ -170,7 +168,7 @@ public class MutualBlockAdapter extends RecyclerView.Adapter<MutualBlockAdapter.
                     return;
                 }
 
-                File file = new File(android.os.Environment.getExternalStorageDirectory() + "/TrustChain/" + Util.byteArrayToHexString(block.getSignature().toByteArray()) + "." + block.getTransaction().getFormat());
+                File file = new File(android.os.Environment.getExternalStorageDirectory() + "/TrustChain/" + ByteArrayConverter.bytesToHexString(block.getSignature().toByteArray()) + "." + block.getTransaction().getFormat());
                 if (file.exists()) file.delete();
 
                 byte[] bytes = block.getTransaction().getUnformatted().toByteArray();

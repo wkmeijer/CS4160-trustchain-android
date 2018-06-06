@@ -301,7 +301,7 @@ public class PeerSummaryActivity extends AppCompatActivity implements CrawlReque
                     builder = new AlertDialog.Builder(context);
                 }
                 String txString = containsBinaryFile(block) ?
-                        block.getTransaction().getFormat() + " file" :
+                        getString(R.string.type_file, block.getTransaction().getFormat()) :
                         block.getTransaction().getUnformatted().toString(UTF_8);
                 builder.setMessage("Do you want to sign Block[ " + txString + " ] from " + inboxItemOtherPeer.getUserName() + "?")
                         .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
