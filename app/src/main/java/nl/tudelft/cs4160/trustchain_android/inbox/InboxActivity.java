@@ -44,16 +44,13 @@ public class InboxActivity extends AppCompatActivity  {
     synchronized private void getInboxItems() {
         final Context currContext = this;
 
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                inboxItems = new ArrayList<>();
-                inboxItems = InboxItemStorage.getInboxItems(currContext);
-                Collections.reverse(inboxItems);
-                mAdapter = new InboxAdapter(inboxItems);
-                ((InboxAdapter) mAdapter).setPeerList(peerList);
-                mRecyclerView.setAdapter(mAdapter);
-            }
+        runOnUiThread(() -> {
+            inboxItems = new ArrayList<>();
+            inboxItems = InboxItemStorage.getInboxItems(currContext);
+            Collections.reverse(inboxItems);
+            mAdapter = new InboxAdapter(inboxItems);
+            ((InboxAdapter) mAdapter).setPeerList(peerList);
+            mRecyclerView.setAdapter(mAdapter);
         });
     }
 

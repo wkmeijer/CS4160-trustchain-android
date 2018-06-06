@@ -40,7 +40,7 @@ public class Network {
     private final String TAG = this.getClass().getName();
     private static final int BUFFER_SIZE = 65536;
     private DatagramChannel channel;
-    private String hashId;
+    private String name;
     private int connectionType;
     private static InetSocketAddress internalSourceAddress;
     private String networkOperator;
@@ -58,7 +58,7 @@ public class Network {
     public final static int CRAWL_REQUEST_ID = 6;
 
     /**
-     * Emtpy constructor
+     * Empty constructor
      */
     private Network() {
     }
@@ -84,10 +84,10 @@ public class Network {
     private void initVariables(Context context) {
         TelephonyManager telephonyManager = ((TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE));
         networkOperator = telephonyManager.getNetworkOperatorName();
-        messageHandler = new MessageHandler(network, new TrustChainDBHelper(context),
-                new PeerHandler(UserNameStorage.getUserName(context)));
-        hashId = UserNameStorage.getUserName(context);
         publicKey = Key.loadKeys(context).getPublicKeyPair();
+        messageHandler = new MessageHandler(network, new TrustChainDBHelper(context),
+                new PeerHandler(publicKey,UserNameStorage.getUserName(context)));
+        name = UserNameStorage.getUserName(context);
         openChannel();
         showLocalIpAddress();
     }
@@ -122,7 +122,7 @@ public class Network {
 
     /**
      * On receive data via the channel.
-     * @param inputBuffer
+     * @param inputBuffer the received data
      * @return
      * @throws IOException
      */
@@ -177,10 +177,10 @@ public class Network {
                 .build();
 
         Message.Builder messageBuilder = Message.newBuilder()
-                .setSourcePeerId(hashId)
+                .setSourcePublicKey(ByteString.copyFrom(publicKey.toBytes()))
+                .setSourceName(name)
                 .setDestinationAddress(ByteString.copyFrom(peer.getAddress().getAddress().getAddress()))
                 .setDestinationPort(peer.getAddress().getPort())
-                .setPublicKey(ByteString.copyFrom(publicKey.toBytes()))
                 .setType(INTRODUCTION_REQUEST_ID)
                 .setPayload(MessageProto.Payload.newBuilder().setIntroductionRequest(request));
 
@@ -195,10 +195,10 @@ public class Network {
      */
     public void sendBlockMessage(Peer peer, TrustChainBlock block) throws IOException {
         Message message = Message.newBuilder()
-                .setSourcePeerId(hashId)
+                .setSourcePublicKey(ByteString.copyFrom(publicKey.toBytes()))
+                .setSourceName(name)
                 .setDestinationAddress(ByteString.copyFrom(peer.getAddress().getAddress().getAddress()))
                 .setDestinationPort(peer.getAddress().getPort())
-                .setPublicKey(ByteString.copyFrom(publicKey.toBytes()))
                 .setType(BLOCK_MESSAGE_ID)
                 .setPayload(MessageProto.Payload.newBuilder().setBlock(block))
                 .build();
@@ -214,10 +214,10 @@ public class Network {
      */
     public void sendCrawlRequest(Peer peer, MessageProto.CrawlRequest request) throws IOException {
         Message message = Message.newBuilder()
-                .setSourcePeerId(hashId)
+                .setSourcePublicKey(ByteString.copyFrom(publicKey.toBytes()))
+                .setSourceName(name)
                 .setDestinationAddress(ByteString.copyFrom(peer.getAddress().getAddress().getAddress()))
                 .setDestinationPort(peer.getAddress().getPort())
-                .setPublicKey(ByteString.copyFrom(publicKey.toBytes()))
                 .setType(CRAWL_REQUEST_ID)
                 .setPayload(MessageProto.Payload.newBuilder().setCrawlRequest(request))
                 .build();
@@ -235,14 +235,14 @@ public class Network {
     public void sendPunctureRequest(Peer peer, Peer puncturePeer) throws IOException {
         MessageProto.PunctureRequest pRequest = MessageProto.PunctureRequest.newBuilder()
                 .setSourceSocket(internalSourceAddress.toString())
-                .setPuncturePeer(ByteString.copyFrom(Peer.serialize(puncturePeer)))
+                .setPuncturePeer(puncturePeer.getProtoPeer())
                 .build();
 
         Message message = Message.newBuilder()
-                .setSourcePeerId(hashId)
+                .setSourcePublicKey(ByteString.copyFrom(publicKey.toBytes()))
+                .setSourceName(name)
                 .setDestinationAddress(ByteString.copyFrom(peer.getAddress().getAddress().getAddress()))
                 .setDestinationPort(peer.getAddress().getPort())
-                .setPublicKey(ByteString.copyFrom(publicKey.toBytes()))
                 .setType(PUNCTURE_REQUEST_ID)
                 .setPayload(MessageProto.Payload.newBuilder().setPunctureRequest(pRequest))
                 .build();
@@ -262,10 +262,10 @@ public class Network {
                 .build();
 
         Message message = Message.newBuilder()
-                .setSourcePeerId(hashId)
+                .setSourcePublicKey(ByteString.copyFrom(publicKey.toBytes()))
+                .setSourceName(name)
                 .setDestinationAddress(ByteString.copyFrom(peer.getAddress().getAddress().getAddress()))
                 .setDestinationPort(peer.getAddress().getPort())
-                .setPublicKey(ByteString.copyFrom(publicKey.toBytes()))
                 .setType(PUNCTURE_ID)
                 .setPayload(MessageProto.Payload.newBuilder().setPuncture(puncture))
                 .build();
@@ -281,25 +281,25 @@ public class Network {
      * @throws IOException
      */
     public void sendIntroductionResponse(Peer peer, Peer invitee) throws IOException {
-        List<ByteString> pexPeers = new ArrayList<>();
+        List<MessageProto.Peer> peers = new ArrayList<>();
         for (Peer p : networkStatusListener.getPeerHandler().getPeerList()) {
-            if (p.isReceivedFrom() && p.getPeerId() != null && p.isAlive())
-                pexPeers.add(ByteString.copyFrom(Peer.serialize(p)));
+            if (p.isReceivedFrom() && p.getName() != null && p.isAlive())
+                peers.add(p.getProtoPeer());
         }
 
         MessageProto.IntroductionResponse response = MessageProto.IntroductionResponse.newBuilder()
                 .setConnectionType(connectionType)
                 .setNetworkOperator(networkOperator)
                 .setInternalSourceSocket(internalSourceAddress.toString())
-                .setInvitee(ByteString.copyFrom(Peer.serialize(invitee)))
-                .addAllPex(pexPeers)
+                .setInvitee(invitee.getProtoPeer())
+                .addAllPeers(peers)
                 .build();
 
         Message message = Message.newBuilder()
-                .setSourcePeerId(hashId)
+                .setSourcePublicKey(ByteString.copyFrom(publicKey.toBytes()))
+                .setSourceName(name)
                 .setDestinationAddress(ByteString.copyFrom(peer.getAddress().getAddress().getAddress()))
                 .setDestinationPort(peer.getAddress().getPort())
-                .setPublicKey(ByteString.copyFrom(publicKey.toBytes()))
                 .setType(INTRODUCTION_RESPONSE_ID)
                 .setPayload(MessageProto.Payload.newBuilder().setIntroductionResponse(response))
                 .build();
@@ -355,16 +355,15 @@ public class Network {
             if (networkStatusListener != null) {
                 networkStatusListener.updateWan(message);
 
-                String peerId = message.getSourcePeerId();
-                Peer peer = networkStatusListener.getPeerHandler().getOrMakePeer(peerId, address);
+                PublicKeyPair sourcePubKey = new PublicKeyPair(message.getSourcePublicKey().toByteArray());
+                Peer peer = networkStatusListener.getPeerHandler().getOrMakePeer(address,sourcePubKey,message.getSourceName());
                 if (peer == null) {
                     return;
                 }
 
-                peer.received(data);
-                PublicKeyPair pubKeyPair = new PublicKeyPair(message.getPublicKey().toByteArray());
-                PubKeyAndAddressPairStorage.addPubkeyAndAddressPair(context, pubKeyPair, address);
-                handleMessage(peer, message, pubKeyPair, context);
+                peer.receivedData();
+                PubKeyAndAddressPairStorage.addPubkeyAndAddressPair(context, sourcePubKey, address);
+                handleMessage(peer, message, sourcePubKey, context);
                 networkStatusListener.updatePeerLists();
             }
         } catch (Exception e) {
@@ -422,8 +421,7 @@ public class Network {
      */
     private static void addPeerToInbox(PublicKeyPair pubKeyPair, Peer peer, Context context) {
         if (pubKeyPair != null) {
-            String ip = peer.getAddress().getAddress().toString().replace("/", "");
-            InboxItem i = new InboxItem(peer.getPeerId(), new ArrayList<Integer>(), ip, pubKeyPair, peer.getPort());
+            InboxItem i = new InboxItem(peer, new ArrayList<>());
             InboxItemStorage.addInboxItem(context, i);
         }
     }

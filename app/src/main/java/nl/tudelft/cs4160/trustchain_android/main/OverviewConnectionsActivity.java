@@ -44,6 +44,7 @@ import nl.tudelft.cs4160.trustchain_android.block.ValidationResult;
 import nl.tudelft.cs4160.trustchain_android.chainExplorer.ChainExplorerActivity;
 import nl.tudelft.cs4160.trustchain_android.crypto.DualSecret;
 import nl.tudelft.cs4160.trustchain_android.crypto.Key;
+import nl.tudelft.cs4160.trustchain_android.crypto.PublicKeyPair;
 import nl.tudelft.cs4160.trustchain_android.funds.FundsActivity;
 import nl.tudelft.cs4160.trustchain_android.funds.qr.ExportWalletQRActivity;
 import nl.tudelft.cs4160.trustchain_android.funds.qr.ScanQRActivity;
@@ -63,7 +64,8 @@ import nl.tudelft.cs4160.trustchain_android.storage.sharedpreferences.UserNameSt
 public class OverviewConnectionsActivity extends AppCompatActivity implements NetworkStatusListener, PeerListener {
 
     // The server ip address, this is the bootstrap phone that's always running
-    public final static String CONNECTABLE_ADDRESS = "130.161.211.254";
+    public static String CONNECTABLE_ADDRESS = "130.161.211.254";
+
     public final static int DEFAULT_PORT = 1873;
     private final static int BUFFER_SIZE = 65536;
     private PeerListAdapter activePeersAdapter;
@@ -95,7 +97,7 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
             while(true) {
                 updatePeerLists();
                 try {
-                    Thread.sleep(1000);
+                    Thread.sleep(500);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -111,9 +113,9 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
      * @param savedInstanceState
      */
     private void initVariables(Bundle savedInstanceState) {
-        peerHandler = new PeerHandler(UserNameStorage.getUserName(this));
         dbHelper = new TrustChainDBHelper(this);
         initKey();
+        peerHandler = new PeerHandler(Key.loadKeys(this).getPublicKeyPair(), UserNameStorage.getUserName(this));
         network = Network.getInstance(getApplicationContext());
 
         if (savedInstanceState != null) {
@@ -124,7 +126,7 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
         getPeerHandler().setPeerListener(this);
         network.setNetworkStatusListener(this);
         network.updateConnectionType((ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE));
-        ((TextView) findViewById(R.id.peer_id)).setText(peerHandler.getHashId());
+        ((TextView) findViewById(R.id.peer_id)).setText(UserNameStorage.getUserName(this));
     }
 
     /**
@@ -246,6 +248,8 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
                 SharedPreferences.Editor editor = preferences.edit();
                 editor.putString("ConnectableAddress", data.getStringExtra("ConnectableAddress"));
                 editor.apply();
+                String newBootstrap = BootstrapIPStorage.getIP(this);
+                CONNECTABLE_ADDRESS = newBootstrap;
                 addInitialPeer();
             }
         }
@@ -295,7 +299,7 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
                 int port = Integer.parseInt(params[1]);
                 inetSocketAddress = new InetSocketAddress(connectableAddress, port);
 
-                activity.peerHandler.addPeer(null, inetSocketAddress);
+                activity.peerHandler.addPeer(inetSocketAddress, null,null);
             } catch (UnknownHostException e) {
                 e.printStackTrace();
             }
@@ -425,8 +429,8 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
             @Override
             public void run() {
                 synchronized (this) {
-                    peerHandler.splitPeerList();
                     peerHandler.removeDeadPeers();
+                    peerHandler.splitPeerList();
                     activePeersAdapter.notifyDataSetChanged();
                     newPeersAdapter.notifyDataSetChanged();
                 }

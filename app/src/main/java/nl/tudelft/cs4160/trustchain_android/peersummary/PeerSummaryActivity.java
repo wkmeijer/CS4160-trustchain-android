@@ -152,7 +152,7 @@ public class PeerSummaryActivity extends AppCompatActivity implements CrawlReque
         network.updateConnectionType((ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE));
 
         int sq = -5;
-        MessageProto.TrustChainBlock block = dbHelper.getBlock(inboxItemOtherPeer.getPublicKeyPair().toBytes(), dbHelper.getMaxSeqNum(inboxItemOtherPeer.getPublicKeyPair().toBytes()));
+        MessageProto.TrustChainBlock block = dbHelper.getBlock(inboxItemOtherPeer.getPeer().getPublicKeyPair().toBytes(), dbHelper.getMaxSeqNum(inboxItemOtherPeer.getPeer().getPublicKeyPair().toBytes()));
         if (block != null) {
             sq = block.getSequenceNumber();
         } else {
@@ -170,7 +170,7 @@ public class PeerSummaryActivity extends AppCompatActivity implements CrawlReque
             public void run() {
                 try {
                     Log.d("BCrawlTest", "Sent crawl request");
-                    network.sendCrawlRequest(inboxItemOtherPeer.getPeerAppToApp(), crawlRequest);
+                    network.sendCrawlRequest(inboxItemOtherPeer.getPeer(), crawlRequest);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -187,8 +187,8 @@ public class PeerSummaryActivity extends AppCompatActivity implements CrawlReque
      */
     public void onClickViewChain(View view) {
         // Try to instantiate public key.
-        if (this.inboxItemOtherPeer.getPublicKeyPair() != null) {
-            byte[] publicKey = this.inboxItemOtherPeer.getPublicKeyPair().toBytes();
+        if (this.inboxItemOtherPeer.getPeer().getPublicKeyPair() != null) {
+            byte[] publicKey = this.inboxItemOtherPeer.getPeer().getPublicKeyPair().toBytes();
             if (publicKey != null) {
                 Intent intent = new Intent(context, ChainExplorerActivity.class);
                 intent.putExtra(ChainExplorerActivity.BUNDLE_EXTRAS_PUBLIC_KEY , publicKey);
@@ -216,7 +216,7 @@ public class PeerSummaryActivity extends AppCompatActivity implements CrawlReque
     public void onClickSend(View view) throws UnsupportedEncodingException {
         byte[] publicKey = Key.loadKeys(this).getPublicKeyPair().toBytes();
         byte[] transactionData = messageEditText.getText().toString().getBytes("UTF-8");
-        final MessageProto.TrustChainBlock block = createBlock(transactionData, DBHelper, publicKey, null, inboxItemOtherPeer.getPublicKeyPair().toBytes());
+        final MessageProto.TrustChainBlock block = createBlock(transactionData, DBHelper, publicKey, null, inboxItemOtherPeer.getPeer().getPublicKeyPair().toBytes());
         final MessageProto.TrustChainBlock signedBlock = TrustChainBlockHelper.sign(block, Key.loadKeys(getApplicationContext()).getSigningKey());
         messageEditText.setText("");
         messageEditText.clearFocus();
@@ -229,7 +229,7 @@ public class PeerSummaryActivity extends AppCompatActivity implements CrawlReque
             @Override
             public void run() {
                 try {
-                    network.sendBlockMessage(inboxItemOtherPeer.getPeerAppToApp(), signedBlock);
+                    network.sendBlockMessage(inboxItemOtherPeer.getPeer(), signedBlock);
                     Snackbar mySnackbar = Snackbar.make(findViewById(R.id.myCoordinatorLayout),"Half block send!", Snackbar.LENGTH_SHORT);
                     mySnackbar.show();
                 } catch (IOException e) {
@@ -257,7 +257,7 @@ public class PeerSummaryActivity extends AppCompatActivity implements CrawlReque
                     builder = new AlertDialog.Builder(context);
                 }
                 try {
-                    builder.setMessage("Do you want to sign Block[ " + block.getTransaction().getUnformatted().toString("UTF-8") + " ] from " + inboxItemOtherPeer.getUserName() + "?")
+                    builder.setMessage("Do you want to sign Block[ " + block.getTransaction().getUnformatted().toString("UTF-8") + " ] from " + inboxItemOtherPeer.getPeer().getName() + "?")
                             .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int id) {
                                     signAndSendHalfBlock(block);
@@ -285,7 +285,7 @@ public class PeerSummaryActivity extends AppCompatActivity implements CrawlReque
         DualSecret keyPair = Key.loadKeys(this);
         MessageProto.TrustChainBlock block = createBlock(null, DBHelper,
                 keyPair.getPublicKeyPair().toBytes(),
-                linkedBlock, inboxItemOtherPeer.getPublicKeyPair().toBytes());
+                linkedBlock, inboxItemOtherPeer.getPeer().getPublicKeyPair().toBytes());
 
         final MessageProto.TrustChainBlock signedBlock = sign(block, keyPair.getSigningKey());
 
@@ -296,7 +296,7 @@ public class PeerSummaryActivity extends AppCompatActivity implements CrawlReque
             @Override
             public void run() {
                 try {
-                    network.sendBlockMessage(inboxItemOtherPeer.getPeerAppToApp(), signedBlock);
+                    network.sendBlockMessage(inboxItemOtherPeer.getPeer(), signedBlock);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -318,7 +318,7 @@ public class PeerSummaryActivity extends AppCompatActivity implements CrawlReque
     public void blockAdded(MessageProto.TrustChainBlock block) {
         DualSecret keyPair = Key.loadKeys(this);
         byte[] myPublicKey = keyPair.getPublicKeyPair().toBytes();
-        byte[] peerPublicKey = this.inboxItemOtherPeer.getPublicKeyPair().toBytes();
+        byte[] peerPublicKey = this.inboxItemOtherPeer.getPeer().getPublicKeyPair().toBytes();
         byte[] publicKey = block.getPublicKey().toByteArray();
         byte[] linkedPublicKey = block.getLinkPublicKey().toByteArray();
         if (Arrays.equals(myPublicKey,linkedPublicKey) && Arrays.equals(peerPublicKey, publicKey)) {
@@ -356,7 +356,7 @@ public class PeerSummaryActivity extends AppCompatActivity implements CrawlReque
             int validationResultStatus = ValidationResult.NO_INFO;
             DualSecret keyPair = Key.loadKeys(activity);
             byte[] myPublicKey = keyPair.getPublicKeyPair().toBytes();
-            byte[] peerPublicKey = activity.inboxItemOtherPeer.getPublicKeyPair().toBytes();
+            byte[] peerPublicKey = activity.inboxItemOtherPeer.getPeer().getPublicKeyPair().toBytes();
 
             for (MessageProto.TrustChainBlock block : activity.DBHelper.getBlocks(keyPair.getPublicKeyPair().toBytes(), true)) {
                 byte[] linkedPublicKey = block.getLinkPublicKey().toByteArray();
@@ -390,7 +390,7 @@ public class PeerSummaryActivity extends AppCompatActivity implements CrawlReque
                         blockStatus += "unknown status";
                     }
 
-                    mutualBlocks.add(new MutualBlockItem(activity.inboxItemOtherPeer.getUserName(), block.getSequenceNumber(), block.getLinkSequenceNumber(), blockStatus, block.getTransaction().getUnformatted().toStringUtf8(), block));
+                    mutualBlocks.add(new MutualBlockItem(activity.inboxItemOtherPeer.getPeer().getName(), block.getSequenceNumber(), block.getLinkSequenceNumber(), blockStatus, block.getTransaction().getUnformatted().toStringUtf8(), block));
                 }
             }
             return mutualBlocks;

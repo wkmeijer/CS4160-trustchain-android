@@ -8,10 +8,10 @@ option java_package = "nl.tudelft.cs4160.trustchain_android.message";
 option java_outer_classname = "MessageProto";
 
 message Message {
-    string source_peer_id = 1;
-    bytes destination_address = 2;
-    int32 destination_port = 3;
-    bytes public_key = 4;
+    bytes source_public_key = 1;
+    string source_name = 2;
+    bytes destination_address = 3;
+    int32 destination_port = 4;
     int32 type = 5;
     Payload payload = 6;
 }
@@ -63,8 +63,8 @@ message IntroductionResponse {
     int64 connection_type = 1;
     string network_operator = 2;
     string internal_source_socket = 3;
-    bytes invitee = 4;
-    repeated bytes pex = 5;
+    Peer invitee = 4;
+    repeated Peer peers = 5;
 }
 
 message Puncture {
@@ -73,5 +73,13 @@ message Puncture {
 
 message PunctureRequest {
     string source_socket = 1;
-    bytes puncture_peer = 2;
+    Peer puncture_peer = 2;
+}
+
+message Peer {
+    bytes address = 1;
+    int32 port = 2;
+    bytes public_key = 3;
+    string name = 4;
+    int32 connectionType = 5;
 }

@@ -100,21 +100,21 @@ public class InboxAdapter extends RecyclerView.Adapter<InboxAdapter.ViewHolder> 
             setOnClickListenerNewUser((ViewHolderAddPeer)holder);
         } else {
             InboxItem inboxItem = mDataset.get(position);
+            Peer peer = inboxItem.getPeer();
             if (inboxItem != null) {
                 ViewHolderItem h = (ViewHolderItem) holder;
                 setOnClickListenerInboxItem(holder, position);
-                h.mUserNameTextView.setText(inboxItem.getUserName());
+                h.mUserNameTextView.setText(inboxItem.getPeer().getName());
                 if (inboxItem.getAmountUnread() > 0) {
                     h.mCounterRelativeLayout.setVisibility(View.VISIBLE);
                 } else {
                     h.mCounterRelativeLayout.setVisibility(View.GONE);
                 }
-                h.mAddressTextView.setText(inboxItem.getAddress() + ":" + inboxItem.getPort());
+                h.mAddressTextView.setText(peer.getIpAddress().getHostAddress() + ":" + peer.getPort());
 
                 h.mStatusTextView.setTextColor(h.mAddressTextView.getContext().getResources().getColor(R.color.colorStatusCantConnect));
-                String name = inboxItem.getUserName();
                 for (Peer curr : peerList) {
-                    if (curr != null && curr.getPeerId() != null && curr.getPeerId().equals(name)) {
+                    if (peer.equals(curr)) {
                         if (curr.isAlive()) {
                             h.mStatusTextView.setTextColor(h.mAddressTextView.getContext().getResources().getColor(R.color.colorStatusConnected));
                         }

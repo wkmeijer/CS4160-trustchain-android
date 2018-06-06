@@ -69,9 +69,9 @@ public class PeerListAdapter extends ArrayAdapter<Peer> {
 
         Peer peer = getItem(position);
 
-        holder.mPeerId.setText(peer.getPeerId() == null ? "" : peer.getPeerId());
+        holder.mPeerId.setText(peer.getName() == null ? "" : peer.getName());
         if (peer.getConnectionType() != -1) {
-            if (OverviewConnectionsActivity.CONNECTABLE_ADDRESS.equals(peer.getExternalAddress().getHostAddress())) {
+            if (OverviewConnectionsActivity.CONNECTABLE_ADDRESS.equals(peer.getIpAddress().getHostAddress())) {
                 holder.mConnection.setText("Server");
             } else {
                 holder.mConnection.setText(connectionTypeString(peer.getConnectionType()));
@@ -98,8 +98,8 @@ public class PeerListAdapter extends ArrayAdapter<Peer> {
             }
         }
 
-        if (peer.getExternalAddress() != null) {
-            holder.mDestinationAddress.setText(String.format("%s:%d", peer.getExternalAddress().toString().substring(1), peer.getPort()));
+        if (peer.getIpAddress() != null) {
+            holder.mDestinationAddress.setText(String.format("%s:%d", peer.getIpAddress().toString().substring(1), peer.getPort()));
         }
 
         if (System.currentTimeMillis() - peer.getLastSentTime() < 200) {
@@ -149,12 +149,12 @@ public class PeerListAdapter extends ArrayAdapter<Peer> {
      */
     public String timeToString(long msSinceLastMessage) {
         // display seconds
-        if(msSinceLastMessage < 59000) {
-            return " " + ((int) Math.ceil(msSinceLastMessage / 1000.0)) + "s";
+        if(msSinceLastMessage < 60000) {
+            return " " + ((int) Math.floor(msSinceLastMessage / 1000.0)) + "s";
         }
 
         // display minutes
-        if(msSinceLastMessage < 3540000) {
+        if(msSinceLastMessage < 3600000) {
             int seconds = ((int) Math.ceil((msSinceLastMessage / 1000.0)));
             int minutes = ((int) Math.floor(seconds /60.0));
             seconds = seconds % 60;
@@ -191,11 +191,11 @@ public class PeerListAdapter extends ArrayAdapter<Peer> {
             if(peer.isAlive() && peer.isReceivedFrom()) {
                 PublicKeyPair pubKeyPair = PubKeyAndAddressPairStorage.getPubKeyByAddress(context, peer.getAddress().toString().replace("/", ""));
                 if(pubKeyPair != null) {
-                    InboxItem i = new InboxItem(peer.getPeerId(), new ArrayList<Integer>(), peer.getAddress().getHostString(), pubKeyPair, peer.getPort());
-                    UserNameStorage.setNewPeerByPublicKey(context, peer.getPeerId(), pubKeyPair);
+                    InboxItem i = new InboxItem(peer, new ArrayList<>());
+                    UserNameStorage.setNewPeerByPublicKey(context, peer.getName(), pubKeyPair);
                     InboxItemStorage.addInboxItem(context, i);
                     Snackbar mySnackbar = Snackbar.make(coordinatorLayout,
-                            peer.getPeerId() + " added to inbox", Snackbar.LENGTH_SHORT);
+                            peer.getName() + " added to inbox", Snackbar.LENGTH_SHORT);
                     mySnackbar.show();
                 } else {
                     Snackbar mySnackbar = Snackbar.make(coordinatorLayout,

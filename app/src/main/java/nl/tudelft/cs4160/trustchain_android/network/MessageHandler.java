@@ -5,6 +5,7 @@ import android.util.Log;
 import com.google.protobuf.ByteString;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import nl.tudelft.cs4160.trustchain_android.block.TrustChainBlockHelper;
@@ -36,7 +37,9 @@ public class MessageHandler {
     public void handleIntroductionRequest(Peer peer, MessageProto.IntroductionRequest request) throws IOException {
         peer.setConnectionType((int) request.getConnectionType());
         if (getPeerHandler().size() > 1) {
-            Peer invitee = getPeerHandler().getEligiblePeer(peer);
+            List<Peer> excludePeers = new ArrayList<>();
+            excludePeers.add(peer);
+            Peer invitee = getPeerHandler().getEligiblePeer(excludePeers);
             if (invitee != null) {
                 network.sendIntroductionResponse(peer, invitee);
                 network.sendPunctureRequest(invitee, peer);
@@ -44,25 +47,26 @@ public class MessageHandler {
             }
         } else {
             Log.d("Network", "Peerlist too small, can't handle introduction request");
-            network.sendIntroductionResponse(peer, null);
+            // send a response anyway containing this device, for heartbeat timer purposes
+            network.sendIntroductionResponse(peer, peer);
         }
     }
 
     /**
-     * Handle an introduction response. Parse incoming PEX peers.
+     * Handle an introduction response. Parse incoming peers.
      *
      * @param peer    the peer that sent this response.
      * @param response the message.
      */
-    public void handleIntroductionResponse(Peer peer, MessageProto.IntroductionResponse response) throws Exception {
+    public void handleIntroductionResponse(Peer peer, MessageProto.IntroductionResponse response) {
         peer.setConnectionType((int) response.getConnectionType());
-        List<ByteString> pex = response.getPexList();
-        for (ByteString pexPeer : pex) {
-            Peer p = Peer.deserialize(pexPeer.toByteArray());
+        List<MessageProto.Peer> peersList = response.getPeersList();
+        for (MessageProto.Peer peerProto : peersList) {
+            Peer p = new Peer(peerProto);
             Log.d(TAG, "From " + peer + " | found peer in pexList: " + p);
 
-            if (!getPeerHandler().hashId.equals(p.getPeerId())) {
-                getPeerHandler().getOrMakePeer(p.getPeerId(), p.getAddress());
+            if (!getPeerHandler().publicKeyPair.equals(p.getPublicKeyPair())) {
+                getPeerHandler().getOrMakePeer(p.getAddress(), p.getPublicKeyPair(), p.getName());
             }
         }
     }
@@ -70,17 +74,12 @@ public class MessageHandler {
     /**
      * Handle a puncture request. Sends a puncture to the puncture inboxItem included in the message.
      *
-     * @param peer    the origin inboxItem.
+     * @param peer    the origin peer.
      * @param request the message.
      * @throws IOException
      */
     public void handlePunctureRequest(Peer peer, MessageProto.PunctureRequest request) throws IOException {
-        Peer puncturePeer = null;
-        try {
-            puncturePeer = Peer.deserialize(request.getPuncturePeer().toByteArray());
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        }
+        Peer puncturePeer = new Peer(request.getPuncturePeer());
         if (!getPeerHandler().peerExistsInList(puncturePeer)) {
             network.sendPuncture(puncturePeer);
         }
