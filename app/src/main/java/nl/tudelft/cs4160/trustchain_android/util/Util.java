@@ -1,6 +1,9 @@
 package nl.tudelft.cs4160.trustchain_android.util;
 
+import android.Manifest;
+import android.app.Activity;
 import android.content.Context;
+import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 
 import java.io.BufferedInputStream;
@@ -148,4 +151,12 @@ public class Util {
         }
         return "";
     }
+
+    public static void requestWriteStoragePermissions(Activity activity, int requestCode) {
+        ActivityCompat.requestPermissions(activity, new String[]{ Manifest.permission.WRITE_EXTERNAL_STORAGE }, requestCode);
+    }
+    public static void requestReadStoragePermissions(Activity activity, int requestCode) {
+        ActivityCompat.requestPermissions(activity, new String[]{ Manifest.permission.READ_EXTERNAL_STORAGE }, requestCode);
+    }
+
 }
