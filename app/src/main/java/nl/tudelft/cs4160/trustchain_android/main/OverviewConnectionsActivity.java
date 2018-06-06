@@ -52,7 +52,7 @@ import nl.tudelft.cs4160.trustchain_android.message.MessageProto;
 import nl.tudelft.cs4160.trustchain_android.passport.ocr.camera.CameraActivity;
 
 import nl.tudelft.cs4160.trustchain_android.network.Network;
-import nl.tudelft.cs4160.trustchain_android.network.NetworkCommunicationListener;
+import nl.tudelft.cs4160.trustchain_android.network.NetworkStatusListener;
 import nl.tudelft.cs4160.trustchain_android.network.peer.Peer;
 import nl.tudelft.cs4160.trustchain_android.network.peer.PeerHandler;
 import nl.tudelft.cs4160.trustchain_android.network.peer.PeerListener;
@@ -60,7 +60,7 @@ import nl.tudelft.cs4160.trustchain_android.storage.database.TrustChainDBHelper;
 import nl.tudelft.cs4160.trustchain_android.storage.sharedpreferences.BootstrapIPStorage;
 import nl.tudelft.cs4160.trustchain_android.storage.sharedpreferences.UserNameStorage;
 
-public class OverviewConnectionsActivity extends AppCompatActivity implements NetworkCommunicationListener, PeerListener {
+public class OverviewConnectionsActivity extends AppCompatActivity implements NetworkStatusListener, PeerListener {
 
     // The server ip address, this is the bootstrap phone that's always running
     public final static String CONNECTABLE_ADDRESS = "130.161.211.254";
@@ -122,7 +122,7 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
         }
 
         getPeerHandler().setPeerListener(this);
-        network.setNetworkCommunicationListener(this);
+        network.setNetworkStatusListener(this);
         network.updateConnectionType((ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE));
         ((TextView) findViewById(R.id.peer_id)).setText(peerHandler.getHashId());
     }
@@ -254,11 +254,11 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
     /**
      *
      * NETWORKING STUFF
-     *
+     * Contains the main send thread and methods to update the network related UI items.
      */
 
     /**
-     * Add the initial hard-coded connectable inboxItem to the inboxItem list.
+     * Add the bootstrap to the peerlist.
      */
     public void addInitialPeer() {
         String address = BootstrapIPStorage.getIP(this);
@@ -408,119 +408,10 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
      * @param ip the ip address.
      */
     private void setWanvote(final String ip) {
-        new Handler(getMainLooper()).post(new Runnable() {
-            @Override
-            public void run() {
-                TextView mWanVote = findViewById(R.id.wanvote);
-                mWanVote.setText(ip);
-            }
+        new Handler(getMainLooper()).post(() -> {
+            TextView mWanVote = findViewById(R.id.wanvote);
+            mWanVote.setText(ip);
         });
-    }
-
-    /**
-     * Handle an introduction request. Send a puncture request to the included invitee.
-     *
-     * @param peer    the orimessagegin inboxItem.
-     * @param request the message.
-     * @throws IOException
-     */
-    @Override
-    public void handleIntroductionRequest(Peer peer, MessageProto.IntroductionRequest request) throws IOException {
-        peer.setConnectionType((int) request.getConnectionType());
-        if (getPeerHandler().size() > 1) {
-            Peer invitee = getPeerHandler().getEligiblePeer(peer);
-            if (invitee != null) {
-                network.sendIntroductionResponse(peer, invitee);
-                network.sendPunctureRequest(invitee, peer);
-                Log.d("Network", "Introducing " + invitee.getAddress() + " to " + peer.getAddress());
-            }
-        } else {
-            Log.d("Network", "Peerlist too small, can't handle introduction request");
-            network.sendIntroductionResponse(peer, null);
-        }
-    }
-
-    /**
-     * Handle an introduction response. Parse incoming PEX peers.
-     *
-     * @param peer    the peer that sent this response.
-     * @param response the message.
-     */
-    @Override
-    public void handleIntroductionResponse(Peer peer, MessageProto.IntroductionResponse response) throws Exception {
-        peer.setConnectionType((int) response.getConnectionType());
-        List<ByteString> pex = response.getPexList();
-        for (ByteString pexPeer : pex) {
-            Peer p = Peer.deserialize(pexPeer.toByteArray());
-            Log.d(TAG, "From " + peer + " | found peer in pexList: " + p);
-
-            if (!getPeerHandler().hashId.equals(p.getPeerId())) {
-                getPeerHandler().getOrMakePeer(p.getPeerId(), p.getAddress());
-            }
-        }
-    }
-
-    /**
-     * Handle a puncture. Does nothing because the only purpose of a puncture is to punch a hole in the NAT.
-     *
-     * @param peer    the origin inboxItem.
-     * @param puncture the message.
-     * @throws IOException
-     */
-    @Override
-    public void handlePuncture(Peer peer, MessageProto.Puncture puncture) throws IOException {
-    }
-
-    /**
-     * Handle a puncture request. Sends a puncture to the puncture inboxItem included in the message.
-     *
-     * @param peer    the origin inboxItem.
-     * @param request the message.
-     * @throws IOException
-     */
-    @Override
-    public void handlePunctureRequest(Peer peer, MessageProto.PunctureRequest request) throws IOException {
-        Peer puncturePeer = null;
-        try {
-            puncturePeer = Peer.deserialize(request.getPuncturePeer().toByteArray());
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        }
-        if (!getPeerHandler().peerExistsInList(puncturePeer)) {
-            network.sendPuncture(puncturePeer);
-        }
-    }
-
-    /**
-     * Handle the received (half) block.
-     * This block is placed in in the TrustChainDB, except if it is INVALID.
-     * @param peer the sending peer
-     * @param block the data send
-     * @throws IOException
-     */
-    @Override
-    public void handleReceivedBlock(Peer peer, MessageProto.TrustChainBlock block) {
-        try {
-            if (TrustChainBlockHelper.validate(block,dbHelper).getStatus() != ValidationResult.INVALID ) {
-                dbHelper.replaceInDB(block);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    /**
-     * Handle crawl request
-     * @param peer the sending peer
-     * @param request the crawlRequest
-     * @throws IOException
-     */
-    @Override
-    public void handleCrawlRequest(Peer peer, MessageProto.CrawlRequest request) throws IOException {
-        //ToDo for future application sending the entire chain is a bit too much
-        for (MessageProto.TrustChainBlock block : dbHelper.getAllBlocks()) {
-            network.sendBlockMessage(peer, block);
-        }
     }
 
     /**
@@ -582,7 +473,7 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
      */
     @Override
     public void updateInternalSourceAddress(final String address) {
-        Log.d("App-To-App Log", "Local ip: " + address);
+        Log.d(TAG, "Local ip: " + address);
 
         runOnUiThread(() -> {
             TextView localIp = findViewById(R.id.local_ip_address_view);
