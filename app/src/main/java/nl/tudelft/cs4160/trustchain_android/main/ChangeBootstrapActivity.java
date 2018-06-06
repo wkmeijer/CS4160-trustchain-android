@@ -33,6 +33,9 @@ public class ChangeBootstrapActivity extends AppCompatActivity {
     public void onClickConnect(View view) {
         bootstrapView = findViewById(R.id.bootstrap_IP);
         try{
+            if(bootstrapView.getText().toString().equals("")) {
+                throw new Exception("Bootstrap IP was empty");
+            }
             Object res = InetAddress.getByName(bootstrapView.getText().toString());
             if(!(res instanceof Inet4Address) && !(res instanceof Inet6Address)){
                 Log.i(TAG, res.toString());
