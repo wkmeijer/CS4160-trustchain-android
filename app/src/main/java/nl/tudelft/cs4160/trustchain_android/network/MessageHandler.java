@@ -2,8 +2,6 @@ package nl.tudelft.cs4160.trustchain_android.network;
 
 import android.util.Log;
 
-import com.google.protobuf.ByteString;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;

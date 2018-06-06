@@ -2,7 +2,6 @@ package nl.tudelft.cs4160.trustchain_android.storage.sharedpreferences;
 
 import android.content.Context;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 

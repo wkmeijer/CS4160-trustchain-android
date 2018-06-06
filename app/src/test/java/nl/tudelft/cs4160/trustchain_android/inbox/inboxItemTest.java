@@ -5,10 +5,12 @@ import junit.framework.TestCase;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.net.InetSocketAddress;
 import java.util.ArrayList;
 
 import nl.tudelft.cs4160.trustchain_android.crypto.DualSecret;
 import nl.tudelft.cs4160.trustchain_android.crypto.PublicKeyPair;
+import nl.tudelft.cs4160.trustchain_android.network.peer.Peer;
 
 public class inboxItemTest extends TestCase {
     String userName;
@@ -27,12 +29,13 @@ public class inboxItemTest extends TestCase {
         address = "address";
         publicKey = new DualSecret().getPublicKeyPair();
         port = 123;
-        ii = new InboxItem(userName, halfBlockSequenceNumbers, address, publicKey, port);
+        Peer peer = new Peer(new InetSocketAddress(address, port),publicKey,userName);
+        ii = new InboxItem(peer, halfBlockSequenceNumbers);
     }
 
     @Test
     public void testConstructorUserName() {
-        assertEquals(ii.getUserName(), userName);
+        assertEquals(ii.getPeer().getName(), userName);
     }
 
     @Test
@@ -42,12 +45,12 @@ public class inboxItemTest extends TestCase {
 
     @Test
     public void testConstructorAddress() {
-        assertEquals(ii.getAddress(), address);
+        assertEquals(ii.getPeer().getIpAddress().getHostAddress(), address);
     }
 
     @Test
     public void testConstructorPublicKey() {
-        assertEquals(ii.getPublicKeyPair(), publicKey);
+        assertEquals(ii.getPeer().getPublicKeyPair(), publicKey);
     }
 
     @Test
@@ -60,67 +63,45 @@ public class inboxItemTest extends TestCase {
 
     @Test
     public void testEquals() {
-        InboxItem ii2 = new InboxItem(userName, halfBlockSequenceNumbers, address, publicKey, port);
+        Peer peer = new Peer(new InetSocketAddress(address,port),publicKey,userName);
+        InboxItem ii2 = new InboxItem(peer, halfBlockSequenceNumbers);
         assertEquals(ii, ii2);
     }
 
     @Test
     public void testEqualsFalseUserName() {
-        InboxItem ii2 = new InboxItem(userName + "r", halfBlockSequenceNumbers, address, publicKey, port);
+        Peer peer = new Peer(new InetSocketAddress(address,port),publicKey,userName + "r");
+        InboxItem ii2 = new InboxItem(peer, halfBlockSequenceNumbers);
         assertFalse(ii.equals(ii2));
     }
 
     @Test
     public void testEqualsFalseAddress() {
-        InboxItem ii2 = new InboxItem(userName, halfBlockSequenceNumbers, address + "r", publicKey, port);
+        Peer peer = new Peer(new InetSocketAddress(address + "r",port),publicKey,userName);
+        InboxItem ii2 = new InboxItem(peer, halfBlockSequenceNumbers);
         assertFalse(ii.equals(ii2));
     }
 
     @Test
     public void testEqualsFalsePublicKey() {
-        InboxItem ii2 = new InboxItem(userName, halfBlockSequenceNumbers, address, new PublicKeyPair(new byte[] {0x00,0x01,0x02}), port);
+        Peer peer = new Peer(new InetSocketAddress(address,port),new PublicKeyPair(new byte[] {0x00,0x01,0x02}),userName);
+        InboxItem ii2 = new InboxItem(peer, halfBlockSequenceNumbers);
         assertFalse(ii.equals(ii2));
     }
 
     @Test
     public void testEqualsFalsePort() {
-        InboxItem ii2 = new InboxItem(userName, halfBlockSequenceNumbers, address, publicKey, port + 12);
+        Peer peer = new Peer(new InetSocketAddress(address,port + 12),publicKey,userName);
+        InboxItem ii2 = new InboxItem(peer, halfBlockSequenceNumbers);
         assertFalse(ii.equals(ii2));
     }
 
     @Test
     public void testEqualsFalseHalfBlockSequenceNumbers() {
+        Peer peer = new Peer(new InetSocketAddress(address,port),publicKey,userName);
         ArrayList<Integer> halfBlockSequenceNumbers2 = new ArrayList<>();
-        InboxItem ii2 = new InboxItem(userName, halfBlockSequenceNumbers2, address, publicKey, port);
+        InboxItem ii2 = new InboxItem(peer, halfBlockSequenceNumbers2);
         assertFalse(ii.equals(ii2));
-    }
-
-    @Test
-    public void testSetUserName() {
-        String newUserName = "random";
-        ii.setUserName(newUserName);
-        assertEquals(ii.getUserName(), newUserName);
-    }
-
-    @Test
-    public void testSetAddress() {
-        String string = "testSetAddress";
-        ii.setAddress(string);
-        assertEquals(ii.getAddress(), string);
-    }
-
-    @Test
-    public void testSetPublicKey() {
-        PublicKeyPair pubKeyPair = new DualSecret().getPublicKeyPair();
-        ii.setPublicKeyPair(pubKeyPair);
-        assertEquals(ii.getPublicKeyPair(), pubKeyPair);
-    }
-
-    @Test
-    public void testSetPort() {
-        int port = 14;
-        ii.setPort(port);
-        assertEquals(ii.getPort(), port);
     }
 
     @Test
@@ -137,7 +118,8 @@ public class inboxItemTest extends TestCase {
     }
     @Test
     public void testGetAmountUnreadNull() {
-        InboxItem ii2 = new InboxItem(userName, null, address, publicKey, port);
+        Peer peer = new Peer(new InetSocketAddress(address,port), publicKey,userName);
+        InboxItem ii2 = new InboxItem(peer, null);
         assertEquals(ii2.getAmountUnread(),0);
     }
 

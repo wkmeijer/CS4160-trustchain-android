@@ -13,7 +13,7 @@ import java.util.List;
 
 import nl.tudelft.cs4160.trustchain_android.network.peer.Peer;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 public class PeerListAdapterTest {
     @Mock
@@ -32,77 +32,77 @@ public class PeerListAdapterTest {
     @Test
     public void timeToStringTestSeconds1() {
         long time = 1000;
-        String expected = " <1s";
+        String expected = " 1s";
         assertEquals(expected, pla.timeToString(time));
     }
 
     @Test
     public void timeToStringTestSeconds2() {
         long time = 2000;
-        String expected = " <2s";
+        String expected = " 2s";
         assertEquals(expected, pla.timeToString(time));
     }
 
     @Test
     public void timeToStringTestSeconds3() {
         long time = 0;
-        String expected = " <0s";
+        String expected = " 0s";
         assertEquals(expected, pla.timeToString(time));
     }
 
     @Test
     public void timeToStringTestHours1() {
         long time = 3600000;
-        String expected = " <1h0m";
+        String expected = " 1h0m";
         assertEquals(expected, pla.timeToString(time));
     }
 
     @Test
     public void timeToStringTestHours2() {
         long time = 3800000;
-        String expected = " <1h4m";
+        String expected = " 1h3m";
         assertEquals(expected, pla.timeToString(time));
     }
 
     @Test
     public void timeToStringTestHours3() {
         long time = 3599999;
-        String expected = " <1h0m";
+        String expected = " 59m59s";
         assertEquals(expected, pla.timeToString(time));
     }
 
     @Test
     public void timeToStringMinutes1() {
         long time = 200000;
-        String expected = " <3m20s";
+        String expected = " 3m20s";
         assertEquals(expected, pla.timeToString(time));
     }
 
     @Test
     public void timeToStringMinutes2() {
         long time = 60000;
-        String expected = " <1m0s";
+        String expected = " 1m0s";
         assertEquals(expected, pla.timeToString(time));
     }
 
     @Test
     public void timeToStringMinutes3() {
         long time = 60001;
-        String expected = " <1m1s";
+        String expected = " 1m0s";
         assertEquals(expected, pla.timeToString(time));
     }
 
     @Test
     public void timeToStringMinutes4() {
         long time = 59999;
-        String expected = " <1m0s";
+        String expected = " 59s";
         assertEquals(expected, pla.timeToString(time));
     }
 
     @Test
     public void timeToStringTestDays() {
         long time = 999999999;
-        String expected = " >1d";
+        String expected = "";
         assertEquals(expected, pla.timeToString(time));
     }
 }

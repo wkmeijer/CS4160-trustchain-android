@@ -1,16 +1,8 @@
 package nl.tudelft.cs4160.trustchain_android.inbox;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.io.Serializable;
-import java.net.InetSocketAddress;
 import java.util.ArrayList;
-import java.util.Arrays;
 
-import nl.tudelft.cs4160.trustchain_android.crypto.PublicKeyPair;
 import nl.tudelft.cs4160.trustchain_android.network.peer.Peer;
 
 public class InboxItem implements Serializable {

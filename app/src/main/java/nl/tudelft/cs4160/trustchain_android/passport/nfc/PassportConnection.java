@@ -8,9 +8,9 @@ import net.sf.scuba.smartcards.CardServiceException;
 
 import org.jmrtd.BACKeySpec;
 import org.jmrtd.PassportService;
-import org.jmrtd.lds.LDSFileUtil;
 import org.jmrtd.lds.DG15File;
 import org.jmrtd.lds.DG1File;
+import org.jmrtd.lds.LDSFileUtil;
 import org.jmrtd.lds.MRZInfo;
 
 import java.io.InputStream;

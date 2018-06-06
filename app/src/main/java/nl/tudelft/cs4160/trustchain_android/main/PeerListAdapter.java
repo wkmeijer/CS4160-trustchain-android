@@ -155,7 +155,7 @@ public class PeerListAdapter extends ArrayAdapter<Peer> {
 
         // display minutes
         if(msSinceLastMessage < 3600000) {
-            int seconds = ((int) Math.ceil((msSinceLastMessage / 1000.0)));
+            int seconds = ((int) Math.floor((msSinceLastMessage / 1000.0)));
             int minutes = ((int) Math.floor(seconds /60.0));
             seconds = seconds % 60;
             return " " + minutes + "m" + seconds + "s";
@@ -163,7 +163,7 @@ public class PeerListAdapter extends ArrayAdapter<Peer> {
 
         // display hours
         if(msSinceLastMessage < 86400000) {
-            int minutes = ((int) Math.ceil(msSinceLastMessage /60000.0));
+            int minutes = ((int) Math.floor(msSinceLastMessage /60000.0));
             int hours = ((int) Math.floor(minutes / 60.0));
             minutes = minutes % 60;
             return " " + hours + "h" + minutes + "m";
