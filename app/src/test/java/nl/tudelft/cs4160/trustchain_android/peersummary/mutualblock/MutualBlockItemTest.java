@@ -66,10 +66,6 @@ public class MutualBlockItemTest {
         assertEquals(mbi.getSeqNum(), seqNum);
     }
 
-    @Test
-    public void testDifferentPeerNameAndSeqNum() {
-        MutualBlockItem mbi = new MutualBlockItem(peerName, block, ValidationResult.INVALID);
-        assertTrue(mbi.getTransaction().equals(transaction));
-    }
+
 
 }

@@ -44,6 +44,7 @@ captures/
 .idea/dictionaries
 .idea/libraries
 
+.idea/runConfigurations.xml
 app/.idea/workspace.xml
 app/.idea/tasks.xml
 app/.idea/gradle.xml
