@@ -39,7 +39,9 @@ public class OpenFileClickListener implements View.OnClickListener{
             return;
         }
 
-        File file = new File(android.os.Environment.getExternalStorageDirectory() + "/TrustChain/" + Util.byteArrayToHexString(block.getSignature().toByteArray()) + "." + block.getTransaction().getFormat());
+        File file = new File(android.os.Environment.getExternalStorageDirectory()
+                + "/TrustChain/" + ByteArrayConverter.bytesToHexString(block.getSignature().toByteArray())
+                + "." + block.getTransaction().getFormat());
         if (file.exists()) file.delete();
 
         byte[] bytes = block.getTransaction().getUnformatted().toByteArray();

@@ -157,12 +157,10 @@ public class ChainExplorerAdapter extends BaseAdapter {
 
         if (TrustChainBlockHelper.containsBinaryFile(block)) {
             // If the block contains a file show the 'click to open' text
-            transaction.setText(block.getTransaction().getFormat() + " file\n" +
-                    context.getString(R.string.click_to_open));
+            transaction.setText(context.getString(R.string.click_to_open_file, block.getTransaction().getFormat()));
             setOpenFileClickListener(transaction, block);
 
-            expTransaction.setText(block.getTransaction().getFormat() + " file\n" +
-                    context.getString(R.string.click_to_open));
+            expTransaction.setText(context.getString(R.string.click_to_open_file, block.getTransaction().getFormat()));
             setOpenFileClickListener(expTransaction, block);
         } else {
             transaction.setText(block.getTransaction().getUnformatted().toStringUtf8());

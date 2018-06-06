@@ -133,24 +133,6 @@ public class Util {
         return new DecimalFormat("#,##0.#").format(size/Math.pow(1024, digitGroups)) + " " + units[digitGroups];
     }
 
-    /**
-     * Method for converting a byte array to a hexString.
-     * This method is used for converting a signed 8-byte array back to a hashString in order to
-     * display it readable.
-     */
-    public static String byteArrayToHexString(byte[] bArray) {
-        if (bArray != null) {
-            final char[] hexArray = "0123456789ABCDEF".toCharArray();
-            char[] hexChars = new char[bArray.length * 2];
-            for (int j = 0; j < bArray.length; j++) {
-                int v = bArray[j] & 0xFF;
-                hexChars[j * 2] = hexArray[v >>> 4];
-                hexChars[j * 2 + 1] = hexArray[v & 0x0F];
-            }
-            return new String(hexChars);
-        }
-        return "";
-    }
 
     public static void requestWriteStoragePermissions(Activity activity, int requestCode) {
         ActivityCompat.requestPermissions(activity, new String[]{ Manifest.permission.WRITE_EXTERNAL_STORAGE }, requestCode);

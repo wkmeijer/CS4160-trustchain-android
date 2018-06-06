@@ -297,7 +297,7 @@ public class PeerSummaryActivity extends AppCompatActivity implements CrawlReque
                     builder = new AlertDialog.Builder(context);
                 }
                 String txString = containsBinaryFile(block) ?
-                        block.getTransaction().getFormat() + " file" :
+                        getString(R.string.type_file, block.getTransaction().getFormat()) :
                         block.getTransaction().getUnformatted().toString(UTF_8);
                 builder.setMessage("Do you want to sign Block[ " + txString + " ] from " + inboxItemOtherPeer.getUserName() + "?")
                         .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
@@ -407,6 +407,7 @@ public class PeerSummaryActivity extends AppCompatActivity implements CrawlReque
         FileDialog fileDialog = new FileDialog(this, mPath);
         fileDialog.addFileListener(new FileDialog.FileSelectedListener() {
             public void fileSelected(File file) {
+                messageEditText.setEnabled(false);
                 transactionDocument = file;
                 selectedFilePath.setText(file.getPath());
                 if (file.length() > MAX_ATTACHMENT_SIZE) {

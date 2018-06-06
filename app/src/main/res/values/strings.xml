@@ -45,7 +45,6 @@
     <string name="camera_permissions_required">Camera permissions required</string>
     <string name="camera_permisions_required_long">To scan QR codes, the application needs permission to access the camera.</string>
     <string name="current_funds">Current Funds</string>
-    <string name="click_to_open">Click to open</string>
 
     <string name="send">Send</string>
     <string name="developer_mode">Developer Mode</string>
@@ -158,4 +157,7 @@
     <string name="need_sign">Awaiting signing</string>
     <string name="invalid_block">Invalid block</string>
     <string name="no_file_selected">No file selected</string>
+
+    <string name="type_file">%s file</string>
+    <string name="click_to_open_file">%s file\nClick to open</string>
 </resources>

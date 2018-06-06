@@ -32,6 +32,7 @@ import nl.tudelft.cs4160.trustchain_android.R;
 import nl.tudelft.cs4160.trustchain_android.passport.DocumentData;
 import nl.tudelft.cs4160.trustchain_android.passport.PassportHolder;
 import nl.tudelft.cs4160.trustchain_android.passport.ocr.ManualInputActivity;
+import nl.tudelft.cs4160.trustchain_android.util.ByteArrayConverter;
 import nl.tudelft.cs4160.trustchain_android.util.Util;
 
 public class PassportConActivity extends AppCompatActivity {
@@ -202,7 +203,7 @@ public class PassportConActivity extends AppCompatActivity {
                 byte[] signed = pcon.signData(bytesToSign);
 
                 Log.d(TAG, "Signed: " + new String(signed, StandardCharsets.UTF_8));
-                Toast.makeText(this, "Response: " + Util.byteArrayToHexString(signed), Toast.LENGTH_LONG).show();
+                Toast.makeText(this, "Response: " + ByteArrayConverter.bytesToHexString(signed), Toast.LENGTH_LONG).show();
 
                 progressView.setImageResource(R.drawable.nfc_icon_3);
 
