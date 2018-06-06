@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -21,6 +23,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.io.IOException;
 import java.lang.ref.WeakReference;
@@ -54,6 +57,8 @@ import nl.tudelft.cs4160.trustchain_android.network.peer.PeerListener;
 import nl.tudelft.cs4160.trustchain_android.passport.ocr.camera.CameraActivity;
 import nl.tudelft.cs4160.trustchain_android.storage.database.TrustChainDBHelper;
 import nl.tudelft.cs4160.trustchain_android.storage.sharedpreferences.BootstrapIPStorage;
+import nl.tudelft.cs4160.trustchain_android.storage.sharedpreferences.InboxItemStorage;
+import nl.tudelft.cs4160.trustchain_android.storage.sharedpreferences.SharedPreferencesStorage;
 import nl.tudelft.cs4160.trustchain_android.storage.sharedpreferences.UserNameStorage;
 
 public class OverviewConnectionsActivity extends AppCompatActivity implements NetworkStatusListener, PeerListener {
@@ -63,6 +68,7 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
 
     public final static int DEFAULT_PORT = 1873;
     private final static int BUFFER_SIZE = 65536;
+    public final static String VERSION_KEY = "VERSION_KEY:";
     private PeerListAdapter activePeersAdapter;
     private PeerListAdapter newPeersAdapter;
     private TrustChainDBHelper dbHelper;
@@ -81,6 +87,7 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_overview_connections);
+        updateVersion();
         initVariables(savedInstanceState);
         initExitButton();
         addInitialPeer();
@@ -135,6 +142,37 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
             kp = Key.createAndSaveKeys(getApplicationContext());
             MessageProto.TrustChainBlock block = TrustChainBlockHelper.createGenesisBlock(kp);
             dbHelper.insertInDB(block);
+        }
+    }
+
+    /**
+     * Check which version the current installed app is and take appropriate actions.
+     * Update the stored version to the version of the current installed app.
+     */
+    private void updateVersion() {
+        PackageInfo pInfo = null;
+        try {
+            pInfo = this.getPackageManager().getPackageInfo(getPackageName(), 0);
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+        }
+        int newVersion = pInfo.versionCode;
+        int storedVersion = 0;
+        try {
+            storedVersion = SharedPreferencesStorage.readSharedPreferences(this,VERSION_KEY,Integer.class);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        // The way inboxitems are stored was changed, so this storage needs to be cleared
+        if(storedVersion < 10) {
+            InboxItemStorage.deleteAll(this);
+        }
+
+        try {
+            SharedPreferencesStorage.writeSharedPreferences(this, VERSION_KEY, newVersion);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
