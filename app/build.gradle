@@ -44,7 +44,6 @@ dependencies {
     implementation 'me.dm7.barcodescanner:zxing:1.9.8'
     implementation 'com.android.support:design:26.1.0'
     implementation 'com.squareup.moshi:moshi:1.5.0'
-//    implementation 'com.github.joshjdevl.libsodiumjni:libsodium-jni-aar:1.0.7'
     implementation 'com.android.support.constraint:constraint-layout:1.0.2'
     implementation 'com.google.code.gson:gson:2.8.2'
     implementation 'com.rmtheis:tess-two:9.0.0'
@@ -59,7 +58,6 @@ dependencies {
 
     androidTestImplementation 'com.github.joshjdevl.libsodiumjni:libsodium-jni-aar:1.0.7'
     implementation 'com.github.joshjdevl.libsodiumjni:libsodium-jni-aar:1.0.7'
-//    testImplementation 'com.github.joshjdevl.libsodiumjni:libsodium-jni-aar:1.0.7'
 
 
 
