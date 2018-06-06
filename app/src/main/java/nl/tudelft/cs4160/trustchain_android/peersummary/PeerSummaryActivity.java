@@ -396,6 +396,7 @@ public class PeerSummaryActivity extends AppCompatActivity implements CrawlReque
         FileDialog fileDialog = new FileDialog(this, mPath);
         fileDialog.addFileListener(new FileDialog.FileSelectedListener() {
             public void fileSelected(File file) {
+                messageEditText.setEnabled(false);
                 transactionDocument = file;
                 selectedFilePath.setText(file.getPath());
                 if (file.length() > MAX_ATTACHMENT_SIZE) {
