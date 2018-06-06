@@ -18,7 +18,7 @@ import nl.tudelft.cs4160.trustchain_android.message.MessageProto;
 import nl.tudelft.cs4160.trustchain_android.message.MessageProto.TrustChainBlock.Transaction;
 
 public class TrustChainDBHelper extends SQLiteOpenHelper {
-    public static final int DATABASE_VERSION = 1;
+    public static final int DATABASE_VERSION = 2;
     public static final String DATABASE_NAME = "TrustChain.db";
 
     private static final String SQL_CREATE_ENTRIES =
@@ -44,6 +44,7 @@ public class TrustChainDBHelper extends SQLiteOpenHelper {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
 
+
     @Override
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(SQL_CREATE_ENTRIES);
@@ -58,7 +59,17 @@ public class TrustChainDBHelper extends SQLiteOpenHelper {
      */
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        onCreate(db);
+        switch (oldVersion) {
+        case 1:
+            db.execSQL("DROP TABLE IF EXISTS " + TrustChainDBContract.BlockEntry.TABLE_NAME);
+            onCreate(db);
+        case 2:
+            break;
+        default:
+            throw new IllegalStateException(
+                    "onUpgrade() with unknown oldVersion" + oldVersion);
+        }
+
     }
 
     /**
@@ -116,7 +127,7 @@ public class TrustChainDBHelper extends SQLiteOpenHelper {
         return db.replace(TrustChainDBContract.BlockEntry.TABLE_NAME, null, values);
     }
 
-    /**
+   /**
      * Retrieves the block associated with the given public key and sequence number from the database
      *
      * @param pubkey    - Public key of which the latest block should be found

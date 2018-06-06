@@ -116,12 +116,15 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
     /**
      * If the app is launched for the first time
      * a new keyPair is created and saved locally in the storage.
-     * A genesis block is also created automatically.
+     * If no blocks are present in the database, a genesis block is created.
      */
     private void initKey() {
         DualSecret kp = Key.loadKeys(getApplicationContext());
         if (kp == null) {
             kp = Key.createAndSaveKeys(getApplicationContext());
+        }
+        int blocks = dbHelper.getMaxSeqNum(kp.getPublicKey().toBytes());
+        if (blocks == 0) {
             MessageProto.TrustChainBlock block = TrustChainBlockHelper.createGenesisBlock(kp);
             dbHelper.insertInDB(block);
         }
