@@ -156,4 +156,8 @@
     <string name="sequenceNum">seq: %1$d</string>
     <string name="need_sign">Awaiting signing</string>
     <string name="invalid_block">Invalid block</string>
+    <string name="no_file_selected">No file selected</string>
+
+    <string name="type_file">%s file</string>
+    <string name="click_to_open_file">%s file\nClick to open</string>
 </resources>
