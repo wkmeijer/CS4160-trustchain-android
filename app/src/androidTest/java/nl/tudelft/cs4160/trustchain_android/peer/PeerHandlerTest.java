@@ -13,6 +13,7 @@ import java.util.List;
 import nl.tudelft.cs4160.trustchain_android.crypto.Key;
 import nl.tudelft.cs4160.trustchain_android.crypto.PublicKeyPair;
 
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
@@ -26,18 +27,21 @@ public class PeerHandlerTest {
     PublicKeyPair publicKeyPair = Key.createNewKeyPair().getPublicKeyPair();
     private String randomHashIdName = "randomHashIdName";
     private PeerHandler peerHandler = new PeerHandler(publicKeyPair,randomHashIdName);
+    private PublicKeyPair peer1key = Key.createNewKeyPair().getPublicKeyPair();
+    private PublicKeyPair peer2key = Key.createNewKeyPair().getPublicKeyPair();
+    private PublicKeyPair peer3key = Key.createNewKeyPair().getPublicKeyPair();
+
 
     @Before
     public void initialization() {
-        Peer peer1 = new Peer(randomInet,Key.createNewKeyPair().getPublicKeyPair(),"peer1");
-        Peer peer2 = new Peer(randomInet,Key.createNewKeyPair().getPublicKeyPair(), "peer2");
-        Peer peer3 = new Peer(randomInet, Key.createNewKeyPair().getPublicKeyPair(), "peer3");
+        Peer peer1 = new Peer(randomInet, peer1key,"peer1");
+        Peer peer2 = new Peer(randomInet, peer2key, "peer2");
+        Peer peer3 = new Peer(randomInet, peer3key, "peer3");
 
         originalIpList = new ArrayList<>();
         originalIpList.add(peer1);
         originalIpList.add(peer2);
         originalIpList.add(peer3);
-        originalIpList.add(peer1);
 
         expectedIpList = new ArrayList<>();
         expectedIpList.add(peer1);
@@ -45,6 +49,7 @@ public class PeerHandlerTest {
         expectedIpList.add(peer3);
 
         peerHandler.setPeerList(originalIpList);
+        originalIpList.add(peer1);
     }
 
     @Test
@@ -61,6 +66,13 @@ public class PeerHandlerTest {
         }
         if (expectedIpList.size() != 0) failed = false;
         assertFalse(failed);
+    }
+
+    @Test
+    public void testRemoveDuplicatesInGetOrMakePeer() {
+        assertNotEquals(expectedIpList.size(),peerHandler.getPeerList().size());
+        peerHandler.getOrMakePeer(randomInet,peer2key,"peer2");
+        assertEquals(expectedIpList.size(),peerHandler.getPeerList().size());
     }
 
     @Test
@@ -87,6 +99,7 @@ public class PeerHandlerTest {
 
     @Test
     public void testSetPeerlist() {
+        peerHandler.setPeerList(originalIpList);
         assertEquals(expectedIpList.size(),peerHandler.getPeerList().size());
     }
 

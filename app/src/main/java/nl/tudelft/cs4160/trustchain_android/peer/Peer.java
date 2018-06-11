@@ -213,6 +213,7 @@ public class Peer implements Serializable {
                 ", name='" + getName() + '\'' +
                 ", isReceivedFrom=" + isReceivedFrom() +
                 ", connectionType=" + getConnectionType() +
+                ", publicKeyPair=" + getPublicKeyPair() +
                 '}';
     }
 

@@ -415,8 +415,9 @@ public class Network {
      */
     private static void addPeerToInbox(PublicKeyPair pubKeyPair, Peer peer, Context context) {
         if (pubKeyPair != null) {
-            InboxItem i = new InboxItem(peer, new ArrayList<Integer>());
+            InboxItem i = new InboxItem(peer, new ArrayList<>());
             InboxItemStorage.addInboxItem(context, i);
+            UserNameStorage.setNewPeerByPublicKey(context, peer.getName(), pubKeyPair);
         }
     }
 
