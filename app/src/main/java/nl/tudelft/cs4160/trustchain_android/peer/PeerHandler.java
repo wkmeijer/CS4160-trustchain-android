@@ -161,6 +161,7 @@ public class PeerHandler {
      * Synchronized is to make sure this happens thread safe.
      */
     public synchronized void splitPeerList() {
+        removeDuplicates();
         List<Peer> newConnected = new ArrayList<>();
         List<Peer> newIncoming = new ArrayList<>();
         for (Peer peer : peerList) {
@@ -226,8 +227,8 @@ public class PeerHandler {
                         Log.i(TAG, "Peer address differs from known address | address: " + address.toString() + " | peer.getAddress(): " + peer.getAddress().toString() + " | peer's public keys: " + publicKeyPair + " | this device's public keys: " + this.publicKeyPair);
                         peer.setAddress(address);
                         peer.setName(name);
-                        removeDuplicates();
                     }
+                    removeDuplicates();
                     return peer;
                 }
             }
@@ -236,9 +237,11 @@ public class PeerHandler {
             if (peer.getAddress().equals(address)) {
                 if (publicKeyPair != null) peer.setPublicKeyPair(publicKeyPair);
                 peer.setName(name);
+                removeDuplicates();
                 return peer;
             }
         }
+        removeDuplicates();
         return addPeer(address, publicKeyPair, name);
     }
 

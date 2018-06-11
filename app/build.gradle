@@ -7,8 +7,8 @@ android {
         applicationId "nl.tudelft.cs4160.trustchain_android"
         minSdkVersion 21
         targetSdkVersion 26
-        versionCode 10
-        versionName "0.3"
+        versionCode 12
+        versionName "0.302"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
     }
