@@ -159,5 +159,17 @@
     <string name="wrong_document_details">Document details are not inserted correctly</string>
     <string name="check_input">Check input</string>
     <string name="destination_address">destination_address</string>
+    <string name="enter_bytes">Enter 8 bytes to sign</string>
 
+    <!--PeerSummary-->
+    <string name="valid_block">Valid block</string>
+    <string name="seq_unknown">Unknown</string>
+    <string name="sequenceNum">seq: %1$d</string>
+    <string name="need_sign">Awaiting signing</string>
+    <string name="invalid_block">Invalid block</string>
+    <string name="no_file_selected">No file selected</string>
+    <string name="warning_files">Note: sent files will be public</string>
+
+    <string name="type_file">%s file</string>
+    <string name="click_to_open_file">%s file\nClick to open</string>
 </resources>

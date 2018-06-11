@@ -1,27 +1,45 @@
 package nl.tudelft.cs4160.trustchain_android.inbox;
 
-import junit.framework.TestCase;
+
+import android.support.test.rule.ActivityTestRule;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.libsodium.jni.NaCl;
 
 import java.net.InetSocketAddress;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import nl.tudelft.cs4160.trustchain_android.crypto.DualSecret;
 import nl.tudelft.cs4160.trustchain_android.crypto.PublicKeyPair;
 import nl.tudelft.cs4160.trustchain_android.network.peer.Peer;
+import nl.tudelft.cs4160.trustchain_android.main.UserConfigurationActivity;
 
-public class inboxItemTest extends TestCase {
-    String userName;
-    ArrayList<Integer> halfBlockSequenceNumbers = new ArrayList<>();
-    String address;
-    PublicKeyPair publicKey;
-    int port;
-    InboxItem ii;
+import static junit.framework.TestCase.assertTrue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+
+public class InboxItemTest {
+
+    private String userName;
+    private ArrayList<Integer> halfBlockSequenceNumbers = new ArrayList<>();
+    private String address;
+    private PublicKeyPair publicKey;
+    private int port;
+    private InboxItem ii;
+
+
+    @Rule
+    public ActivityTestRule<UserConfigurationActivity> mActivityRule = new ActivityTestRule<>(
+            UserConfigurationActivity.class,
+            true,
+            false);
 
     @Before
     public void setUp() {
+        NaCl.sodium();
         userName = "userName";
         halfBlockSequenceNumbers.add(1);
         halfBlockSequenceNumbers.add(2);
@@ -32,6 +50,7 @@ public class inboxItemTest extends TestCase {
         Peer peer = new Peer(new InetSocketAddress(address, port),publicKey,userName);
         ii = new InboxItem(peer, halfBlockSequenceNumbers);
     }
+
 
     @Test
     public void testConstructorUserName() {
@@ -105,6 +124,20 @@ public class inboxItemTest extends TestCase {
     }
 
     @Test
+    public void testSetUserName() {
+        String newUserName = "random";
+        ii.getPeer().setName(newUserName);
+        assertEquals(ii.getPeer().getName(), newUserName);
+    }
+
+    @Test
+    public void testSetPublicKey() {
+        PublicKeyPair pubKeyPair = new DualSecret().getPublicKeyPair();
+        ii.getPeer().setPublicKeyPair(pubKeyPair);
+        assertTrue(Arrays.equals(ii.getPeer().getPublicKeyPair().toBytes(), pubKeyPair.toBytes()));
+    }
+
+    @Test
     public void testSetBlocks() {
         ArrayList<Integer> halfBlockSequenceNumbers2 = new ArrayList<>();
         halfBlockSequenceNumbers2.add(4);
@@ -122,6 +155,5 @@ public class inboxItemTest extends TestCase {
         InboxItem ii2 = new InboxItem(peer, null);
         assertEquals(ii2.getAmountUnread(),0);
     }
-
 
 }

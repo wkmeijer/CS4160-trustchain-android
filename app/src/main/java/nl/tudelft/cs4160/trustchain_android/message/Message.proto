@@ -37,7 +37,8 @@ message TrustChainBlock {
 
     message Transaction {
         bytes unformatted = 1;
-        Claim claim = 2;
+        string format = 2;
+        Claim claim = 3;
     }
 
     message Claim {

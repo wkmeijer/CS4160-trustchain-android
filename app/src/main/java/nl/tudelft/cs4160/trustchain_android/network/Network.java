@@ -311,7 +311,7 @@ public class Network {
     private synchronized void sendMessage(Message message, Peer peer) throws IOException {
         ByteBuffer outputBuffer = ByteBuffer.allocate(BUFFER_SIZE);
         channel.send(outputBuffer.wrap(message.toByteArray()), peer.getAddress());
-        Log.i(TAG, "Sending " + message);
+        Log.d(TAG, "Sending " + message);
         peer.sentData();
         if (networkStatusListener != null) {
             networkStatusListener.updatePeerLists();
@@ -415,7 +415,7 @@ public class Network {
      */
     private static void addPeerToInbox(PublicKeyPair pubKeyPair, Peer peer, Context context) {
         if (pubKeyPair != null) {
-            InboxItem i = new InboxItem(peer, new ArrayList<>());
+            InboxItem i = new InboxItem(peer, new ArrayList<Integer>());
             InboxItemStorage.addInboxItem(context, i);
         }
     }

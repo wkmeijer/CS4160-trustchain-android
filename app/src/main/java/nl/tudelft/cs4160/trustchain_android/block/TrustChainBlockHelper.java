@@ -56,7 +56,7 @@ public class TrustChainBlockHelper {
      * @param linkpubk - The public key of the linked peer
      * @return a new half block
      */
-    public static MessageProto.TrustChainBlock createBlock(byte[] transaction, TrustChainDBHelper dbHelper,
+    public static MessageProto.TrustChainBlock createBlock(byte[] transaction, String format, TrustChainDBHelper dbHelper,
                                                          byte[] mypubk, MessageProto.TrustChainBlock linkedBlock,
                                                          byte[] linkpubk) {
         MessageProto.TrustChainBlock latestBlock = dbHelper.getLatestBlock(mypubk);
@@ -67,7 +67,11 @@ public class TrustChainBlockHelper {
                     .setLinkPublicKey(linkedBlock.getPublicKey())
                     .setLinkSequenceNumber(linkedBlock.getSequenceNumber());
         } else {
-            builder.setTransaction(Transaction.newBuilder().setUnformatted(ByteString.copyFrom(transaction)).build())
+            builder.setTransaction(
+                        Transaction.newBuilder()
+                                .setUnformatted(ByteString.copyFrom(transaction))
+                                .setFormat(format)
+                                .build())
                     .setLinkPublicKey(ByteString.copyFrom(linkpubk))
                     .setLinkSequenceNumber(TrustChainBlockHelper.UNKNOWN_SEQ);
         }
@@ -409,6 +413,19 @@ public class TrustChainBlockHelper {
         res = ellipsize(ByteArrayConverter.bytesToHexString(pubKey), maxLength);
         res += " (size: " + length + ")";
         return res;
+    }
+
+    /**
+     * Returns wether the given block contains a binary file in the transaction field.
+     * If the format field contains anything besides null, empty string or txt, assume the attached
+     * file is binary and allow opening using an external application.
+     * @param block
+     * @return
+     */
+    public static boolean containsBinaryFile(MessageProto.TrustChainBlock block) {
+        return block.getTransaction().getFormat() != null
+                && !block.getTransaction().getFormat().equals("");
+//              && !block.getTransaction().getFormat().equals("txt"));
     }
 
 }

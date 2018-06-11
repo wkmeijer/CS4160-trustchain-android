@@ -40,7 +40,7 @@ public class PubKeyAndAddressPairStorage {
      * @return
      */
     public static String getAddressByPubkey(Context context, PublicKeyPair pubKeyPair) {
-        Log.i(TAG, "get address of: " + pubKeyPair.toString());
+        Log.d(TAG, "get address of: " + pubKeyPair.toString());
         return SharedPreferencesStorage.readSharedPreferences(context, PUBKEY_KEY_PREFIX + Base64.encodeToString(pubKeyPair.toBytes(), Base64.DEFAULT));
     }
 
