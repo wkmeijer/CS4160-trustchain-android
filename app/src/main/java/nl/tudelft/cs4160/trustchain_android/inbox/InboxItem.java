@@ -3,7 +3,7 @@ package nl.tudelft.cs4160.trustchain_android.inbox;
 import java.io.Serializable;
 import java.util.ArrayList;
 
-import nl.tudelft.cs4160.trustchain_android.network.peer.Peer;
+import nl.tudelft.cs4160.trustchain_android.peer.Peer;
 
 public class InboxItem implements Serializable {
     private Peer peer;

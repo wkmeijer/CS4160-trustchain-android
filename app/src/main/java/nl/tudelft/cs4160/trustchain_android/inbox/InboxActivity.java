@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 import nl.tudelft.cs4160.trustchain_android.R;
-import nl.tudelft.cs4160.trustchain_android.network.peer.Peer;
+import nl.tudelft.cs4160.trustchain_android.peer.Peer;
 import nl.tudelft.cs4160.trustchain_android.storage.sharedpreferences.InboxItemStorage;
 
 public class InboxActivity extends AppCompatActivity  {

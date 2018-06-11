@@ -1,4 +1,4 @@
-package nl.tudelft.cs4160.trustchain_android.network.peer;
+package nl.tudelft.cs4160.trustchain_android.peer;
 
 import android.os.Handler;
 import android.os.Looper;

@@ -1,11 +1,13 @@
-package nl.tudelft.cs4160.trustchain_android.network.peer;
+package nl.tudelft.cs4160.trustchain_android.peer;
 
 import junit.framework.TestCase;
 
 import org.junit.Before;
 import org.junit.Test;
 
+import java.net.InetAddress;
 import java.net.InetSocketAddress;
+import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 import java.util.concurrent.TimeUnit;
 
@@ -18,11 +20,17 @@ public class PeerTest extends TestCase {
     String id2;
     InetSocketAddress address;
     PublicKeyPair publicKeyPair;
+    PublicKeyPair publicKeyPair2;
 
     @Before
     public void setUp() {
-        address = new InetSocketAddress(11);
+        try {
+            address = new InetSocketAddress(InetAddress.getByName("127.0.0.1"), 11);
+        } catch (UnknownHostException e) {
+            e.printStackTrace();
+        }
         publicKeyPair = Key.createNewKeyPair().getPublicKeyPair();
+        publicKeyPair2 = Key.createNewKeyPair().getPublicKeyPair();
         id1 = "123";
         id2 = "24";
     }
@@ -37,7 +45,7 @@ public class PeerTest extends TestCase {
     @Test
     public void testNotEqual() {
         Peer peer1 = new Peer(address, publicKeyPair, id1);
-        Peer peer2 = new Peer(address, publicKeyPair, id2);
+        Peer peer2 = new Peer(address, publicKeyPair2, id2);
         assertFalse(peer1.equals(peer2));
     }
 
@@ -69,8 +77,8 @@ public class PeerTest extends TestCase {
     public void testToString(){
         Peer peer1 = new Peer(address, publicKeyPair, "firstPEER");
         peer1.setConnectionType(1);
-        assertEquals("Peer{" + "address=" + address + ", peerId='" + "firstPEER" + '\'' +
-                        ", hasReceivedData=" + false + ", connectionType=" + 1 + '}'
+        assertEquals("Peer{" + "address=" + address + ", name='" + "firstPEER" + '\'' +
+                        ", isReceivedFrom=" + false + ", connectionType=" + 1 + '}'
                 ,peer1.toString());
     }
 
@@ -81,9 +89,9 @@ public class PeerTest extends TestCase {
         assertEquals(1, peer1.getConnectionType());
         peer1.setName("PEER");
         assertEquals("PEER", peer1.getName());
-        peer1.setAddress(new InetSocketAddress("host", 11));
-        assertEquals(new InetSocketAddress("host", 11), peer1.getAddress());
-        assertNull(peer1.getAddress());
+        peer1.setAddress(new InetSocketAddress("192.168.0.101", 11));
+        assertEquals(new InetSocketAddress("192.168.0.101", 11), peer1.getAddress());
+        assertNotNull(peer1.getAddress());
     }
 
     @Test
@@ -103,12 +111,6 @@ public class PeerTest extends TestCase {
         long lastReceivedTime = peer1.getLastReceivedTime();
         peer1.receivedData();
         assertNotSame(lastReceivedTime, peer1.getLastReceivedTime());
-    }
-
-    @Test
-    public void testHashCode() {
-        Peer peer1 = new Peer(address, publicKeyPair, "firstPEER");
-        assertEquals(132867431, peer1.hashCode());
     }
 
     @Test

@@ -1,5 +1,6 @@
-package nl.tudelft.cs4160.trustchain_android.network.peer;
+package nl.tudelft.cs4160.trustchain_android.peer;
 
+import junit.framework.TestCase;
 
 import org.junit.After;
 import org.junit.Before;
@@ -18,17 +19,13 @@ import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.validateMockitoUsage;
 
-/**
- * Created by Boning on 12/17/2017.
- */
-
 public class PeerHandlerTest {
-    private PeerHandler peerHandler;
     private ArrayList<Peer> originalIpList;
     private ArrayList<Peer> expectedIpList;
     InetSocketAddress randomInet = new InetSocketAddress(200);
     PublicKeyPair publicKeyPair = Key.createNewKeyPair().getPublicKeyPair();
     private String randomHashIdName = "randomHashIdName";
+    private PeerHandler peerHandler = new PeerHandler(publicKeyPair,randomHashIdName);
 
     @Before
     public void initialization() {
@@ -47,12 +44,11 @@ public class PeerHandlerTest {
         expectedIpList.add(peer2);
         expectedIpList.add(peer3);
 
-        peerHandler = new PeerHandler(publicKeyPair,randomHashIdName);
         peerHandler.setPeerList(originalIpList);
     }
 
     @Test
-    public void removeDuplicatesTest() {
+    public void testRemoveDuplicates() {
         peerHandler.removeDuplicates();
         ArrayList<Peer> newIPPeerList = peerHandler.getPeerList();
         boolean failed = false;
@@ -68,7 +64,7 @@ public class PeerHandlerTest {
     }
 
     @Test
-    public void peerExistsInListTest() {
+    public void testPeerExistsInList() {
         Peer peer4 = new Peer(randomInet,Key.createNewKeyPair().getPublicKeyPair(),"peer4");
         assertTrue(peerHandler.peerExistsInList(originalIpList.get(0)));
         assertFalse(peerHandler.peerExistsInList(peer4));

@@ -1,4 +1,4 @@
-package nl.tudelft.cs4160.trustchain_android.network.peer;
+package nl.tudelft.cs4160.trustchain_android.peer;
 
 import com.google.protobuf.ByteString;
 
@@ -22,7 +22,6 @@ public class Peer implements Serializable {
     private long lastSentTime = -1;
     private long lastReceiveTime = -1;
     private long creationTime;
-    long serialVersionUID = -8872742022617111380L;
 
     /**
      * Create a peer, for consistency protocolbuffers is used for this too, instead of simply serializing this.
@@ -34,7 +33,7 @@ public class Peer implements Serializable {
         ByteString ipAddress = null;
         int port = 0;
         ByteString publicKey = ByteString.EMPTY;
-        if(address != null) {
+        if(address != null && address.getAddress() != null) {
             ipAddress = ByteString.copyFrom(address.getAddress().getAddress());
             port = address.getPort();
         }
@@ -155,7 +154,7 @@ public class Peer implements Serializable {
     }
 
     public void setAddress(InetSocketAddress address) {
-        ByteString ipAddress = null;
+        ByteString ipAddress = ByteString.EMPTY;
         int port = 0;
         if(address != null) {
             ipAddress = ByteString.copyFrom(address.getAddress().getAddress());

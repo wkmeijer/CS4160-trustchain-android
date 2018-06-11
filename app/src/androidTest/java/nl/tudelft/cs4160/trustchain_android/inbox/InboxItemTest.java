@@ -13,8 +13,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 import nl.tudelft.cs4160.trustchain_android.crypto.DualSecret;
+import nl.tudelft.cs4160.trustchain_android.crypto.Key;
 import nl.tudelft.cs4160.trustchain_android.crypto.PublicKeyPair;
-import nl.tudelft.cs4160.trustchain_android.network.peer.Peer;
+import nl.tudelft.cs4160.trustchain_android.peer.Peer;
 import nl.tudelft.cs4160.trustchain_android.main.UserConfigurationActivity;
 
 import static junit.framework.TestCase.assertTrue;
@@ -44,7 +45,7 @@ public class InboxItemTest {
         halfBlockSequenceNumbers.add(1);
         halfBlockSequenceNumbers.add(2);
         halfBlockSequenceNumbers.add(3);
-        address = "address";
+        address = "127.0.0.1";
         publicKey = new DualSecret().getPublicKeyPair();
         port = 123;
         Peer peer = new Peer(new InetSocketAddress(address, port),publicKey,userName);
@@ -91,19 +92,19 @@ public class InboxItemTest {
     public void testEqualsFalseUserName() {
         Peer peer = new Peer(new InetSocketAddress(address,port),publicKey,userName + "r");
         InboxItem ii2 = new InboxItem(peer, halfBlockSequenceNumbers);
-        assertFalse(ii.equals(ii2));
+        assertTrue(ii.equals(ii2));
     }
 
     @Test
     public void testEqualsFalseAddress() {
-        Peer peer = new Peer(new InetSocketAddress(address + "r",port),publicKey,userName);
+        Peer peer = new Peer(new InetSocketAddress("1.1.1.1",port),publicKey,userName);
         InboxItem ii2 = new InboxItem(peer, halfBlockSequenceNumbers);
         assertFalse(ii.equals(ii2));
     }
 
     @Test
     public void testEqualsFalsePublicKey() {
-        Peer peer = new Peer(new InetSocketAddress(address,port),new PublicKeyPair(new byte[] {0x00,0x01,0x02}),userName);
+        Peer peer = new Peer(new InetSocketAddress(address,port), Key.createNewKeyPair().getPublicKeyPair(),userName);
         InboxItem ii2 = new InboxItem(peer, halfBlockSequenceNumbers);
         assertFalse(ii.equals(ii2));
     }
