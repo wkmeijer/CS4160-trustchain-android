@@ -157,6 +157,7 @@
     <string name="need_sign">Awaiting signing</string>
     <string name="invalid_block">Invalid block</string>
     <string name="no_file_selected">No file selected</string>
+    <string name="warning_files">Note: sent files will be public</string>
 
     <string name="type_file">%s file</string>
     <string name="click_to_open_file">%s file\nClick to open</string>

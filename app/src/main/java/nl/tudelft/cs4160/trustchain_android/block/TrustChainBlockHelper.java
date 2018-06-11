@@ -17,7 +17,6 @@ import nl.tudelft.cs4160.trustchain_android.crypto.PublicKeyPair;
 import nl.tudelft.cs4160.trustchain_android.crypto.SigningKey;
 import nl.tudelft.cs4160.trustchain_android.message.MessageProto;
 import nl.tudelft.cs4160.trustchain_android.message.MessageProto.TrustChainBlock.Transaction;
-import nl.tudelft.cs4160.trustchain_android.peersummary.mutualblock.MutualBlockItem;
 import nl.tudelft.cs4160.trustchain_android.storage.database.TrustChainDBHelper;
 import nl.tudelft.cs4160.trustchain_android.util.ByteArrayConverter;
 
@@ -429,9 +428,4 @@ public class TrustChainBlockHelper {
 //              && !block.getTransaction().getFormat().equals("txt"));
     }
 
-    public static boolean containsBinaryFile(MutualBlockItem block) {
-        return block.getTransactionFormat() != null
-                && !block.getTransactionFormat().equals("");
-//              && !block.getTransactionFormat().equals("txt"));
-    }
 }

@@ -37,13 +37,13 @@ import nl.tudelft.cs4160.trustchain_android.message.MessageProto;
 import nl.tudelft.cs4160.trustchain_android.storage.database.TrustChainDBHelper;
 import nl.tudelft.cs4160.trustchain_android.storage.sharedpreferences.UserNameStorage;
 import nl.tudelft.cs4160.trustchain_android.util.ByteArrayConverter;
+import nl.tudelft.cs4160.trustchain_android.util.OpenFileClickListener;
 import nl.tudelft.cs4160.trustchain_android.util.Util;
 
 public class ChainExplorerAdapter extends BaseAdapter {
     static final String TAG = "ChainExplorerAdapter";
 
     private final static String PEER_NAME_UNKNOWN = "unknown";
-    private static final int REQUEST_STORAGE_PERMISSIONS = 1;
 
     private Context context;
     private List<MessageProto.TrustChainBlock> blocksList;
@@ -187,46 +187,10 @@ public class ChainExplorerAdapter extends BaseAdapter {
      * @param block TrustChainBlock that contains a file
      */
     private void setOpenFileClickListener(View view, final MessageProto.TrustChainBlock block) {
-        view.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (ContextCompat.checkSelfPermission(context, Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                        != PackageManager.PERMISSION_GRANTED) {
-                    requestStoragePermissions();
-                    return;
-                }
-
-                File file = new File(android.os.Environment.getExternalStorageDirectory() + "/TrustChain/" + ByteArrayConverter.bytesToHexString(block.getSignature().toByteArray()) + "." + block.getTransaction().getFormat());
-                if (file.exists()) file.delete();
-
-                byte[] bytes = block.getTransaction().getUnformatted().toByteArray();
-                ByteArrayInputStream is = new ByteArrayInputStream(bytes);
-
-                try {
-                    if (!Util.copyFile(is, file)) {
-                        Snackbar.make(view, "Copying file to filesystem failed.", Snackbar.LENGTH_LONG).show();
-                        return;
-                    }
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    Snackbar.make(view, "Copying file to filesystem failed.", Snackbar.LENGTH_LONG).show();
-                    return;
-                }
-
-                String extension = android.webkit.MimeTypeMap.getFileExtensionFromUrl(Uri.fromFile(file).toString());
-                String mimetype = android.webkit.MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension);
-                if (mimetype == null) mimetype = "text/plain"; // If no mime type is found, try to open as plain text
-
-                Intent i = new Intent();
-                i.setDataAndType(Uri.fromFile(file), mimetype);
-                context.startActivity(i);
-            }
-        });
+        view.setOnClickListener(new OpenFileClickListener((Activity)context, block));
     }
 
-    private void requestStoragePermissions() {
-        ActivityCompat.requestPermissions((Activity)context, new String[]{ Manifest.permission.WRITE_EXTERNAL_STORAGE }, REQUEST_STORAGE_PERMISSIONS);
-    }
+
 
     private String getPeerAlias(ByteString key) {
         if (peerList.containsKey(key)) {
