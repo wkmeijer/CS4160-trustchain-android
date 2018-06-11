@@ -11,15 +11,16 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import nl.tudelft.cs4160.trustchain_android.Util.ByteArrayConverter;
 import nl.tudelft.cs4160.trustchain_android.crypto.DualSecret;
 import nl.tudelft.cs4160.trustchain_android.crypto.Key;
 import nl.tudelft.cs4160.trustchain_android.crypto.PublicKeyPair;
 import nl.tudelft.cs4160.trustchain_android.crypto.SigningKey;
-import nl.tudelft.cs4160.trustchain_android.database.TrustChainDBHelper;
 import nl.tudelft.cs4160.trustchain_android.message.MessageProto;
+import nl.tudelft.cs4160.trustchain_android.message.MessageProto.TrustChainBlock.Transaction;
+import nl.tudelft.cs4160.trustchain_android.storage.database.TrustChainDBHelper;
+import nl.tudelft.cs4160.trustchain_android.util.ByteArrayConverter;
 
-import static nl.tudelft.cs4160.trustchain_android.Util.Util.ellipsize;
+import static nl.tudelft.cs4160.trustchain_android.util.Util.ellipsize;
 
 public class TrustChainBlockHelper {
     public static final ByteString GENESIS_HASH = ByteString.copyFrom(new byte[] {0x00});
@@ -34,7 +35,7 @@ public class TrustChainBlockHelper {
      */
     public static MessageProto.TrustChainBlock createGenesisBlock(DualSecret kp) {
         MessageProto.TrustChainBlock block = MessageProto.TrustChainBlock.newBuilder()
-                .setTransaction(ByteString.EMPTY)
+                .setTransaction(Transaction.newBuilder().setUnformatted(ByteString.EMPTY).build())
                 .setPublicKey(ByteString.copyFrom(kp.getPublicKeyPair().toBytes()))
                 .setSequenceNumber(GENESIS_SEQ)
                 .setLinkPublicKey(EMPTY_PK)
@@ -55,7 +56,7 @@ public class TrustChainBlockHelper {
      * @param linkpubk - The public key of the linked peer
      * @return a new half block
      */
-    public static MessageProto.TrustChainBlock createBlock(byte[] transaction, TrustChainDBHelper dbHelper,
+    public static MessageProto.TrustChainBlock createBlock(byte[] transaction, String format, TrustChainDBHelper dbHelper,
                                                          byte[] mypubk, MessageProto.TrustChainBlock linkedBlock,
                                                          byte[] linkpubk) {
         MessageProto.TrustChainBlock latestBlock = dbHelper.getLatestBlock(mypubk);
@@ -66,7 +67,11 @@ public class TrustChainBlockHelper {
                     .setLinkPublicKey(linkedBlock.getPublicKey())
                     .setLinkSequenceNumber(linkedBlock.getSequenceNumber());
         } else {
-            builder.setTransaction(ByteString.copyFrom(transaction))
+            builder.setTransaction(
+                        Transaction.newBuilder()
+                                .setUnformatted(ByteString.copyFrom(transaction))
+                                .setFormat(format)
+                                .build())
                     .setLinkPublicKey(ByteString.copyFrom(linkpubk))
                     .setLinkSequenceNumber(TrustChainBlockHelper.UNKNOWN_SEQ);
         }
@@ -363,7 +368,7 @@ public class TrustChainBlockHelper {
         res += "\tLink Sequence Number: " + block.getLinkSequenceNumber() + "\n";
         res += "\tPrevious Hash: " + ByteArrayConverter.bytesToHexString(block.getPreviousHash().toByteArray()) + "\n";
         res += "\tSignature: " + ByteArrayConverter.bytesToHexString(block.getSignature().toByteArray()) + "\n";
-        res += "\tTransaction: \n" + block.getTransaction().toStringUtf8() + "\n";
+        res += "\tTransaction: \n" + block.getTransaction().getUnformatted().toStringUtf8() + "\n";
         res += "}";
         return res;
     }
@@ -387,7 +392,7 @@ public class TrustChainBlockHelper {
     public static String transferDataToString(MessageProto.TrustChainBlock block){
         String res = "Trustchainblock: { ";
         try {
-            res += " data: " + block.getTransaction().toString("UTF-8") + "\n";
+            res += " data: " + block.getTransaction().getUnformatted().toString("UTF-8") + "\n";
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
@@ -408,6 +413,19 @@ public class TrustChainBlockHelper {
         res = ellipsize(ByteArrayConverter.bytesToHexString(pubKey), maxLength);
         res += " (size: " + length + ")";
         return res;
+    }
+
+    /**
+     * Returns wether the given block contains a binary file in the transaction field.
+     * If the format field contains anything besides null, empty string or txt, assume the attached
+     * file is binary and allow opening using an external application.
+     * @param block
+     * @return
+     */
+    public static boolean containsBinaryFile(MessageProto.TrustChainBlock block) {
+        return block.getTransaction().getFormat() != null
+                && !block.getTransaction().getFormat().equals("");
+//              && !block.getTransaction().getFormat().equals("txt"));
     }
 
 }

@@ -4,14 +4,22 @@
     package="nl.tudelft.cs4160.trustchain_android">
 
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.BLUETOOTH" />
-    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.NFC" />
+
+    <uses-feature
+        android:name="android.hardware.nfc"
+        android:required="false" />
 
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.CAMERA" />
+
+    <uses-feature android:name="android.hardware.camera" />
+    <uses-feature android:name="android.hardware.camera.autofocus" />
 
     <application
         tools:replace="android:allowBackup"
@@ -21,7 +29,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".main.TrustChainActivity"
+            android:name=".peersummary.PeerSummaryActivity"
             android:configChanges="orientation|screenLayout|screenSize"
             android:windowSoftInputMode="stateUnchanged" />
         <activity android:name=".chainExplorer.ChainExplorerActivity" />
@@ -42,16 +50,20 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".qr.ScanQRActivity" />
-        <activity android:name=".qr.ExportWalletQRActivity" />
+        <activity android:name=".funds.qr.ScanQRActivity" />
+        <activity android:name=".funds.qr.ExportWalletQRActivity" />
         <activity android:name=".funds.FundsActivity" />
         <activity
-            android:name=".main.ChainExplorerInfoActivity"
+            android:name=".chainExplorer.ChainExplorerInfoActivity"
             android:label="@string/title_activity_info_chain_explorer" />
         <activity
-            android:name=".main.BootstrapActivity"
+            android:name=".main.ChangeBootstrapActivity"
             android:windowSoftInputMode="adjustResize" />
         <activity android:name=".inbox.InboxActivity"/>
+        <activity android:name=".passport.ocr.camera.CameraActivity" />
+        <activity android:name=".passport.ocr.ManualInputActivity" />
+        <activity android:name=".passport.nfc.PassportConActivity" />
+
     </application>
 
 </manifest>

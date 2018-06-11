@@ -1,9 +1,10 @@
 <resources>
+    <!-- OverViewConnectionsActivity -->
     <string name="app_name">TrustChain Android</string>
     <string name="my_external_ip">My external ip is:</string>
-    <string name="connect_bootstrap_ip">The IP address of a peer:</string>
-    <string name="change_bootstrap">Find peer</string>
-    <string name="connect_bootstrap_ip_hint">145.94.155.32</string>
+    <string name="connect_bootstrap_ip">The IP address of the new bootstrap:</string>
+    <string name="change_bootstrap">Change bootstrap</string>
+    <string name="connect_bootstrap_ip_hint">130.161.211.254</string>
     <string name="my_local_ip">My local ip is:</string>
     <string name="connect_ip_hint">127.0.0.1</string>
     <string name="connect_port_hint">port</string>
@@ -12,7 +13,12 @@
     <string name="connect">connect</string>
     <string name="view_chain">View Chain</string>
     <string name="reset_database_button">Clear Database (closes app)</string>
-    <string name="connection_info_text">Info</string>
+    <string name="last_received">Received: </string>
+    <string name="last_sent">Sent: </string>
+    <string name="peer_id">peer id</string>
+    <string name="snackbar_peer_added">%s added to inbox</string>
+    <string name="snackbar_no_pub_key">This peer didn\'t send a public key yet</string>
+    <string name="snackbar_peer_inactive">This peer is currently not active</string>
 
     <!-- Trustchain -->
     <string name="title_activity_key">Key management</string>
@@ -47,10 +53,15 @@
     <string name="developer_mode">Developer Mode</string>
 
     <!-- Menu -->
-    <string name="menu_item_1">My Chain</string>
-    <string name="menu_item_2">Clear Entire Inbox</string>
+    <string name="menu_chainexplorer">My Chain</string>
+    <string name="menu_clear_inbox">Clear Entire Inbox</string>
     <string name="menu_info">Info</string>
-    <string name="find_peer">Find peer</string>
+    <string name="menu_change_bootstrap">Change bootstrap</string>
+    <string name="menu_import_tokens">Import Tokens</string>
+    <string name="menu_export_tokens">Export Tokens</string>
+    <string name="menu_funds">Funds</string>
+    <string name="menu_transactions">Transactions</string>
+    <string name="menu_scan_passport">Scan Passport</string>
 
     <!--- app to app strings -->
     <string name="start_connection">Attempt connection</string>
@@ -63,7 +74,6 @@
     <string name="pex_handshake_id">PEX handshake ID:</string>
     <string name="circle_symbol">●</string>
     <string name="indicator_symbol">▂</string>
-    <string name="peer_id">Peer ID</string>
     <string name="unknown">unknown</string>
     <string name="wan_address">WAN Address</string>
     <string name="ip">ip</string>
@@ -79,11 +89,19 @@
     <string name="title_activity_detail">DetailActivity</string>
     <string name="title_activity_user">UserActivity</string>
     <string name="title_activity_info_chain_explorer">UserActivity</string>
+    <string name="version">version %s</string>
 
     <!-- Connection explanation view -->
     <string name="symbolMeaningText">Meaning:</string>
     <string name="connectionInfoText">Here we provide an explanation of each symbol and their corresponding color.</string>
     <string name="symbolExplanationText">Explanation</string>
+    <string name="connected">Connected with peer</string>
+    <string name="connecting">Connecting with peer</string>
+    <string name="cannot_connect">Cannot connect with peer</string>
+    <string name="received_packet">Received a packet from peer</string>
+    <string name="sent_packet">Sent a packet to peer</string>
+    <string name="time_since_received">Time since last received message"</string>
+    <string name="time_since_sent">Time since last message sent</string>
 
     <!--- info chain explorer -->
     <string name="color_info">Color is based on the hash of the public key.</string>
@@ -92,8 +110,66 @@
     <string name="new_user">+ Find new users</string>
     <string name="inbox">Open Inbox</string>
 
-    <string name="import_tokens">Import Tokens</string>
-    <string name="export_tokens">Export Tokens</string>
-    <string name="funds">Funds</string>
-    <string name="transactions">Transactions</string>
+    <!-- OCR Scanning -->
+    <string name="ocr_switch_to_manual">Manual Input</string>
+    <string name="ocr_camera_permission_explanation">Please provide camera permissions in order to scan a document.</string>
+    <string name="ocr_camera_error">This device doesn\'t support Camera2 API.</string>
+    <string name="ocr_help_text">Scan the text at the bottom of the passport or on the backside of the ID card.</string>
+
+    <!--Manual Input-->
+    <string-array name="months_array">
+        <item>January</item>
+        <item>February</item>
+        <item>March</item>
+        <item>April</item>
+        <item>May</item>
+        <item>June</item>
+        <item>July</item>
+        <item>August</item>
+        <item>September</item>
+        <item>October</item>
+        <item>November</item>
+        <item>December</item>
+    </string-array>
+    <string name="docNum">Document number</string>
+    <string name="expiryDate">Expiry date</string>
+    <string name="dateBirth">Date of birth</string>
+    <string name="hintDocNum">XXP100154</string>
+    <string name="hintExpiryDate">yymmdd</string>
+    <string name="hintDateBirth">yymmdd</string>
+    <string name="manInputSubmit">Submit</string>
+    <string name="errFormatDocNum">Input of document number is not correct, please recheck your input.</string>
+    <string name="errFormatExpiryDate">Please fill in the expiry date of the document in the yymmdd format.</string>
+    <string name="errFormatDateBirth">Please fill in the date of birth in the yymmdd format.</string>
+    <string name="errInputDocNum">Please fill in the document number.</string>
+    <string name="errInputExpiryDate">Please fill in the expiry date of the document.</string>
+    <string name="errInputDateBirth">Please fill in the date of birth.</string>
+
+    <!--NFC Scanning-->
+    <string name="passportconnection">Connect to document</string>
+    <string name="nfc_not_supported_error">This device does not support NFC.</string>
+    <string name="nfc_disabled_error_snackbar">NFC is needed for the passport connection</string>
+    <string name="nfc_disabled_snackbar_action">Turn on NFC</string>
+    <string name="nfc_enabled">Please hold the travel document to the back of the device.</string>
+    <string name="general_error">Could not connect, please make sure the travel document is compatible.</string>
+    <string name="NFC_error">Could not complete NFC scan, please try again.</string>
+    <string name="start_con_button">Start ID connection</string>
+    <string name="scan_doc_details">Please scan the ID first</string>
+
+    <string name="wrong_document_details">Document details are not inserted correctly</string>
+    <string name="check_input">Check input</string>
+    <string name="destination_address">destination_address</string>
+    <string name="enter_bytes">Enter 8 bytes to sign</string>
+
+    <!--PeerSummary-->
+    <string name="valid_block">Valid block</string>
+    <string name="seq_unknown">Unknown</string>
+    <string name="sequenceNum">seq: %1$d</string>
+    <string name="need_sign">Awaiting signing</string>
+    <string name="invalid_block">Invalid block</string>
+    <string name="no_file_selected">No file selected</string>
+    <string name="warning_files">Note: sent files will be public</string>
+
+    <string name="type_file">%s file</string>
+    <string name="click_to_open_file">%s file\nClick to open</string>
 </resources>

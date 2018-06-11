@@ -3,30 +3,36 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
         android:id="@+id/chain_menu"
-        android:title="@string/menu_item_1"
+        android:title="@string/menu_chainexplorer"
         app:showAsAction="never"/>
 
     <item
         android:id="@+id/connection_explanation_menu"
-        android:title="@string/connection_info_text"
+        android:title="@string/menu_info"
         app:showAsAction="never" />
     <item
         android:id="@+id/find_peer"
-        android:title="@string/find_peer"
+        android:title="@string/menu_change_bootstrap"
         app:showAsAction="never" />
 
     <item
         android:id="@+id/funds"
-        android:title="@string/funds"
+        android:title="@string/menu_funds"
         app:showAsAction="never" />
 
     <item
         android:id="@+id/import_tokens"
-        android:title="@string/import_tokens"
+        android:title="@string/menu_import_tokens"
         app:showAsAction="never" />
 
     <item
         android:id="@+id/export_tokens"
-        android:title="@string/export_tokens"
+        android:title="@string/menu_export_tokens"
         app:showAsAction="never" />
+
+    <item
+        android:id="@+id/passport_scan"
+        android:title="@string/menu_scan_passport"
+        app:showAsAction="never"/>
+
 </menu>

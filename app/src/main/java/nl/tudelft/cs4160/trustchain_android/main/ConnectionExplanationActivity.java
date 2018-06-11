@@ -6,19 +6,21 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import nl.tudelft.cs4160.trustchain_android.R;
 
 public class ConnectionExplanationActivity extends AppCompatActivity {
 
     private ArrayList<String> symbolList;
-    private String[] explanationText = {"Connected with peer", "Connecting with peer", "Cannot connect with peer", "Received a packet from peer", "Sent a packet to peer"};
-    private int[] colorList = {R.color.colorStatusConnected, R.color.colorStatusConnecting, R.color.colorStatusCantConnect, R.color.colorReceived, R.color.colorSent};
+    private String[] explanationText;
+    private int[] colorList = {R.color.colorStatusConnected, R.color.colorStatusConnecting, R.color.colorStatusCantConnect, R.color.colorReceived, R.color.colorSent, 0, 0};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         createSymbolList();
+        createExplanationTextList();
         setContentView(R.layout.activity_connection_explanation);
         createConnectionExplanationList();
     }
@@ -35,7 +37,7 @@ public class ConnectionExplanationActivity extends AppCompatActivity {
                 new ConnectionExplanationListAdapter
                         (
                             getApplicationContext(),
-                            R.layout.connection_explanation_list_item,
+                            R.layout.item_connection_explanation_list,
                             symbolList,
                             explanationText,
                             colorList
@@ -57,6 +59,28 @@ public class ConnectionExplanationActivity extends AppCompatActivity {
         for (int i = 0; i < 2; i++) {
             String symbol = this.getString(R.string.indicator_symbol);
             symbolList.add(symbol);
+        }
+
+        symbolList.add(getString(R.string.last_received));
+        symbolList.add(getString(R.string.last_sent));
+    }
+
+    /**
+     * Create a list of strings of explanation texts
+     */
+    private void createExplanationTextList() {
+        List<Integer> ids = new ArrayList<>();
+        ids.add(R.string.connected);
+        ids.add(R.string.connecting);
+        ids.add(R.string.cannot_connect);
+        ids.add(R.string.received_packet);
+        ids.add(R.string.sent_packet);
+        ids.add(R.string.time_since_received);
+        ids.add(R.string.time_since_sent);
+
+        explanationText = new String[ids.size()];
+        for(int i=0; i<ids.size(); i++) {
+            explanationText[i] = getString(ids.get(i));
         }
     }
 }

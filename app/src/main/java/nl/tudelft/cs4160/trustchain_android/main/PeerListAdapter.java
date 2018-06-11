@@ -15,21 +15,33 @@ import java.util.ArrayList;
 import java.util.List;
 
 import nl.tudelft.cs4160.trustchain_android.R;
-import nl.tudelft.cs4160.trustchain_android.SharedPreferences.InboxItemStorage;
-import nl.tudelft.cs4160.trustchain_android.SharedPreferences.PubKeyAndAddressPairStorage;
-import nl.tudelft.cs4160.trustchain_android.SharedPreferences.UserNameStorage;
-import nl.tudelft.cs4160.trustchain_android.appToApp.PeerAppToApp;
+import nl.tudelft.cs4160.trustchain_android.crypto.PublicKeyPair;
 import nl.tudelft.cs4160.trustchain_android.inbox.InboxItem;
+import nl.tudelft.cs4160.trustchain_android.peer.Peer;
+import nl.tudelft.cs4160.trustchain_android.storage.sharedpreferences.InboxItemStorage;
+import nl.tudelft.cs4160.trustchain_android.storage.sharedpreferences.PubKeyAndAddressPairStorage;
+import nl.tudelft.cs4160.trustchain_android.storage.sharedpreferences.UserNameStorage;
+import nl.tudelft.cs4160.trustchain_android.util.Util;
 
-public class PeerListAdapter extends ArrayAdapter<PeerAppToApp> {
+public class PeerListAdapter extends ArrayAdapter<Peer> {
     private final Context context;
-    private boolean incoming;
     private CoordinatorLayout coordinatorLayout;
 
-    public PeerListAdapter(Context context, int resource, List<PeerAppToApp> peerConnectionList, boolean incoming, CoordinatorLayout coordinatorLayout) {
+    static class ViewHolder {
+        TextView mPeerId;
+        TextView mConnection;
+        TextView mLastSent;
+        TextView mLastReceived;
+        TextView mDestinationAddress;
+        TextView mStatusIndicator;
+        TextView mReceivedIndicator;
+        TextView mSentIndicator;
+        TableLayout mTableLayoutConnection;
+    }
+
+    public PeerListAdapter(Context context, int resource, List<Peer> peerConnectionList, CoordinatorLayout coordinatorLayout) {
         super(context, resource, peerConnectionList);
         this.context = context;
-        this.incoming = incoming;
         this.coordinatorLayout = coordinatorLayout;
     }
 
@@ -39,12 +51,14 @@ public class PeerListAdapter extends ArrayAdapter<PeerAppToApp> {
         if (convertView == null) {
             LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
-            convertView = inflater.inflate(R.layout.peer_connection_list_item, parent, false);
+            convertView = inflater.inflate(R.layout.item_peer_connection_list, parent, false);
 
             holder = new ViewHolder();
             holder.mStatusIndicator = convertView.findViewById(R.id.status_indicator);
-            holder.mCarrier = convertView.findViewById(R.id.carrier);
+            holder.mConnection = convertView.findViewById(R.id.connection);
             holder.mPeerId = convertView.findViewById(R.id.peer_id);
+            holder.mLastSent = convertView.findViewById(R.id.last_sent);
+            holder.mLastReceived = convertView.findViewById(R.id.last_received);
             holder.mDestinationAddress = convertView.findViewById(R.id.destination_address);
             holder.mReceivedIndicator = convertView.findViewById(R.id.received_indicator);
             holder.mSentIndicator = convertView.findViewById(R.id.sent_indicator);
@@ -54,24 +68,24 @@ public class PeerListAdapter extends ArrayAdapter<PeerAppToApp> {
             holder = (ViewHolder) convertView.getTag();
         }
 
-        PeerAppToApp peer = getItem(position);
+        Peer peer = getItem(position);
 
-        holder.mPeerId.setText(peer.getPeerId() == null ? "" : peer.getPeerId());
-        if (peer.getNetworkOperator() != null) {
-            if (peer.getConnectionType() == ConnectivityManager.TYPE_MOBILE) {
-                holder.mCarrier.setText(peer.getNetworkOperator());
+        holder.mPeerId.setText(peer.getName() == null ? "" : peer.getName());
+        if (peer.getConnectionType() != -1) {
+            if (OverviewConnectionsActivity.CONNECTABLE_ADDRESS.equals(peer.getIpAddress().getHostAddress())) {
+                holder.mConnection.setText("Server");
             } else {
-
-                if (peer.getExternalAddress().getHostAddress().toString().equals(OverviewConnectionsActivity.CONNECTABLE_ADDRESS)) {
-                    holder.mCarrier.setText("Server");
-                } else {
-                    holder.mCarrier.setText(connectionTypeString(peer.getConnectionType()));
-                }
+                holder.mConnection.setText(connectionTypeString(peer.getConnectionType()));
             }
         } else {
-            holder.mCarrier.setText("");
+            if(peer.isReceivedFrom()) {
+                holder.mConnection.setText("unknown");
+            } else {
+                holder.mConnection.setText("");
+            }
         }
-        if (peer.hasReceivedData()) {
+
+        if (peer.isReceivedFrom()) {
             if (peer.isAlive()) {
                 holder.mStatusIndicator.setTextColor(context.getResources().getColor(R.color.colorStatusConnected));
             } else {
@@ -85,17 +99,22 @@ public class PeerListAdapter extends ArrayAdapter<PeerAppToApp> {
             }
         }
 
-        if (peer.getExternalAddress() != null) {
-            holder.mDestinationAddress.setText(String.format("%s:%d", peer.getExternalAddress().toString().substring(1), peer.getPort()));
+        if (peer.getIpAddress() != null) {
+            holder.mDestinationAddress.setText(String.format("%s:%d", peer.getIpAddress().toString().substring(1), peer.getPort()));
         }
 
-        if (System.currentTimeMillis() - peer.getLastSendTime() < 200) {
+        if (System.currentTimeMillis() - peer.getLastSentTime() < 200) {
             animate(holder.mSentIndicator);
         }
-        if (System.currentTimeMillis() - peer.getLastReceiveTime() < 200) {
+        if (System.currentTimeMillis() - peer.getLastReceivedTime() < 200) {
             animate(holder.mReceivedIndicator);
         }
         setOnClickListener(holder.mTableLayoutConnection, position);
+
+        if(peer.isReceivedFrom()) {
+            holder.mLastReceived.setText(Util.timeToString(System.currentTimeMillis() - peer.getLastReceivedTime()));
+        }
+        holder.mLastSent.setText(Util.timeToString(System.currentTimeMillis() - peer.getLastSentTime()));
 
         return convertView;
     }
@@ -108,7 +127,7 @@ public class PeerListAdapter extends ArrayAdapter<PeerAppToApp> {
     private String connectionTypeString(int connectionType) {
         switch (connectionType) {
             case ConnectivityManager.TYPE_WIFI:
-                return "Wifi";
+                return "WiFi";
             case ConnectivityManager.TYPE_BLUETOOTH:
                 return "Bluetooth";
             case ConnectivityManager.TYPE_ETHERNET:
@@ -124,16 +143,6 @@ public class PeerListAdapter extends ArrayAdapter<PeerAppToApp> {
         }
     }
 
-    static class ViewHolder {
-        TextView mPeerId;
-        TextView mCarrier;
-        TextView mDestinationAddress;
-        TextView mStatusIndicator;
-        TextView mReceivedIndicator;
-        TextView mSentIndicator;
-        TableLayout mTableLayoutConnection;
-    }
-
     /**
      * On click peer. If it's possible to add this peer
      * to your inbox this happens, otherwise a snackbar message
@@ -143,30 +152,27 @@ public class PeerListAdapter extends ArrayAdapter<PeerAppToApp> {
      */
     private void setOnClickListener(TableLayout mTableLayoutConnection, int position) {
         mTableLayoutConnection.setTag(position);
-        View.OnClickListener onClickListener = new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                int pos = (int) v.getTag();
-                PeerAppToApp peer = getItem(pos);
-                if(peer.isAlive() && peer.hasReceivedData()) {
-                    String pubKey = PubKeyAndAddressPairStorage.getPubKeyByAddress(context, peer.getAddress().toString().replace("/", ""));
-                    if(pubKey != null && !pubKey.equals("")) {
-                        InboxItem i = new InboxItem(peer.getPeerId(), new ArrayList<Integer>(), peer.getAddress().getHostString(), pubKey, peer.getPort());
-                        UserNameStorage.setNewPeerByPublicKey(context, peer.getPeerId(), pubKey);
-                        InboxItemStorage.addInboxItem(context, i);
-                        Snackbar mySnackbar = Snackbar.make(coordinatorLayout,
-                                peer.getPeerId() + " added to inbox", Snackbar.LENGTH_SHORT);
-                        mySnackbar.show();
-                    }else{
-                        Snackbar mySnackbar = Snackbar.make(coordinatorLayout,
-                                "This peer didn't send a public key yet", Snackbar.LENGTH_SHORT);
-                        mySnackbar.show();
-                    }
-                }else{
+        View.OnClickListener onClickListener = v -> {
+            int pos = (int) v.getTag();
+            Peer peer = getItem(pos);
+            if(peer.isAlive() && peer.isReceivedFrom()) {
+                PublicKeyPair pubKeyPair = PubKeyAndAddressPairStorage.getPubKeyByAddress(context, peer.getAddress().getHostString() + ":" + peer.getPort());
+                if(pubKeyPair != null) {
+                    InboxItem i = new InboxItem(peer, new ArrayList<>());
+                    UserNameStorage.setNewPeerByPublicKey(context, peer.getName(), pubKeyPair);
+                    InboxItemStorage.addInboxItem(context, i);
                     Snackbar mySnackbar = Snackbar.make(coordinatorLayout,
-                            "This peer is currently not active", Snackbar.LENGTH_SHORT);
+                            context.getString(R.string.snackbar_peer_added,peer.getName()), Snackbar.LENGTH_SHORT);
+                    mySnackbar.show();
+                } else {
+                    Snackbar mySnackbar = Snackbar.make(coordinatorLayout,
+                            context.getString(R.string.snackbar_no_pub_key), Snackbar.LENGTH_SHORT);
                     mySnackbar.show();
                 }
+            } else {
+                Snackbar mySnackbar = Snackbar.make(coordinatorLayout,
+                        context.getString(R.string.snackbar_peer_inactive), Snackbar.LENGTH_SHORT);
+                mySnackbar.show();
             }
         };
         mTableLayoutConnection.setOnClickListener(onClickListener);

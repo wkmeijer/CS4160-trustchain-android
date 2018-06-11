@@ -40,11 +40,14 @@ public class ConnectionExplanationListAdapter extends ArrayAdapter {
     public View getView(int position, View convertView, ViewGroup parent) {
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         if(convertView == null) {
-            convertView = inflater.inflate(R.layout.connection_explanation_list_item, null, true);
+            convertView = inflater.inflate(R.layout.item_connection_explanation_list, null, true);
             TextView symbol = convertView.findViewById(R.id.colorSymbol);
             TextView symbolMeaning = convertView.findViewById(R.id.symbolMeaning);
             symbol.setText(symbolList.get(position));
-            symbol.setTextColor(context.getResources().getColor(colorList[position]));
+            // when no color specified, use default
+            if (colorList[position] != 0) {
+                symbol.setTextColor(context.getResources().getColor(colorList[position]));
+            }
             symbol.setTextSize(18.f);
             symbolMeaning.setText(colorExplanationText[position]);
             symbolMeaning.setTextSize(18.f);

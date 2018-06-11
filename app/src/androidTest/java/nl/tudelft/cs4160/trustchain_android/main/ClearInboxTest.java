@@ -17,8 +17,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import nl.tudelft.cs4160.trustchain_android.R;
-import nl.tudelft.cs4160.trustchain_android.SharedPreferences.InboxItemStorage;
-import nl.tudelft.cs4160.trustchain_android.SharedPreferences.UserNameStorage;
+import nl.tudelft.cs4160.trustchain_android.storage.sharedpreferences.InboxItemStorage;
+import nl.tudelft.cs4160.trustchain_android.storage.sharedpreferences.UserNameStorage;
 
 import static android.support.test.InstrumentationRegistry.getInstrumentation;
 import static android.support.test.espresso.Espresso.onView;
@@ -106,7 +106,7 @@ public class ClearInboxTest {
         ViewInteraction tableLayout = onView(
                 allOf(withId(R.id.tableLayoutConnection),
                         childAtPosition(
-                                withParent(withId(R.id.incoming_peer_connection_list_view)),
+                                withParent(withId(R.id.new_peers_list_view)),
                                 1),
                         isDisplayed()));
         tableLayout.perform(click());
