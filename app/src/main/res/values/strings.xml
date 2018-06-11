@@ -28,7 +28,7 @@
     <string name="create_key">Create new key</string>
     <string name="show_key">Show key</string>
     <string name="verify_sig">Verify signature</string>
-    <string name="storage_permission_explanation">Please give storage permissions for scanning the text on the passport</string>
+    <string name="storage_permission_explanation">Please give storage permissions</string>
     <string name="sign_data">Sign data!</string>
     <string name="valid_signature">Valid signature</string>
     <string name="invalid_signature">Invalid signature</string>
@@ -113,6 +113,7 @@
     <!-- OCR Scanning -->
     <string name="ocr_switch_to_manual">Manual Input</string>
     <string name="ocr_camera_permission_explanation">Please provide camera permissions in order to scan a document.</string>
+    <string name="ocr_storage_permission_explanation">Please give storage permissions for scanning the text on the passport</string>
     <string name="ocr_camera_error">This device doesn\'t support Camera2 API.</string>
     <string name="ocr_help_text">Scan the text at the bottom of the passport or on the backside of the ID card.</string>
 

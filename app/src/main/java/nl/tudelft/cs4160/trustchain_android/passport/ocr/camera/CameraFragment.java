@@ -262,7 +262,7 @@ public class CameraFragment extends Fragment {
                         if (grantResults[i] != PackageManager.PERMISSION_GRANTED) {
                             showingPermissionExplanation = true;
                             new AlertDialog.Builder(getActivity())
-                                    .setMessage(getString(R.string.storage_permission_explanation))
+                                    .setMessage(getString(R.string.ocr_storage_permission_explanation))
                                     .setPositiveButton(android.R.string.ok, (dialogInterface, i12) -> {
                                         showingPermissionExplanation = false;
                                         requestPermissions();

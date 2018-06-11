@@ -203,7 +203,6 @@ public class TesseractOCR {
      */
     public void cleanup () {
         if (isInitialized) {
-            giveStats();
             myThread.quitSafely();
             myHandler.removeCallbacks(scan);
             timeoutHandler.removeCallbacks(timeout);
@@ -217,21 +216,6 @@ public class TesseractOCR {
             baseApi.end();
             isInitialized = false;
             stopping = false;
-        }
-    }
-
-    /**
-     * Prints some statistics about the run time of the OCR scanning
-     */
-    private void giveStats() {
-        long max = Collections.max(times);
-        long curravg = 0;
-        for (int i=0; i < times.size(); i++) {
-            curravg += times.get(i);
-        }
-        // prevent divide by zero
-        if(times.size()>0) {
-            Log.e(TAG, "Max runtime was " + max / 1000f + " sec and avg was " + curravg / times.size() / 1000f + " tot tries: " + times.size());
         }
     }
 }
