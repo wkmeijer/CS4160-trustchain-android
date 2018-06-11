@@ -540,12 +540,18 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
     }
 
 
+    /**
+     * Show a toast when the user presses the home button. Since this activity is always running,
+     * it is not necessary to add this function to other activities. Source:
+     * http://www.developerphil.com/no-you-can-not-override-the-home-button-but-you-dont-have-to/
+     * @param level
+     */
     @Override
     public void onTrimMemory(int level) {
         super.onTrimMemory(level);
         if (level == TRIM_MEMORY_UI_HIDDEN) {
             Toast.makeText(this,
-                    "The app is still running in background and consuming data", Toast.LENGTH_SHORT).show();
+                    getString(R.string.toast_app_running), Toast.LENGTH_LONG).show();
 
         }
     }
