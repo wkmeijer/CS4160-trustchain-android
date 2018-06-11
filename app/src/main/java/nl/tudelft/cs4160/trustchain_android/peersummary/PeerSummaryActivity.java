@@ -417,7 +417,7 @@ public class PeerSummaryActivity extends AppCompatActivity implements CrawlReque
                 } else {
                     selectedFilePath.setError(null);
                     sendButton.setEnabled(true);
-                    Snackbar.make(findViewById(R.id.peer_summary_layout),getString(R.string.warning_files),Snackbar.LENGTH_LONG).show();
+                    Snackbar.make(findViewById(R.id.myCoordinatorLayout),getString(R.string.warning_files),Snackbar.LENGTH_LONG).show();
                 }
             }
         });
