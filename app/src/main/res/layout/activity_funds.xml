@@ -108,7 +108,7 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/transactions"
+        android:text="@string/menu_transactions"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:textStyle="bold" />
 

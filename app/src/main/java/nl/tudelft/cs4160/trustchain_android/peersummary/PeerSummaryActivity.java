@@ -99,7 +99,7 @@ public class PeerSummaryActivity extends AppCompatActivity implements CrawlReque
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.trustchain_menu, menu);
+        inflater.inflate(R.menu.menu_trustchain, menu);
         return true;
     }
 
@@ -151,8 +151,7 @@ public class PeerSummaryActivity extends AppCompatActivity implements CrawlReque
     private void initializeMutualBlockRecycleView() {
         mLayoutManager = new LinearLayoutManager(this);
 
-        mAdapter = new MutualBlockAdapter(this, inboxItemOtherPeer.getPeerAppToApp(),
-                inboxItemOtherPeer.getPublicKeyPair().toBytes());
+        mAdapter = new MutualBlockAdapter(this, inboxItemOtherPeer.getPeer());
         mRecyclerView.setLayoutManager(mLayoutManager);
         mRecyclerView.setAdapter(mAdapter);
 
@@ -169,7 +168,7 @@ public class PeerSummaryActivity extends AppCompatActivity implements CrawlReque
         network.updateConnectionType((ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE));
 
         int sq = -5;
-        MessageProto.TrustChainBlock block = dbHelper.getBlock(inboxItemOtherPeer.getPublicKeyPair().toBytes(), dbHelper.getMaxSeqNum(inboxItemOtherPeer.getPublicKeyPair().toBytes()));
+        MessageProto.TrustChainBlock block = dbHelper.getBlock(inboxItemOtherPeer.getPeer().getPublicKeyPair().toBytes(), dbHelper.getMaxSeqNum(inboxItemOtherPeer.getPeer().getPublicKeyPair().toBytes()));
         if (block != null) {
             sq = block.getSequenceNumber();
         } else {
@@ -187,7 +186,7 @@ public class PeerSummaryActivity extends AppCompatActivity implements CrawlReque
             public void run() {
                 try {
                     Log.d("BCrawlTest", "Sent crawl request");
-                    network.sendCrawlRequest(inboxItemOtherPeer.getPeerAppToApp(), crawlRequest);
+                    network.sendCrawlRequest(inboxItemOtherPeer.getPeer(), crawlRequest);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -204,8 +203,8 @@ public class PeerSummaryActivity extends AppCompatActivity implements CrawlReque
      */
     public void onClickViewChain(View view) {
         // Try to instantiate public key.
-        if (this.inboxItemOtherPeer.getPublicKeyPair() != null) {
-            byte[] publicKey = this.inboxItemOtherPeer.getPublicKeyPair().toBytes();
+        if (this.inboxItemOtherPeer.getPeer().getPublicKeyPair() != null) {
+            byte[] publicKey = this.inboxItemOtherPeer.getPeer().getPublicKeyPair().toBytes();
             if (publicKey != null) {
                 Intent intent = new Intent(this, ChainExplorerActivity.class);
                 intent.putExtra(ChainExplorerActivity.BUNDLE_EXTRAS_PUBLIC_KEY , publicKey);
@@ -253,7 +252,7 @@ public class PeerSummaryActivity extends AppCompatActivity implements CrawlReque
             transactionData = messageEditText.getText().toString().getBytes(UTF_8);
         }
 
-        final MessageProto.TrustChainBlock block = createBlock(transactionData, format, DBHelper, publicKey, null, inboxItemOtherPeer.getPublicKeyPair().toBytes());
+        final MessageProto.TrustChainBlock block = createBlock(transactionData, format, DBHelper, publicKey, null, inboxItemOtherPeer.getPeer().getPublicKeyPair().toBytes());
         final MessageProto.TrustChainBlock signedBlock = TrustChainBlockHelper.sign(block, Key.loadKeys(getApplicationContext()).getSigningKey());
         Log.d(TAG, "Signed block is " + signedBlock.toByteArray().length + " bytes");
         messageEditText.setText("");
@@ -268,7 +267,7 @@ public class PeerSummaryActivity extends AppCompatActivity implements CrawlReque
             @Override
             public void run() {
                 try {
-                    network.sendBlockMessage(inboxItemOtherPeer.getPeerAppToApp(), signedBlock);
+                    network.sendBlockMessage(inboxItemOtherPeer.getPeer(), signedBlock);
                     Snackbar mySnackbar = Snackbar.make(findViewById(R.id.myCoordinatorLayout),"Half block send!", Snackbar.LENGTH_SHORT);
                     mySnackbar.show();
                 } catch (IOException e) {
@@ -299,7 +298,7 @@ public class PeerSummaryActivity extends AppCompatActivity implements CrawlReque
                 String txString = containsBinaryFile(block) ?
                         getString(R.string.type_file, block.getTransaction().getFormat()) :
                         block.getTransaction().getUnformatted().toString(UTF_8);
-                builder.setMessage("Do you want to sign Block[ " + txString + " ] from " + inboxItemOtherPeer.getUserName() + "?")
+                builder.setMessage("Do you want to sign Block[ " + txString + " ] from " + inboxItemOtherPeer.getPeer().getName() + "?")
                         .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int id) {
                                 signAndSendHalfBlock(block);
@@ -324,7 +323,7 @@ public class PeerSummaryActivity extends AppCompatActivity implements CrawlReque
         DualSecret keyPair = Key.loadKeys(this);
         MessageProto.TrustChainBlock block = createBlock(null, null, //Setting format and transaction not needed, they are already contained in linkedblock
                 DBHelper, keyPair.getPublicKeyPair().toBytes(),
-                linkedBlock, inboxItemOtherPeer.getPublicKeyPair().toBytes());
+                linkedBlock, inboxItemOtherPeer.getPeer().getPublicKeyPair().toBytes());
 
         final MessageProto.TrustChainBlock signedBlock = sign(block, keyPair.getSigningKey());
 
@@ -334,7 +333,7 @@ public class PeerSummaryActivity extends AppCompatActivity implements CrawlReque
             @Override
             public void run() {
                 try {
-                    network.sendBlockMessage(inboxItemOtherPeer.getPeerAppToApp(), signedBlock);
+                    network.sendBlockMessage(inboxItemOtherPeer.getPeer(), signedBlock);
 
                     //show that the block is valid
                     mAdapter.updateValidationResult(linkedBlock, ValidationResult.VALID);
@@ -368,7 +367,7 @@ public class PeerSummaryActivity extends AppCompatActivity implements CrawlReque
     public void blockAdded(MessageProto.TrustChainBlock block) {
         DualSecret keyPair = Key.loadKeys(this);
         byte[] myPublicKey = keyPair.getPublicKeyPair().toBytes();
-        byte[] peerPublicKey = this.inboxItemOtherPeer.getPublicKeyPair().toBytes();
+        byte[] peerPublicKey = this.inboxItemOtherPeer.getPeer().getPublicKeyPair().toBytes();
         byte[] publicKey = block.getPublicKey().toByteArray();
         byte[] linkedPublicKey = block.getLinkPublicKey().toByteArray();
         if (Arrays.equals(myPublicKey,linkedPublicKey) && Arrays.equals(peerPublicKey, publicKey)) {

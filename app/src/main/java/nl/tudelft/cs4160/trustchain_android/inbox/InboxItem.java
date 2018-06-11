@@ -1,52 +1,25 @@
 package nl.tudelft.cs4160.trustchain_android.inbox;
 
 import java.io.Serializable;
-import java.net.InetSocketAddress;
 import java.util.ArrayList;
-import java.util.Arrays;
 
-import nl.tudelft.cs4160.trustchain_android.crypto.PublicKeyPair;
 import nl.tudelft.cs4160.trustchain_android.network.peer.Peer;
 
 public class InboxItem implements Serializable {
-    private String userName;
+    private Peer peer;
     private ArrayList<Integer> halfBlockSequenceNumbers;
-    private String address;
-    // byte array because libsodium PublicKey is not serializable
-    private byte[] publicKeyPair;
-    private int port;
+    long serialVersionUID = -5061379998789838600L;
 
     /**
      * Inbox item constructor
-     * @param userName the username
+     * @param peer the peer which this inboxitem will be about
      * @param halfBlockSequenceNumbers the list of the sequence numbers of the unread blocks
-     * @param address ip address
-     * @param publicKeyPair
-     * @param port
      */
-    public InboxItem(String userName, ArrayList<Integer> halfBlockSequenceNumbers, String address, PublicKeyPair publicKeyPair, int port) {
-        this.userName = userName;
+    public InboxItem(Peer peer, ArrayList<Integer> halfBlockSequenceNumbers) {
+        this.peer = peer;
         this.halfBlockSequenceNumbers = halfBlockSequenceNumbers;
-        this.address = address;
-        this.publicKeyPair = publicKeyPair.toBytes();
-        this.port = port;
     }
 
-    public String getUserName() {
-        return userName;
-    }
-
-    public int getPort() {
-        return port;
-    }
-
-    public void setPort(int port) {
-        this.port = port;
-    }
-
-    public void setUserName(String userName) {
-        this.userName = userName;
-    }
 
     public ArrayList<Integer> getHalfBlocks() {
         return halfBlockSequenceNumbers;
@@ -58,22 +31,6 @@ public class InboxItem implements Serializable {
 
     public void setHalfBlocks(ArrayList<Integer> halfBlocks) {
         this.halfBlockSequenceNumbers = halfBlocks;
-    }
-
-    public String getAddress() {
-        return address;
-    }
-
-    public void setAddress(String address) {
-        this.address = address;
-    }
-
-    public PublicKeyPair getPublicKeyPair() {
-        return new PublicKeyPair(publicKeyPair);
-    }
-
-    public void setPublicKeyPair(PublicKeyPair publicKeyPair) {
-        this.publicKeyPair = publicKeyPair.toBytes();
     }
 
     /**
@@ -92,20 +49,14 @@ public class InboxItem implements Serializable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        InboxItem inboxItem = (InboxItem) o;
+        InboxItem other = (InboxItem) o;
 
-        if (port != inboxItem.port) return false;
-        if (userName != null ? !userName.equals(inboxItem.userName) : inboxItem.userName != null)
+        if (halfBlockSequenceNumbers != null ? !halfBlockSequenceNumbers.equals(other.halfBlockSequenceNumbers) : other.halfBlockSequenceNumbers != null)
             return false;
-        if (halfBlockSequenceNumbers != null ? !halfBlockSequenceNumbers.equals(inboxItem.halfBlockSequenceNumbers) : inboxItem.halfBlockSequenceNumbers != null)
-            return false;
-        if (address != null ? !address.equals(inboxItem.address) : inboxItem.address != null)
-            return false;
-        return publicKeyPair != null ? Arrays.equals(publicKeyPair, inboxItem.publicKeyPair) : inboxItem.publicKeyPair == null;
+        return this.peer.equals(other.peer);
     }
 
-    public Peer getPeerAppToApp(){
-       return new Peer(userName, new InetSocketAddress(address,port));
+    public Peer getPeer(){
+       return peer;
     }
-
 }

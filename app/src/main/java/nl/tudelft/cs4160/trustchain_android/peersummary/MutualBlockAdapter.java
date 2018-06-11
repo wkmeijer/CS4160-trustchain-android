@@ -21,6 +21,7 @@ import nl.tudelft.cs4160.trustchain_android.block.ValidationResult;
 import nl.tudelft.cs4160.trustchain_android.chainExplorer.ChainColor;
 import nl.tudelft.cs4160.trustchain_android.crypto.DualSecret;
 import nl.tudelft.cs4160.trustchain_android.crypto.Key;
+import nl.tudelft.cs4160.trustchain_android.crypto.PublicKeyPair;
 import nl.tudelft.cs4160.trustchain_android.message.MessageProto;
 import nl.tudelft.cs4160.trustchain_android.network.peer.Peer;
 import nl.tudelft.cs4160.trustchain_android.storage.database.TrustChainDBHelper;
@@ -36,7 +37,7 @@ public class MutualBlockAdapter extends RecyclerView.Adapter<MutualBlockAdapter.
     private ArrayList<Integer> validationResults = new ArrayList<>();
     private Context context;
     private DualSecret keyPair;
-    private byte[] peerPublicKey;
+    private PublicKeyPair peerPublicKey;
     private TrustChainDBHelper dbHelper;
 
     private String myPeerName, peerName;
@@ -46,15 +47,14 @@ public class MutualBlockAdapter extends RecyclerView.Adapter<MutualBlockAdapter.
     /**
      * Constructor.
      **/
-    public MutualBlockAdapter(PeerSummaryActivity activity, Peer peer, byte[] key) {
-        //TODO: remove the argument key and use peer when wilko's pr is merged
+    public MutualBlockAdapter(PeerSummaryActivity activity, Peer peer) {
         this.context = activity.getApplicationContext();
         this.keyPair = Key.loadKeys(context);
         this.dbHelper = new TrustChainDBHelper(context);
         this.myPeerName = UserNameStorage.getUserName(context);
-        this.peerName = peer.getPeerId();
+        this.peerName = peer.getName();
         this.activity = activity;
-        this.peerPublicKey = key;
+        this.peerPublicKey = peer.getPublicKeyPair();
 
         loadMutualBlocks();
     }
@@ -67,11 +67,11 @@ public class MutualBlockAdapter extends RecyclerView.Adapter<MutualBlockAdapter.
             @Override
             public void run() {
                 DualSecret keyPair = Key.loadKeys(activity);
-                byte[] myPublicKey = keyPair.getPublicKeyPair().toBytes();
+                PublicKeyPair myPublicKey = keyPair.getPublicKeyPair();
                 for (MessageProto.TrustChainBlock block : dbHelper.getBlocks(keyPair.getPublicKeyPair().toBytes(), true)) {
-                    byte[] linkedPublicKey = block.getLinkPublicKey().toByteArray();
-                    byte[] publicKey = block.getPublicKey().toByteArray();
-                    if (Arrays.equals(linkedPublicKey,myPublicKey) && Arrays.equals(publicKey,peerPublicKey)) {
+                    PublicKeyPair linkedPublicKey = new PublicKeyPair(block.getLinkPublicKey().toByteArray());
+                    PublicKeyPair publicKey = new PublicKeyPair(block.getPublicKey().toByteArray());
+                    if (linkedPublicKey.equals(myPublicKey) && publicKey.equals(peerPublicKey)) {
                         int validationResultStatus;
                         try {
                             validationResultStatus = TrustChainBlockHelper.validate(block, dbHelper).getStatus();

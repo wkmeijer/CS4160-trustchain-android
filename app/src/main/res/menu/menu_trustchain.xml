@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
         android:id="@+id/chain_menu"
-        android:title="@string/menu_item_1"
+        android:title="@string/menu_chainexplorer"
         app:showAsAction="never" />
     <item
         android:id="@+id/close"

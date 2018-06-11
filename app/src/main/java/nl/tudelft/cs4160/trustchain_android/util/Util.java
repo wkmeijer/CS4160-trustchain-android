@@ -133,6 +133,38 @@ public class Util {
         return new DecimalFormat("#,##0.#").format(size/Math.pow(1024, digitGroups)) + " " + units[digitGroups];
     }
 
+    /**
+     * Returns a nice string representation indicating how long ago this peer was last seen.
+     * @param msSinceLastMessage
+     * @return a string representation of last seen
+     */
+    public static String timeToString(long msSinceLastMessage) {
+        // display seconds
+        if(msSinceLastMessage < 60000) {
+            return " " + ((int) Math.floor(msSinceLastMessage / 1000.0)) + "s";
+        }
+
+        // display minutes
+        if(msSinceLastMessage < 3600000) {
+            int seconds = ((int) Math.floor((msSinceLastMessage / 1000.0)));
+            int minutes = ((int) Math.floor(seconds /60.0));
+            seconds = seconds % 60;
+            return " " + minutes + "m" + seconds + "s";
+        }
+
+        // display hours
+        if(msSinceLastMessage < 86400000) {
+            int minutes = ((int) Math.floor(msSinceLastMessage /60000.0));
+            int hours = ((int) Math.floor(minutes / 60.0));
+            minutes = minutes % 60;
+            return " " + hours + "h" + minutes + "m";
+        }
+
+        // default: more than 1 day, display nothing, getting a time since last message that is this
+        // high will almost always happen cause of some error. In any other cases, the app has been
+        // closed for such a long time that the information isn't useful anymore.
+        return "";
+    }
 
     public static void requestWriteStoragePermissions(Activity activity, int requestCode) {
         ActivityCompat.requestPermissions(activity, new String[]{ Manifest.permission.WRITE_EXTERNAL_STORAGE }, requestCode);
@@ -140,5 +172,4 @@ public class Util {
     public static void requestReadStoragePermissions(Activity activity, int requestCode) {
         ActivityCompat.requestPermissions(activity, new String[]{ Manifest.permission.READ_EXTERNAL_STORAGE }, requestCode);
     }
-
 }

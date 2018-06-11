@@ -7,6 +7,10 @@ import org.junit.Test;
 
 import java.net.InetSocketAddress;
 import java.util.ArrayList;
+import java.util.List;
+
+import nl.tudelft.cs4160.trustchain_android.crypto.Key;
+import nl.tudelft.cs4160.trustchain_android.crypto.PublicKeyPair;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -22,14 +26,15 @@ public class PeerHandlerTest {
     private PeerHandler peerHandler;
     private ArrayList<Peer> originalIpList;
     private ArrayList<Peer> expectedIpList;
-    InetSocketAddress rnadomInet = new InetSocketAddress(200);
+    InetSocketAddress randomInet = new InetSocketAddress(200);
+    PublicKeyPair publicKeyPair = Key.createNewKeyPair().getPublicKeyPair();
     private String randomHashIdName = "randomHashIdName";
 
     @Before
     public void initialization() {
-        Peer peer1 = new Peer("peer1", rnadomInet);
-        Peer peer2 = new Peer("peer2", rnadomInet);
-        Peer peer3 = new Peer("peer3", rnadomInet);
+        Peer peer1 = new Peer(randomInet,Key.createNewKeyPair().getPublicKeyPair(),"peer1");
+        Peer peer2 = new Peer(randomInet,Key.createNewKeyPair().getPublicKeyPair(), "peer2");
+        Peer peer3 = new Peer(randomInet, Key.createNewKeyPair().getPublicKeyPair(), "peer3");
 
         originalIpList = new ArrayList<>();
         originalIpList.add(peer1);
@@ -42,7 +47,7 @@ public class PeerHandlerTest {
         expectedIpList.add(peer2);
         expectedIpList.add(peer3);
 
-        peerHandler = new PeerHandler(randomHashIdName);
+        peerHandler = new PeerHandler(publicKeyPair,randomHashIdName);
         peerHandler.setPeerList(originalIpList);
     }
 
@@ -64,15 +69,15 @@ public class PeerHandlerTest {
 
     @Test
     public void peerExistsInListTest() {
-        Peer peer4 = new Peer("peer4", rnadomInet);
+        Peer peer4 = new Peer(randomInet,Key.createNewKeyPair().getPublicKeyPair(),"peer4");
         assertTrue(peerHandler.peerExistsInList(originalIpList.get(0)));
         assertFalse(peerHandler.peerExistsInList(peer4));
     }
 
     @Test
     public void testCertainMethods() {
-        peerHandler = new PeerHandler("name");
-        Peer peer = new Peer("peer", rnadomInet);
+        peerHandler = new PeerHandler(Key.createNewKeyPair().getPublicKeyPair(),"name");
+        Peer peer = new Peer(randomInet,Key.createNewKeyPair().getPublicKeyPair(),"peer");
         peerHandler.add(peer);
         assertEquals(1, peerHandler.size());
         peerHandler.remove(peer);
@@ -92,15 +97,15 @@ public class PeerHandlerTest {
     @Test
     public void testPeerlistAdd() {
         int size = peerHandler.getPeerList().size();
-        Peer peer2 = new Peer("peer2", rnadomInet);
+        Peer peer2 = new Peer(randomInet,Key.createNewKeyPair().getPublicKeyPair(), "peer2");
         peerHandler.add(peer2);
         assertEquals(peerHandler.getPeerList().size(), size + 1);
     }
 
 
     @Test
-    public void testPeerListGetHash() {
-        assertEquals(peerHandler.getHashId(), randomHashIdName);
+    public void testPeerListGetPublicKeyPair() {
+        assertEquals(peerHandler.getPublicKeyPair(), publicKeyPair);
     }
 
     @Test
@@ -117,12 +122,12 @@ public class PeerHandlerTest {
 
     @Test
     public void testNotExistsIn() {
-        assertFalse(peerHandler.peerExistsInList(new Peer("peerA??", new InetSocketAddress(202))));
+        assertFalse(peerHandler.peerExistsInList(new Peer(new InetSocketAddress(202), Key.createNewKeyPair().getPublicKeyPair(), "peerA??")));
     }
 
     @Test
     public void testAdd() {
-        Peer randomPeer = new Peer("peerA??", new InetSocketAddress(202));
+        Peer randomPeer = new Peer(new InetSocketAddress(202), Key.createNewKeyPair().getPublicKeyPair(), "peerA??");
         peerHandler.add(randomPeer);
         assertTrue(peerHandler.peerExistsInList(randomPeer));
     }
@@ -130,13 +135,15 @@ public class PeerHandlerTest {
     @Test
     public void testAddPeerAlreadyInList() {
         int size = peerHandler.getPeerList().size();
-        peerHandler.addPeer(originalIpList.get(0).getPeerId(), originalIpList.get(0).getAddress());
+        peerHandler.addPeer(originalIpList.get(0).getAddress(), originalIpList.get(0).getPublicKeyPair(), originalIpList.get(0).getName());
         assertEquals(peerHandler.getPeerList().size(), size);
     }
 
     @Test
     public void testEligiblePeer() {
-        Peer peer = peerHandler.getEligiblePeer(originalIpList.get(0));
+        List<Peer> excludePeers = new ArrayList<>();
+        excludePeers.add(originalIpList.get(0));
+        Peer peer = peerHandler.getEligiblePeer(excludePeers);
         assertNotEquals(peer.toString(), originalIpList.get(0).toString());
     }
 
