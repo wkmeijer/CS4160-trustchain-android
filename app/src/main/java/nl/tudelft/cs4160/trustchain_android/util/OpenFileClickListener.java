@@ -64,6 +64,7 @@ public class OpenFileClickListener implements View.OnClickListener{
 
         Intent i = new Intent();
         i.setDataAndType(Uri.fromFile(file), mimeType);
+        i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         context.startActivity(i);
 
     }
