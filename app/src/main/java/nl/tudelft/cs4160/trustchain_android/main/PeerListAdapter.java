@@ -21,6 +21,7 @@ import nl.tudelft.cs4160.trustchain_android.network.peer.Peer;
 import nl.tudelft.cs4160.trustchain_android.storage.sharedpreferences.InboxItemStorage;
 import nl.tudelft.cs4160.trustchain_android.storage.sharedpreferences.PubKeyAndAddressPairStorage;
 import nl.tudelft.cs4160.trustchain_android.storage.sharedpreferences.UserNameStorage;
+import nl.tudelft.cs4160.trustchain_android.util.Util;
 
 public class PeerListAdapter extends ArrayAdapter<Peer> {
     private final Context context;
@@ -111,9 +112,9 @@ public class PeerListAdapter extends ArrayAdapter<Peer> {
         setOnClickListener(holder.mTableLayoutConnection, position);
 
         if(peer.isReceivedFrom()) {
-            holder.mLastReceived.setText(timeToString(System.currentTimeMillis() - peer.getLastReceivedTime()));
+            holder.mLastReceived.setText(Util.timeToString(System.currentTimeMillis() - peer.getLastReceivedTime()));
         }
-        holder.mLastSent.setText(timeToString(System.currentTimeMillis() - peer.getLastSentTime()));
+        holder.mLastSent.setText(Util.timeToString(System.currentTimeMillis() - peer.getLastSentTime()));
 
         return convertView;
     }
@@ -143,40 +144,6 @@ public class PeerListAdapter extends ArrayAdapter<Peer> {
     }
 
     /**
-     * Returns a nice string representation indicating how long ago this peer was last seen.
-     * @param msSinceLastMessage
-     * @return a string representation of last seen
-     */
-    public String timeToString(long msSinceLastMessage) {
-        // display seconds
-        if(msSinceLastMessage < 60000) {
-            return " " + ((int) Math.floor(msSinceLastMessage / 1000.0)) + "s";
-        }
-
-        // display minutes
-        if(msSinceLastMessage < 3600000) {
-            int seconds = ((int) Math.floor((msSinceLastMessage / 1000.0)));
-            int minutes = ((int) Math.floor(seconds /60.0));
-            seconds = seconds % 60;
-            return " " + minutes + "m" + seconds + "s";
-        }
-
-        // display hours
-        if(msSinceLastMessage < 86400000) {
-            int minutes = ((int) Math.floor(msSinceLastMessage /60000.0));
-            int hours = ((int) Math.floor(minutes / 60.0));
-            minutes = minutes % 60;
-            return " " + hours + "h" + minutes + "m";
-        }
-
-        // default: more than 1 day, display nothing, getting a time since last message that is this
-        // high will almost always happen cause of some error. In any other cases, the app has been
-        // closed for such a long time that the information isn't useful anymore.
-        return "";
-    }
-
-
-    /**
      * On click peer. If it's possible to add this peer
      * to your inbox this happens, otherwise a snackbar message
      * will explain why this isn't possible.
@@ -189,22 +156,22 @@ public class PeerListAdapter extends ArrayAdapter<Peer> {
             int pos = (int) v.getTag();
             Peer peer = getItem(pos);
             if(peer.isAlive() && peer.isReceivedFrom()) {
-                PublicKeyPair pubKeyPair = PubKeyAndAddressPairStorage.getPubKeyByAddress(context, peer.getAddress().toString().replace("/", ""));
+                PublicKeyPair pubKeyPair = PubKeyAndAddressPairStorage.getPubKeyByAddress(context, peer.getAddress().getHostString());
                 if(pubKeyPair != null) {
                     InboxItem i = new InboxItem(peer, new ArrayList<>());
                     UserNameStorage.setNewPeerByPublicKey(context, peer.getName(), pubKeyPair);
                     InboxItemStorage.addInboxItem(context, i);
                     Snackbar mySnackbar = Snackbar.make(coordinatorLayout,
-                            peer.getName() + " added to inbox", Snackbar.LENGTH_SHORT);
+                            context.getString(R.string.snackbar_peer_added,peer.getName()), Snackbar.LENGTH_SHORT);
                     mySnackbar.show();
                 } else {
                     Snackbar mySnackbar = Snackbar.make(coordinatorLayout,
-                            "This peer didn't send a public key yet", Snackbar.LENGTH_SHORT);
+                            context.getString(R.string.snackbar_no_pub_key), Snackbar.LENGTH_SHORT);
                     mySnackbar.show();
                 }
             } else {
                 Snackbar mySnackbar = Snackbar.make(coordinatorLayout,
-                        "This peer is currently not active", Snackbar.LENGTH_SHORT);
+                        context.getString(R.string.snackbar_peer_inactive), Snackbar.LENGTH_SHORT);
                 mySnackbar.show();
             }
         };

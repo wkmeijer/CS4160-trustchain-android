@@ -62,6 +62,8 @@ import nl.tudelft.cs4160.trustchain_android.storage.sharedpreferences.InboxItemS
 import nl.tudelft.cs4160.trustchain_android.storage.sharedpreferences.SharedPreferencesStorage;
 import nl.tudelft.cs4160.trustchain_android.storage.sharedpreferences.UserNameStorage;
 
+import static nl.tudelft.cs4160.trustchain_android.main.UserConfigurationActivity.*;
+
 public class OverviewConnectionsActivity extends AppCompatActivity implements NetworkStatusListener, PeerListener {
 
     // The server ip address, this is the bootstrap phone that's always running
@@ -69,7 +71,6 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
 
     public final static int DEFAULT_PORT = 1873;
     private final static int BUFFER_SIZE = 65536;
-    public final static String VERSION_KEY = "VERSION_KEY:";
     private PeerListAdapter activePeersAdapter;
     private PeerListAdapter newPeersAdapter;
     private TrustChainDBHelper dbHelper;
@@ -88,8 +89,8 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_overview_connections);
-        updateVersion();
         initVariables(savedInstanceState);
+        initTextViews();
         initExitButton();
         addInitialPeer();
         startListenThread();
@@ -129,7 +130,20 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
         getPeerHandler().setPeerListener(this);
         network.setNetworkStatusListener(this);
         network.updateConnectionType((ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE));
+    }
+
+    /**
+     * Get stored information and display it in the correct text views.
+     */
+    private void initTextViews() {
         ((TextView) findViewById(R.id.peer_id)).setText(UserNameStorage.getUserName(this));
+        String versionName = "unknown";
+        try {
+            versionName = SharedPreferencesStorage.readSharedPreferences(this, VERSION_NAME_KEY, String.class);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        ((TextView )findViewById(R.id.version)).setText(getString(R.string.version, versionName));
     }
 
     /**
@@ -144,39 +158,6 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
             MessageProto.TrustChainBlock block = TrustChainBlockHelper.createGenesisBlock(kp);
             dbHelper.insertInDB(block);
         }
-    }
-
-    /**
-     * Check which version the current installed app is and take appropriate actions.
-     * Update the stored version to the version of the current installed app.
-     */
-    private void updateVersion() {
-        PackageInfo pInfo = null;
-        try {
-            pInfo = this.getPackageManager().getPackageInfo(getPackageName(), 0);
-        } catch (PackageManager.NameNotFoundException e) {
-            e.printStackTrace();
-        }
-        int newVersion = pInfo.versionCode;
-        int storedVersion = 0;
-        try {
-            storedVersion = SharedPreferencesStorage.readSharedPreferences(this,VERSION_KEY,Integer.class);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        // The way inboxitems are stored was changed, so this storage needs to be cleared
-        if(storedVersion < 10) {
-            InboxItemStorage.deleteAll(this);
-            Log.i(TAG, "Old version detected, cleared inbox for compatibility purposes");
-        }
-
-        try {
-            SharedPreferencesStorage.writeSharedPreferences(this, VERSION_KEY, newVersion);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        ((TextView )findViewById(R.id.version)).setText(getString(R.string.version, pInfo.versionName));
     }
 
     /**
@@ -354,7 +335,7 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
             View view = findViewById(android.R.id.content);
             Snackbar networkUnreachableSnackbar = Snackbar.make(view, "Network unavailable", Snackbar.LENGTH_INDEFINITE);
 
-            // wait max one second for the CreateInetSocketAddressTask to finish, indicated by that the bootstrap is added to the
+            // wait max one second for the CreateInetSocketAddressTask to finish, indicated by that the bootstrap is added to the peerlist
             int t = 0;
             while(peerHandler.size() == 0 && t < 100) {
                 try {

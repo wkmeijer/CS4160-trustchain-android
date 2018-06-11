@@ -1,4 +1,5 @@
 <resources>
+    <!-- OverViewConnectionsActivity -->
     <string name="app_name">TrustChain Android</string>
     <string name="my_external_ip">My external ip is:</string>
     <string name="connect_bootstrap_ip">The IP address of the new bootstrap:</string>
@@ -15,6 +16,9 @@
     <string name="last_received">Received: </string>
     <string name="last_sent">Sent: </string>
     <string name="peer_id">peer id</string>
+    <string name="snackbar_peer_added">%s added to inbox</string>
+    <string name="snackbar_no_pub_key">This peer didn\'t send a public key yet</string>
+    <string name="snackbar_peer_inactive">This peer is currently not active</string>
 
     <!-- Trustchain -->
     <string name="title_activity_key">Key management</string>
@@ -91,6 +95,13 @@
     <string name="symbolMeaningText">Meaning:</string>
     <string name="connectionInfoText">Here we provide an explanation of each symbol and their corresponding color.</string>
     <string name="symbolExplanationText">Explanation</string>
+    <string name="connected">Connected with peer</string>
+    <string name="connecting">Connecting with peer</string>
+    <string name="cannot_connect">Cannot connect with peer</string>
+    <string name="received_packet">Received a packet from peer</string>
+    <string name="sent_packet">Sent a packet to peer</string>
+    <string name="time_since_received">Time since last received message"</string>
+    <string name="time_since_sent">Time since last message sent</string>
 
     <!--- info chain explorer -->
     <string name="color_info">Color is based on the hash of the public key.</string>
