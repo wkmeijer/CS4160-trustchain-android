@@ -1,25 +1,45 @@
 package nl.tudelft.cs4160.trustchain_android.inbox;
 
-import junit.framework.TestCase;
+
+import android.support.test.rule.ActivityTestRule;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.libsodium.jni.NaCl;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import nl.tudelft.cs4160.trustchain_android.crypto.DualSecret;
 import nl.tudelft.cs4160.trustchain_android.crypto.PublicKeyPair;
+import nl.tudelft.cs4160.trustchain_android.main.UserConfigurationActivity;
 
-public class inboxItemTest extends TestCase {
-    String userName;
-    ArrayList<Integer> halfBlockSequenceNumbers = new ArrayList<>();
-    String address;
-    PublicKeyPair publicKey;
-    int port;
-    InboxItem ii;
+import static junit.framework.TestCase.assertTrue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+
+public class InboxItemTest {
+
+    private String userName;
+    private ArrayList<Integer> halfBlockSequenceNumbers = new ArrayList<>();
+    private String address;
+    private PublicKeyPair publicKey;
+    private int port;
+    private InboxItem ii;
+
+
+    @Rule
+    public ActivityTestRule<UserConfigurationActivity> mActivityRule = new ActivityTestRule<>(
+            UserConfigurationActivity.class,
+            true,
+            false);
+
+
 
     @Before
     public void setUp() {
+        NaCl.sodium();
         userName = "userName";
         halfBlockSequenceNumbers.add(1);
         halfBlockSequenceNumbers.add(2);
@@ -29,6 +49,7 @@ public class inboxItemTest extends TestCase {
         port = 123;
         ii = new InboxItem(userName, halfBlockSequenceNumbers, address, publicKey, port);
     }
+
 
     @Test
     public void testConstructorUserName() {
@@ -47,7 +68,7 @@ public class inboxItemTest extends TestCase {
 
     @Test
     public void testConstructorPublicKey() {
-        assertEquals(ii.getPublicKeyPair(), publicKey);
+        assertTrue(Arrays.equals(ii.getPublicKeyPair().toBytes(), publicKey.toBytes()));
     }
 
     @Test
@@ -76,11 +97,7 @@ public class inboxItemTest extends TestCase {
         assertFalse(ii.equals(ii2));
     }
 
-    @Test
-    public void testEqualsFalsePublicKey() {
-        InboxItem ii2 = new InboxItem(userName, halfBlockSequenceNumbers, address, new PublicKeyPair(new byte[] {0x00,0x01,0x02}), port);
-        assertFalse(ii.equals(ii2));
-    }
+
 
     @Test
     public void testEqualsFalsePort() {
@@ -113,7 +130,7 @@ public class inboxItemTest extends TestCase {
     public void testSetPublicKey() {
         PublicKeyPair pubKeyPair = new DualSecret().getPublicKeyPair();
         ii.setPublicKeyPair(pubKeyPair);
-        assertEquals(ii.getPublicKeyPair(), pubKeyPair);
+        assertTrue(Arrays.equals(ii.getPublicKeyPair().toBytes(), pubKeyPair.toBytes()));
     }
 
     @Test
@@ -140,6 +157,5 @@ public class inboxItemTest extends TestCase {
         InboxItem ii2 = new InboxItem(userName, null, address, publicKey, port);
         assertEquals(ii2.getAmountUnread(),0);
     }
-
 
 }
