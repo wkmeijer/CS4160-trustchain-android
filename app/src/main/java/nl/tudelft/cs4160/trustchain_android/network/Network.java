@@ -430,6 +430,10 @@ public class Network {
                 , block.getSequenceNumber());
     }
 
+    public MessageHandler getMessageHandler() {
+        return messageHandler;
+    }
+
     /**
      * Show local ip visually to the user.
      */

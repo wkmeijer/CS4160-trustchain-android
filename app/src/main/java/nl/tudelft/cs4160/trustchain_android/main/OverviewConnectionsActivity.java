@@ -115,7 +115,6 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
         dbHelper = new TrustChainDBHelper(this);
         initKey();
         peerHandler = new PeerHandler(Key.loadKeys(this).getPublicKeyPair(), UserNameStorage.getUserName(this));
-        network = Network.getInstance(getApplicationContext());
 
         if (savedInstanceState != null) {
             ArrayList<Peer> list = (ArrayList<Peer>) savedInstanceState.getSerializable("peers");
@@ -123,6 +122,8 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
         }
 
         getPeerHandler().setPeerListener(this);
+        network = Network.getInstance(getApplicationContext());
+        network.getMessageHandler().setPeerHandler(getPeerHandler());
         network.setNetworkStatusListener(this);
         network.updateConnectionType((ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE));
     }

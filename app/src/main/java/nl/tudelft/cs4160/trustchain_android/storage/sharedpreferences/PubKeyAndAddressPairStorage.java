@@ -53,6 +53,9 @@ public class PubKeyAndAddressPairStorage {
     public static PublicKeyPair getPubKeyByAddress(Context context, String address) {
         Log.i(TAG, "get key of: " + address);
         String pubKeyPair = SharedPreferencesStorage.readSharedPreferences(context, ADDRESS_KEY_PREFIX + address);
+        if(pubKeyPair == null) {
+            return null;
+        }
         return new PublicKeyPair(Base64.decode(pubKeyPair, Base64.DEFAULT));
     }
 }

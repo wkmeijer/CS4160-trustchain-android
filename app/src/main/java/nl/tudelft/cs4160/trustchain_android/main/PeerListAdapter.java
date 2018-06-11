@@ -156,7 +156,7 @@ public class PeerListAdapter extends ArrayAdapter<Peer> {
             int pos = (int) v.getTag();
             Peer peer = getItem(pos);
             if(peer.isAlive() && peer.isReceivedFrom()) {
-                PublicKeyPair pubKeyPair = PubKeyAndAddressPairStorage.getPubKeyByAddress(context, peer.getAddress().getHostString());
+                PublicKeyPair pubKeyPair = PubKeyAndAddressPairStorage.getPubKeyByAddress(context, peer.getAddress().getHostString() + ":" + peer.getPort());
                 if(pubKeyPair != null) {
                     InboxItem i = new InboxItem(peer, new ArrayList<>());
                     UserNameStorage.setNewPeerByPublicKey(context, peer.getName(), pubKeyPair);

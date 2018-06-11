@@ -130,4 +130,8 @@ public class MessageHandler {
     public PeerHandler getPeerHandler() {
         return peerHandler;
     }
+
+    public void setPeerHandler(PeerHandler peerHandler) {
+        this.peerHandler = peerHandler;
+    }
 }
