@@ -61,7 +61,7 @@ import static nl.tudelft.cs4160.trustchain_android.block.TrustChainBlockHelper.s
 public class PeerSummaryActivity extends AppCompatActivity implements CrawlRequestListener {
     private final static String TAG = PeerSummaryActivity.class.toString();
     private static final int REQUEST_STORAGE_PERMISSIONS = 1;
-    private static final int MAX_ATTACHMENT_SIZE = 61440; //Max file attachment size in bytes, set to 60bytes leaving 5kb for other block data, as the max message size in UDP is 64KB
+    private static final int MAX_ATTACHMENT_SIZE = 61440; //Max file attachment size in bytes, set to 60kbytes leaving 5kb for other block data, as the max message size in UDP is 64KB
     private Context context;
     private RecyclerView mRecyclerView;
     private MutualBlockAdapter mAdapter;
@@ -412,11 +412,12 @@ public class PeerSummaryActivity extends AppCompatActivity implements CrawlReque
                 selectedFilePath.setText(file.getPath());
                 if (file.length() > MAX_ATTACHMENT_SIZE) {
                     selectedFilePath.requestFocus();
-                    selectedFilePath.setError("Too big (" + Util.readableSize(file.length()) + ")");
+                    selectedFilePath.setError("Too big (" + Util.readableSize(file.length()) + ") max is " + Util.readableSize(MAX_ATTACHMENT_SIZE));
                     sendButton.setEnabled(false);
                 } else {
                     selectedFilePath.setError(null);
                     sendButton.setEnabled(true);
+                    Snackbar.make(findViewById(R.id.peer_summary_layout),getString(R.string.warning_files),Snackbar.LENGTH_LONG).show();
                 }
             }
         });

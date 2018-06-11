@@ -3,13 +3,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="10dp"
-    android:id="@+id/myCoordinatorLayout"
+    android:id="@+id/peer_summary_layout"
     tools:context="nl.tudelft.cs4160.trustchain_android.peersummary.PeerSummaryActivity">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:padding="10dp"
         android:orientation="vertical">
 
         <LinearLayout
