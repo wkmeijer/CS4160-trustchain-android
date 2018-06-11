@@ -224,6 +224,9 @@ public class TesseractOCR {
      * Prints some statistics about the run time of the OCR scanning
      */
     private void giveStats() {
+        if(times.isEmpty()) {
+            return;
+        }
         long max = Collections.max(times);
         long curravg = 0;
         for (int i=0; i < times.size(); i++) {

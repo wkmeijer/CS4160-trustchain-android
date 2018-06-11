@@ -56,12 +56,7 @@ public class CameraFragment extends Fragment {
     private Runnable scanningTakingLongTimeout = new Runnable() {
         @Override
         public void run() {
-            manualInput.post(new Runnable() {
-                @Override
-                public void run() {
-                    manualInput.setVisibility(View.VISIBLE);
-                }
-            });
+            manualInput.post(() -> manualInput.setVisibility(View.VISIBLE));
             final ViewTreeObserver observer = manualInput.getViewTreeObserver();
             observer.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
                 @Override
@@ -182,27 +177,19 @@ public class CameraFragment extends Fragment {
      */
     @Override
     public void onViewCreated(final View view, final Bundle savedInstanceState) {
-        mTextureView = (AutoFitTextureView) view.findViewById(R.id.texture);
-        scanSegment = (ImageView) view.findViewById(R.id.scan_segment);
-        manualInput = (Button) view.findViewById(R.id.manual_input_button);
-        overlay = (Overlay) view.findViewById(R.id.overlay);
-        manualInput.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getActivity(), ManualInputActivity.class);
-                getActivity().startActivityForResult(intent, GET_DOC_INFO);
-            }
+        mTextureView = view.findViewById(R.id.texture);
+        scanSegment = view.findViewById(R.id.scan_segment);
+        manualInput = view.findViewById(R.id.manual_input_button);
+        overlay = view.findViewById(R.id.overlay);
+        manualInput.setOnClickListener(v -> {
+            Intent intent = new Intent(getActivity(), ManualInputActivity.class);
+            getActivity().startActivityForResult(intent, GET_DOC_INFO);
         });
 
-        toggleTorchButton = (FloatingActionButton) view.findViewById(R.id.toggle_torch_button);
-        toggleTorchButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-             public void onClick(View v) {
-                mCameraHandler.toggleTorch();
-            }
-         });
+        toggleTorchButton = view.findViewById(R.id.toggle_torch_button);
+        toggleTorchButton.setOnClickListener(v -> mCameraHandler.toggleTorch());
 
-        infoText = (TextView) view.findViewById(R.id.info_text);
+        infoText = view.findViewById(R.id.info_text);
         controlPanel = view.findViewById(R.id.control);
         final ViewTreeObserver observer = controlPanel.getViewTreeObserver();
         observer.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
@@ -275,13 +262,16 @@ public class CameraFragment extends Fragment {
                         if (grantResults[i] != PackageManager.PERMISSION_GRANTED) {
                             showingPermissionExplanation = true;
                             new AlertDialog.Builder(getActivity())
-                                    .setMessage(getString(R.string.storage_permission_explanation))
-                                    .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-                                        @Override
-                                        public void onClick(DialogInterface dialogInterface, int i) {
-                                            showingPermissionExplanation = false;
-                                            requestPermissions();
-                                        }
+                                    .setMessage(getString(R.string.ocr_storage_permission_explanation))
+                                    .setPositiveButton(android.R.string.ok, (dialogInterface, i12) -> {
+                                        showingPermissionExplanation = false;
+                                        requestPermissions();
+                                    })
+                                    .setNegativeButton(android.R.string.no, (dialogInterface, i12) -> {
+                                        showingPermissionExplanation = false;
+                                        Intent intent = new Intent(getActivity(), ManualInputActivity.class);
+                                        getActivity().startActivityForResult(intent, GET_DOC_INFO);
+                                        getActivity().finish();
                                     })
                                     .show();
                         }
@@ -291,12 +281,15 @@ public class CameraFragment extends Fragment {
                             showingPermissionExplanation = true;
                             new AlertDialog.Builder(getActivity())
                                     .setMessage(getString(R.string.ocr_camera_permission_explanation))
-                                    .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-                                        @Override
-                                        public void onClick(DialogInterface dialogInterface, int i) {
-                                            showingPermissionExplanation = false;
-                                            requestPermissions();
-                                        }
+                                    .setPositiveButton(android.R.string.ok, (dialogInterface, i1) -> {
+                                        showingPermissionExplanation = false;
+                                        requestPermissions();
+                                    })
+                                    .setNegativeButton(android.R.string.no, (dialogInterface, i12) -> {
+                                        showingPermissionExplanation = false;
+                                        Intent intent = new Intent(getActivity(), ManualInputActivity.class);
+                                        getActivity().startActivityForResult(intent, GET_DOC_INFO);
+                                        getActivity().finish();
                                     })
                                     .show();
                         }
@@ -465,12 +458,7 @@ public class CameraFragment extends Fragment {
     public void showToast(final String text) {
         final Activity activity = getActivity();
         if (activity != null) {
-            activity.runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    Toast.makeText(activity, text, Toast.LENGTH_SHORT).show();
-                }
-            });
+            activity.runOnUiThread(() -> Toast.makeText(activity, text, Toast.LENGTH_SHORT).show());
         }
     }
 }

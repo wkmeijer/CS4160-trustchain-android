@@ -39,19 +39,16 @@ public class ManualInputActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_manual_input);
 
-        docNumber = (EditText) findViewById(R.id.doc_num);
+        docNumber = findViewById(R.id.doc_num);
 
-        Button submitBut = (Button) findViewById(R.id.submit_button);
+        Button submitBut = findViewById(R.id.submit_button);
         final Activity thisActivity = this;
-        submitBut.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if(verifyInput()) {
-                    Intent returnIntent = new Intent(thisActivity, PassportConActivity.class);
-                    returnIntent.putExtra(DocumentData.identifier, getData());
-                    setResult(Activity.RESULT_OK, returnIntent);
-                    startActivity(returnIntent);
-                }
+        submitBut.setOnClickListener(view -> {
+            if(verifyInput()) {
+                Intent returnIntent = new Intent(thisActivity, PassportConActivity.class);
+                returnIntent.putExtra(DocumentData.identifier, getData());
+                setResult(Activity.RESULT_OK, returnIntent);
+                startActivity(returnIntent);
             }
         });
         setupDOBSpinners();
@@ -64,9 +61,9 @@ public class ManualInputActivity extends AppCompatActivity {
     }
 
     private void setupExpirySpinners() {
-        expiryDaySpinner = (Spinner) findViewById(R.id.expiry_day_spinner);
-        expiryMonthSpinner = (Spinner) findViewById(R.id.expiry_month_spinner);
-        expiryYearSpinner = (Spinner) findViewById(R.id.expiry_year_spinner);
+        expiryDaySpinner = findViewById(R.id.expiry_day_spinner);
+        expiryMonthSpinner = findViewById(R.id.expiry_month_spinner);
+        expiryYearSpinner = findViewById(R.id.expiry_year_spinner);
 
         List<String> days = new ArrayList<>();
         for (int i = 0; i < 31; i++) {
@@ -96,9 +93,9 @@ public class ManualInputActivity extends AppCompatActivity {
     }
 
     private void setupDOBSpinners () {
-        dobDaySpinner = (Spinner) findViewById(R.id.dob_day_spinner);
-        dobMonthSpinner = (Spinner) findViewById(R.id.dob_month_spinner);
-        dobYearSpinner = (Spinner) findViewById(R.id.dob_year_spinner);
+        dobDaySpinner = findViewById(R.id.dob_day_spinner);
+        dobMonthSpinner = findViewById(R.id.dob_month_spinner);
+        dobYearSpinner = findViewById(R.id.dob_year_spinner);
 
         List<String> days = new ArrayList<>();
         for (int i = 0; i < 31; i++) {
