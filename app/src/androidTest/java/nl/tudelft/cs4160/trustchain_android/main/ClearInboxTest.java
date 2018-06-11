@@ -106,7 +106,7 @@ public class ClearInboxTest {
         ViewInteraction tableLayout = onView(
                 allOf(withId(R.id.tableLayoutConnection),
                         childAtPosition(
-                                withParent(withId(R.id.incoming_peer_connection_list_view)),
+                                withParent(withId(R.id.new_peers_list_view)),
                                 1),
                         isDisplayed()));
         tableLayout.perform(click());

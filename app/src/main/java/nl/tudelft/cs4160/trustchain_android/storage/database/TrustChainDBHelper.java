@@ -18,12 +18,13 @@ import nl.tudelft.cs4160.trustchain_android.message.MessageProto;
 import nl.tudelft.cs4160.trustchain_android.message.MessageProto.TrustChainBlock.Transaction;
 
 public class TrustChainDBHelper extends SQLiteOpenHelper {
-    public static final int DATABASE_VERSION = 1;
+    public static final int DATABASE_VERSION = 2;
     public static final String DATABASE_NAME = "TrustChain.db";
 
     private static final String SQL_CREATE_ENTRIES =
             "CREATE TABLE IF NOT EXISTS " + TrustChainDBContract.BlockEntry.TABLE_NAME + " (" +
-                    TrustChainDBContract.BlockEntry.COLUMN_NAME_TX + " TEXT NOT NULL," +
+                    TrustChainDBContract.BlockEntry.COLUMN_NAME_TX + " BLOB NOT NULL," +
+                    TrustChainDBContract.BlockEntry.COLUMN_NAME_TX_FORMAT + " TEXT," +
                     TrustChainDBContract.BlockEntry.COLUMN_NAME_PUBLIC_KEY + " TEXT NOT NULL," +
                     TrustChainDBContract.BlockEntry.COLUMN_NAME_SEQUENCE_NUMBER + " INTEGER NOT NULL," +
                     TrustChainDBContract.BlockEntry.COLUMN_NAME_LINK_PUBLIC_KEY + " TEXT NOT NULL," +
@@ -43,6 +44,7 @@ public class TrustChainDBHelper extends SQLiteOpenHelper {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
 
+
     @Override
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(SQL_CREATE_ENTRIES);
@@ -57,7 +59,17 @@ public class TrustChainDBHelper extends SQLiteOpenHelper {
      */
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        onCreate(db);
+        switch (oldVersion) {
+        case 1:
+            db.execSQL("DROP TABLE IF EXISTS " + TrustChainDBContract.BlockEntry.TABLE_NAME);
+            onCreate(db);
+        case 2:
+            break;
+        default:
+            throw new IllegalStateException(
+                    "onUpgrade() with unknown oldVersion" + oldVersion);
+        }
+
     }
 
     /**
@@ -78,7 +90,8 @@ public class TrustChainDBHelper extends SQLiteOpenHelper {
         MessageProto.TrustChainBlock b = block;
         SQLiteDatabase db = getWritableDatabase();
         ContentValues values = new ContentValues();
-        values.put(TrustChainDBContract.BlockEntry.COLUMN_NAME_TX, block.getTransaction().getUnformatted().toStringUtf8());
+        values.put(TrustChainDBContract.BlockEntry.COLUMN_NAME_TX, block.getTransaction().getUnformatted().toByteArray());
+        values.put(TrustChainDBContract.BlockEntry.COLUMN_NAME_TX_FORMAT, block.getTransaction().getFormat());
         values.put(TrustChainDBContract.BlockEntry.COLUMN_NAME_PUBLIC_KEY, Base64.encodeToString(block.getPublicKey().toByteArray(), Base64.DEFAULT));
         values.put(TrustChainDBContract.BlockEntry.COLUMN_NAME_SEQUENCE_NUMBER, block.getSequenceNumber());
         values.put(TrustChainDBContract.BlockEntry.COLUMN_NAME_LINK_PUBLIC_KEY, Base64.encodeToString(block.getLinkPublicKey().toByteArray(), Base64.DEFAULT));
@@ -101,7 +114,8 @@ public class TrustChainDBHelper extends SQLiteOpenHelper {
         MessageProto.TrustChainBlock b = block;
         SQLiteDatabase db = getWritableDatabase();
         ContentValues values = new ContentValues();
-        values.put(TrustChainDBContract.BlockEntry.COLUMN_NAME_TX, block.getTransaction().getUnformatted().toStringUtf8());
+        values.put(TrustChainDBContract.BlockEntry.COLUMN_NAME_TX, block.getTransaction().getUnformatted().toByteArray());
+        values.put(TrustChainDBContract.BlockEntry.COLUMN_NAME_TX_FORMAT, block.getTransaction().getFormat());
         values.put(TrustChainDBContract.BlockEntry.COLUMN_NAME_PUBLIC_KEY, Base64.encodeToString(block.getPublicKey().toByteArray(), Base64.DEFAULT));
         values.put(TrustChainDBContract.BlockEntry.COLUMN_NAME_SEQUENCE_NUMBER, block.getSequenceNumber());
         values.put(TrustChainDBContract.BlockEntry.COLUMN_NAME_LINK_PUBLIC_KEY, Base64.encodeToString(block.getLinkPublicKey().toByteArray(), Base64.DEFAULT));
@@ -113,7 +127,7 @@ public class TrustChainDBHelper extends SQLiteOpenHelper {
         return db.replace(TrustChainDBContract.BlockEntry.TABLE_NAME, null, values);
     }
 
-    /**
+   /**
      * Retrieves the block associated with the given public key and sequence number from the database
      *
      * @param pubkey    - Public key of which the latest block should be found
@@ -297,6 +311,30 @@ public class TrustChainDBHelper extends SQLiteOpenHelper {
         return res;
     }
 
+    public int getBlockCount() {
+        SQLiteDatabase dbReadable = getReadableDatabase();
+        int res = -1;
+        String[] projection = new String[]{"count(" +
+                TrustChainDBContract.BlockEntry.COLUMN_NAME_SEQUENCE_NUMBER + ")"};
+
+        Cursor cursor = dbReadable.query(
+                TrustChainDBContract.BlockEntry.TABLE_NAME,
+                projection,
+                null,
+                null,
+                null,
+                null,
+                null
+        );
+        if (cursor.getCount() == 1) {
+            cursor.moveToFirst();
+            res = cursor.getInt(cursor.getColumnIndex(
+                    "count(" + TrustChainDBContract.BlockEntry.COLUMN_NAME_SEQUENCE_NUMBER + ")"));
+        }
+        cursor.close();
+        return res;
+    }
+
     /**
      * Retrieves all the blocks inserted in the database.
      *
@@ -396,8 +434,11 @@ public class TrustChainDBHelper extends SQLiteOpenHelper {
         MessageProto.TrustChainBlock.Builder builder = MessageProto.TrustChainBlock.newBuilder();
 
         while (cursor.moveToNext()) {
-            builder.setTransaction(Transaction.newBuilder().setUnformatted(ByteString.copyFromUtf8(cursor.getString(
-                    cursor.getColumnIndex(TrustChainDBContract.BlockEntry.COLUMN_NAME_TX)))).build())
+            builder.setTransaction(
+                        Transaction.newBuilder()
+                                .setUnformatted(ByteString.copyFrom(cursor.getBlob(cursor.getColumnIndex(TrustChainDBContract.BlockEntry.COLUMN_NAME_TX))))
+                                .setFormat(cursor.getString(cursor.getColumnIndex(TrustChainDBContract.BlockEntry.COLUMN_NAME_TX_FORMAT)))
+                                .build())
                     .setPublicKey(ByteString.copyFrom(Base64.decode(cursor.getString(
                             cursor.getColumnIndex(TrustChainDBContract.BlockEntry.COLUMN_NAME_PUBLIC_KEY)), Base64.DEFAULT)))
                     .setSequenceNumber(cursor.getInt(

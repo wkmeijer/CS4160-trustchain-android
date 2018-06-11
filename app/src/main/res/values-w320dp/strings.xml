@@ -1,0 +1,4 @@
+<resources>
+    <string name="last_received">R: </string>
+    <string name="last_sent">S: </string>
+</resources>

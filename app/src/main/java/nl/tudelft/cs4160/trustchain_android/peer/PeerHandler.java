@@ -1,4 +1,4 @@
-package nl.tudelft.cs4160.trustchain_android.network.peer;
+package nl.tudelft.cs4160.trustchain_android.peer;
 
 import android.os.Handler;
 import android.os.Looper;
@@ -9,25 +9,29 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import nl.tudelft.cs4160.trustchain_android.crypto.PublicKeyPair;
 import nl.tudelft.cs4160.trustchain_android.network.WanVote;
 
 public class PeerHandler {
     private ArrayList<Peer> peerList;
-    private List<Peer> incomingList = new ArrayList<>();
-    private List<Peer> outgoingList = new ArrayList<>();
+    private List<Peer> activePeersList = new ArrayList<>();
+    private List<Peer> newPeersList = new ArrayList<>();
     private PeerListener peerListener;
-    public String hashId;
+    public PublicKeyPair publicKeyPair;
+    String name;
     private WanVote wanVote;
-    final String TAG = this.getClass().toString();
+    private final String TAG = this.getClass().toString();
 
     /**
      * Peer handler constructor.
      *
-     * @param hashId
+     * @param publicKeyPair the public keys of this device
+     * @param name the username chosen for this device
      */
-    public PeerHandler(String hashId) {
+    public PeerHandler(PublicKeyPair publicKeyPair, String name) {
         this.peerList = new ArrayList<>();
-        this.hashId = hashId;
+        this.publicKeyPair = publicKeyPair;
+        this.name = name;
         this.wanVote = new WanVote();
     }
 
@@ -43,7 +47,7 @@ public class PeerHandler {
             Peer p1 = peerList.get(i);
             for (int j = 0; j < peerList.size(); j++) {
                 Peer p2 = peerList.get(j);
-                if (j != i && p1.getPeerId() != null && p1.getPeerId().equals(p2.getPeerId())) {
+                if (j != i && p1.getPublicKeyPair() != null && p1.getPublicKeyPair().equals(p2.getPublicKeyPair())) {
                     peerList.remove(p2);
                 }
             }
@@ -99,9 +103,9 @@ public class PeerHandler {
      * @return
      */
     public synchronized boolean peerExistsInList(Peer peer) {
-        if (peer.getPeerId() == null) return false;
+        if (peer.getPublicKeyPair() == null) return false;
         for (Peer p : this.peerList) {
-            if (peer.getPeerId().equals(p.getPeerId())) {
+            if (peer.getPublicKeyPair().equals(p.getPublicKeyPair())) {
                 return true;
             }
         }
@@ -109,14 +113,15 @@ public class PeerHandler {
     }
 
     /**
-     * Add a inboxItem to the peerlist.
+     * Add a peer to the peerlist.
      * Synchronized is to make sure this happens thread safe.
-     * @param peerId   the inboxItem's id.
-     * @param address  the inboxItem's address.
-     * @return the added inboxItem.
+     * @param address  the peer's address.
+     * @param peerPublicKeyPair the peer's public keys
+     * @param name   the peer's name.
+     * @return the added peer.
      */
-    public synchronized Peer addPeer(String peerId, InetSocketAddress address) {
-        if (hashId.equals(peerId)) {
+    public synchronized Peer addPeer(InetSocketAddress address, PublicKeyPair peerPublicKeyPair, String name) {
+        if (publicKeyPair.equals(peerPublicKeyPair)) {
             Log.i(TAG, "Not adding self");
             Peer self = null;
             for (Peer p : peerList) {
@@ -130,68 +135,75 @@ public class PeerHandler {
             return null;
         }
         if (wanVote.getAddress() != null && wanVote.getAddress().equals(address)) {
-            Log.i(TAG, "Not adding inboxItem with same address as wanVote");
+            Log.i(TAG, "Not adding peer with same address as this device");
             return null;
         }
         for (Peer peer : peerList) {
-            if (peer.getPeerId() != null && peer.getPeerId().equals(peerId)) return peer;
+            if (peer.getPublicKeyPair() != null && peer.getPublicKeyPair().equals(peerPublicKeyPair)) return peer;
             if (peer.getAddress().equals(address)) return peer;
         }
-        final Peer peer = new Peer(peerId, address);
+        final Peer peer = new Peer(address, peerPublicKeyPair, name);
 
         new Handler(Looper.getMainLooper()).post(new Runnable() {
             @Override
             public synchronized void run() {
                     peerList.add(peer);
                     splitPeerList();
-                    Log.i(TAG, "Added " + peer + " Peerlist now has size: " + peerList.size());
-                peerListener.updateIncomingPeers();
-                peerListener.updateOutgoingPeers();
+                peerListener.updateActivePeers();
+                peerListener.updateNewPeers();
             }
         });
         return peer;
     }
 
     /**
-     * Split the inboxItem list between incoming and outgoing peers.
+     * Split the peer list between connected and incoming peers.
      * Synchronized is to make sure this happens thread safe.
      */
     public synchronized void splitPeerList() {
+        List<Peer> newConnected = new ArrayList<>();
         List<Peer> newIncoming = new ArrayList<>();
-        List<Peer> newOutgoing = new ArrayList<>();
         for (Peer peer : peerList) {
-            if (peer.hasReceivedData()) {
-                newIncoming.add(peer);
+            if (peer.isReceivedFrom()) {
+                newConnected.add(peer);
             } else {
-                newOutgoing.add(peer);
+                newIncoming.add(peer);
             }
         }
-        if (!newIncoming.equals(incomingList)) {
-            incomingList.clear();
-            incomingList.addAll(newIncoming);
+        if (!newConnected.equals(activePeersList)) {
+            activePeersList.clear();
+            activePeersList.addAll(newConnected);
         }
-        if (!newOutgoing.equals(outgoingList)) {
-            outgoingList.clear();
-            outgoingList.addAll(newOutgoing);
+        if (!newIncoming.equals(newPeersList)) {
+            newPeersList.clear();
+            newPeersList.addAll(newIncoming);
         }
     }
 
 
     /**
      * Pick a random eligible inboxItem/invitee for sending an introduction request to.
+     * The bootstrap is always an eligible peer, even it is is timed out.
      * Synchronized is to make sure this happens thread safe.
-     * @param excludePeer inboxItem to which the invitee is sent.
+     * @param excludePeers a list of peers to exclude, can be null
      * @return the eligible inboxItem if any, else null.
      */
-    public synchronized Peer getEligiblePeer(Peer excludePeer) {
+    public synchronized Peer getEligiblePeer(List<Peer> excludePeers) {
         List<Peer> eligiblePeers = new ArrayList<>();
         for (Peer p : peerList) {
-            if (p.isAlive() && !p.equals(excludePeer)) {
+            boolean excluded = false;
+            for(Peer e : excludePeers) {
+                if(e.equals(p)) {
+                    excluded = true;
+                    break;
+                }
+            }
+            if (p.isAlive() && !excluded || p.isBootstrap()) {
                 eligiblePeers.add(p);
             }
         }
         if (eligiblePeers.size() == 0) {
-            Log.d(TAG, "No elegible peers!");
+            Log.d(TAG, "No eligible peers!");
             return null;
         }
         Random random = new Random();
@@ -199,19 +211,21 @@ public class PeerHandler {
     }
 
     /**
-     * Resolve a inboxItem id or address to a inboxItem, else create a new one.
+     * Resolve a public key or address to a peer, else create a new one.
      *
-     * @param id       the inboxItem's unique id.
-     * @param address  the inboxItem's address.
-     * @return the resolved or create inboxItem.
+     * @param address  the peer's address.
+     * @param publicKeyPair the peer's public keys
+     * @param name   the peer's name.
+     * @return the resolved or created peer.
      */
-    public synchronized Peer getOrMakePeer(String id, InetSocketAddress address) {
-        if (id != null) {
+    public synchronized Peer getOrMakePeer(InetSocketAddress address, PublicKeyPair publicKeyPair, String name) {
+        if (publicKeyPair != null) {
             for (Peer peer : peerList) {
-                if (id.equals(peer.getPeerId())) {
+                if (publicKeyPair.equals(peer.getPublicKeyPair())) {
                     if (!address.equals(peer.getAddress())) {
-                        Log.i(TAG, "Peer address differs from known address | address: " + address.toString() + " | peer.getAddress(): " + peer.getAddress().toString() + " | id: " + id + " | hashid: " + hashId);
+                        Log.i(TAG, "Peer address differs from known address | address: " + address.toString() + " | peer.getAddress(): " + peer.getAddress().toString() + " | peer's public keys: " + publicKeyPair + " | this device's public keys: " + this.publicKeyPair);
                         peer.setAddress(address);
+                        peer.setName(name);
                         removeDuplicates();
                     }
                     return peer;
@@ -220,27 +234,32 @@ public class PeerHandler {
         }
         for (Peer peer : peerList) {
             if (peer.getAddress().equals(address)) {
-                if (id != null) peer.setPeerId(id);
+                if (publicKeyPair != null) peer.setPublicKeyPair(publicKeyPair);
+                peer.setName(name);
                 return peer;
             }
         }
-        return addPeer(id, address);
+        return addPeer(address, publicKeyPair, name);
     }
 
-    public String getHashId() {
-        return hashId;
+    public PublicKeyPair getPublicKeyPair() {
+        return publicKeyPair;
+    }
+
+    public String getName() {
+        return name;
     }
 
     public WanVote getWanVote() {
         return wanVote;
     }
 
-    public List<Peer> getIncomingList() {
-        return incomingList;
+    public List<Peer> getactivePeersList() {
+        return activePeersList;
     }
 
-    public List<Peer> getOutgoingList() {
-        return outgoingList;
+    public List<Peer> getnewPeersList() {
+        return newPeersList;
     }
 
     /**

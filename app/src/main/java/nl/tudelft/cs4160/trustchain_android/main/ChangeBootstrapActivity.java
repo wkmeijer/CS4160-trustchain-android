@@ -15,14 +15,14 @@ import java.net.InetAddress;
 import nl.tudelft.cs4160.trustchain_android.R;
 import nl.tudelft.cs4160.trustchain_android.storage.sharedpreferences.BootstrapIPStorage;
 
-public class BootstrapActivity extends AppCompatActivity {
+public class ChangeBootstrapActivity extends AppCompatActivity {
     private EditText bootstrapView;
     private final String TAG = this.getClass().getName();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_bootstrap);
+        setContentView(R.layout.activity_change_bootstrap);
     }
 
     /**
@@ -33,6 +33,9 @@ public class BootstrapActivity extends AppCompatActivity {
     public void onClickConnect(View view) {
         bootstrapView = findViewById(R.id.bootstrap_IP);
         try{
+            if(bootstrapView.getText().toString().equals("")) {
+                throw new Exception("Bootstrap IP was empty");
+            }
             Object res = InetAddress.getByName(bootstrapView.getText().toString());
             if(!(res instanceof Inet4Address) && !(res instanceof Inet6Address)){
                 Log.i(TAG, res.toString());

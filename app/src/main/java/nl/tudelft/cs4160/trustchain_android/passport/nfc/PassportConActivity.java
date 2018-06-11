@@ -13,14 +13,11 @@ import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import com.google.gson.Gson;
 
 import org.jmrtd.PassportService;
 
@@ -29,12 +26,14 @@ import java.security.PublicKey;
 import java.security.Security;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.UUID;
 
 import nl.tudelft.cs4160.trustchain_android.R;
 import nl.tudelft.cs4160.trustchain_android.passport.DocumentData;
 import nl.tudelft.cs4160.trustchain_android.passport.PassportHolder;
 import nl.tudelft.cs4160.trustchain_android.passport.ocr.ManualInputActivity;
-import nl.tudelft.cs4160.trustchain_android.passport.ocr.util.Util;
+import nl.tudelft.cs4160.trustchain_android.util.ByteArrayConverter;
+import nl.tudelft.cs4160.trustchain_android.util.Util;
 
 public class PassportConActivity extends AppCompatActivity {
 
@@ -51,6 +50,7 @@ public class PassportConActivity extends AppCompatActivity {
     private ImageView progressView;
     private EditText dataToSignField;
     private PassportConActivity thisActivity;
+    private TextView resultText;
 
     /**
      * This activity usually be loaded from the starting screen of the app.
@@ -68,7 +68,10 @@ public class PassportConActivity extends AppCompatActivity {
 
         TextView notice = (TextView) findViewById(R.id.notice);
         progressView = (ImageView) findViewById(R.id.progress_view);
+        resultText = (TextView) findViewById(R.id.result_data);
         dataToSignField = (EditText) findViewById(R.id.data_to_sign);
+        dataToSignField.setText(UUID.randomUUID().toString().substring(0, MAX_SIGN_BYTES));
+
 
         dataToSignField.addTextChangedListener(new TextWatcher() {
             @Override
@@ -153,7 +156,7 @@ public class PassportConActivity extends AppCompatActivity {
     }
 
     /**
-     * @param activity The corresponding {@link BaseActivity} requesting to stop the foreground dispatch.
+     * @param activity The corresponding {@link Activity} requesting to stop the foreground dispatch.
      * @param adapter The {@link NfcAdapter} used for the foreground dispatch.
      */
     public static void stopForegroundDispatch(final Activity activity, NfcAdapter adapter) {
@@ -189,34 +192,22 @@ public class PassportConActivity extends AppCompatActivity {
                 byte[] bytesToSign = dataToSign.getBytes();
                 // Get public key from dg15
                 PublicKey pubKey = pcon.getAAPublicKey(ps);
+                PassportHolder personalInfo = pcon.getPassportHolder(ps);
 
-                // Get voter information from dg1
-//                Voter voter = pcon.getVoter(ps);
                 Log.d(TAG, "Public key: " + pubKey);
 
                 progressView.setImageResource(R.drawable.nfc_icon_2);
 
                 Log.d(TAG, "Signing data: " + dataToSign);
-                Log.d(TAG, "Signing bytes: " + bytesToSign);
 
                 byte[] signed = pcon.signData(bytesToSign);
 
-                Log.d(TAG, "Signed: " + signed);
-                Toast.makeText(this, "Response: " + Util.byteArrayToHexString(signed), Toast.LENGTH_LONG).show();
+                Log.d(TAG, "Signed: " + new String(signed, StandardCharsets.UTF_8));
+                Toast.makeText(this, "Response: " + ByteArrayConverter.bytesToHexString(signed), Toast.LENGTH_LONG).show();
 
-//                SharedPreferences sharedPrefs = getSharedPreferences(getString(R.string.shared_preferences_file), Context.MODE_PRIVATE);
-                Gson gson = new Gson();
-//                String json = sharedPrefs.getString(getString(R.string.shared_preferences_key_election), "");
-//                Election election = gson.fromJson(json, Election.class);
-//
-//                BlockChain bc = BlockChain.getInstance(null);
-//                AssetBalance balance = bc.getVotingPassBalance(pubKey, election.getAsset());
-//
-//                ArrayList<byte[]> signedTransactions = bc.getSpendUtxoTransactions(pubKey, balance, pcon);
                 progressView.setImageResource(R.drawable.nfc_icon_3);
 
-                // when all data is loaded start ResultActivity
-//                startResultActivity(pubKey, signedTransactions, voter);
+                resultText.setText("Hello, " + personalInfo.getFirstName() + " " + personalInfo.getLastName());
             } catch (Exception ex) {
                 handleConnectionFailed(ex);
             } finally {

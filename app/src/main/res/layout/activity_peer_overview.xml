@@ -3,13 +3,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="10dp"
     android:id="@+id/myCoordinatorLayout"
     tools:context="nl.tudelft.cs4160.trustchain_android.peersummary.PeerSummaryActivity">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:padding="10dp"
         android:orientation="vertical">
 
         <LinearLayout
@@ -83,6 +83,35 @@
                 android:visibility="gone"
                 android:layout_height="wrap_content" />
         </android.widget.ScrollView>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <Button
+                style="@style/Widget.AppCompat.Button.Colored"
+                android:layout_width="wrap_content"
+                android:layout_height="35dp"
+                android:background="@color/colorPrimary"
+                android:onClick="onClickChooseFile"
+                android:paddingEnd="10dp"
+                android:paddingStart="10dp"
+                android:layout_marginStart="5dp"
+                android:text="Send Document" />
+
+            <TextView
+                android:id="@+id/selected_path"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:singleLine="true"
+                android:ellipsize="start"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
+                android:text="@string/no_file_selected"
+                />
+
+        </LinearLayout>
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/mutualBlocksRecyclerView"

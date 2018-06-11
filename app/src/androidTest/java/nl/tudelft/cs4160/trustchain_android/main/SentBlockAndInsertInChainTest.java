@@ -88,20 +88,13 @@ public class SentBlockAndInsertInChainTest {
         appCompatButton2.perform(click());
 
         ViewInteraction appCompatButton3 = onView(
-                allOf(withId(R.id.userButton), withText("+ Find new users"),
-                        childAtPosition(
-                                allOf(withId(R.id.wrapperLinearLayout),
-                                        childAtPosition(
-                                                withId(R.id.my_recycler_view),
-                                                0)),
-                                0),
-                        isDisplayed()));
+                withId(R.id.userButton));
         appCompatButton3.perform(click());
 
         ViewInteraction tableLayout = onView(
                 allOf(withId(R.id.tableLayoutConnection),
                         childAtPosition(
-                                withParent(withId(R.id.incoming_peer_connection_list_view)),
+                                withParent(withId(R.id.new_peers_list_view)),
                                 1),
                         isDisplayed()));
         tableLayout.perform(click());
@@ -123,54 +116,20 @@ public class SentBlockAndInsertInChainTest {
                                 0)));
         recyclerView.perform(actionOnItemAtPosition(0, click()));
 
-        ViewInteraction appCompatEditText2 = onView(
-                allOf(withId(R.id.message_edit_text),
-                        childAtPosition(
-                                childAtPosition(
-                                        withClassName(is("android.widget.LinearLayout")),
-                                        2),
-                                0),
-                        isDisplayed()));
+        ViewInteraction appCompatEditText2 = onView(withId(R.id.message_edit_text));
         appCompatEditText2.perform(click());
 
         ViewInteraction appCompatEditText3 = onView(
-                allOf(withId(R.id.message_edit_text),
-                        childAtPosition(
-                                childAtPosition(
-                                        withClassName(is("android.widget.LinearLayout")),
-                                        2),
-                                0),
-                        isDisplayed()));
+                withId(R.id.message_edit_text));
         appCompatEditText3.perform(click());
 
-        ViewInteraction appCompatEditText4 = onView(
-                allOf(withId(R.id.message_edit_text),
-                        childAtPosition(
-                                childAtPosition(
-                                        withClassName(is("android.widget.LinearLayout")),
-                                        2),
-                                0),
-                        isDisplayed()));
+        ViewInteraction appCompatEditText4 = onView(withId(R.id.message_edit_text));
         appCompatEditText4.perform(replaceText("hey"), closeSoftKeyboard());
 
-        ViewInteraction appCompatButton5 = onView(
-                allOf(withId(R.id.send_button), withText("Send"),
-                        childAtPosition(
-                                childAtPosition(
-                                        withClassName(is("android.widget.LinearLayout")),
-                                        2),
-                                1),
-                        isDisplayed()));
+        ViewInteraction appCompatButton5 = onView(withId(R.id.send_button));
         appCompatButton5.perform(click());
 
-        ViewInteraction appCompatButton6 = onView(
-                allOf(withId(R.id.view_chain_button), withText("View Chain"),
-                        childAtPosition(
-                                childAtPosition(
-                                        withClassName(is("android.widget.LinearLayout")),
-                                        1),
-                                0),
-                        isDisplayed()));
+        ViewInteraction appCompatButton6 = onView(withId(R.id.view_chain_button));
         appCompatButton6.perform(click());
 
         ViewInteraction linearLayout = onView(

@@ -4,6 +4,8 @@ import android.content.Context;
 import android.util.Base64;
 import android.util.Log;
 
+import java.net.InetSocketAddress;
+
 import nl.tudelft.cs4160.trustchain_android.crypto.PublicKeyPair;
 
 /**
@@ -21,13 +23,14 @@ public class PubKeyAndAddressPairStorage {
      * @param pubKeyPair
      * @param address
      */
-    public static void addPubkeyAndAddressPair(Context context, PublicKeyPair pubKeyPair, String address) {
+    public static void addPubkeyAndAddressPair(Context context, PublicKeyPair pubKeyPair, InetSocketAddress address) {
         if(pubKeyPair == null || address == null) {
             return;
         }
-        Log.i(TAG, "add " + address + " - " + pubKeyPair.toString());
-        SharedPreferencesStorage.writeSharedPreferences(context, PUBKEY_KEY_PREFIX + Base64.encodeToString(pubKeyPair.toBytes(), Base64.DEFAULT), address);
-        SharedPreferencesStorage.writeSharedPreferences(context, ADDRESS_KEY_PREFIX + address, Base64.encodeToString(pubKeyPair.toBytes(), Base64.DEFAULT));
+        String ipAddress = address.getAddress().toString().replace("/", "") + ":" + address.getPort();
+        Log.i(TAG, "add " + ipAddress + " - " + pubKeyPair.toString());
+        SharedPreferencesStorage.writeSharedPreferences(context, PUBKEY_KEY_PREFIX + Base64.encodeToString(pubKeyPair.toBytes(), Base64.DEFAULT), ipAddress);
+        SharedPreferencesStorage.writeSharedPreferences(context, ADDRESS_KEY_PREFIX + ipAddress, Base64.encodeToString(pubKeyPair.toBytes(), Base64.DEFAULT));
     }
 
     /**
@@ -37,7 +40,7 @@ public class PubKeyAndAddressPairStorage {
      * @return
      */
     public static String getAddressByPubkey(Context context, PublicKeyPair pubKeyPair) {
-        Log.i(TAG, "get address of: " + pubKeyPair.toString());
+        Log.d(TAG, "get address of: " + pubKeyPair.toString());
         return SharedPreferencesStorage.readSharedPreferences(context, PUBKEY_KEY_PREFIX + Base64.encodeToString(pubKeyPair.toBytes(), Base64.DEFAULT));
     }
 
@@ -50,6 +53,9 @@ public class PubKeyAndAddressPairStorage {
     public static PublicKeyPair getPubKeyByAddress(Context context, String address) {
         Log.i(TAG, "get key of: " + address);
         String pubKeyPair = SharedPreferencesStorage.readSharedPreferences(context, ADDRESS_KEY_PREFIX + address);
+        if(pubKeyPair == null) {
+            return null;
+        }
         return new PublicKeyPair(Base64.decode(pubKeyPair, Base64.DEFAULT));
     }
 }

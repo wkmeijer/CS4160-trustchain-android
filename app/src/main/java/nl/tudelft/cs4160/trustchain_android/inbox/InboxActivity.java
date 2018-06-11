@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 import nl.tudelft.cs4160.trustchain_android.R;
-import nl.tudelft.cs4160.trustchain_android.network.peer.Peer;
+import nl.tudelft.cs4160.trustchain_android.peer.Peer;
 import nl.tudelft.cs4160.trustchain_android.storage.sharedpreferences.InboxItemStorage;
 
 public class InboxActivity extends AppCompatActivity  {
@@ -44,16 +44,13 @@ public class InboxActivity extends AppCompatActivity  {
     synchronized private void getInboxItems() {
         final Context currContext = this;
 
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                inboxItems = new ArrayList<>();
-                inboxItems = InboxItemStorage.getInboxItems(currContext);
-                Collections.reverse(inboxItems);
-                mAdapter = new InboxAdapter(inboxItems);
-                ((InboxAdapter) mAdapter).setPeerList(peerList);
-                mRecyclerView.setAdapter(mAdapter);
-            }
+        runOnUiThread(() -> {
+            inboxItems = new ArrayList<>();
+            inboxItems = InboxItemStorage.getInboxItems(currContext);
+            Collections.reverse(inboxItems);
+            mAdapter = new InboxAdapter(inboxItems);
+            ((InboxAdapter) mAdapter).setPeerList(peerList);
+            mRecyclerView.setAdapter(mAdapter);
         });
     }
 
@@ -65,7 +62,7 @@ public class InboxActivity extends AppCompatActivity  {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.inbox_menu, menu);
+        inflater.inflate(R.menu.menu_inbox, menu);
         return true;
     }
 
