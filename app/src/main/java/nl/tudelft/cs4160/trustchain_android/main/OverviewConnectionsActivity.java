@@ -21,6 +21,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.io.IOException;
 import java.lang.ref.WeakReference;
@@ -536,5 +537,16 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
     @Override
     public PeerHandler getPeerHandler() {
         return peerHandler;
+    }
+
+
+    @Override
+    public void onTrimMemory(int level) {
+        super.onTrimMemory(level);
+        if (level == TRIM_MEMORY_UI_HIDDEN) {
+            Toast.makeText(this,
+                    "The app is still running in background and consuming data", Toast.LENGTH_SHORT).show();
+
+        }
     }
 }
