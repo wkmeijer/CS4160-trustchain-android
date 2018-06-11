@@ -69,9 +69,9 @@ public class MutualBlockAdapter extends RecyclerView.Adapter<MutualBlockAdapter.
                 DualSecret keyPair = Key.loadKeys(activity);
                 PublicKeyPair myPublicKey = keyPair.getPublicKeyPair();
                 for (MessageProto.TrustChainBlock block : dbHelper.getBlocks(keyPair.getPublicKeyPair().toBytes(), true)) {
-                    PublicKeyPair linkedPublicKey = new PublicKeyPair(block.getLinkPublicKey().toByteArray());
-                    PublicKeyPair publicKey = new PublicKeyPair(block.getPublicKey().toByteArray());
-                    if (linkedPublicKey.equals(myPublicKey) && publicKey.equals(peerPublicKey)) {
+                    byte[] linkedPublicKey = block.getLinkPublicKey().toByteArray();
+                    byte[] publicKey = block.getPublicKey().toByteArray();
+                    if (Arrays.equals(linkedPublicKey,myPublicKey.toBytes()) && Arrays.equals(publicKey,peerPublicKey.toBytes())) {
                         int validationResultStatus;
                         try {
                             validationResultStatus = TrustChainBlockHelper.validate(block, dbHelper).getStatus();

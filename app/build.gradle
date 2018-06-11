@@ -33,8 +33,8 @@ android {
         exclude '**/MessageProto.java'
     }
     compileOptions {
-        targetCompatibility 1.8
-        sourceCompatibility 1.8
+        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_1_8
     }
 }
 
@@ -59,13 +59,8 @@ dependencies {
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'junit:junit:4.12'
     testImplementation 'org.mockito:mockito-core:2.7.22'
-
     androidTestImplementation 'com.github.joshjdevl.libsodiumjni:libsodium-jni-aar:1.0.7'
     implementation 'com.github.joshjdevl.libsodiumjni:libsodium-jni-aar:1.0.7'
-
-
-
-
     androidTestImplementation 'org.mockito:mockito-android:2.7.22'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
     androidTestImplementation 'com.android.support.test.espresso:espresso-intents:3.0.1'
