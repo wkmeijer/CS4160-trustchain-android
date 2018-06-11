@@ -227,8 +227,8 @@ public class PeerHandler {
                         Log.i(TAG, "Peer address differs from known address | address: " + address.toString() + " | peer.getAddress(): " + peer.getAddress().toString() + " | peer's public keys: " + publicKeyPair + " | this device's public keys: " + this.publicKeyPair);
                         peer.setAddress(address);
                         peer.setName(name);
-                        removeDuplicates();
                     }
+                    removeDuplicates();
                     return peer;
                 }
             }
