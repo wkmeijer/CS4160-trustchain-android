@@ -21,6 +21,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.io.IOException;
 import java.lang.ref.WeakReference;
@@ -536,5 +537,22 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
     @Override
     public PeerHandler getPeerHandler() {
         return peerHandler;
+    }
+
+
+    /**
+     * Show a toast when the user presses the home button. Since this activity is always running,
+     * it is not necessary to add this function to other activities. Source:
+     * http://www.developerphil.com/no-you-can-not-override-the-home-button-but-you-dont-have-to/
+     * @param level
+     */
+    @Override
+    public void onTrimMemory(int level) {
+        super.onTrimMemory(level);
+        if (level == TRIM_MEMORY_UI_HIDDEN) {
+            Toast.makeText(this,
+                    getString(R.string.toast_app_running), Toast.LENGTH_LONG).show();
+
+        }
     }
 }

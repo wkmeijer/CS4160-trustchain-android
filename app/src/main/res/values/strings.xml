@@ -19,6 +19,7 @@
     <string name="snackbar_peer_added">%s added to inbox</string>
     <string name="snackbar_no_pub_key">This peer didn\'t send a public key yet</string>
     <string name="snackbar_peer_inactive">This peer is currently not active</string>
+    <string name="toast_app_running">The app is still running in background and consuming data</string>
 
     <!-- Trustchain -->
     <string name="title_activity_key">Key management</string>
