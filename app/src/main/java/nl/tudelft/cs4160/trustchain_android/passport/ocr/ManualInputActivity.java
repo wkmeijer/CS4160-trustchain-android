@@ -45,10 +45,9 @@ public class ManualInputActivity extends AppCompatActivity {
         final Activity thisActivity = this;
         submitBut.setOnClickListener(view -> {
             if(verifyInput()) {
-                Intent returnIntent = new Intent(thisActivity, PassportConActivity.class);
-                returnIntent.putExtra(DocumentData.identifier, getData());
-                setResult(Activity.RESULT_OK, returnIntent);
-                startActivity(returnIntent);
+                Intent intent = new Intent(thisActivity, PassportConActivity.class);
+                intent.putExtra(DocumentData.identifier, getData());
+                startActivity(intent);
             }
         });
         setupDOBSpinners();

@@ -37,7 +37,6 @@ import nl.tudelft.cs4160.trustchain_android.util.Util;
 
 public class PassportConActivity extends AppCompatActivity {
 
-    private static final int GET_DOC_INFO = 1;
     private static final String TAG = PassportConActivity.class.getName();
     public static final int MAX_SIGN_BYTES = 8;
 
@@ -66,10 +65,10 @@ public class PassportConActivity extends AppCompatActivity {
         documentData = (DocumentData) extras.get(DocumentData.identifier);
         thisActivity = this;
 
-        TextView notice = (TextView) findViewById(R.id.notice);
-        progressView = (ImageView) findViewById(R.id.progress_view);
-        resultText = (TextView) findViewById(R.id.result_data);
-        dataToSignField = (EditText) findViewById(R.id.data_to_sign);
+        TextView notice = findViewById(R.id.notice);
+        progressView = findViewById(R.id.progress_view);
+        resultText = findViewById(R.id.result_data);
+        dataToSignField = findViewById(R.id.data_to_sign);
         dataToSignField.setText(UUID.randomUUID().toString().substring(0, MAX_SIGN_BYTES));
 
 
@@ -239,27 +238,6 @@ public class PassportConActivity extends AppCompatActivity {
         }
     }
 
-    /**
-     * Method to start the ResultActivity once all the data is loaded.
-     * Creates new intent with the read data
-     * @param pubKey The public key.
-     * @param signedTransactions Signed data.
-     * @param holder The PassportHolder.
-     */
-    public void startResultActivity(PublicKey pubKey, ArrayList<byte[]> signedTransactions, PassportHolder holder) {
-        if(pubKey != null && signedTransactions != null) {
-
-//            Intent intent = new Intent(getApplica
-//            intent.putExtra("signedTransactions",tionContext(), ResultActivity.class);
-////            intent.putExtra("voter", voter);
-//            intent.putExtra("pubKey", pubKey); signedTransactions);
-//            startActivity(intent);
-            finish();
-        } else {
-            Toast.makeText(this, getString(R.string.NFC_error), Toast.LENGTH_LONG).show();
-            progressView.setImageResource(R.drawable.nfc_icon_empty);
-        }
-    }
 
     /**
      * Check if NFC is enabled and display error message when it is not.
@@ -276,11 +254,8 @@ public class PassportConActivity extends AppCompatActivity {
         // Display a notice that NFC is disabled and provide user with option to turn on NFC
         if (!mNfcAdapter.isEnabled()) {
             // Add listener for action in snackbar
-            View.OnClickListener nfcSnackbarListener = new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    thisActivity.startActivity(new Intent(Settings.ACTION_NFC_SETTINGS));
-                }
+            View.OnClickListener nfcSnackbarListener = v -> {
+                thisActivity.startActivity(new Intent(Settings.ACTION_NFC_SETTINGS));
             };
 
             Snackbar nfcDisabledSnackbar = Snackbar.make(findViewById(R.id.coordinator_layout),
@@ -296,32 +271,15 @@ public class PassportConActivity extends AppCompatActivity {
      */
     public void displayCheckInputSnackbar() {
         // Add listener for action in snackbar
-        View.OnClickListener inputSnackbarListener = new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(thisActivity, ManualInputActivity.class);
-                intent.putExtra(DocumentData.identifier, documentData);
-                startActivityForResult(intent, GET_DOC_INFO);
-            }
+        View.OnClickListener inputSnackbarListener = v -> {
+            Intent intent = new Intent(thisActivity, ManualInputActivity.class);
+            intent.putExtra(DocumentData.identifier, documentData);
+            startActivity(intent);
         };
 
         Snackbar inputSnackbar = Snackbar.make(findViewById(R.id.coordinator_layout),
                 R.string.wrong_document_details, Snackbar.LENGTH_INDEFINITE);
         inputSnackbar.setAction(R.string.check_input, inputSnackbarListener);
         inputSnackbar.show();
-    }
-
-    /**
-     * Update the documentdata in this activity and in the main activity.
-     * @param requestCode requestCode
-     * @param resultCode resultCode
-     * @param data The data
-     */
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == GET_DOC_INFO && resultCode == RESULT_OK) {
-            documentData = (DocumentData) data.getExtras().get(DocumentData.identifier);
-        }
     }
 }
