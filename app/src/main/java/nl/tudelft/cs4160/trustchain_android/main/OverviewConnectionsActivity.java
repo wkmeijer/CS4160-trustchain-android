@@ -57,6 +57,7 @@ import nl.tudelft.cs4160.trustchain_android.storage.database.TrustChainDBHelper;
 import nl.tudelft.cs4160.trustchain_android.storage.sharedpreferences.BootstrapIPStorage;
 import nl.tudelft.cs4160.trustchain_android.storage.sharedpreferences.SharedPreferencesStorage;
 import nl.tudelft.cs4160.trustchain_android.storage.sharedpreferences.UserNameStorage;
+import nl.tudelft.cs4160.trustchain_android.util.RequestCode;
 
 import static nl.tudelft.cs4160.trustchain_android.main.UserConfigurationActivity.*;
 
@@ -203,11 +204,11 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
                 return true;
             case R.id.find_peer:
                 Intent bootstrapActivity = new Intent(this, ChangeBootstrapActivity.class);
-                startActivityForResult(bootstrapActivity, 1);
+                startActivityForResult(bootstrapActivity, RequestCode.CHANGE_BOOTSTRAP);
                 return true;
             case R.id.passport_scan:
                 Intent cameraActivity = new Intent(this, CameraActivity.class);
-                startActivityForResult(cameraActivity, 1);
+                startActivity(cameraActivity);
                 return true;
             default:
                 return false;
@@ -259,16 +260,13 @@ public class OverviewConnectionsActivity extends AppCompatActivity implements Ne
      */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == 1) {
-            if (resultCode == Activity.RESULT_OK) {
-                SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
-                SharedPreferences.Editor editor = preferences.edit();
-                editor.putString("ConnectableAddress", data.getStringExtra("ConnectableAddress"));
-                editor.apply();
-                String newBootstrap = BootstrapIPStorage.getIP(this);
-                CONNECTABLE_ADDRESS = newBootstrap;
-                addInitialPeer();
-            }
+        if (requestCode == RequestCode.CHANGE_BOOTSTRAP && resultCode == Activity.RESULT_OK) {
+            SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+            SharedPreferences.Editor editor = preferences.edit();
+            editor.putString("ConnectableAddress", data.getStringExtra("ConnectableAddress"));
+            editor.apply();
+            CONNECTABLE_ADDRESS = BootstrapIPStorage.getIP(this);
+            addInitialPeer();
         }
     }
 

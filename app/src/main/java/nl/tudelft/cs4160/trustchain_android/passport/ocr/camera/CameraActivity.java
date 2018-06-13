@@ -41,22 +41,6 @@ public class CameraActivity extends Activity {
         }
     }
 
-    /**
-     * Pass data from ManualInputActivity to the MainActivity.
-     * @param requestCode requestCode
-     * @param resultCode resultCode
-     * @param data The data
-     */
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == GET_DOC_INFO && resultCode == RESULT_OK) {
-            setResult(Activity.RESULT_OK, data);
-            //Clear this activity
-            Intent i = new Intent(this, PassportConActivity.class);
-            startActivity(i);
-        }
-    }
 
     /**
      * Hack: receives permission callback from fragment if API level < 23.
