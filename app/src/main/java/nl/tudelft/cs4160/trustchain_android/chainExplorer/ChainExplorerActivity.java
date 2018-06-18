@@ -23,13 +23,13 @@ import java.util.Arrays;
 import java.util.List;
 
 import nl.tudelft.cs4160.trustchain_android.R;
-import nl.tudelft.cs4160.trustchain_android.SharedPreferences.UserNameStorage;
-import nl.tudelft.cs4160.trustchain_android.Util.ByteArrayConverter;
 import nl.tudelft.cs4160.trustchain_android.crypto.DualSecret;
 import nl.tudelft.cs4160.trustchain_android.crypto.Key;
-import nl.tudelft.cs4160.trustchain_android.database.TrustChainDBHelper;
-import nl.tudelft.cs4160.trustchain_android.main.ChainExplorerInfoActivity;
+import nl.tudelft.cs4160.trustchain_android.crypto.PublicKeyPair;
 import nl.tudelft.cs4160.trustchain_android.message.MessageProto;
+import nl.tudelft.cs4160.trustchain_android.storage.database.TrustChainDBHelper;
+import nl.tudelft.cs4160.trustchain_android.storage.sharedpreferences.UserNameStorage;
+import nl.tudelft.cs4160.trustchain_android.util.ByteArrayConverter;
 
 import static android.view.Gravity.CENTER;
 
@@ -76,7 +76,7 @@ public class ChainExplorerActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.chainexplorer_menu, menu);
+        inflater.inflate(R.menu.menu_chainexplorer, menu);
         return true;
     }
 
@@ -91,7 +91,7 @@ public class ChainExplorerActivity extends AppCompatActivity {
         }
     }
 
-    private byte[] retrievePublicKey() {
+    private byte[] retrievePublicKeyPair() {
         if (getIntent().hasExtra(BUNDLE_EXTRAS_PUBLIC_KEY )) {
             return getIntent().getByteArrayExtra(BUNDLE_EXTRAS_PUBLIC_KEY);
         }
@@ -103,21 +103,25 @@ public class ChainExplorerActivity extends AppCompatActivity {
      */
     private void init() {
         dbHelper = new TrustChainDBHelper(this);
-        byte[] publicKey = retrievePublicKey();
-        Log.i(TAG, "Using " + Arrays.toString(publicKey) + " as public key");
+        byte[] publicKeyPair = retrievePublicKeyPair();
+        Log.i(TAG, "Using " + Arrays.toString(publicKeyPair) + " as public keypair");
         try {
-            List<MessageProto.TrustChainBlock> blocks = dbHelper.getBlocks(publicKey, true);
+            List<MessageProto.TrustChainBlock> blocks = dbHelper.getBlocks(publicKeyPair, true);
             if(blocks.size() > 0) {
-                String ownPubKey = ByteArrayConverter.byteStringToString(blocks.get(0).getPublicKey());
-                String firstPubKey = ByteArrayConverter.byteStringToString(ByteString.copyFrom(publicKey));
-                if (ownPubKey.equals(firstPubKey)){
+                byte[] ownPubKey = kp.getPublicKeyPair().toBytes();
+                byte[] firstPubKey = blocks.get(0).getPublicKey().toByteArray();
+                if (Arrays.equals(ownPubKey,firstPubKey)){
                     this.setTitle(TITLE);
                 } else {
-                    this.setTitle("Chain of " + UserNameStorage.getPeerByPublicKey(this,
-                            ByteArrayConverter.byteStringToString(blocks.get(0).getPublicKey())));
+                    String username = UserNameStorage.getPeerByPublicKey(this,
+                            new PublicKeyPair(blocks.get(0).getPublicKey().toByteArray()));
+                    if(username == null) {
+                        username = "unknown peer";
+                    }
+                    this.setTitle("Chain of " + username);
                 }
                 adapter = new ChainExplorerAdapter(this, blocks,
-                        kp.getPublicKeyPair().toBytes(), publicKey);
+                        kp.getPublicKeyPair().toBytes(), publicKeyPair);
                 blocksList.setAdapter(adapter);
             } else{
                 // ToDo display empty chain
@@ -126,28 +130,25 @@ public class ChainExplorerActivity extends AppCompatActivity {
             e.printStackTrace();
         }
 
-        blocksList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                LinearLayout expandedItem = view.findViewById(R.id.expanded_item);
-                ImageView expandArrow = view.findViewById(R.id.expand_arrow);
+        blocksList.setOnItemClickListener((parent, view, position, id) -> {
+            LinearLayout expandedItem = view.findViewById(R.id.expanded_item);
+            ImageView expandArrow = view.findViewById(R.id.expand_arrow);
 
-                // Expand the item when it is clicked
-                if (expandedItem.getVisibility() == View.GONE) {
-                    expandedItem.setVisibility(View.VISIBLE);
-                    Log.v(TAG, "Item height: " + expandedItem.getHeight());
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                        expandArrow.setImageDrawable(getDrawable(R.drawable.ic_expand_less_black_24dp));
-                    } else {
-                        expandArrow.setImageDrawable(getResources().getDrawable(R.drawable.ic_expand_less_black_24dp));
-                    }
+            // Expand the item when it is clicked
+            if (expandedItem.getVisibility() == View.GONE) {
+                expandedItem.setVisibility(View.VISIBLE);
+                Log.v(TAG, "Item height: " + expandedItem.getHeight());
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    expandArrow.setImageDrawable(getDrawable(R.drawable.ic_expand_less_black_24dp));
                 } else {
-                    expandedItem.setVisibility(View.GONE);
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                        expandArrow.setImageDrawable(getDrawable(R.drawable.ic_expand_more_black_24dp));
-                    } else {
-                        expandArrow.setImageDrawable(getResources().getDrawable(R.drawable.ic_expand_more_black_24dp));
-                    }
+                    expandArrow.setImageDrawable(getResources().getDrawable(R.drawable.ic_expand_less_black_24dp));
+                }
+            } else {
+                expandedItem.setVisibility(View.GONE);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    expandArrow.setImageDrawable(getDrawable(R.drawable.ic_expand_more_black_24dp));
+                } else {
+                    expandArrow.setImageDrawable(getResources().getDrawable(R.drawable.ic_expand_more_black_24dp));
                 }
             }
         });

@@ -1,15 +1,14 @@
 apply plugin: 'com.android.application'
-apply plugin: 'jacoco-android'
 
 android {
     compileSdkVersion 26
-    buildToolsVersion '26.0.2'
+    buildToolsVersion '27.0.3'
     defaultConfig {
         applicationId "nl.tudelft.cs4160.trustchain_android"
         minSdkVersion 21
         targetSdkVersion 26
-        versionCode 6
-        versionName "0.26"
+        versionCode 14
+        versionName "0.304"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
     }
@@ -18,9 +17,6 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-        }
-        debug {
-            testCoverageEnabled = true
         }
     }
 
@@ -36,8 +32,11 @@ android {
     packagingOptions {
         exclude '**/MessageProto.java'
     }
+    compileOptions {
+        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_1_8
+    }
 }
-
 
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
@@ -49,16 +48,23 @@ dependencies {
     implementation 'me.dm7.barcodescanner:zxing:1.9.8'
     implementation 'com.android.support:design:26.1.0'
     implementation 'com.squareup.moshi:moshi:1.5.0'
-    implementation 'com.github.joshjdevl.libsodiumjni:libsodium-jni-aar:1.0.7'
     implementation 'com.android.support.constraint:constraint-layout:1.0.2'
     implementation 'com.google.code.gson:gson:2.8.2'
-    implementation 'com.android.support:multidex:1.0.2'
+    implementation 'com.rmtheis:tess-two:9.0.0'
+    implementation 'org.jmrtd:jmrtd:0.5.5'
+    implementation 'com.madgag.spongycastle:core:1.54.0.0'
+    implementation 'com.madgag.spongycastle:prov:1.54.0.0'
+    implementation 'net.sf.scuba:scuba-sc-android:0.0.9'
+    implementation 'com.android.support:multidex:1.0.3'
     testImplementation 'junit:junit:4.12'
+    androidTestImplementation 'junit:junit:4.12'
     testImplementation 'org.mockito:mockito-core:2.7.22'
+    androidTestImplementation 'com.github.joshjdevl.libsodiumjni:libsodium-jni-aar:1.0.7'
+    implementation 'com.github.joshjdevl.libsodiumjni:libsodium-jni-aar:1.0.7'
     androidTestImplementation 'org.mockito:mockito-android:2.7.22'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
     androidTestImplementation 'com.android.support.test.espresso:espresso-intents:3.0.1'
-    androidTestCompile 'com.android.support.test.espresso:espresso-contrib:2.2.2', {
+    androidTestImplementation 'com.android.support.test.espresso:espresso-contrib:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
         exclude group: 'com.android.support', module: 'support-v4'
         exclude group: 'com.android.support', module: 'design'

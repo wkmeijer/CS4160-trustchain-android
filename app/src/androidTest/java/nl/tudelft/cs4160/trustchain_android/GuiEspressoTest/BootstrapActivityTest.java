@@ -4,11 +4,8 @@ import android.support.test.rule.ActivityTestRule;
 
 import org.junit.Rule;
 
-import nl.tudelft.cs4160.trustchain_android.main.BootstrapActivity;
+import nl.tudelft.cs4160.trustchain_android.main.ChangeBootstrapActivity;
 
-<<<<<<<HEAD
-        =======
-        >>>>>>>29aa341a74003f041d63668cec12d1f42177436b
 
 /**
  * Created by Laurens on 12/18/2017.
@@ -17,8 +14,8 @@ import nl.tudelft.cs4160.trustchain_android.main.BootstrapActivity;
 public class BootstrapActivityTest {
 
     @Rule
-    public ActivityTestRule<BootstrapActivity> mActivityRule = new ActivityTestRule<>(
-            BootstrapActivity.class);
+    public ActivityTestRule<ChangeBootstrapActivity> mActivityRule = new ActivityTestRule<>(
+            ChangeBootstrapActivity.class);
 //
 //    @Test
 //    public void gotoOverviewConnections() throws InterruptedException{

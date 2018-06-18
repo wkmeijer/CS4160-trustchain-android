@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".passport.ocr.ManualInputActivity"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_marginTop="10dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/doc_num_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:text="@string/docNum"/>
+
+        <EditText
+            android:id="@+id/doc_num"
+            android:layout_width="match_parent"
+            android:layout_margin="10dp"
+            android:padding="5dp"
+            android:inputType = "textCapCharacters"
+            android:layout_height="wrap_content"
+            android:background="@drawable/grey_border"
+            android:maxLines="1"
+            android:maxLength="9"
+            android:hint="@string/hintDocNum"/>
+
+        <TextView
+            android:id="@+id/exp_date_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:text="@string/expiryDate"/>
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp">
+
+            <FrameLayout
+                android:background="@drawable/grey_border"
+                android:layout_marginEnd="10dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+                <Spinner
+                    android:id="@+id/expiry_day_spinner"
+                    android:padding="5dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
+                </Spinner>
+            </FrameLayout>
+
+            <FrameLayout
+                android:background="@drawable/grey_border"
+                android:layout_width="wrap_content"
+                android:layout_marginEnd="10dp"
+                android:layout_height="wrap_content">
+
+                <Spinner
+                    android:id="@+id/expiry_month_spinner"
+                    android:padding="5dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
+                </Spinner>
+            </FrameLayout>
+
+            <FrameLayout
+                android:background="@drawable/grey_border"
+                android:layout_width="wrap_content"
+                android:layout_marginEnd="10dp"
+                android:layout_height="wrap_content">
+
+                <Spinner
+                    android:id="@+id/expiry_year_spinner"
+                    android:padding="5dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
+                </Spinner>
+            </FrameLayout>
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/dob_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:text="@string/dateBirth"/>
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp">
+
+            <FrameLayout
+                android:background="@drawable/grey_border"
+                android:layout_width="wrap_content"
+                android:layout_marginEnd="10dp"
+                android:layout_height="wrap_content">
+
+                <Spinner
+                    android:id="@+id/dob_day_spinner"
+                    android:padding="5dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
+                </Spinner>
+            </FrameLayout>
+
+            <FrameLayout
+                android:background="@drawable/grey_border"
+                android:layout_width="wrap_content"
+                android:layout_marginEnd="10dp"
+                android:layout_height="wrap_content">
+
+                <Spinner
+                    android:id="@+id/dob_month_spinner"
+                    android:padding="5dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
+                </Spinner>
+            </FrameLayout>
+
+            <FrameLayout
+                android:background="@drawable/grey_border"
+                android:layout_width="wrap_content"
+                android:layout_marginEnd="10dp"
+                android:layout_height="wrap_content">
+
+                <Spinner
+                    android:id="@+id/dob_year_spinner"
+                    android:padding="5dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
+                </Spinner>
+            </FrameLayout>
+        </LinearLayout>
+
+    </LinearLayout>
+    <Button
+        android:id="@+id/submit_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/manInputSubmit"
+        android:textColor="@android:color/white"
+        android:background="@drawable/blue_button_bottom"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentStart="true" />
+</RelativeLayout>
+

@@ -15,7 +15,7 @@ import org.json.JSONObject;
 import nl.tudelft.cs4160.trustchain_android.R;
 import nl.tudelft.cs4160.trustchain_android.message.MessageProto;
 
-import static nl.tudelft.cs4160.trustchain_android.Util.Util.readableSize;
+import static nl.tudelft.cs4160.trustchain_android.util.Util.readableSize;
 
 public class FundsAdapter extends ArrayAdapter<MessageProto.TrustChainBlock> {
     public FundsAdapter(@NonNull Context context) {
@@ -34,7 +34,7 @@ public class FundsAdapter extends ArrayAdapter<MessageProto.TrustChainBlock> {
 
         MessageProto.TrustChainBlock block = this.getItem(position);
 
-        transactionString = block.getTransaction().toStringUtf8();
+        transactionString = block.getTransaction().getUnformatted().toStringUtf8();
         System.out.println("Found " + transactionString);
 
         long up = 0;
